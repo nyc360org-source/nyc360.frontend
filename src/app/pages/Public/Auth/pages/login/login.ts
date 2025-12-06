@@ -42,7 +42,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
   initializeGoogleButton() {
     if (typeof google !== 'undefined') {
       google.accounts.id.initialize({
-        client_id: 'YOUR_GOOGLE_CLIENT_ID_HERE.apps.googleusercontent.com', // 🔴 ضع معرف العميل الخاص بك هنا
+        client_id: '124220032804-65up6tfjkjvch75p1k0skmou7csqi3c1.apps.googleusercontent.com', // 🔴 ضع معرف العميل الخاص بك هنا
         callback: (response: any) => this.handleGoogleLogin(response)
       });
 
