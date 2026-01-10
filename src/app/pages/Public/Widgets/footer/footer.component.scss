@@ -1,143 +1,137 @@
-// متغيرات الألوان لسهولة التعديل
-$bg-color: #111111;       // خلفية داكنة جداً
-$text-color: #b0b0b0;     // لون نص رمادي فاتح
-$accent-color: #FFD700;   // اللون الذهبي المميز
-$hover-bg: #222222;       // لون الخلفية عند التحويم
+// --- Variables ---
+$bg-dark: #002147;      // Deep Blue (From Image)
+$text-white: #ffffff;
+$text-gray: #B0B0B0;    // Light Gray for links
+$border-color: rgba(255, 255, 255, 0.1); // Faint divider
+$font-main: 'Segoe UI', Helvetica, Arial, sans-serif;
 
 .footer-section {
-  background-color: $bg-color;
-  color: $text-color;
-  padding: 80px 0 30px; // مسافات واسعة تعطي شعور بالفخامة
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; // خط نظيف
-  border-top: 3px solid $accent-color; // خط علوي ذهبي جمالي
+  background-color: $bg-dark;
+  color: $text-white;
+  padding: 80px 0 30px; // Top padding 80px, Bottom 30px
+  font-family: $font-main;
+  font-size: 14px;
 }
 
-.footer-brand {
-  h2 {
-    color: #fff;
-    letter-spacing: 2px;
-    font-size: 2rem;
-  }
-  .highlight {
-    color: $accent-color;
+// 1. Logo Column
+.logo-col {
+  padding-right: 40px; // Spacing for desktop
+  
+  .footer-logo {
+    height: 40px; // Adjust based on your actual logo
+    width: auto;
+    object-fit: contain;
+    // Fallback if using text logo
+    // &.text-logo { font-size: 1.8rem; font-weight: 800; color: white; span { color: #FFA500; } }
   }
 }
 
-.footer-heading {
-  color: #fff;
+// 2. Titles
+.col-title {
+  font-size: 13px;
   font-weight: 700;
-  position: relative;
-  display: inline-block;
-  
-  // خط صغير تحت العناوين
-  &::after {
-    content: '';
-    display: block;
-    width: 40px;
-    height: 2px;
-    background: $accent-color;
-    margin-top: 10px;
-    transition: width 0.3s;
-  }
-  
-  &:hover::after {
-    width: 100%; // تأثير تمدد الخط عند الوقوف عليه
-  }
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: $text-white;
+  margin-bottom: 25px;
 }
 
-.description {
-  line-height: 1.8;
-  font-size: 0.95rem;
-  color: #fff;
-}
-
-// روابط القائمة السريعة
+// 3. Links List
 .footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
   li {
     margin-bottom: 12px;
+    
+    a {
+      text-decoration: none;
+      color: $text-gray;
+      font-size: 14px;
+      transition: color 0.2s ease;
+      
+      &:hover {
+        color: $text-white;
+        text-decoration: underline;
+      }
+    }
   }
   
-  a {
-    color: $text-color;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    display: inline-block;
-
-    &:hover {
-      color: $accent-color;
-      transform: translateX(5px); // حركة بسيطة لليمين
-    }
-    
-    i {
-      font-size: 0.8rem;
-      color: $accent-color;
-    }
-  }
+  // Specific spacing for the main links under logo
+  &.main-links li { margin-bottom: 15px; }
 }
 
-// أزرار السوشيال ميديا
-.social-links {
-  gap: 15px;
+// 4. Social Media
+.social-box {
+  .social-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+  }
   
-  .social-btn {
+  .social-icons {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    background: rgba(255, 255, 255, 0.05);
-    color: #fff;
-    border-radius: 50%;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    border: 1px solid transparent;
-
-    &:hover {
-      background: $accent-color;
-      color: #000; // النص يصبح أسود عند التحويم
-      transform: translateY(-3px); // يرتفع للأعلى قليلاً
-      box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
-    }
-  }
-}
-
-// روابط الاتصال
-.contact-item {
-  display: flex;
-  align-items: center;
-  justify-content: center; // افتراضي للموبايل
-  
-  @media (min-width: 768px) {
-    justify-content: flex-start; // بداية السطر للديسك توب
-  }
-
-  .highlight {
-    color: $accent-color;
-  }
-  
-  .contact-link {
-    color: $text-color;
-    text-decoration: none;
-    transition: color 0.3s;
+    gap: 15px;
     
-    &:hover {
-      color: #fff;
+    a {
+      color: $text-white;
+      font-size: 18px;
+      width: 36px;
+      height: 36px;
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 50%; // Circle
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+      text-decoration: none;
+
+      &:hover {
+        background-color: $text-white;
+        color: $bg-dark;
+        border-color: $text-white;
+      }
     }
   }
 }
 
-// الجزء السفلي (Copyright)
+// 5. Bottom Bar
 .footer-bottom {
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  font-size: 0.9rem;
+  margin-top: 60px;
+  padding-top: 25px;
+  border-top: 1px solid $border-color;
   
-  .bottom-link {
-    color: $text-color;
-    text-decoration: none;
-    transition: color 0.3s;
-    
-    &:hover {
-      color: $accent-color;
+  p {
+    color: $text-gray;
+    font-size: 12px;
+    margin-bottom: 10px; // For mobile stacking
+    @media (min-width: 768px) { margin-bottom: 0; }
+  }
+
+  .legal-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: inline-flex;
+    gap: 20px;
+    justify-content: center; // Mobile center
+    @media (min-width: 768px) { justify-content: flex-end; } // Desktop right
+
+    li a {
+      color: $text-gray;
+      font-size: 12px;
+      text-decoration: none;
+      transition: color 0.2s;
+      &:hover { color: $text-white; }
     }
   }
+}
+
+// Responsive Tweaks
+@media (max-width: 991px) {
+  .logo-col { margin-bottom: 40px; padding-right: 0; }
+  .footer-links { margin-bottom: 30px; }
 }

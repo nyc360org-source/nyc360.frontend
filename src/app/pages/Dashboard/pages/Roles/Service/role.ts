@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { environment } from '../../../../../environments/environment';
 import { Role, RolesResponse, UpdateRolePermissionsRequest } from '../models/role';
-import { StandardResponse } from '../../../../models/standardresponse';
+import { StandardResponse } from '../models/standardresponse';
 
 @Injectable({
   providedIn: 'root'

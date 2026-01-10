@@ -1,0 +1,214 @@
+<div class="page-container">
+
+  <div *ngIf="errorMessage" class="state-container text-danger">
+    <i class="bi bi-exclamation-circle me-2"></i> {{ errorMessage }}
+  </div>
+
+  <div *ngIf="post" class="content-grid">
+    
+    <main class="main-column">
+      
+      <div class="featured-media" *ngIf="(post.attachments && post.attachments.length > 0) || post.imageUrl">
+        <img *ngIf="post.attachments && post.attachments.length > 0" [src]="resolveImageUrl(post.attachments[0].url)" alt="Post Image">
+        <img *ngIf="(!post.attachments || post.attachments.length === 0) && post.imageUrl" [src]="resolveImageUrl(post.imageUrl)" alt="Post Image">
+      </div>
+
+      <div class="meta-row">
+        <div class="author-info">
+          <img [src]="getAuthorAvatar(post.author)" class="author-avatar-small">
+          <span class="author-name">{{ getAuthorName(post.author) }}</span>
+        </div>
+        
+        <span class="divider">•</span>
+        <span class="date">{{ post.createdAt | date:'mediumDate' }}</span>
+        
+        <div class="more-options-wrapper">
+          <button class="icon-btn-ghost me-2" (click)="toggleSave()" [title]="post.isSaved ? 'Unsave' : 'Save'">
+             <i class="bi" [ngClass]="post.isSaved ? 'bi-bookmark-fill text-primary' : 'bi-bookmark'"></i>
+          </button>
+
+          <button class="icon-btn-ghost" (click)="toggleMenu()">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          
+          <div class="dropdown-menu-custom" *ngIf="showMenu">
+            <div class="menu-item" *ngIf="canEdit" routerLink="/admin/posts/edit/{{post.id}}">
+              <i class="bi bi-pencil"></i> <span>Edit Post</span>
+            </div>
+            <div class="menu-item text-danger" *ngIf="canEdit" (click)="onDelete()">
+              <i class="bi bi-trash"></i> <span>Delete Post</span>
+            </div>
+            <div class="menu-item" (click)="openReportModal()">
+              <i class="bi bi-flag"></i> <span>Report Post</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tags-row">
+        <span class="tag-pill category-pill">{{ getCategoryName(post.category) }}</span>
+        <a *ngFor="let tag of post.tags; let i = index" 
+           [routerLink]="['/public/posts/tags', tag]" 
+           class="tag-pill" 
+           [ngClass]="['green', 'blue', 'pink', 'purple', 'cyan', 'indigo'][i % 6]">
+           #{{ tag }}
+        </a>
+      </div>
+
+      <h1 class="article-title">{{ post.title }}</h1>
+      <div class="article-body" [innerHTML]="post.content"></div>
+
+      <div class="interaction-bar mb-4 d-flex align-items-center gap-3 border-top border-bottom py-3">
+          <button class="btn btn-light rounded-pill px-3 d-flex align-items-center gap-2" 
+                  [class.text-primary]="post.userInteraction === InteractionType.Like" 
+                  (click)="toggleInteraction(InteractionType.Like)">
+              <i class="bi" [ngClass]="post.userInteraction === InteractionType.Like ? 'bi-hand-thumbs-up-fill' : 'bi-hand-thumbs-up'"></i> 
+              <span class="fw-bold">{{ post.stats?.likes || 0 }}</span>
+          </button>
+          
+          <button class="btn btn-light rounded-pill px-3 d-flex align-items-center gap-2" 
+                  [class.text-danger]="post.userInteraction === InteractionType.Dislike" 
+                  (click)="toggleInteraction(InteractionType.Dislike)">
+              <i class="bi" [ngClass]="post.userInteraction === InteractionType.Dislike ? 'bi-hand-thumbs-down-fill' : 'bi-hand-thumbs-down'"></i>
+              <span class="fw-bold">{{ post.stats?.dislikes || 0 }}</span>
+          </button>
+          
+          <div class="ms-auto">
+             <button class="btn btn-share-action rounded-pill px-4" (click)="openShareModal()">
+                <i class="bi bi-share-fill me-2"></i> Share 
+                <span class="badge bg-white text-dark ms-1" *ngIf="post.stats?.shares">{{ post.stats?.shares }}</span>
+             </button>
+          </div>
+      </div>
+
+      <div class="comments-section-modern">
+        <div class="comment-input-area">
+          <div class="input-wrapper">
+            <input type="text" placeholder="What are your thoughts?" [(ngModel)]="newCommentContent" (keydown.enter)="submitComment()">
+            <button class="send-btn" (click)="submitComment()" [disabled]="!newCommentContent.trim()">
+              <i class="bi bi-send-fill"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="comments-sort">
+          <span>Sort by: <strong>Recent</strong></span>
+        </div>
+
+        <div class="comments-list">
+          <div class="comment-item-modern" *ngFor="let comment of post.comments">
+            <div class="comment-content">
+              <h5 class="comment-author">{{ getAuthorName(comment.author) }}</h5>
+              <p class="comment-text">{{ comment.content }}</p>
+              
+              <div class="comment-actions">
+                <button class="act-btn" (click)="openReplyInput(comment.id)"><i class="bi bi-reply"></i> Reply</button>
+              </div>
+              
+              <div class="reply-input-box" *ngIf="activeReplyId === comment.id">
+                <input #replyInput type="text" placeholder="Write a reply..." (keydown.enter)="submitReply(comment, replyInput.value)">
+                <button class="send-btn-small" (click)="submitReply(comment, replyInput.value)">
+                  <i class="bi bi-send-fill"></i>
+                </button>
+              </div>
+
+              <div class="nested-replies" *ngIf="comment.replies?.length">
+                <div class="comment-item-modern reply-item" *ngFor="let reply of comment.replies">
+                  <div class="comment-content">
+                    <h5 class="comment-author">{{ getAuthorName(reply.author) }}</h5>
+                    <p class="comment-text">{{ reply.content }}</p>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+          <p *ngIf="post.comments?.length === 0" class="text-muted text-center py-3">No comments yet.</p>
+        </div>
+      </div>
+    </main>
+
+    <aside class="sidebar-column">
+      <div class="sidebar-card profile-card">
+        <div class="card-header-blue">
+          <div class="icon-box"><i class="bi bi-newspaper"></i></div>
+          <button class="btn-follow">Follow</button>
+        </div>
+        <div class="card-body">
+          <div class="hub-info">
+            <h4>{{ getAuthorName(post.author) }} <i class="bi bi-patch-check-fill text-primary"></i></h4>
+            <p>Providing the latest updates and news for the NYC360 community.</p>
+          </div>
+          <div class="links-list">
+             <div class="link-item"><i class="bi bi-globe"></i> Public Source</div>
+             <div class="link-item"><i class="bi bi-calendar"></i> Posted: {{ post.createdAt | date:'shortDate' }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-card related-posts" *ngIf="relatedPosts.length > 0">
+        <h4 class="sidebar-title">Related Posts</h4>
+        <div class="related-list">
+          <div class="related-item" *ngFor="let item of relatedPosts" [routerLink]="['/public/posts/details', item.id]">
+             <div class="rel-img-wrapper" *ngIf="item.imageUrl">
+                <img [src]="resolveImageUrl(item.imageUrl)" alt="thumbnail">
+            </div>
+            
+            <div class="rel-info">
+              <h5 class="two-lines-ellipsis">{{ item.title }}</h5>
+              <span class="meta">
+                  <i class="bi bi-chat-dots"></i> {{ item.commentsCount }} comments
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="showShareModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3>Share Post</h3>
+      <button class="close-btn" (click)="closeShareModal()"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="modal-body">
+      <p class="modal-desc">Share "<strong>{{ post?.title }}</strong>" on your news feed?</p>
+      <div class="form-group mt-3">
+        <textarea class="form-control" rows="3" placeholder="Say something about this (optional)..." [(ngModel)]="shareComment"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="closeShareModal()">Cancel</button>
+      <button class="btn-submit" (click)="submitShare()" [disabled]="isSharing">
+         <span *ngIf="isSharing" class="spinner-border spinner-border-sm me-2"></span> Share Now
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="showReportModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3>Report Post</h3>
+      <button class="close-btn" (click)="closeReportModal()"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="modal-body">
+      <p class="modal-desc">Why are you reporting this post?</p>
+      <div class="radio-group">
+        <label><input type="radio" name="reason" [(ngModel)]="reportReason" value="Spam"> Spam</label>
+        <label><input type="radio" name="reason" [(ngModel)]="reportReason" value="Hate Speech"> Hate Speech</label>
+        <label><input type="radio" name="reason" [(ngModel)]="reportReason" value="Harassment"> Harassment</label>
+        <label><input type="radio" name="reason" [(ngModel)]="reportReason" value="Other"> Other</label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="closeReportModal()">Cancel</button>
+      <button class="btn-submit" (click)="submitReport()" [disabled]="!reportReason || isReporting">
+        <span *ngIf="isReporting" class="spinner-border spinner-border-sm me-2"></span> Submit
+      </button>
+    </div>
+  </div>
+</div>

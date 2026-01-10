@@ -1,12 +1,13 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common'; // مهم للتاريخ والـ Classes
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { AuthService } from '../../../Public/Auth/Service/auth';
+import { AuthService } from '../../../Authentication/Service/auth';
+import { NavigationControlsComponent } from "../navigation-controls/navigation-controls.component";
 
 @Component({
   selector: 'app-nav-bar',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive],
+  imports: [CommonModule, RouterLink, RouterLinkActive, NavigationControlsComponent],
   templateUrl: './nav-bar.component.html',
   styleUrls: ['./nav-bar.component.scss'],
   providers: [DatePipe] 

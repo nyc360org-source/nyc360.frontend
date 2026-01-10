@@ -1,12 +1,10 @@
-// src/app/pages/Dashboard/pages/rss/rss-form/rss-form.component.ts
-
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { RssService } from '../../services/rss';
-import { RssCategoryList, RssSource } from '../../models/rss';
-// تأكد من المسارات
+import { RssSource } from '../../models/rss';
+import { CATEGORY_LIST } from '../../../../../models/category-list';
 
 @Component({
   selector: 'app-rss-form',
@@ -25,13 +23,14 @@ export class RssFormComponent implements OnInit {
   form!: FormGroup;
   isEditMode = false;
   editId: number | null = null;
-  categories = RssCategoryList;
+  
+  // القائمة المشتركة
+  categories = CATEGORY_LIST; 
   
   isLoading = false;
   selectedFile: File | null = null;
 
   ngOnInit() {
-    // Check if we have state data passed from List (Edit Mode)
     const state = history.state.data as RssSource;
 
     if (state && state.id) {
@@ -43,15 +42,16 @@ export class RssFormComponent implements OnInit {
     }
   }
 
-  // --- Form for CREATE (Simple) ---
+  // --- Form for CREATE ---
   initCreateForm() {
     this.form = this.fb.group({
       url: ['', [Validators.required, Validators.pattern('https?://.+')]],
+      // Validators.required يقبل الصفر كقيمة صحيحة، لكن يجب أن تكون القيمة المبدئية null
       category: [null, Validators.required]
     });
   }
 
-  // --- Form for EDIT (Full) ---
+  // --- Form for EDIT ---
   initEditForm(data: RssSource) {
     this.form = this.fb.group({
       name: [data.name, Validators.required],
@@ -71,27 +71,44 @@ export class RssFormComponent implements OnInit {
 
   // --- Submit Logic ---
   onSubmit() {
-    if (this.form.invalid) return;
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+    
     this.isLoading = true;
 
     if (this.isEditMode && this.editId) {
       // UPDATE Logic
       this.rssService.updateRssSource(this.editId, this.form.value, this.selectedFile || undefined)
         .subscribe({
-          next: (res: any) => this.handleSuccess('Updated'),
+          next: (res: any) => {
+            if (res.isSuccess) {
+              this.handleSuccess('Updated');
+            } else {
+              this.handleError({ error: res.error });
+            }
+          },
           error: (err: any) => this.handleError(err)
         });
     } else {
       // CREATE Logic
       const payload = {
         url: this.form.value.url,
-        category: +this.form.value.category
+        // تأكد من تحويلها لرقم، حتى لو كانت 0
+        category: Number(this.form.value.category)
       };
       
-      // الآن دالة createRssSource موجودة ولن تعطي خطأ
       this.rssService.createRssSource(payload)
         .subscribe({
-          next: (res: any) => this.handleSuccess('Created'),
+          next: (res: any) => {
+            if (res.isSuccess) {
+              this.handleSuccess('Created');
+            } else {
+              // إرسال الخطأ القادم من الباك إند
+              this.handleError({ error: res.error });
+            }
+          },
           error: (err: any) => this.handleError(err)
         });
     }
@@ -103,10 +120,21 @@ export class RssFormComponent implements OnInit {
     this.router.navigate(['/admin/rss']);
   }
 
+  // 🔥 تحسين هندلة الخطأ لعرض رسالة الباك إند
   handleError(err: any) {
-    console.error(err);
-    alert('Operation failed.');
     this.isLoading = false;
+    console.error('API Error:', err);
+
+    let msg = 'Operation failed. Please try again.';
+
+    // محاولة استخراج الرسالة من الباك إند
+    if (err.error && err.error.message) {
+      msg = err.error.message;
+    } else if (err.message) {
+      msg = err.message;
+    }
+
+    alert(`Error: ${msg}`);
   }
 
   goBack() {

@@ -1,0 +1,82 @@
+<div class="page-container">
+  
+  <div class="page-header">
+    <div class="title-section">
+      <h2>{{ isEditMode ? 'Edit Post' : 'Create New Post' }}</h2>
+      <p>Fill in the details below to publish content.</p>
+    </div>
+    <button (click)="goBack()" class="btn-back">
+      <i class="bi bi-arrow-left"></i> Back
+    </button>
+  </div>
+
+  <div class="form-card">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+      <div class="form-group">
+        <label>Post Title</label>
+        <div class="input-wrapper">
+          <i class="bi bi-type-h1"></i>
+          <input type="text" formControlName="title" placeholder="Enter a catchy headline...">
+        </div>
+        <small class="text-danger" *ngIf="form.get('title')?.invalid && form.get('title')?.touched">
+          Title is required (min 5 chars).
+        </small>
+      </div>
+
+      <div class="form-row">
+        
+        <div class="form-group">
+          <label>Category</label>
+          <div class="input-wrapper">
+            <i class="bi bi-tag-fill"></i>
+            <select formControlName="category">
+              <option [ngValue]="null" disabled>Select Category</option>
+              <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</option>
+            </select>
+          </div>
+          <small class="text-danger" *ngIf="form.get('category')?.invalid && form.get('category')?.touched">
+            Please select a category.
+          </small>
+        </div>
+
+        <div class="form-group">
+          <label>Cover Image</label>
+          <div class="file-input-wrapper">
+            <input type="file" (change)="onFileSelect($event)" accept="image/*" id="fileInput">
+            <label for="fileInput" class="file-label">
+              <i class="bi bi-cloud-upload"></i> Choose Image
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="img-preview-box" *ngIf="imagePreview">
+        <p>Preview:</p>
+        <img [src]="imagePreview" alt="Preview">
+      </div>
+
+      <div class="form-group">
+        <label>Content</label>
+        <textarea formControlName="content" rows="12" placeholder="Write your article content here..."></textarea>
+        <small class="text-danger" *ngIf="form.get('content')?.invalid && form.get('content')?.touched">
+          Content is required (min 20 chars).
+        </small>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" (click)="goBack()" class="btn-ghost">Cancel</button>
+        
+        <button type="submit" class="btn-gold" [disabled]="isLoading || form.invalid">
+          <span *ngIf="!isLoading">
+            <i class="bi bi-send-fill"></i> {{ isEditMode ? 'Save Changes' : 'Publish Post' }}
+          </span>
+          <span *ngIf="isLoading">
+            <span class="spinner-border spinner-border-sm"></span> Processing...
+          </span>
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>

@@ -1,76 +1,140 @@
-<nav class="nav-bar-container">
+<nav class="nav-wrapper">
   
-  <div class="top-header">
-    
-    <button class="mobile-toggle" (click)="toggleMenu()">
-      <i class="bi" [ngClass]="isMenuOpen ? 'bi-x-lg' : 'bi-list'"></i>
-    </button>
+  <div class="top-thick-line"></div>
 
-    <div class="logo" routerLink="/">
-      <span class="logo-text">NYC360</span>
+  <div class="top-nav">
+    
+    <div class="nav-start">
+      <button class="mobile-toggle d-lg-none" (click)="toggleMenu()">
+        <i class="bi bi-list"></i>
+      </button>
+      
+      <a routerLink="/" class="logo-area">
+        <img src="image_0_0.jpg" alt="NYC360" class="logo-img"> 
+      </a>
     </div>
 
-    <ul class="main-links d-none d-lg-flex">
-      <li><a routerLink="/news" routerLinkActive="active">NEWS</a></li>
-      <li><a routerLink="/politics" routerLinkActive="active">POLITICS</a></li>
-    </ul>
-
-    <div class="actions">
-      <button class="search-button"><i class="bi bi-search"></i></button>
-      
-      <ng-container *ngIf="!isLoggedIn">
-        <a routerLink="/Login" class="subscribe">Login</a>
-        <a routerLink="/Signup" class="subscribe-button">Sign Up</a>
-      </ng-container>
-
-      <div class="d-flex align-items-center gap-2" *ngIf="isLoggedIn">
-        
-        <a [routerLink]="['/profile', currentUsername]" 
-           class="profile-btn" 
-           title="My Profile">
-          <i class="bi bi-person-circle fs-4 text-white"></i>
-        </a>
-
-        <button (click)="logout()" class="auth-link">Logout</button>
+    <div class="nav-center d-none d-lg-block">
+      <div class="search-bar-purple">
+        <i class="bi bi-search search-icon"></i>
+        <input type="text" [placeholder]="currentActiveCat ? 'Search in NYC360/' + currentActiveCat.name : 'Search in NYC360...'" />
       </div>
     </div>
-  </div>
 
-  <div class="mobile-menu" [class.open]="isMenuOpen">
-    <ul class="mobile-links">
-      <li><a routerLink="/" (click)="toggleMenu()">HOME</a></li>
+    <div class="nav-end">
       
-      <li *ngIf="isLoggedIn">
-        <a [routerLink]="['/profile', currentUsername]" (click)="toggleMenu()">MY PROFILE</a>
-      </li>
+      <div class="dynamic-nav-links d-none d-lg-flex" 
+           *ngIf="currentActiveCat"
+           [ngClass]="currentActiveCat.id">
+           
+         <a *ngFor="let link of currentActiveCat.topLinks" 
+            [routerLink]="[link.route]"
+            routerLinkActive="active-link"
+            class="nav-text-link">
+            {{ link.label }}
+         </a>
 
-      <li *ngIf="canViewDashboard">
-        <a routerLink="/admin/dashboard" (click)="toggleMenu()">DASHBOARD</a>
-      </li>
+      </div>
+      <ng-container *ngIf="isLoggedIn; else loginTemplate">
+        <button class="notification-btn">
+          <i class="bi bi-bell-fill"></i>
+          <span *ngIf="hasNotifications" class="notification-dot"></span>
+        </button>
 
-
-      <li *ngIf="!isLoggedIn"><a routerLink="/Login" (click)="toggleMenu()">LOGIN</a></li>
-      <li *ngIf="isLoggedIn"><a (click)="logout()">LOGOUT</a></li>
-    </ul>
-  </div>
-
-  <hr class="divider top-divider">
-  <div class="date-section">{{ currentDate | date:'EEEE, MMMM d, y' }}</div>
-  <hr class="divider bottom-divider">
-  
-  <div class="sub-links-bar d-none d-md-block">
-    <ul class="sub-links">
-      <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">HOME</a></li>
-      
-      <li *ngIf="canViewDashboard">
-        <a routerLink="/admin/dashboard" routerLinkActive="active" class="highlight-link">
-          <i class="bi bi-speedometer2"></i> Dashboard
+        <a [routerLink]="['/public/profile', currentUsername]" class="user-profile-link" title="Profile">
+          <i class="bi bi-person-circle profile-icon" style="font-size: 1.8rem;"></i>
         </a>
-      </li>
+      </ng-container>
+      
+      <ng-template #loginTemplate>
+        <a routerLink="/auth/login" class="btn-login-text">Login</a>
+        <a routerLink="/auth/register-selection" class="btn-signup-blue">Sign Up</a>
+      </ng-template>
 
+    </div>
+  </div>
 
+  <div class="categories-nav d-none d-lg-block">
+    <div class="cat-scroller">
+      <a routerLink="/public/home" routerLinkActive="active-cat" class="cat-pill all">
+        <i class="bi bi-grid-fill"></i> All
+      </a>
 
-    </ul>
+      <a *ngFor="let cat of categories" 
+         [routerLink]="[cat.route]" 
+         routerLinkActive="active-cat"
+         [routerLinkActiveOptions]="{ exact: false }" 
+         [class]="'cat-pill ' + cat.id"> 
+         
+         <i [class]="'bi ' + cat.icon"></i>
+         <span>{{ cat.name }}</span>
+      </a>
+    </div>
   </div>
 
 </nav>
+
+<div class="sidebar-overlay" [class.show]="isMenuOpen" (click)="toggleMenu()"></div>
+
+<div class="sidebar-menu" [class.open]="isMenuOpen">
+  <div class="sidebar-header">
+    <span class="brand">NYC<span>360</span></span>
+    <button class="close-btn" (click)="toggleMenu()"><i class="bi bi-x-lg"></i></button>
+  </div>
+
+  <div class="sidebar-content">
+    
+    <div *ngIf="isLoggedIn" class="mobile-user-info" [routerLink]="['/profile', currentUsername]" (click)="toggleMenu()">
+      <i class="bi bi-person-circle" style="font-size: 2rem; color: #0A3D91;"></i>
+      <div class="user-details">
+        <span class="welcome">Welcome back,</span>
+        <span class="username">{{ currentUsername }}</span>
+      </div>
+    </div>
+
+    <div *ngIf="currentActiveCat" class="mobile-sub-links-group">
+      <p class="menu-label">{{ currentActiveCat.name }} Menu</p>
+      <a *ngFor="let link of currentActiveCat.topLinks" 
+         [routerLink]="[link.route]" 
+         routerLinkActive="active-mobile-link"
+         (click)="toggleMenu()"
+         class="mobile-sub-link-item">
+         {{ link.label }}
+      </a>
+      <hr style="border-top: 1px solid #eee; margin: 15px 0;">
+    </div>
+
+    <p class="menu-label">Categories</p>
+    
+    <div class="mobile-categories-list">
+      <a routerLink="/public/home" 
+         (click)="toggleMenu()"
+         routerLinkActive="active-mobile-cat"
+         class="mobile-cat-item all">
+         <div class="icon-box"><i class="bi bi-grid-fill"></i></div>
+         <span class="text">All</span>
+         <i class="bi bi-chevron-right arrow"></i>
+      </a>
+
+      <a *ngFor="let cat of categories" 
+         [routerLink]="[cat.route]" 
+         (click)="toggleMenu()"
+         routerLinkActive="active-mobile-cat"
+         [routerLinkActiveOptions]="{ exact: false }"
+         [class]="'mobile-cat-item ' + cat.id">
+        <div class="icon-box"><i [class]="'bi ' + cat.icon"></i></div>
+        <span class="text">{{ cat.name }}</span>
+        <i class="bi bi-chevron-right arrow"></i>
+      </a>
+    </div>
+
+    <div class="mobile-actions">
+      <button *ngIf="isLoggedIn" (click)="logout()" class="btn-logout-mobile">Logout</button>
+      <ng-container *ngIf="!isLoggedIn">
+          <a routerLink="/auth/login" (click)="toggleMenu()" class="btn-login-mobile">Login</a>
+          <a routerLink="/auth/register-selection" (click)="toggleMenu()" class="btn-signup-mobile">Sign Up</a>
+      </ng-container>
+    </div>
+
+  </div>
+</div>

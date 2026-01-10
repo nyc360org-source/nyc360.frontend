@@ -5,7 +5,7 @@
       <h2>{{ isEditMode ? 'Edit Post' : 'Create New Post' }}</h2>
       <p>Fill in the details below to publish content.</p>
     </div>
-    <button (click)="goBack()" class="btn-back">
+    <button type="button" (click)="goBack()" class="btn-back">
       <i class="bi bi-arrow-left"></i> Back
     </button>
   </div>
@@ -41,37 +41,52 @@
         </div>
 
         <div class="form-group">
-          <label>Cover Image</label>
+          <label>Attachments (Multiple)</label>
           <div class="file-input-wrapper">
-            <input type="file" (change)="onFileSelect($event)" accept="image/*" id="fileInput">
+            <input type="file" (change)="onFileSelect($event)" accept="image/*" id="fileInput" multiple>
             <label for="fileInput" class="file-label">
-              <i class="bi bi-cloud-upload"></i> Choose Image
+              <i class="bi bi-cloud-upload"></i> 
+              {{ selectedFiles.length > 0 ? selectedFiles.length + ' Files Selected' : 'Choose Images' }}
             </label>
           </div>
         </div>
       </div>
 
-      <div class="img-preview-box" *ngIf="imagePreview">
-        <p>Preview:</p>
-        <img [src]="imagePreview" alt="Preview">
+      <div class="previews-container" *ngIf="imagePreviews.length > 0 || existingAttachments.length > 0">
+        
+        <div class="preview-grid" *ngIf="imagePreviews.length > 0">
+           <p class="w-100">New Uploads:</p>
+           <div class="preview-item" *ngFor="let img of imagePreviews">
+             <img [src]="img" alt="New Preview">
+           </div>
+        </div>
+
+        <div class="preview-grid" *ngIf="existingAttachments.length > 0">
+           <p class="w-100">Existing Images:</p>
+           <div class="preview-item" *ngFor="let attach of existingAttachments">
+             <img [src]="resolveImageUrl(attach.url)" 
+                  alt="Existing Image"
+                  (error)="attach.url = null"> </div>
+        </div>
+
       </div>
 
       <div class="form-group">
         <label>Content</label>
         <textarea formControlName="content" rows="12" placeholder="Write your article content here..."></textarea>
         <small class="text-danger" *ngIf="form.get('content')?.invalid && form.get('content')?.touched">
-          Content is required (min 20 chars).
+          Content is required (min 10 chars).
         </small>
       </div>
 
       <div class="form-actions">
         <button type="button" (click)="goBack()" class="btn-ghost">Cancel</button>
         
-        <button type="submit" class="btn-gold" [disabled]="isLoading || form.invalid">
-          <span *ngIf="!isLoading">
+        <button type="submit" class="btn-gold" [disabled]="isLoading || isSubmitting || form.invalid">
+          <span *ngIf="!isSubmitting">
             <i class="bi bi-send-fill"></i> {{ isEditMode ? 'Save Changes' : 'Publish Post' }}
           </span>
-          <span *ngIf="isLoading">
+          <span *ngIf="isSubmitting">
             <span class="spinner-border spinner-border-sm"></span> Processing...
           </span>
         </button>

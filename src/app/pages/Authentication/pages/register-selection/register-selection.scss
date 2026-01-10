@@ -1,0 +1,211 @@
+@use "sass:color";
+
+// --- Theme Variables ---
+$bg-dark: #081223;       
+$bg-light: #ffffff;      
+$accent: #BC5E3D;        // Copper
+$text-dark: #1a1a1a;
+$text-muted: #6c757d;
+$border-color: #e9ecef;
+$input-bg: #f8f9fa;
+$error-color: #dc3545; // Standard Red for errors
+
+.selection-container {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  font-family: 'Segoe UI', sans-serif;
+  overflow: hidden;
+
+  @media (max-width: 992px) {
+    flex-direction: column;
+    overflow-y: auto;
+  }
+}
+
+/* --- Left Brand Panel --- */
+.brand-panel {
+  flex: 0 0 35%;
+  background-color: $bg-dark;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+  position: relative;
+  overflow: hidden;
+  background-image: radial-gradient(circle at top left, color.adjust($bg-dark, $lightness: 8%), $bg-dark);
+
+  .brand-content { position: relative; z-index: 2; max-width: 400px; }
+  .logo-box {
+    margin-bottom: 30px;
+    .logo-text { font-size: 2rem; font-weight: 800; letter-spacing: 1px; .highlight { color: $accent; } }
+  }
+  .brand-title { font-size: 3.5rem; font-weight: 700; line-height: 1.1; margin-bottom: 20px; font-family: 'Playfair Display', serif; }
+  .brand-subtitle { font-size: 1.1rem; color: rgba(255,255,255,0.7); }
+  .glow-circle {
+    position: absolute; bottom: -150px; right: -150px; width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba($accent, 0.2) 0%, transparent 70%);
+    border-radius: 50%; z-index: 1;
+  }
+  @media (max-width: 992px) { flex: 0 0 auto; padding: 40px 20px; text-align: center; }
+}
+
+/* --- Right Choice Panel --- */
+.choices-panel {
+  flex: 1;
+  background-color: $bg-light;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  position: relative;
+
+  .content-wrapper {
+    width: 100%;
+    max-width: 600px;
+  }
+
+  .header-section {
+    text-align: center; margin-bottom: 40px;
+    .main-question { font-size: 2.2rem; font-weight: 700; color: $text-dark; margin-bottom: 8px; }
+    .sub-text { font-size: 1rem; color: $text-muted; }
+  }
+
+  // --- SELECTION CARDS ---
+  .cards-grid { display: flex; flex-direction: column; gap: 15px; }
+
+  .selection-card {
+    background-color: $bg-light;
+    border: 1px solid rgba(0,0,0,0.08);
+    padding: 20px 25px;
+    border-radius: 12px;
+    display: flex; align-items: center; gap: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+
+    &:hover {
+      transform: translateY(-3px);
+      border-color: rgba($accent, 0.4);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+      .card-icon { background-color: $accent; color: #fff; }
+      .card-arrow { color: $accent; transform: translateX(5px); }
+    }
+
+    .card-icon {
+      width: 50px; height: 50px; background-color: rgba($accent, 0.1); color: $accent;
+      border-radius: 10px; display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; transition: all 0.3s ease; flex-shrink: 0;
+    }
+    .card-text {
+      flex-grow: 1;
+      h3 { margin: 0 0 4px; font-size: 1.1rem; font-weight: 700; color: $text-dark; }
+      p { margin: 0; font-size: 0.9rem; color: $text-muted; }
+    }
+    .card-arrow { font-size: 1.2rem; color: #ccc; transition: all 0.3s ease; }
+  }
+
+  // --- FORM STYLES ---
+  .form-container { animation: fadeIn 0.5s ease-out; }
+
+  .btn-back {
+    background: none; border: none; color: $text-muted;
+    font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;
+    margin-bottom: 20px; transition: color 0.2s;
+    &:hover { color: $accent; }
+  }
+
+  .row-group { display: flex; gap: 15px; @media(max-width: 576px) { flex-direction: column; gap: 0; } }
+
+  .form-group {
+    margin-bottom: 18px; width: 100%;
+    
+    label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 5px; color: $text-dark; }
+    
+    .input-wrapper {
+      position: relative;
+      i { position: absolute; top: 50%; left: 15px; transform: translateY(-50%); color: $text-muted; transition: 0.3s; }
+      
+      input {
+        width: 100%; padding: 12px 15px 12px 45px;
+        border: 1px solid $border-color; border-radius: 8px; background: $input-bg;
+        font-size: 0.95rem; transition: all 0.3s;
+        
+        &:focus { 
+          outline: none; border-color: $accent; background: #fff; 
+          box-shadow: 0 0 0 3px rgba($accent, 0.1); 
+          & + i { color: $accent; } // Highlight icon on focus
+        }
+
+        // Invalid State
+        &.invalid {
+          border-color: $error-color;
+          background-color: rgba($error-color, 0.05);
+          &:focus { box-shadow: 0 0 0 3px rgba($error-color, 0.1); }
+        }
+      }
+    }
+
+    // Error Message
+    .error-msg {
+      color: $error-color; font-size: 0.8rem; margin-top: 5px; display: block;
+      animation: slideDown 0.2s ease-out;
+    }
+  }
+
+  // --- INTERESTS ---
+  .interests-section {
+    margin: 25px 0;
+    .section-label { 
+      font-size: 0.85rem; font-weight: 700; color: $text-dark; margin-bottom: 10px; display: block; 
+      .req { color: $error-color; margin-left: 2px; }
+    }
+    
+    .chips-grid {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      
+      .interest-chip {
+        display: flex; align-items: center; gap: 8px;
+        padding: 8px 16px; background-color: #fff;
+        border: 1px solid $border-color; border-radius: 50px;
+        font-size: 0.85rem; font-weight: 600; color: $text-muted;
+        cursor: pointer; transition: all 0.2s ease; user-select: none;
+
+        i { font-size: 1rem; }
+
+        &:hover { background-color: rgba($accent, 0.05); border-color: rgba($accent, 0.5); color: $accent; }
+
+        &.active {
+          background-color: $accent; border-color: $accent; color: #fff;
+          box-shadow: 0 4px 10px rgba($accent, 0.3);
+        }
+      }
+    }
+  }
+
+  // --- CHECKBOX & SUBMIT ---
+  .form-check {
+    display: flex; align-items: center; gap: 8px; margin: 20px 0 5px;
+    input { accent-color: $accent; width: 16px; height: 16px; cursor: pointer; }
+    label { font-size: 0.85rem; color: $text-muted; a { color: $text-dark; font-weight: 600; } }
+  }
+  .terms-error { font-size: 0.8rem; color: $error-color; margin-bottom: 15px; }
+
+  .btn-submit {
+    width: 100%; padding: 14px; background-color: $accent; color: #fff;
+    border: none; border-radius: 8px; font-size: 1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+    cursor: pointer; transition: all 0.3s;
+    &:hover:not(:disabled) { background-color: color.adjust($accent, $lightness: -8%); transform: translateY(-2px); }
+    &:disabled { opacity: 0.7; cursor: not-allowed; }
+  }
+
+  .login-footer {
+    text-align: center; margin-top: 30px; font-size: 0.9rem; color: $text-muted;
+    a { color: $accent; font-weight: 700; text-decoration: none; &:hover { text-decoration: underline; } }
+  }
+  
+  .alert-box { background: #fff0f0; color: #d63384; padding: 10px; border-radius: 6px; font-size: 0.9rem; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+
+  @keyframes slideDown { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+}

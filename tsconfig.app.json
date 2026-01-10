@@ -10,7 +10,7 @@
   },
   "include": [
     "src/**/*.ts"
-  ],
+, "src/app/pages/Public/pages/communities/models/post-details.ts"  ],
   "exclude": [
     "src/**/*.spec.ts"
   ]

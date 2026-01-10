@@ -1,0 +1,98 @@
+$primary-orange: #ff7f50;
+$primary-hover: #e66a3c;
+$bg-light: #f3f4f6;
+$white: #ffffff;
+$radius: 16px;
+
+:host {
+  display: block; min-height: 100vh; background-color: $bg-light; padding: 40px 20px;
+}
+.create-page-container { max-width: 600px; margin: 0 auto; }
+
+.editor-card {
+  background: $white; border-radius: $radius; box-shadow: 0 4px 20px rgba(0,0,0,0.06); 
+
+  .card-header { 
+    padding: 15px 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; 
+    h2 { margin: 0; font-size: 1.1rem; } 
+    .close-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #999; } 
+  }
+
+  .card-body {
+    padding: 20px;
+    
+    .user-row { 
+      display: flex; gap: 12px; align-items: center; margin-bottom: 15px; 
+      .avatar-placeholder { width: 40px; height: 40px; border-radius: 50%; background: #eee; display: flex; align-items: center; justify-content: center; color: #999; } 
+      .info { 
+        display: flex; flex-direction: column; font-size: 0.9rem; 
+        .badge-public { font-size: 0.75rem; color: #777; } 
+      } 
+    }
+
+    // Title Input
+    .title-input {
+        width: 100%; border: none; outline: none; font-size: 1.1rem; font-weight: 700; 
+        margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid transparent;
+        &:focus { border-bottom-color: #eee; }
+        &::placeholder { color: #bbb; }
+    }
+
+    // Content Area
+    .main-input {
+      width: 100%; border: none; resize: none; outline: none; font-size: 1rem; margin-bottom: 15px;
+      &::placeholder { color: #bbb; }
+    }
+
+    // Images Grid
+    .previews-grid {
+      display: flex; gap: 10px; overflow-x: auto; padding-bottom: 15px;
+      .preview-item {
+        position: relative; width: 100px; height: 100px; flex-shrink: 0;
+        img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
+        .remove-btn { position: absolute; top: 4px; right: 4px; background: rgba(0,0,0,0.6); color: #fff; border: none; width: 20px; height: 20px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+      }
+    }
+
+    // Tags Chips
+    .tags-container {
+        display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px;
+        .tag-chip {
+            background: #e3f2fd; color: #1565c0; padding: 4px 10px; border-radius: 12px; font-size: 0.85rem; display: flex; align-items: center; gap: 6px;
+            button { background: none; border: none; color: inherit; cursor: pointer; font-size: 1.1rem; line-height: 0.8; display: flex; align-items: center; }
+        }
+    }
+
+    .toolbar {
+      border-top: 1px solid #f9f9f9; padding-top: 15px;
+      .tools-left {
+        display: flex; align-items: center; gap: 15px;
+        
+        .tool-item { cursor: pointer; font-size: 1.3rem; display: flex; align-items: center; }
+
+        // Tag Input Styling
+        .tag-input-wrapper {
+            flex: 1;
+            .input-box {
+                display: flex; align-items: center; gap: 8px; background: #f8f9fa; padding: 6px 12px; border-radius: 20px;
+                input { border: none; background: transparent; outline: none; font-size: 0.9rem; width: 100%; }
+                i { font-size: 1.1rem; }
+                .btn-add-tag {
+                  border: none; background: #ddd; color: #555; width: 24px; height: 24px; border-radius: 50%; 
+                  display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1rem;
+                  &:hover { background: #ccc; }
+                }
+            }
+        }
+      }
+    }
+  }
+
+  .card-footer {
+    padding: 15px 20px; border-top: 1px solid #eee; text-align: right;
+    .btn-post {
+      background: $primary-orange; color: #fff; border: none; padding: 8px 24px; border-radius: 30px; font-weight: 600; cursor: pointer;
+      &:hover { background: $primary-hover; } &:disabled { opacity: 0.6; cursor: not-allowed; }
+    }
+  }
+}

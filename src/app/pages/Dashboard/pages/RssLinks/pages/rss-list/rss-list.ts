@@ -1,11 +1,11 @@
-// src/app/pages/Dashboard/pages/rss/rss-list/rss-list.component.ts
-
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
 import { environment } from '../../../../../../environments/environment';
 import { RssService } from '../../services/rss';
-import { RssCategoryList, RssSource } from '../../models/rss';
+import { RssSource } from '../../models/rss';
+import { CATEGORY_LIST } from '../../../../../models/category-list';
+// 🔥 Import the shared category list
 
 @Component({
   selector: 'app-rss-list',
@@ -22,15 +22,15 @@ export class RssListComponent implements OnInit {
   // Dependencies
   private rssService = inject(RssService);
   private router = inject(Router);
-  private cdr = inject(ChangeDetectorRef); // <--- Critical for updates
+  private cdr = inject(ChangeDetectorRef);
 
   // State
   rssList: RssSource[] = [];
   isLoading = true;
   errorMessage = '';
   
-  // Category Helper
-  categories = RssCategoryList;
+  // 🔥 Use the shared list
+  categories = CATEGORY_LIST;
 
   ngOnInit() {
     this.loadRssFeeds();
@@ -42,17 +42,16 @@ export class RssListComponent implements OnInit {
 
     this.rssService.getAllRssSources().subscribe({
       next: (res) => {
-        console.log('RSS Response:', res); // Debug check
+        console.log('RSS Response:', res);
 
         if (res.isSuccess) {
-          // Safely assign data (handle null cases)
           this.rssList = res.data || [];
         } else {
           this.errorMessage = res.error?.message || 'Failed to load RSS feeds.';
         }
         
         this.isLoading = false;
-        this.cdr.detectChanges(); // <--- Force UI to render data
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.isLoading = false;
@@ -63,7 +62,7 @@ export class RssListComponent implements OnInit {
     });
   }
 
-  // Helper to get Category Name from ID (e.g. 1 -> "Community")
+  // Helper to get Category Name from ID
   getCategoryName(id: number): string {
     const cat = this.categories.find(c => c.id === id);
     return cat ? cat.name : 'Unknown';
@@ -71,7 +70,7 @@ export class RssListComponent implements OnInit {
 
   onDelete(id: number) {
     if(confirm('Are you sure you want to delete this source?')) {
-      this.isLoading = true; // Show spinner while deleting
+      this.isLoading = true;
       this.rssService.deleteRssSource(id).subscribe({
         next: () => {
           this.loadRssFeeds(); // Reload list

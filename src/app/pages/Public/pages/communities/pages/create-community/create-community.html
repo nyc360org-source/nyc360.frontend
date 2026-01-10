@@ -1,0 +1,136 @@
+<div class="create-page">
+  
+  <header class="create-header">
+    <div class="container">
+      <small>NYC360 NETWORK</small>
+      <h1>Create a Community</h1>
+      <p>Start a new hub for discussions, events, and local support.</p>
+    </div>
+  </header>
+
+  <div class="container form-container">
+    
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      
+      <div class="form-card">
+        <h3><i class="bi bi-info-circle-fill"></i> Basic Information</h3>
+        
+        <div class="form-group">
+          <label>Community Name <span class="req">*</span></label>
+          <input type="text" formControlName="name" (input)="onNameChange()" placeholder="e.g. Brooklyn Tech Enthusiasts">
+          <div class="error" *ngIf="form.get('name')?.touched && form.get('name')?.invalid">Name is required (min 3 chars).</div>
+        </div>
+
+        <div class="form-group">
+          <label>Slug (URL) <span class="req">*</span></label>
+          <div class="input-wrapper">
+            <span class="prefix">nyc360.com/c/</span>
+            <input type="text" formControlName="slug" placeholder="brooklyn-tech">
+          </div>
+          <small>Unique identifier for the URL</small>
+        </div>
+
+        <div class="form-group">
+          <label>Description <span class="req">*</span></label>
+          <textarea formControlName="description" rows="4" placeholder="What is this community about?"></textarea>
+          <div class="error" *ngIf="form.get('description')?.touched && form.get('description')?.invalid">Description is required.</div>
+        </div>
+
+        <div class="form-group">
+          <label>Category Type <span class="req">*</span></label>
+          <select formControlName="type">
+            <option *ngFor="let t of typesList" [value]="t.id">{{ t.name }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-card location-card">
+        <h3><i class="bi bi-geo-alt-fill"></i> Location</h3>
+        <p class="hint">Search for a Borough, Neighborhood, or Zip Code.</p>
+        
+        <div class="search-wrapper">
+          <input 
+            type="text" 
+            [formControl]="locationSearchControl" 
+            placeholder="Search location... (e.g. Bronx)" 
+            (blur)="onSearchBlur()"
+            (focus)="showLocationResults = true"
+            [class.valid]="selectedLocation">
+          
+          <i class="bi bi-search search-icon" *ngIf="!isSearchingLocation"></i>
+          <div class="spinner-sm" *ngIf="isSearchingLocation"></div>
+
+          <div class="search-results" *ngIf="showLocationResults && locationResults.length > 0">
+            <div 
+              class="result-item" 
+              *ngFor="let loc of locationResults" 
+              (mousedown)="onLocationSelect(loc)"> 
+              <div class="loc-icon"><i class="bi bi-geo-alt"></i></div>
+              <div class="loc-info">
+                <strong>{{ loc.neighborhood }}</strong>
+                <span>{{ loc.borough }}, {{ loc.zipCode }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="search-results" *ngIf="showLocationResults && locationResults.length === 0 && locationSearchControl.value?.length! > 2 && !isSearchingLocation">
+            <div class="no-result">No locations found.</div>
+          </div>
+        </div>
+
+        <div class="error" *ngIf="form.get('locationId')?.touched && form.get('locationId')?.invalid">
+          Location is required. Please select from the list.
+        </div>
+      </div>
+
+      <div class="form-card privacy-card">
+        <h3><i class="bi bi-shield-lock-fill"></i> Privacy</h3>
+        <p class="hint">Control who can see and join your community.</p>
+
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <strong>Private Community</strong>
+            <span>Only members can see posts. New members must be approved.</span>
+          </div>
+          <label class="switch">
+            <input type="checkbox" formControlName="isPrivate">
+            <span class="slider round"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <h3><i class="bi bi-images"></i> Branding</h3>
+        
+        <div class="upload-row">
+          <div class="upload-box avatar-box">
+            <label>Avatar / Logo</label>
+            <div class="preview-circle" [style.backgroundImage]="'url(' + (avatarPreview || 'assets/images/default-group.png') + ')'" (click)="avatarInput.click()">
+              <div class="overlay"><i class="bi bi-camera"></i></div>
+            </div>
+            <input #avatarInput type="file" (change)="onAvatarSelect($event)" hidden accept="image/*">
+            <button type="button" class="btn-text" (click)="avatarInput.click()">Upload Logo</button>
+          </div>
+
+          <div class="upload-box cover-box">
+            <label>Cover Image</label>
+            <div class="preview-rect" [style.backgroundImage]="'url(' + (coverPreview || 'assets/images/placeholder-cover.jpg') + ')'" (click)="coverInput.click()">
+              <div class="overlay"><i class="bi bi-card-image"></i></div>
+            </div>
+            <input #coverInput type="file" (change)="onCoverSelect($event)" hidden accept="image/*">
+            <button type="button" class="btn-text" (click)="coverInput.click()">Upload Cover</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions-row">
+        <button type="button" class="btn-cancel" routerLink="/public/communities/community">Cancel</button>
+        <button type="submit" class="btn-submit" [disabled]="isSubmitting">
+          {{ isSubmitting ? 'Creating...' : 'Create Community' }}
+        </button>
+      </div>
+
+    </form>
+
+  </div>
+</div>

@@ -1,79 +1,142 @@
-<div class="page-container">
+<div class="page-container" (click)="openMenuId = null">
   
-  <div class="page-header">
-    <div class="title-section">
-      <h2>Posts Management</h2>
-      <p>Manage your news articles and content.</p>
+  <div class="feed-header">
+    <div class="header-text">
+      <h2>Community Feed</h2>
+      <p>Updates & Stories</p>
     </div>
-    <a routerLink="/admin/posts/create" class="btn-add">
-      <i class="bi bi-plus-lg"></i> Create New Post
-    </a>
+    <a routerLink="/admin/posts/create" class="btn-create"><i class="bi bi-pencil-square"></i> Post</a>
   </div>
 
-  <div *ngIf="isLoading" class="state-container">
-    <div class="spinner-border text-gold" role="status"></div>
-    <p>Loading Posts...</p>
+  <div class="filter-bar">
+    <button class="pill" [class.active]="selectedCategoryId === null" (click)="filterByCategory(null)">All</button>
+    <button *ngFor="let cat of categories" class="pill" 
+            [class.active]="selectedCategoryId === cat.id" (click)="filterByCategory(cat.id)">
+      {{ cat.name }}
+    </button>
   </div>
 
-  <div *ngIf="errorMessage" class="state-container text-danger">
-    <i class="bi bi-exclamation-triangle"></i>
-    <p>{{ errorMessage }}</p>
-  </div>
+  <div *ngIf="isLoading" class="loading-spinner"><div class="spinner-border text-primary" role="status"></div></div>
 
-  <div *ngIf="!isLoading && posts.length === 0 && !errorMessage" class="state-container">
-    <i class="bi bi-journal-text"></i>
-    <p>No posts available. Start by creating one.</p>
-  </div>
-
-  <div *ngIf="!isLoading && posts.length > 0" class="posts-grid">
-    <div class="post-card" *ngFor="let post of posts">
+  <div *ngIf="!isLoading && posts.length > 0" class="feed-layout">
+    
+    <div class="post-card fade-in" *ngFor="let post of posts">
       
-      <div class="card-img-wrapper">
-        <img *ngIf="post.imageUrl && post.imageUrl.startsWith('http')" 
-             [src]="post.imageUrl" 
-             alt="{{ post.title }}" 
-             loading="lazy">
-        
-        <img *ngIf="post.imageUrl && !post.imageUrl.startsWith('http')" 
-             [src]="environment.apiBaseUrl2 + '/posts/' + post.imageUrl" 
-             alt="{{ post.title }}" 
-             loading="lazy">
-        
-        <div *ngIf="!post.imageUrl" class="img-placeholder">
-          <i class="bi bi-image"></i>
+      <div class="card-top">
+        <img [src]="getAvatar(post.author)" class="user-avatar" loading="lazy">
+        <div class="meta">
+          <h4 class="username">{{ $any(post.author)?.fullName || 'User' }}</h4>
+          <span class="timestamp">{{ post.createdAt | date:'mediumDate' }} • <span class="cat">{{ getCategoryName(post.category) }}</span></span>
         </div>
-
-        <span class="category-badge">{{ getCategoryName(post.category) }}</span>
+        
+        <div class="post-menu-container">
+          <button class="icon-btn" (click)="toggleMenu(post.id, $event)"><i class="bi bi-three-dots"></i></button>
+          
+          <div class="menu-dropdown" *ngIf="openMenuId === post.id" (click)="$event.stopPropagation()">
+            <ng-container *ngIf="isOwnerOrAdmin(post)">
+              <button class="menu-item" [routerLink]="['/admin/posts/edit', post.id]"><i class="bi bi-pencil"></i> Edit Post</button>
+              <button class="menu-item text-danger" (click)="onDelete(post.id)"><i class="bi bi-trash"></i> Delete Post</button>
+            </ng-container>
+            <button class="menu-item" (click)="openReportModal(post)"><i class="bi bi-flag"></i> Report Post</button>
+          </div>
+        </div>
       </div>
 
-      <div class="card-body">
-        <div class="meta-info">
-          <span class="date"><i class="bi bi-calendar3"></i> {{ post.createdAt | date:'mediumDate' }}</span>
-        </div>
-
-        <h3 class="post-title" title="{{ post.title }}">{{ post.title }}</h3>
-        
-        <p class="post-excerpt">
-          {{ (post.content | slice:0:100) }}...
-        </p>
+      <div class="card-content">
+        <h3 class="post-title">{{ post.title }}</h3>
+        <p class="post-text">{{ (post.content | slice:0:200) }}{{ post.content.length > 200 ? '...' : '' }}</p>
       </div>
 
-      <div class="card-footer">
-        <a [routerLink]="['/admin/posts/details', post.id]" class="btn-action view" title="View Details">
-          View Post <i class="bi bi-arrow-right"></i>
-        </a>
-        
-        <div class="action-buttons">
-          <a [routerLink]="['/admin/posts/edit', post.id]" class="btn-icon edit" title="Edit">
-            <i class="bi bi-pencil-square"></i>
-          </a>
-          <button (click)="onDelete(post.id)" class="btn-icon delete" title="Delete">
-            <i class="bi bi-trash"></i>
+      <div class="card-media" *ngIf="getMainImage(post) as imgSrc">
+        <img [src]="imgSrc" loading="lazy" (error)="post.imageUrl = null">
+      </div>
+
+      <div class="card-stats">
+        <div class="stat-left"><i class="bi bi-hand-thumbs-up-fill text-primary"></i> {{ post.stats?.likes || 0 }}</div>
+        <div class="stat-right" (click)="toggleComments(post.id)">{{ post.stats?.comments || 0 }} Comments</div>
+      </div>
+
+      <div class="card-actions">
+        <button class="action-btn" [class.active]="post.currentUserInteraction === InteractionType.Like" (click)="toggleLike(post)">
+          <i class="bi" [class.bi-hand-thumbs-up-fill]="post.currentUserInteraction === InteractionType.Like" 
+             [class.bi-hand-thumbs-up]="post.currentUserInteraction !== InteractionType.Like"></i> Like
+        </button>
+        <button class="action-btn" (click)="toggleComments(post.id)"><i class="bi bi-chat-bubble"></i> Comment</button>
+        <button class="action-btn" [routerLink]="['admin/posts/details', post.id]"><i class="bi bi-share"></i> View</button>
+      </div>
+
+      <div class="comments-area" *ngIf="showComments[post.id]">
+        <div class="view-more-container" *ngIf="(post.comments?.length || 0) > 3">
+          <button class="btn-view-more" (click)="toggleCommentLimit(post)">
+            {{ commentLimits[post.id] >= (post.comments?.length || 0) ? 'Hide comments' : 'View more comments' }}
           </button>
         </div>
-      </div>
 
+        <div class="comments-stream">
+          <div class="comment-thread" *ngFor="let comment of post.comments?.slice(0, commentLimits[post.id])">
+            <div class="comment-row">
+              <img [src]="getAvatar(comment.author)" class="comment-avatar">
+              <div class="bubble-container">
+                <div class="comment-bubble">
+                  <span class="author">{{ $any(comment.author)?.fullName || 'User' }}</span>
+                  <p>{{ comment.content }}</p>
+                </div>
+                <div class="comment-actions-text">
+                  <span (click)="openReplyInput(comment.id)">Reply</span>
+                  <span class="time">{{ comment.createdAt | date:'shortTime' }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="nested-replies" *ngIf="comment.replies?.length">
+              <div class="comment-row reply" *ngFor="let reply of comment.replies">
+                <img [src]="getAvatar(reply.author)" class="comment-avatar small">
+                <div class="bubble-container">
+                  <div class="comment-bubble">
+                    <span class="author">{{ $any(reply.author)?.fullName || 'User' }}</span>
+                    <p>{{ reply.content }}</p>
+                  </div>
+                  <div class="comment-actions-text"><span class="time">{{ reply.createdAt | date:'shortTime' }}</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="reply-input-wrapper" *ngIf="activeReplyId === comment.id">
+              <div class="input-box small">
+                <input type="text" placeholder="Write a reply..." [(ngModel)]="replyInputs[comment.id]" (keydown.enter)="submitReply(post, comment)" autoFocus>
+                <button (click)="submitReply(post, comment)" [disabled]="!replyInputs[comment.id]?.trim()" [class.active]="replyInputs[comment.id]?.trim()"><i class="bi bi-send-fill"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="comment-input-wrapper">
+          <div class="input-box">
+            <input type="text" placeholder="Write a comment..." [(ngModel)]="commentInputs[post.id]" (keydown.enter)="submitComment(post)">
+            <button (click)="submitComment(post)" [disabled]="!commentInputs[post.id]?.trim()" [class.active]="commentInputs[post.id]?.trim()"><i class="bi bi-send-fill"></i></button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
+  <div class="modal-backdrop" *ngIf="isReportModalOpen">
+    <div class="modal-content">
+      <div class="modal-header"><h3>Report Post</h3> <button class="btn-close" (click)="closeReportModal()"><i class="bi bi-x-lg"></i></button></div>
+      <div class="modal-body">
+        <p class="instruction">Select a problem:</p>
+        <div class="form-group">
+          <select [(ngModel)]="reportReason">
+            <option [ngValue]="null" disabled>Select reason</option>
+            <option *ngFor="let r of reportReasonsList" [ngValue]="r.id">{{ r.label }}</option>
+          </select>
+        </div>
+        <div class="form-group"><textarea [(ngModel)]="reportDetails" rows="3" placeholder="Details..."></textarea></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="closeReportModal()">Cancel</button>
+        <button class="btn-submit" (click)="submitReport()" [disabled]="!reportReason || isReporting">{{ isReporting ? '...' : 'Submit' }}</button>
+      </div>
+    </div>
+  </div>
 </div>

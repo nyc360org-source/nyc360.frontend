@@ -1,0 +1,166 @@
+<div class="selection-container">
+  
+  <div class="brand-panel">
+    <div class="brand-content">
+      <div class="logo-box">
+        <span class="logo-text">NYC<span class="highlight">360</span></span>
+      </div>
+      <h1 class="brand-title">Your City.<br>Your Story.</h1>
+      <p class="brand-subtitle">Join the definitive digital pulse of New York City.</p>
+    </div>
+    <div class="glow-circle"></div>
+  </div>
+
+  <div class="choices-panel">
+    <div class="content-wrapper">
+
+      <div *ngIf="currentStep === 'selection'" @fadeSlide>
+        
+        <div class="header-section">
+          <h2 class="main-question">How do you identify?</h2>
+          <p class="sub-text">Choose your profile type to proceed.</p>
+        </div>
+
+        <div class="cards-grid" [@listAnimation]="selectionOptions.length">
+          <div class="selection-card" 
+               *ngFor="let option of selectionOptions" 
+               (click)="onSelect(option.id)">
+            <div class="card-icon">
+              <i class="bi" [ngClass]="option.icon"></i>
+            </div>
+            <div class="card-text">
+              <h3>{{ option.title }}</h3>
+              <p>{{ option.desc }}</p>
+            </div>
+            <div class="card-arrow">
+              <i class="bi bi-chevron-right"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="login-footer">
+          Already have an account? <a href="/auth/login">Log in</a>
+        </div>
+      </div>
+
+      <div *ngIf="currentStep === 'form' && form" @fadeSlide class="form-container">
+        
+        <button class="btn-back" (click)="goBack()">
+          <i class="bi bi-arrow-left"></i> Back
+        </button>
+
+        <div class="header-section form-header">
+          <h2 class="main-question">{{ getFormTitle() }}</h2>
+          <p class="sub-text">Complete your details securely.</p>
+        </div>
+
+        <div *ngIf="errorMessage" class="alert-box">
+          <i class="bi bi-exclamation-circle-fill"></i> {{ errorMessage }}
+        </div>
+
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+          
+          <div *ngIf="!isOrganization" class="form-fields">
+            <div class="row-group">
+              <div class="form-group">
+                <label>First Name</label>
+                <div class="input-wrapper">
+                  <i class="bi bi-person"></i>
+                  <input type="text" formControlName="firstName" placeholder="John" 
+                         [class.invalid]="isFieldInvalid('firstName')">
+                </div>
+                <div *ngIf="isFieldInvalid('firstName')" class="error-msg">Name is required (min 2 chars).</div>
+              </div>
+              
+              <div class="form-group">
+                <label>Last Name</label>
+                <div class="input-wrapper">
+                  <i class="bi bi-person"></i>
+                  <input type="text" formControlName="lastName" placeholder="Doe"
+                         [class.invalid]="isFieldInvalid('lastName')">
+                </div>
+                <div *ngIf="isFieldInvalid('lastName')" class="error-msg">Last name is required.</div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Username</label>
+              <div class="input-wrapper">
+                <i class="bi bi-at"></i>
+                <input type="text" formControlName="username" placeholder="johndoe_nyc"
+                       [class.invalid]="isFieldInvalid('username')">
+              </div>
+              <div *ngIf="isFieldInvalid('username')" class="error-msg">Username required (min 4 chars).</div>
+            </div>
+          </div>
+
+          <div *ngIf="isOrganization" class="form-fields">
+            <div class="form-group">
+              <label>Organization Name</label>
+              <div class="input-wrapper">
+                <i class="bi bi-building"></i>
+                <input type="text" formControlName="Name" placeholder="Official Company Name"
+                       [class.invalid]="isFieldInvalid('Name')">
+              </div>
+              <div *ngIf="isFieldInvalid('Name')" class="error-msg">Organization name required.</div>
+            </div>
+            
+            <div class="form-group">
+              <label>Username</label>
+              <div class="input-wrapper">
+                <i class="bi bi-person-badge"></i>
+                <input type="text" formControlName="username" placeholder="org_official"
+                       [class.invalid]="isFieldInvalid('username')">
+              </div>
+              <div *ngIf="isFieldInvalid('username')" class="error-msg">Username required (min 4 chars).</div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Email Address</label>
+            <div class="input-wrapper">
+              <i class="bi bi-envelope"></i>
+              <input type="email" formControlName="email" placeholder="email@example.com"
+                     [class.invalid]="isFieldInvalid('email')">
+            </div>
+            <div *ngIf="isFieldInvalid('email')" class="error-msg">Please enter a valid email.</div>
+          </div>
+
+          <div class="form-group">
+            <label>Password</label>
+            <div class="input-wrapper">
+              <i class="bi bi-lock"></i>
+              <input type="password" formControlName="password" placeholder="Strong password"
+                     [class.invalid]="isFieldInvalid('password')">
+            </div>
+            <div *ngIf="isFieldInvalid('password')" class="error-msg">Min 6 chars, 1 digit, 1 lowercase.</div>
+          </div>
+
+          <div class="interests-section">
+            <label class="section-label">Select Interests ({{ selectedInterestIds.length }}) <span class="req">*</span></label>
+            <div class="chips-grid">
+              <div 
+                class="interest-chip" 
+                *ngFor="let interest of interestsList"
+                [class.active]="isSelected(interest.id)"
+                (click)="toggleInterest(interest.id)">
+                <i class="bi" [ngClass]="interest.icon"></i>
+                <span>{{ interest.name }}</span>
+              </div>
+            </div>
+          </div>
+
+
+          <!-- <div *ngIf="isFieldInvalid('terms')" class="error-msg terms-error">You must accept the terms.</div> -->
+
+          <button type="submit" class="btn-submit" [disabled]=" isLoading">
+            <span *ngIf="!isLoading">Create Account</span>
+            <span *ngIf="isLoading"><i class="spinner-border spinner-border-sm"></i> Processing...</span>
+          </button>
+
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>

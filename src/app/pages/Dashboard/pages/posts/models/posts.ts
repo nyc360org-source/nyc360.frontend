@@ -1,48 +1,54 @@
-// src/app/pages/Dashboard/pages/posts/models/post.models.ts
-
-// 1. Category Enum (Matches Backend)
 export enum PostCategory {
-  Art = 0,
-  Community = 1,
-  Culture = 2,
-  Education = 3,
-  Events = 4,
-  Lifestyle = 5,
-  Media = 6,
-  News = 7,
-  Recruitment = 8,
-  Social = 9,
-  Tv = 10
+  Art = 1, Community = 2, Culture = 3, Education = 4, Events = 5,
+  Lifestyle = 6, Media = 7, News = 8, Recruitment = 9, Social = 10,
+  Tourism = 11, Tv = 12
 }
 
-// Helper List for Dropdowns
 export const PostCategoryList = [
-  { id: 0, name: 'Art' },
-  { id: 1, name: 'Community' },
-  { id: 2, name: 'Culture' },
-  { id: 3, name: 'Education' },
-  { id: 4, name: 'Events' },
-  { id: 5, name: 'Lifestyle' },
-  { id: 6, name: 'Media' },
-  { id: 7, name: 'News' },
-  { id: 8, name: 'Recruitment' },
-  { id: 9, name: 'Social' },
-  { id: 10, name: 'TV' }
+  { id: 1, name: 'Art' }, { id: 2, name: 'Community' }, { id: 3, name: 'Culture' },
+  { id: 4, name: 'Education' }, { id: 5, name: 'Events' }, { id: 6, name: 'Lifestyle' },
+  { id: 7, name: 'Media' }, { id: 8, name: 'News' }, { id: 9, name: 'Recruitment' },
+  { id: 10, name: 'Social' }, { id: 11, name: 'Tourism' }, { id: 12, name: 'TV' }
 ];
 
-// 2. Main Entity
-export interface Post {
-  id: number;
-  title: string;
-  content: string;
-  category: number; // Enum ID
-  imageUrl: string | null;
-  createdAt?: string; // Optional date
+export enum InteractionType { Like = 1, Dislike = 2 }
+
+// Enum for Report Reasons (Matches Backend)
+export enum FlagReasonType {
+  Spam = 1,
+  HateSpeech = 2,
+  Harassment = 3,
+  InappropriateContent = 4,
+  ScamOrFraud = 5,
+  ViolationOfPolicy = 6,
+  Other = 7
 }
 
-// 3. API Response Wrapper
-export interface PostsResponse {
-  isSuccess: boolean;
-  data: Post[] | any; // Can be array or single object
-  error: { code: string; message: string } | null;
+export interface PostAttachment { id: number; url: string; }
+
+export interface PostAuthor {
+  id: number; username?: string; fullName?: string; name?: string;
+  imageUrl?: string | null; type?: number;
+}
+
+export interface PostStats {
+  views: number; likes: number; dislikes: number; comments: number; shares: number;
+}
+
+export interface Comment {
+  id: number; content: string; author: PostAuthor | string;
+  createdAt: string; replies?: Comment[]; isReplying?: boolean;
+}
+
+export interface Post {
+  id: number; title: string; content: string; sourceType?: number;
+  postType?: number; category: number; attachments: PostAttachment[];
+  imageUrl?: string | null; stats?: PostStats; comments?: Comment[];
+  author?: PostAuthor | string; createdAt: string; lastUpdated: string;
+  currentUserInteraction?: number;
+}
+
+export interface ApiResponse<T> {
+  isSuccess: boolean; data: T; error: { code: string; message: string } | null;
+  page?: number; pageSize?: number; totalCount?: number; totalPages?: number;
 }

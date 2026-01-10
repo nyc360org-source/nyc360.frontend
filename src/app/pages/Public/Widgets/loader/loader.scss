@@ -1,0 +1,115 @@
+// المتغيرات بتاعتك
+$primary-orange: #2018b4;
+$primary-hover: #1913c8;
+$text-dark: #2c2c2c;
+$white: #ffffff;
+
+.loader-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(255, 255, 255, 0.7); // شفافية بسيطة
+  backdrop-filter: blur(8px); // تأثير ضبابي احترافي (Glass Effect)
+  z-index: 9999; // فوق كل حاجة
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.loader-container {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+// الدائرة النابضة (Outer Ring)
+.pulse-ring {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: 4px solid transparent;
+  border-top-color: $primary-orange;
+  border-bottom-color: $primary-orange;
+  border-radius: 50%;
+  animation: spin 1.5s linear infinite;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 5px; left: 5px; right: 5px; bottom: 5px;
+    border: 4px solid transparent;
+    border-left-color: $text-dark;
+    border-right-color: $text-dark;
+    border-radius: 50%;
+    animation: spinReverse 2s linear infinite;
+  }
+}
+
+// اللوجو أو الأيقونة في النص (Breathing Logo)
+.logo-circle {
+  width: 50px;
+  height: 50px;
+  background: $primary-orange;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: $white;
+  font-size: 1.5rem;
+  box-shadow: 0 0 15px rgba($primary-orange, 0.5);
+  animation: breathe 2s ease-in-out infinite;
+
+  i {
+    animation: floatIcon 2s ease-in-out infinite;
+  }
+}
+
+.loading-text {
+  font-family: 'Merriweather', serif; // فونت الهيدر بتاعك
+  color: $text-dark;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  animation: textFade 1.5s ease-in-out infinite alternate;
+}
+
+// --- Keyframes ---
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes spinReverse {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(-360deg); }
+}
+
+@keyframes breathe {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 15px rgba($primary-orange, 0.5); }
+  50% { transform: scale(1.1); box-shadow: 0 0 25px rgba($primary-orange, 0.8); }
+}
+
+@keyframes floatIcon {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes textFade {
+  from { opacity: 0.5; }
+  to { opacity: 1; }
+}

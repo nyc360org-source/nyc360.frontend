@@ -10,7 +10,7 @@ import { Role } from '../models/role'; // Role model should include 'contentLimi
   selector: 'app-roles-list',
   standalone: true,
   // Note: CurrencyPipe is added to imports for robust number formatting, though 'number' pipe is sufficient for KB.
-  imports: [CommonModule, RouterModule, CurrencyPipe], 
+  imports: [CommonModule, RouterModule], 
   templateUrl: './roles-list.html',
   styleUrls: ['./roles-list.scss']
 })

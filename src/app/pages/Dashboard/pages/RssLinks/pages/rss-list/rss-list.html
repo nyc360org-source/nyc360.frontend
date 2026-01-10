@@ -40,10 +40,10 @@
       <div class="rss-info">
         <div class="rss-img">
           <ng-container *ngIf="item.imageUrl">
-
-             <img [src]="(environment.apiBaseUrl2 + '/rss-sources/' + item.imageUrl)" 
+             <img [src]="item.imageUrl.startsWith('http') ? item.imageUrl : (environment.apiBaseUrl2 + '/rss-sources/' + item.imageUrl)" 
                   alt="RSS Source"
-                  (error)="item.imageUrl = null"> </ng-container>
+                  (error)="item.imageUrl = null"> 
+          </ng-container>
 
           <div *ngIf="!item.imageUrl" class="img-placeholder">
             <i class="bi bi-rss-fill"></i>
@@ -66,8 +66,8 @@
       </div>
 
       <div class="rss-date">
-        <span *ngIf="item.lastChecked.startsWith('0001')">Never Checked</span>
-        <span *ngIf="!item.lastChecked.startsWith('0001')">{{ item.lastChecked | date:'shortDate' }}</span>
+        <span *ngIf="!item.lastChecked || item.lastChecked.startsWith('0001')">Never Checked</span>
+        <span *ngIf="item.lastChecked && !item.lastChecked.startsWith('0001')">{{ item.lastChecked | date:'shortDate' }}</span>
       </div>
 
       <div class="rss-actions">

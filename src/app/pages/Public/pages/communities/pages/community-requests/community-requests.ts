@@ -1,0 +1,54 @@
+// src/app/pages/Public/pages/communities/components/community-requests/community-requests.component.ts
+
+import { Component, Input, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { CommunityRequestsService } from '../../services/community-requests';
+import { CommunityRequestDto } from '../../models/community-requests';
+import { environment } from '../../../../../../environments/environment';
+
+@Component({
+  selector: 'app-community-requests',
+  standalone: true,
+  imports: [CommonModule],
+  templateUrl: './community-requests.html',
+  styleUrls: ['./community-requests.scss']
+})
+export class CommunityRequestsComponent implements OnInit {
+  @Input() communityId!: number;
+  
+  private service = inject(CommunityRequestsService);
+  requests: CommunityRequestDto[] = [];
+  isLoading = true;
+
+  ngOnInit() {
+    if (this.communityId) this.loadRequests();
+  }
+
+  loadRequests() {
+    this.isLoading = true;
+    this.service.getRequests(this.communityId).subscribe({
+      next: (res) => {
+        this.isLoading = false;
+        if (res.isSuccess) this.requests = res.data || [];
+      },
+      error: () => this.isLoading = false
+    });
+  }
+
+  handleAction(req: CommunityRequestDto, action: 'approve' | 'reject') {
+    const apiCall = action === 'approve' 
+      ? this.service.approveRequest(this.communityId, req.userId)
+      : this.service.rejectRequest(this.communityId, req.userId);
+
+    apiCall.subscribe(res => {
+      if (res.isSuccess) {
+        this.requests = this.requests.filter(r => r.userId !== req.userId);
+      }
+    });
+  }
+
+  resolveAvatar(url: string): string {
+    if (!url) return 'assets/images/default-avatar.png';
+    return url.includes('http') ? url : `${environment.apiBaseUrl2}/avatars/${url}`;
+  }
+}
