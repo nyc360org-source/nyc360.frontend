@@ -51,7 +51,6 @@ export class LoginService {
       // If 2FA IS required, the component will handle redirection to OTP page.
       if (!res.data.twoFactorRequired) {
         this.authService.saveTokens(res.data.accessToken, res.data.refreshToken);
-        this.authService.loadUserFromToken(); // Update global user state
       }
     }
   }

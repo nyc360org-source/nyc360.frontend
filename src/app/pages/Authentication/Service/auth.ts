@@ -10,6 +10,7 @@ import {
   AuthResponse, ChangePasswordRequest, ConfirmEmailRequest, ForgotPasswordRequest,
   RefreshTokenRequest, ResetPasswordRequest, LoginResponseData
 } from '../models/auth';
+import { UserInfo } from '../models/user-info';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
@@ -28,6 +29,8 @@ export class AuthService {
 
   // User State
   public currentUser$ = new BehaviorSubject<any>(null);
+  private fullUserInfoSubject = new BehaviorSubject<UserInfo | null>(null);
+  public fullUserInfo$ = this.fullUserInfoSubject.asObservable();
 
   constructor() {
     // محاولة تحميل المستخدم عند بدء التطبيق
@@ -56,7 +59,11 @@ export class AuthService {
   }
 
   getAvatar(): string | null {
-    return this.currentUser$.value?.imageUrl || null;
+    return this.currentUser$.value?.imageUrl || this.fullUserInfoSubject.value?.avatarUrl || null;
+  }
+
+  getFullUserInfo(): UserInfo | null {
+    return this.fullUserInfoSubject.value;
   }
 
   isLoggedIn(): boolean {
@@ -108,6 +115,10 @@ export class AuthService {
     return this.http.post<AuthResponse>(`${this.apiUrl}/change-password`, data);
   }
 
+  fetchFullUserInfo(): Observable<AuthResponse<UserInfo>> {
+    return this.http.get<AuthResponse<UserInfo>>(`${environment.apiBaseUrl}/users/my-info`);
+  }
+
   // ============================================================
   // 4. STATE MANAGEMENT & HELPERS
   // ============================================================
@@ -118,6 +129,7 @@ export class AuthService {
       localStorage.removeItem(this.refreshTokenKey);
     }
     this.currentUser$.next(null);
+    this.fullUserInfoSubject.next(null);
     this.router.navigate(['/auth/login']);
   }
 
@@ -219,6 +231,18 @@ export class AuthService {
         // تحديث الحالة فوراً
         this.currentUser$.next(user);
 
+        // جلب البيانات الكاملة للمستخدم
+        this.fetchFullUserInfo().subscribe({
+          next: (res) => {
+            if (res.isSuccess) {
+              this.fullUserInfoSubject.next(res.data);
+            }
+          },
+          error: (err) => {
+            console.error('Error fetching full user info:', err);
+          }
+        });
+
       } catch (e) {
         console.error('Invalid Token found during load:', e);
         this.logout(); // Redirect to login on error
@@ -227,6 +251,7 @@ export class AuthService {
       // ✅ User requested constraint: If token missing, assume logged out state.
       // The guard will handle redirect if route is protected.
       this.currentUser$.next(null);
+      this.fullUserInfoSubject.next(null);
     }
   }
 }
