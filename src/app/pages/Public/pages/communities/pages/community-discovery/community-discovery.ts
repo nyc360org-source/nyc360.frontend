@@ -7,6 +7,7 @@ import { CommunitySuggestion } from '../../models/community';
 import { environment } from '../../../../../../environments/environment';
 import { Subject, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
 import { ToastService } from '../../../../../../shared/services/toast.service';
+import { GlobalLoaderService } from '../../../../../../shared/components/global-loader/global-loader.service';
 
 @Component({
   selector: 'app-community-discovery',
@@ -19,6 +20,7 @@ export class CommunityDiscoveryComponent implements OnInit {
 
   private communityService = inject(CommunityService);
   protected readonly environment = environment;
+  private loaderService = inject(GlobalLoaderService);
 
   // Data
   communities: (CommunitySuggestion & { showSuccess?: boolean })[] = [];
@@ -83,6 +85,7 @@ export class CommunityDiscoveryComponent implements OnInit {
 
   loadCommunities() {
     this.isLoading = true;
+    this.loaderService.show();
 
     const typeParam = this.selectedType ? this.selectedType : undefined;
     const locParam = this.selectedLocationId ? this.selectedLocationId : undefined;
@@ -96,6 +99,7 @@ export class CommunityDiscoveryComponent implements OnInit {
     ).subscribe({
       next: (res) => {
         this.isLoading = false;
+        this.loaderService.hide();
         if (res.isSuccess) {
           this.communities = res.data || [];
           this.totalCount = res.totalCount || 0;
@@ -104,6 +108,7 @@ export class CommunityDiscoveryComponent implements OnInit {
       },
       error: () => {
         this.isLoading = false;
+        this.loaderService.hide();
         this.communities = [];
         this.totalPages = 1;
       }

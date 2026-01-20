@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MyOffersService } from '../../service/my-offers';
 import { MyOffer } from '../../models/my-offers';
+import { GlobalLoaderService } from '../../../../../../shared/components/global-loader/global-loader.service';
 
 @Component({
   selector: 'app-my-offers',
@@ -14,6 +15,7 @@ import { MyOffer } from '../../models/my-offers';
 export class MyOffersComponent implements OnInit {
   private offersService = inject(MyOffersService);
   private cdr = inject(ChangeDetectorRef); // Inject CDR
+  private loaderService = inject(GlobalLoaderService);
 
   offers: MyOffer[] = [];
   isLoading = true;
@@ -29,6 +31,7 @@ export class MyOffersComponent implements OnInit {
 
   loadOffers() {
     this.isLoading = true;
+    this.loaderService.show();
 
     let isActiveParam: boolean | undefined = undefined;
     if (this.currentFilter === 'active') isActiveParam = true;
@@ -42,10 +45,12 @@ export class MyOffersComponent implements OnInit {
           this.pagination.totalCount = res.totalCount;
         }
         this.isLoading = false;
+        this.loaderService.hide();
         this.cdr.detectChanges(); // Force update
       },
       error: () => {
         this.isLoading = false;
+        this.loaderService.hide();
         this.cdr.detectChanges(); // Force update
       }
     });

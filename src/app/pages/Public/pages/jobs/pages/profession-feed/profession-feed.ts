@@ -8,6 +8,7 @@ import { ArticleHeroComponent } from '../../../../Widgets/article-hero.component
 import { ArticleGridCardComponent } from '../../../../Widgets/article-grid-card.component/article-grid-card.component';
 import { ImageService } from '../../../../../../shared/services/image.service';
 import { ImgFallbackDirective } from '../../../../../../shared/directives/img-fallback.directive';
+import { GlobalLoaderService } from '../../../../../../shared/components/global-loader/global-loader.service';
 
 @Component({
   selector: 'app-profession-feed',
@@ -19,6 +20,7 @@ import { ImgFallbackDirective } from '../../../../../../shared/directives/img-fa
 export class ProfessionFeedComponent implements OnInit {
   private feedService = inject(ProfessionFeedService);
   private cdr = inject(ChangeDetectorRef);
+  private loaderService = inject(GlobalLoaderService);
   protected readonly environment = environment;
   protected imageService = inject(ImageService);
 
@@ -37,6 +39,7 @@ export class ProfessionFeedComponent implements OnInit {
 
   loadFeed() {
     this.isLoading = true;
+    this.loaderService.show();
     this.feedService.getFeed().subscribe({
       next: (res) => {
         if (res.isSuccess && res.data) {
@@ -57,10 +60,12 @@ export class ProfessionFeedComponent implements OnInit {
           this.textArticles = noImages;
         }
         this.isLoading = false;
+        this.loaderService.hide();
         this.cdr.detectChanges();
       },
       error: () => {
         this.isLoading = false;
+        this.loaderService.hide();
         this.cdr.detectChanges();
       }
     });

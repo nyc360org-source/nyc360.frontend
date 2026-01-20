@@ -6,6 +6,7 @@ import { Post } from '../models/posts';
 import { environment } from '../../../../../environments/environment';
 import { CATEGORY_LIST } from '../../../../../pages/models/category-list';
 import { CATEGORY_THEMES } from '../../../Widgets/feeds/models/categories';
+import { GlobalLoaderService } from '../../../../../shared/components/global-loader/global-loader.service';
 
 @Component({
   selector: 'app-tag-posts',
@@ -20,6 +21,7 @@ export class TagPostsComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private postsService = inject(PostsService);
   private cdr = inject(ChangeDetectorRef);
+  private loaderService = inject(GlobalLoaderService);
 
   posts: Post[] = [];
 
@@ -43,12 +45,14 @@ export class TagPostsComponent implements OnInit {
   loadTagPosts(tag: string) {
     this.isLoaded = false;
     this.posts = [];
+    this.loaderService.show();
     this.relatedTags = []; // تصفية التاجات القديمة
 
     // طلب 10 بوستات فقط للسرعة
     this.postsService.getPostsByTag(tag, 1, 10).subscribe({
       next: (res) => {
         this.isLoaded = true;
+        this.loaderService.hide();
 
         if (res.isSuccess) {
           if (Array.isArray(res.data)) {
@@ -65,6 +69,7 @@ export class TagPostsComponent implements OnInit {
       },
       error: (err) => {
         this.isLoaded = true;
+        this.loaderService.hide();
         console.error(err);
         this.cdr.detectChanges();
       }

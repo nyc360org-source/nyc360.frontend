@@ -5,6 +5,7 @@ import { MyApplicationsService } from '../../service/my-applications';
 import { MyApplication } from '../../models/my-applications';
 import { ToastService } from '../../../../../../shared/services/toast.service';
 import { ConfirmationService } from '../../../../../../shared/services/confirmation.service';
+import { GlobalLoaderService } from '../../../../../../shared/components/global-loader/global-loader.service';
 
 @Component({
   selector: 'app-my-applications',
@@ -18,6 +19,7 @@ export class MyApplicationsComponent implements OnInit {
   private cdr = inject(ChangeDetectorRef);
   private toastService = inject(ToastService);
   private confirmationService = inject(ConfirmationService);
+  private loaderService = inject(GlobalLoaderService);
 
   applications: MyApplication[] = [];
   isLoading = true;
@@ -29,15 +31,20 @@ export class MyApplicationsComponent implements OnInit {
 
   loadApps() {
     this.isLoading = true;
+    this.loaderService.show();
     this.appsService.getMyApplications().subscribe({
       next: (res) => {
+        this.loaderService.hide();
         if (res.isSuccess) {
           this.applications = res.data;
         }
         this.isLoading = false;
         this.cdr.detectChanges();
       },
-      error: () => (this.isLoading = false)
+      error: () => {
+        this.isLoading = false;
+        this.loaderService.hide();
+      }
     });
   }
 

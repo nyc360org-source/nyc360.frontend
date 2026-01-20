@@ -12,6 +12,7 @@ import { Post, InteractionType, PostComment } from '../../posts/models/posts';
 import { ToastService } from '../../../../../shared/services/toast.service';
 import { PostsService } from '../../posts/services/posts';
 import { CATEGORY_LIST } from '../../../../models/category-list';
+import { GlobalLoaderService } from '../../../../../shared/components/global-loader/global-loader.service';
 
 export interface DashboardCard {
   type: string;
@@ -48,6 +49,7 @@ export class ProfileComponent implements OnInit {
   private datePipe = inject(DatePipe);
   private zone = inject(NgZone);
   private toastService = inject(ToastService);
+  private loaderService = inject(GlobalLoaderService);
 
   // --- State ---
   user: UserProfileData | null = null;
@@ -108,10 +110,12 @@ export class ProfileComponent implements OnInit {
 
   loadProfile(username: string) {
     this.isLoading = true;
+    this.loaderService.show();
     this.profileService.getProfile(username).subscribe({
       next: (res) => {
         this.zone.run(() => {
           this.isLoading = false;
+          this.loaderService.hide();
           if (res.isSuccess && res.data) {
             this.user = res.data;
             if (this.user.recentPosts) {
@@ -125,6 +129,7 @@ export class ProfileComponent implements OnInit {
       error: () => {
         this.zone.run(() => {
           this.isLoading = false;
+          this.loaderService.hide();
           this.cdr.detectChanges();
         });
       }
@@ -147,10 +152,12 @@ export class ProfileComponent implements OnInit {
 
   loadSavedPosts() {
     this.isSavedLoading = true;
+    this.loaderService.show();
     this.profileService.getSavedPosts().subscribe({
       next: (res) => {
         this.zone.run(() => {
           this.isSavedLoading = false;
+          this.loaderService.hide();
           if (res.isSuccess) {
             this.savedPosts = (res.data || []).map((p: any) => this.normalizePostData(p));
           }
@@ -160,6 +167,7 @@ export class ProfileComponent implements OnInit {
       error: () => {
         this.zone.run(() => {
           this.isSavedLoading = false;
+          this.loaderService.hide();
           this.cdr.detectChanges();
         });
       }

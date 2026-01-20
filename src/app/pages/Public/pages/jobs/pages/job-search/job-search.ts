@@ -5,6 +5,7 @@ import { RouterLink } from '@angular/router';
 import { JobOfferSummary, JobSearchFilters, LocationSearchResult } from '../../models/job-search';
 import { JobSearchService } from '../../service/job-search';
 import { environment } from '../../../../../../environments/environment';
+import { GlobalLoaderService } from '../../../../../../shared/components/global-loader/global-loader.service';
 
 @Component({
   selector: 'app-job-search',
@@ -16,6 +17,7 @@ import { environment } from '../../../../../../environments/environment';
 export class JobSearchComponent implements OnInit {
   private jobService = inject(JobSearchService);
   private cdr = inject(ChangeDetectorRef); // Inject CDR
+  private loaderService = inject(GlobalLoaderService);
 
   jobs: JobOfferSummary[] = [];
   locations: LocationSearchResult[] = [];
@@ -52,6 +54,7 @@ export class JobSearchComponent implements OnInit {
 
   fetchJobs(): void {
     this.isLoading = true;
+    this.loaderService.show();
     this.errorMsg = '';
 
     this.jobService.searchJobs(this.filters).subscribe({
@@ -64,10 +67,12 @@ export class JobSearchComponent implements OnInit {
           this.errorMsg = 'Failed to load jobs.';
         }
         this.isLoading = false;
+        this.loaderService.hide();
         this.cdr.detectChanges(); // Force update
       },
       error: () => {
         this.isLoading = false;
+        this.loaderService.hide();
         this.errorMsg = 'Server error occurred.';
         this.cdr.detectChanges(); // Force update
       }

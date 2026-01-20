@@ -6,6 +6,7 @@ import { CommunityRequestsService } from '../../services/community-requests';
 import { CommunityRequestDto } from '../../models/community-requests';
 import { environment } from '../../../../../../environments/environment';
 import { ToastService } from '../../../../../../shared/services/toast.service';
+import { GlobalLoaderService } from '../../../../../../shared/components/global-loader/global-loader.service';
 
 @Component({
   selector: 'app-community-requests',
@@ -19,6 +20,7 @@ export class CommunityRequestsComponent implements OnInit {
 
   private service = inject(CommunityRequestsService);
   private toastService = inject(ToastService);
+  private loaderService = inject(GlobalLoaderService);
   requests: CommunityRequestDto[] = [];
   isLoading = true;
 
@@ -28,12 +30,17 @@ export class CommunityRequestsComponent implements OnInit {
 
   loadRequests() {
     this.isLoading = true;
+    this.loaderService.show();
     this.service.getRequests(this.communityId).subscribe({
       next: (res) => {
         this.isLoading = false;
+        this.loaderService.hide();
         if (res.isSuccess) this.requests = res.data || [];
       },
-      error: () => this.isLoading = false
+      error: () => {
+        this.isLoading = false;
+        this.loaderService.hide();
+      }
     });
   }
 

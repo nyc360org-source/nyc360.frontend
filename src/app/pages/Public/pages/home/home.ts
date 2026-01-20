@@ -12,6 +12,7 @@ import { CATEGORY_THEMES } from '../../Widgets/feeds/models/categories';
 import { ToastService } from '../../../../shared/services/toast.service';
 import { ImageService } from '../../../../shared/services/image.service';
 import { ImgFallbackDirective } from '../../../../shared/directives/img-fallback.directive';
+import { GlobalLoaderService } from '../../../../shared/components/global-loader/global-loader.service';
 
 interface Alert { type: 'yellow' | 'blue' | 'red'; title: string; desc: string; icon: string; }
 
@@ -34,6 +35,7 @@ export class Home implements OnInit {
   private router = inject(Router);
   private toastService = inject(ToastService);
   protected imageService = inject(ImageService);
+  private loaderService = inject(GlobalLoaderService);
 
   // Data
   featuredPosts: Post[] = [];
@@ -106,16 +108,19 @@ export class Home implements OnInit {
 
   loadFeed() {
     this.isLoading = true;
+    this.loaderService.show();
     this.postsService.getPostsFeed().subscribe({
       next: (res) => {
         if (res.isSuccess && res.data) {
           this.processData(res.data);
         }
         this.isLoading = false;
+        this.loaderService.hide();
         this.cdr.detectChanges();
       },
       error: () => {
         this.isLoading = false;
+        this.loaderService.hide();
         this.toastService.error('Failed to load feed');
         this.cdr.detectChanges();
       }

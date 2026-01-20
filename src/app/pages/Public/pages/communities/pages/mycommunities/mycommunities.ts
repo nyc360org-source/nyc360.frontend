@@ -6,6 +6,7 @@ import { RouterLink } from '@angular/router';
 import { MyCommunitiesService } from '../../services/mycommunities';
 import { MyCommunity } from '../../models/mycommuinties';
 import { ToastService } from '../../../../../../shared/services/toast.service';
+import { GlobalLoaderService } from '../../../../../../shared/components/global-loader/global-loader.service';
 
 @Component({
   selector: 'app-mycommunities',
@@ -18,6 +19,7 @@ export class MycommunitiesComponent implements OnInit {
 
   private communityService = inject(MyCommunitiesService);
   private toastService = inject(ToastService);
+  private loaderService = inject(GlobalLoaderService);
 
   // Data
   communities: MyCommunity[] = [];
@@ -57,6 +59,7 @@ export class MycommunitiesComponent implements OnInit {
 
   loadCommunities() {
     this.isLoading = true;
+    this.loaderService.show();
 
     this.communityService.getMyCommunities({
       Search: this.searchText,
@@ -66,6 +69,7 @@ export class MycommunitiesComponent implements OnInit {
     }).subscribe({
       next: (res: any) => {
         this.isLoading = false;
+        this.loaderService.hide();
         // Handle case sensitivity (data vs Data)
         if (res.isSuccess || res.IsSuccess) {
           this.communities = res.data || res.Data || [];
@@ -77,6 +81,7 @@ export class MycommunitiesComponent implements OnInit {
       },
       error: (err) => {
         this.isLoading = false;
+        this.loaderService.hide();
         console.error('Error fetching communities:', err);
         this.communities = [];
       }
