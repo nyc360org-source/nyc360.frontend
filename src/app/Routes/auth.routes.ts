@@ -1,11 +1,10 @@
 // src/app/routes/auth.routes.ts
 import { Routes } from '@angular/router';
-import { AuthLayout } from '../pages/Layout/auth-layout/auth-layout';
 
 export const AUTH_ROUTES: Routes = [
   {
-    path: 'auth',
-    component: AuthLayout,
+    path: '',
+    loadComponent: () => import('../pages/Layout/auth-layout/auth-layout').then(m => m.AuthLayout),
     children: [
       { path: 'login', loadComponent: () => import('../pages/Authentication/pages/login/login').then(m => m.LoginComponent) },
       { path: 'register-selection', loadComponent: () => import('../pages/Authentication/pages/register-selection/register-selection').then(m => m.RegisterSelectionComponent) },

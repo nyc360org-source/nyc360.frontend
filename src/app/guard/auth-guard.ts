@@ -14,7 +14,7 @@ export const authGuard: CanActivateFn = (route, state) => {
   // لو الكود شغال على السيرفر، بنعدي الطلب لأن السيرفر معندوش LocalStorage
   // ده بيمنع مشاكل الوميض والخطأ أثناء التحميل الأولي
   if (!isPlatformBrowser(platformId)) {
-    return true; 
+    return true;
   }
 
   // ---------------------------------------------------------------------------
@@ -52,8 +52,7 @@ export const authGuard: CanActivateFn = (route, state) => {
     const hasRole = requiredRoles.some(role => authService.hasRole(role));
     if (!hasRole) {
       // معاه توكن سليم بس مش مسموح له يدخل هنا
-      // ممكن توجهه لصفحة 403 أو الهوم
-      router.navigate(['/public/home']); 
+      router.navigate(['/access-denied']);
       return false;
     }
   }
@@ -64,6 +63,7 @@ export const authGuard: CanActivateFn = (route, state) => {
   const requiredPermission = route.data['permission'] as string;
   if (requiredPermission) {
     if (!authService.hasPermission(requiredPermission)) {
+      router.navigate(['/access-denied']);
       return false;
     }
   }

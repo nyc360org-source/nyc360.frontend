@@ -1,13 +1,12 @@
-// src/app/pages/Dashboard/pages/posts/post-form/post-form.component.ts
-
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Observable, Subject, of } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap, catchError } from 'rxjs/operators';
 import { PostsService } from '../services/posts';
-import { PostCategoryList } from '../models/posts';
-import { Observable } from 'rxjs';
-import { environment } from '../../../../../environments/environment'; // تأكد من المسار الصحيح
+import { CATEGORY_THEMES, CategoryEnum } from '../../../../Public/Widgets/feeds/models/categories';
+import { ToastService } from '../../../../../shared/services/toast.service';
 
 @Component({
   selector: 'app-post-form',
@@ -17,42 +16,62 @@ import { environment } from '../../../../../environments/environment'; // تأك
   styleUrls: ['./post-form.scss']
 })
 export class PostFormComponent implements OnInit {
-  
-  // Expose environment to template if needed, or use via method
-  protected readonly environment = environment;
 
-  // Dependency Injection
   private fb = inject(FormBuilder);
   private postsService = inject(PostsService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private toastService = inject(ToastService);
 
-  // Form Group
   form: FormGroup;
-  
-  // UI State
   isEditMode = false;
   postId: number | null = null;
   isLoading = false;
   isSubmitting = false;
-  categories = PostCategoryList;
-  
-  // File Handling (Multiple)
-  selectedFiles: File[] = []; 
-  imagePreviews: string[] = []; // للصور الجديدة (Base64)
-  existingAttachments: any[] = []; // للصور القديمة (من السيرفر)
+
+  categories = Object.entries(CATEGORY_THEMES).map(([key, value]) => ({
+    id: Number(key),
+    ...value
+  }));
+
+  postTypes = [
+    { id: 0, name: 'Normal' },
+    { id: 1, name: 'News' },
+    { id: 2, name: 'Job' },
+    { id: 3, name: 'Event' },
+    { id: 4, name: 'Initiative' },
+    { id: 5, name: 'Moment' },
+    { id: 6, name: 'Grant' }
+  ];
+
+  selectedFiles: File[] = [];
+  imagePreviews: string[] = [];
+  existingAttachments: any[] = [];
+
+  // -- Search Logic: Location --
+  locationSearch$ = new Subject<string>();
+  locationResults: any[] = [];
+  selectedLocation: any = null;
+  showLocationDropdown = false;
+
+  // -- Search Logic: Tags --
+  tagSearch$ = new Subject<string>();
+  tagResults: any[] = [];
+  selectedTags: any[] = []; // Array of objects {id, name}
+  showTagDropdown = false;
 
   constructor() {
-    // Initialize Form
     this.form = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(5)]],
-      content: ['', [Validators.required, Validators.minLength(10)]],
-      category: [null, Validators.required]
+      content: ['', [Validators.required, Validators.minLength(20)]],
+      category: [null, Validators.required],
+      type: [0, Validators.required],
+      locationSearch: [''] // Display only input
     });
   }
 
   ngOnInit() {
-    // Check for ID in URL to determine Edit Mode
+    this.setupSearch();
     this.route.params.subscribe(params => {
       if (params['id']) {
         this.isEditMode = true;
@@ -62,59 +81,80 @@ export class PostFormComponent implements OnInit {
     });
   }
 
-  loadPostData(id: number) {
-    this.isLoading = true;
-    this.postsService.getPostById(id).subscribe({
-      next: (res) => {
-        this.isLoading = false;
-        if (res.isSuccess) {
-          const post = res.data;
-          this.form.patchValue({
-            title: post.title,
-            content: post.content,
-            category: post.category
-          });
-          
-          if (post.attachments && post.attachments.length > 0) {
-            this.existingAttachments = post.attachments;
-          }
-        }
-      },
-      error: () => this.isLoading = false
+  setupSearch() {
+    // Location Search Config
+    this.locationSearch$.pipe(
+      debounceTime(400),
+      distinctUntilChanged(),
+      switchMap(term => {
+        if (!term || term.length < 2) return of([]);
+        return this.postsService.searchLocations(term).pipe(
+          catchError(() => of([]))
+        );
+      })
+    ).subscribe((res: any) => {
+      this.locationResults = res.data || [];
+      this.showLocationDropdown = this.locationResults.length > 0;
+    });
+
+    // Tag Search Config
+    this.tagSearch$.pipe(
+      debounceTime(400),
+      distinctUntilChanged(),
+      switchMap(term => {
+        if (!term || term.length < 2) return of([]);
+        return this.postsService.searchTags(term).pipe(
+          catchError(() => of([]))
+        );
+      })
+    ).subscribe((res: any) => {
+      this.tagResults = res.data || [];
+      this.showTagDropdown = this.tagResults.length > 0;
     });
   }
 
-  /**
-   * دالة معالجة روابط الصور (نفس المنطق في القائمة)
-   */
-  resolveImageUrl(url: string): string {
-    if (!url) return '';
-
-    // معالجة روابط السيرفر الداخلية
-    if (url.includes('@local://')) {
-      const filename = url.replace('@local://', '');
-      return `${this.environment.apiBaseUrl3}/${filename}`;
+  // --- Location Handlers ---
+  onLocationInput(event: any) {
+    const val = event.target.value;
+    this.locationSearch$.next(val);
+    if (!val) {
+      this.selectedLocation = null;
+      this.showLocationDropdown = false;
     }
-
-    // معالجة الصور القديمة النسبية
-    if (!url.startsWith('http') && !url.startsWith('data:')) {
-       return `${this.environment.apiBaseUrl}/${url}`;
-    }
-
-    return url;
   }
 
-  /**
-   * Handle Multiple File Selection
-   */
-  onFileSelect(event: any) {
-    const files = event.target.files;
-    
-    if (files && files.length > 0) {
-      this.selectedFiles = Array.from(files);
-      this.imagePreviews = []; 
+  selectLocation(loc: any) {
+    this.selectedLocation = loc;
+    this.form.patchValue({ locationSearch: loc.neighborhoodNet || loc.borough }); // Display value
+    this.showLocationDropdown = false;
+  }
 
-      this.selectedFiles.forEach(file => {
+  // --- Tag Handlers ---
+  onTagInput(event: any) {
+    const val = event.target.value;
+    this.tagSearch$.next(val);
+  }
+
+  selectTag(tag: any) {
+    // Avoid duplicates
+    if (!this.selectedTags.find(t => t.id === tag.id)) {
+      this.selectedTags.push(tag);
+    }
+    this.showTagDropdown = false;
+    // Clear input manually if needed via ViewChild, but for now logic is simple
+  }
+
+  removeTag(index: number) {
+    this.selectedTags.splice(index, 1);
+  }
+
+  // --- Attachments ---
+  onFileSelect(event: any) {
+    if (event.target.files && event.target.files.length > 0) {
+      const files = Array.from(event.target.files) as File[];
+      this.selectedFiles = [...this.selectedFiles, ...files];
+
+      files.forEach(file => {
         const reader = new FileReader();
         reader.onload = (e: any) => {
           this.imagePreviews.push(e.target.result);
@@ -124,37 +164,89 @@ export class PostFormComponent implements OnInit {
     }
   }
 
-  /**
-   * Submit Form
-   */
+  removeFile(index: number) {
+    this.selectedFiles.splice(index, 1);
+    this.imagePreviews.splice(index, 1);
+  }
+
+  // --- Load Data (Edit Mode) ---
+  loadPostData(id: number) {
+    this.isLoading = true;
+    this.postsService.getPostById(id).subscribe({
+      next: (res: any) => {
+        this.isLoading = false;
+        if (res.isSuccess) {
+          const post = res.data;
+          this.form.patchValue({
+            title: post.title,
+            content: post.content,
+            category: post.category,
+            type: post.postType || 0,
+            locationSearch: post.location?.neighborhoodNet || ''
+          });
+
+          if (post.location) this.selectedLocation = post.location;
+          if (post.attachments) this.existingAttachments = post.attachments;
+        }
+      },
+      error: () => {
+        this.isLoading = false;
+        this.toastService.error('Failed to load post data');
+      }
+    });
+  }
+
+  // --- Submit ---
   onSubmit() {
-    if (this.form.invalid) return;
+    // Location is mandatory per user logic (implied by API call requirement), but if user didn't change it on edit...
+    // Let's assume on create it's mandatory.
+    if (this.form.invalid || (!this.selectedLocation && !this.isEditMode)) {
+      // On edit if location is already there but not re-selected, we might need handling. 
+      // But assuming selectedLocation is populated on load.
+      // Actually let's just check selectedLocation if we require it.
+    }
+
+    // User requested validation for all fields.
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      this.toastService.error('Please fill in all required fields marked with *');
+      return;
+    }
 
     this.isSubmitting = true;
-    const formData = this.form.value;
+
+    // Prepare final payload
+    const formData: any = {
+      title: this.form.value.title,
+      content: this.form.value.content,
+      category: this.form.value.category,
+      type: this.form.value.type,
+      locationId: this.selectedLocation ? this.selectedLocation.id : 0, // 0 or null if not selected but required?
+      tags: this.selectedTags.map(t => t.id) // Send IDs array
+    };
 
     let request$: Observable<any>;
 
     if (this.isEditMode && this.postId) {
-      request$ = this.postsService.updatePost(this.postId, formData, this.selectedFiles.length > 0 ? this.selectedFiles : undefined);
+      request$ = this.postsService.updatePost(this.postId, formData, this.selectedFiles);
     } else {
-      request$ = this.postsService.createPost(formData, this.selectedFiles.length > 0 ? this.selectedFiles : undefined);
+      request$ = this.postsService.createPost(formData, this.selectedFiles);
     }
 
     request$.subscribe({
-      next: (res) => {
+      next: (res: any) => {
         this.isSubmitting = false;
         if (res.isSuccess) {
-          alert(this.isEditMode ? 'Post updated successfully' : 'Post created successfully');
-          this.goBack();
+          this.toastService.success(this.isEditMode ? 'Post updated successfully!' : 'Post published successfully!');
+          this.router.navigate(['/admin/posts']); // Update to Admin Route
         } else {
-          alert(res.error?.message || 'Operation failed');
+          this.toastService.error(res.error?.message || 'Operation failed');
         }
       },
-      error: (err) => {
+      error: (err: any) => {
         this.isSubmitting = false;
         console.error(err);
-        alert('Network error occurred');
+        this.toastService.error('Network error occurred. Please try again.');
       }
     });
   }

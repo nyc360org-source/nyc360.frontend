@@ -1,239 +1,177 @@
-// --- Variables ---
-$bg-page: #f8f9fa;
-$card-bg: #ffffff;
-$text-main: #2d2d2d;
-$text-muted: #6c757d;
-$gold: #DAA520;
-$border: #e4e6e8;
-$danger: #dc3545;
-$primary: #0d6efd;
-
-// --- Container ---
-.page-container {
-  padding: 25px;
-  min-height: 100vh;
-  background: $bg-page;
-  font-family: 'Segoe UI', sans-serif;
-  color: $text-main;
+.roles-page {
+  padding-bottom: 3rem;
 }
 
-// --- Header ---
-.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 35px;
-
-  .title-section {
-    h2 {
-      font-size: 1.9rem;
-      font-weight: 800;
-      color: $text-main;
-      margin-bottom: 6px;
-    }
-    p {
-      color: $text-muted;
-      font-size: 0.95rem;
-      margin: 0;
-    }
-  }
-
-  .btn-add {
-    background: $gold;
-    color: #fff;
-    padding: 11px 22px;
-    border-radius: 10px;
-    font-weight: 600;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: 0.25s ease;
-
-    &:hover {
-      background: darken($gold, 10%);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 10px rgba($gold, 0.3);
-    }
-  }
-}
-
-// --- Grid ---
-.roles-grid {
-  display: grid;
-  gap: 22px;
-  grid-template-columns: 1fr;
-
-  @media (min-width: 768px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  @media (min-width: 1200px) {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-// --- Cards ---
-.role-card {
-  background: $card-bg;
-  border: 1px solid $border;
-  border-radius: 14px;
-  padding: 22px;
+.role-card-luxury {
+  border-radius: 20px;
   display: flex;
   flex-direction: column;
-  transition: 0.25s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
 
   &:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 14px 28px rgba(0,0,0,0.06);
-    border-color: rgba($gold, 0.4);
-  }
-
-  .card-header-row {
-    display: flex;
-    align-items: center;
-    gap: 18px;
-    margin-bottom: 18px;
-
-    .role-icon {
-      width: 50px;
-      height: 50px;
-      border-radius: 12px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: linear-gradient(135deg, $gold, lighten($gold, 20%));
-      color: #fff;
-      font-size: 1.3rem;
-    }
-
-    .role-title {
-      flex-grow: 1;
-
-      h3 {
-        margin: 0;
-        font-size: 1.15rem;
-        font-weight: 700;
-        color: $text-main;
-      }
-      .perm-count {
-        font-size: 0.8rem;
-        color: $text-muted;
-      }
-    }
-
-    .actions-group {
-      display: flex;
-      gap: 10px;
-
-      .btn-icon {
-        width: 38px;
-        height: 38px;
-        border-radius: 10px;
-        background: #fff;
-        border: 1px solid $border;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        transition: 0.25s;
-        cursor: pointer;
-
-        &.edit {
-          color: $primary;
-          &:hover {
-            background: $primary;
-            color: #fff;
-            border-color: $primary;
-          }
-        }
-
-        &.delete {
-          color: $danger;
-          &:hover {
-            background: $danger;
-            color: #fff;
-            border-color: $danger;
-          }
-        }
-      }
-    }
-  }
-
-  .divider {
-    height: 1px;
-    background: $border;
-    margin: 18px 0;
-  }
-
-  .content-limit-section {
-    .section-title {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: $text-muted;
-      margin-bottom: 5px;
-    }
-    .limit-value {
-      font-weight: 700;
-      color: $text-main;
-    }
-  }
-
-  .permissions-section {
-    .section-title {
-      font-size: 0.82rem;
-      color: $text-muted;
-      margin-bottom: 10px;
-      font-weight: 600;
-      text-transform: uppercase;
-    }
-
-    .tags-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      max-height: 150px;
-      overflow-y: auto;
-
-      .perm-tag {
-        padding: 5px 12px;
-        background: #f1f3f4;
-        border-radius: 6px;
-        border: 1px solid darken($border, 5%);
-        font-size: 0.78rem;
-      }
-
-      .no-perm {
-        font-size: 0.85rem;
-        font-style: italic;
-        color: $text-muted;
-      }
-    }
+    transform: translateY(-8px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+    border-color: var(--luxury-gold);
   }
 }
 
-// --- States ---
-.state-container {
-  background: #fff;
-  padding: 45px;
-  border-radius: 14px;
-  border: 1px solid $border;
-  text-align: center;
-  margin-top: 25px;
+.role-icon-box {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  background: #f8fafc;
+  color: var(--luxury-slate);
+  border: 1px solid #e2e8f0;
 
-  i {
-    font-size: 2.2rem;
-    margin-bottom: 10px;
-    color: $gold;
+  &.master {
+    background: rgba(212, 175, 55, 0.1);
+    color: var(--luxury-gold);
+    border-color: rgba(212, 175, 55, 0.2);
+  }
+}
+
+.role-name {
+  color: var(--luxury-navy);
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.badge-count {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: var(--luxury-gold);
+  background: #fffcf5;
+  padding: 2px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.badge-limit {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: var(--luxury-blue);
+  background: aliceblue;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.section-label {
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--luxury-slate);
+  letter-spacing: 1px;
+}
+
+.permissions-flow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.luxury-chip {
+  padding: 4px 10px;
+  background: #f8fafc;
+  border: 1px solid #f1f5f9;
+  border-radius: 8px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--luxury-slate);
+  text-transform: uppercase;
+
+  &.more {
+    background: var(--luxury-navy);
+    color: white;
+    border: none;
+  }
+}
+
+.card-footer-luxury {
+  border-top: 1px dashed #e2e8f0;
+}
+
+.btn-action-luxury {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: #f8fafc;
+  border-radius: 8px;
+  color: var(--luxury-slate);
+  transition: all 0.2s;
+
+  &:hover {
+    transform: scale(1.1);
   }
 
-  p {
-    color: $text-muted;
-    margin-top: 5px;
+  &.edit:hover {
+    background: rgba(52, 152, 219, 0.1);
+    color: var(--luxury-blue);
   }
 
-  .spinner-border {
-    width: 2.3rem;
-    height: 2.3rem;
-    border-width: 3px;
-    color: $gold;
+  &.delete:hover {
+    background: rgba(231, 76, 60, 0.1);
+    color: #e74c3c;
+  }
+}
+
+.italic {
+  font-style: italic;
+}
+
+// Responsive Design
+// Responsive Design
+@media (max-width: 768px) {
+
+  /* Reset outer padding for correct centering */
+  .roles-page,
+  .container-fluid {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    /* If the roles page has padding, reduce it */
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+  }
+
+  /* Ensure row fits and centers items */
+  .row {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    justify-content: center;
+    /* Center the columns */
+  }
+
+  /* Force columns to center their content */
+  .col-md-6 {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .role-card-luxury {
+    /* Compact card logic */
+    width: 88%;
+    max-width: 360px;
+    margin: 0 auto 1.25rem auto;
+    /* Center self */
+  }
+
+  .header-section {
+    flex-direction: column;
+    align-items: center !important;
+    text-align: center;
+
+    .gold-title {
+      font-size: 1.5rem;
+    }
+
+    a.btn-luxury-gold {
+      width: 88%;
+      max-width: 360px;
+      text-align: center;
+    }
   }
 }

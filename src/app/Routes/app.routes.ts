@@ -1,21 +1,17 @@
 import { Routes } from '@angular/router';
-import { PublicLayoutComponent } from '../pages/Layout/public-layout/public-layout.component';
-import { AdminLayoutComponent } from '../pages/Layout/admin-layout/admin-layout.component';
-import { authGuard } from '../guard/auth-guard'; 
-import { AuthLayout } from '../pages/Layout/auth-layout/auth-layout';
-import { LandingLayout } from '../pages/Layout/landing-layout/landing-layout';
-import { AUTH_ROUTES } from './auth.routes';
-import { PUBLIC_ROUTES } from './public.routes';
-import { ADMIN_ROUTES } from './admin.routes';
 
+/**
+ * NYC-360 Main Routing Table
+ * Standardized with Maximum Lazy Loading for optimal performance.
+ */
 export const routes: Routes = [
-  
+
   // ============================================================
-  // 1. LANDING & GENERAL (Root)
+  // 1. LANDING & GENERAL (Minimal initial bundle)
   // ============================================================
   {
     path: '',
-    component: LandingLayout,
+    loadComponent: () => import('../pages/Layout/landing-layout/landing-layout').then(m => m.LandingLayout),
     children: [
       {
         path: '',
@@ -28,18 +24,40 @@ export const routes: Routes = [
     ]
   },
 
-// 2. Auth Routes
-  ...AUTH_ROUTES,
+  // ============================================================
+  // 2. AUTH MODULE (Lazy Loaded)
+  // ============================================================
+  {
+    path: 'auth',
+    loadChildren: () => import('./auth.routes').then(m => m.AUTH_ROUTES)
+  },
 
-  // 3. Public Routes (Feed, Profile, etc.)
-  ...PUBLIC_ROUTES,
+  // ============================================================
+  // 3. PUBLIC MODULE (Lazy Loaded with Layout & Guards)
+  // ============================================================
+  {
+    path: 'public',
+    loadChildren: () => import('./public.routes').then(m => m.PUBLIC_ROUTES)
+  },
 
-  // 4. Admin Routes
-  ...ADMIN_ROUTES,
+  // ============================================================
+  // 4. ADMIN DASHBOARD (Lazy Loaded with RBAC Guards)
+  // ============================================================
+  {
+    path: 'admin',
+    loadChildren: () => import('./admin.routes').then(m => m.ADMIN_ROUTES)
+  },
+
+  // ============================================================
+  // 5. SYSTEM ROUTES
+  // ============================================================
+  {
+    path: 'access-denied',
+    loadComponent: () => import('../pages/Public/pages/access-denied/access-denied.component').then(m => m.AccessDeniedComponent)
+  },
 
   {
     path: '**',
     loadComponent: () => import('../pages/Public/Widgets/not-found/not-found').then(m => m.NotFoundComponent)
   }
-  
 ];

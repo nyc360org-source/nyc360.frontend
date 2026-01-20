@@ -1,199 +1,248 @@
-// --- Variables ---
-$bg-page: #f8f9fa;
-$card-bg: #ffffff;
-$gold: #DAA520;
-$text-main: #333;
-$text-muted: #6c757d;
-$border: #e9ecef;
-$primary-blue: #0d6efd;
-$danger-red: #dc3545;
-$success-green: #198754;
-
-.page-container {
-  padding: 30px;
+.luxury-dashboard {
+  background-color: var(--luxury-bg);
   min-height: 100vh;
-  background-color: $bg-page;
-  color: $text-main;
-  font-family: 'Segoe UI', sans-serif;
 }
 
-// --- Header ---
-.page-header {
+.stat-card {
+  padding: 1.5rem;
+  border-radius: 20px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 30px;
-
-  .title-section {
-    h2 { font-weight: 800; margin-bottom: 5px; }
-    p { color: $text-muted; font-size: 0.95rem; }
-  }
-
-  .btn-add {
-    background-color: $gold;
-    color: #fff;
-    padding: 10px 20px;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: 0.2s;
-    
-    &:hover { 
-      background-color: darken($gold, 10%); 
-      box-shadow: 0 4px 12px rgba($gold, 0.3); 
-    }
-  }
-}
-
-// --- RSS List ---
-.rss-list {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-// --- Header Row (Desktop) ---
-.list-header {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr auto; 
-  padding: 0 25px;
-  margin-bottom: 5px;
-  
-  span {
-    font-size: 0.85rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    color: $text-muted;
-    letter-spacing: 0.5px;
-  }
-}
-
-// --- Item (Row / Card) ---
-.rss-item {
-  background: $card-bg;
-  border: 1px solid $border;
-  border-radius: 12px;
-  padding: 20px 25px;
-  transition: transform 0.2s, box-shadow 0.2s;
-  
-  // Desktop Layout: Grid Row
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr auto;
-  align-items: center;
-  gap: 20px;
+  gap: 1.5rem;
+  transition: all 0.3s ease;
 
   &:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-    border-left: 4px solid $gold;
+    transform: translateY(-5px);
   }
 
-  // 1. Info Section
-  .rss-info {
+  .icon-box {
+    width: 60px;
+    height: 60px;
+    border-radius: 16px;
     display: flex;
     align-items: center;
-    gap: 15px;
-    
-    .rss-img {
-      width: 50px; height: 50px; flex-shrink: 0;
-      
-      img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; border: 1px solid $border; }
-      
-      .img-placeholder {
-        width: 100%; height: 100%; background: #f1f3f4; border-radius: 8px;
-        display: flex; align-items: center; justify-content: center;
-        color: $text-muted; font-size: 1.2rem;
+    justify-content: center;
+    font-size: 1.8rem;
+    z-index: 2;
+  }
+
+  .info-box {
+    z-index: 2;
+
+    .count {
+      font-weight: 800;
+      font-size: 1.8rem;
+      margin: 0;
+      color: var(--luxury-navy);
+    }
+
+    .label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--luxury-slate);
+      letter-spacing: 1px;
+    }
+  }
+
+  &.gold .icon-box {
+    background: rgba(212, 175, 55, 0.15);
+    color: var(--luxury-gold);
+  }
+
+  &.green .icon-box {
+    background: rgba(46, 204, 113, 0.15);
+    color: var(--luxury-green);
+  }
+
+  &.blue .icon-box {
+    background: rgba(52, 152, 219, 0.15);
+    color: var(--luxury-blue);
+  }
+}
+
+.table-card {
+  border-radius: 24px;
+  overflow: hidden;
+}
+
+.source-logo-wrapper {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  background: white;
+  padding: 5px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.source-logo {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.source-name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--luxury-navy);
+  margin-bottom: 2px;
+}
+
+.source-link {
+  font-size: 0.75rem;
+  color: var(--luxury-slate);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--luxury-blue);
+  }
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: #f1f5f9;
+  color: var(--luxury-slate);
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #94a3b8;
+  }
+
+  &.active {
+    background: rgba(46, 204, 113, 0.1);
+    color: var(--luxury-green);
+
+    .dot {
+      background: var(--luxury-green);
+      animation: pulse 2s infinite;
+    }
+  }
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.5;
+    transform: scale(1.2);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.btn-icon {
+  width: 36px;
+  height: 36px;
+  border: 1px solid #e2e8f0;
+  background: white;
+  border-radius: 10px;
+  color: var(--luxury-slate);
+  transition: all 0.2s;
+
+  &:hover {
+    background: var(--luxury-bg);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  }
+
+  &.edit:hover {
+    border-color: var(--luxury-gold);
+    color: var(--luxury-gold);
+  }
+
+  &.delete:hover {
+    border-color: #e74c3c;
+
+    color: #e74c3c;
+  }
+}
+
+@media (max-width: 991px) {
+  .header-section {
+    flex-wrap: wrap;
+    gap: 1rem;
+
+    .d-flex.gap-2 {
+      width: 100%;
+      justify-content: space-between;
+
+      button,
+      a {
+        flex: 1;
+        text-align: center;
       }
     }
-
-    .rss-text {
-      overflow: hidden;
-      h3 { margin: 0; font-size: 1rem; font-weight: 700; color: $text-main; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-      .rss-link { font-size: 0.85rem; color: $primary-blue; text-decoration: none; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; &:hover { text-decoration: underline; } }
-    }
-  }
-
-  // 2. Category
-  .cat-badge {
-    display: inline-block;
-    font-size: 0.75rem;
-    background: #f8f9fa;
-    border: 1px solid darken($border, 5%);
-    color: $text-main;
-    padding: 5px 12px;
-    border-radius: 20px;
-    font-weight: 600;
-  }
-
-  // 3. Status
-  .rss-status {
-    display: flex; align-items: center; gap: 8px; font-size: 0.9rem; font-weight: 600; color: $text-muted;
-    .status-dot {
-      width: 10px; height: 10px; border-radius: 50%; background: #ccc;
-      &.active { background: $success-green; box-shadow: 0 0 0 2px rgba($success-green, 0.2); }
-    }
-  }
-
-  // 4. Date
-  .rss-date { font-size: 0.9rem; color: $text-muted; }
-
-  // 5. Actions
-  .rss-actions {
-    display: flex; gap: 10px; justify-content: flex-end;
-    
-    .btn-icon {
-      width: 35px; height: 35px; border-radius: 8px; border: 1px solid $border; background: #fff; color: $text-muted; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;
-      
-      &:hover { background: $gold; color: #fff; border-color: $gold; }
-      &.edit:hover { background: $primary-blue; border-color: $primary-blue; }
-      &.delete:hover { background: $danger-red; border-color: $danger-red; }
-    }
   }
 }
 
-// --- Loading & Empty States ---
-.state-container {
-  text-align: center; padding: 50px; background: $card-bg; border-radius: 12px; border: 1px solid $border; color: $text-muted;
-  .spinner-border { color: $gold; margin-bottom: 10px; }
-}
-
-// ============================================================
-// 📱 MOBILE RESPONSIVE (CARD VIEW)
-// ============================================================
+/* Mobile Responsive Adjustments */
 @media (max-width: 768px) {
-  
-  .list-header { display: none; } // Hide header row
 
-  .rss-item {
-    display: flex; 
-    flex-direction: column; // Convert row to column stack
-    align-items: flex-start;
-    gap: 15px;
-    
-    // Full width card info
-    .rss-info {
-      width: 100%;
-      .rss-img { width: 60px; height: 60px; }
-      .rss-text { h3 { font-size: 1.1rem; white-space: normal; } }
+  /* Reset outer padding that causes shifts */
+  .luxury-dashboard {
+    padding: 10px !important;
+  }
+
+  .container-fluid {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  /* Center the container content */
+  .d-md-none.p-3 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 !important;
+    width: 100%;
+  }
+
+  .rss-card-mobile {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    margin: 0 auto 1.25rem auto;
+    width: 88%;
+    /* Narrower for "small shape" look */
+    max-width: 360px;
+    overflow: hidden;
+
+    .source-logo-wrapper {
+      width: 45px;
+      height: 45px;
     }
 
-    // Metadata Row (Category + Status + Date)
-    .rss-category, .rss-status, .rss-date {
-      font-size: 0.85rem;
-      width: 100%;
+    .source-name {
+      font-size: 0.95rem;
     }
 
-    // Actions (Full width buttons at bottom)
-    .rss-actions {
-      width: 100%;
-      border-top: 1px solid $border;
-      padding-top: 15px;
-      justify-content: space-between; // Spread buttons
-      
-      .btn-icon { flex: 1; } // Make buttons expand
+    .status-badge.small {
+      font-size: 0.70rem;
+      padding: 3px 10px;
+    }
+
+    .btn {
+      border-radius: 10px;
+      font-weight: 600;
+      padding: 8px;
     }
   }
 }

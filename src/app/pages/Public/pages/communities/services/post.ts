@@ -10,7 +10,7 @@ import { ApiResponse, PostDetailsData, PostComment, InteractionType } from '../m
 export class PostService {
   private http = inject(HttpClient);
   // تأكد من أن الرابط يطابق الباك اند لديك
-  private baseUrl = environment.apiBaseUrl + '/posts'; 
+  private baseUrl = environment.apiBaseUrl + '/posts';
 
   // جلب تفاصيل البوست
   getPostDetails(id: number): Observable<ApiResponse<PostDetailsData>> {
@@ -29,7 +29,7 @@ export class PostService {
   }
 
   // مشاركة البوست (اختياري)
-  sharePost(id: number, content: string = ''): Observable<ApiResponse<any>> {
-    return this.http.post<ApiResponse<any>>(`${this.baseUrl}/${id}/share`, { content });
+  sharePost(id: number, commentary: string = ''): Observable<ApiResponse<any>> {
+    return this.http.post<ApiResponse<any>>(`${this.baseUrl}/${id}/share`, { Commentary: commentary });
   }
 }

@@ -10,14 +10,14 @@ import { Role } from '../../Roles/models/role';
 @Component({
   selector: 'app-user-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule], 
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './userlist.html',
   styleUrls: ['./userlist.scss']
 })
 export class UserList implements OnInit {
-  
+
   protected readonly environment = environment;
-  
+
   // --- Dependencies ---
   private usersService = inject(UsersService);
   private rolesService = inject(RolesService);
@@ -46,9 +46,9 @@ export class UserList implements OnInit {
   // --- Forms ---
   profileForm: FormGroup;
   selectedFile: File | null = null;
-  
+
   // Single Role Selection Variable
-  selectedRoleName: string = ''; 
+  selectedRoleName: string = '';
 
   constructor() {
     this.profileForm = this.fb.group({
@@ -69,12 +69,12 @@ export class UserList implements OnInit {
     this.isLoading = true;
     this.usersService.getAllUsers(this.currentPage, this.pageSize, this.searchTerm)
       .subscribe({
-        next: (res) => {
+        next: (res: any) => {
           this.isLoading = false;
-          if (res.isSuccess) {
-            this.users = res.data || [];
-            this.totalCount = res.totalCount;
-            this.totalPages = res.totalPages;
+          if (res.isSuccess || res.IsSuccess) {
+            this.users = res.data || res.Data || [];
+            this.totalCount = res.totalCount ?? res.TotalCount ?? 0;
+            this.totalPages = res.totalPages ?? res.TotalPages ?? 0;
             this.cdr.detectChanges();
           }
         },
@@ -88,8 +88,8 @@ export class UserList implements OnInit {
   // --- Load Roles for Modal ---
   loadAllRoles() {
     this.rolesService.getAllRoles().subscribe({
-      next: (res) => {
-        if (res.isSuccess) this.availableRoles = res.data || [];
+      next: (res: any) => {
+        if (res.isSuccess || res.IsSuccess) this.availableRoles = res.data || res.Data || [];
       }
     });
   }
@@ -98,7 +98,7 @@ export class UserList implements OnInit {
   openEditProfile(user: User) {
     this.selectedUser = user;
     this.selectedFile = null;
-    
+
     this.profileForm.patchValue({
       firstName: user.firstName,
       lastName: user.lastName,
@@ -118,7 +118,7 @@ export class UserList implements OnInit {
   saveProfile() {
     if (this.profileForm.invalid || !this.selectedUser) return;
     this.isSaving = true;
-    
+
     this.usersService.updateProfile(this.selectedUser.id, this.profileForm.value, this.selectedFile || undefined)
       .subscribe({
         next: (res) => {

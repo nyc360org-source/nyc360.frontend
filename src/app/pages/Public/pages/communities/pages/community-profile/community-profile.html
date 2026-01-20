@@ -1,5 +1,9 @@
+<div *ngIf="isLoading && !community" class="spinner-center" style="height: 80vh; align-items: center;">
+  <div class="spinner"></div>
+</div>
+
 <div class="community-wrapper" *ngIf="community">
-  
+
   <div class="community-header">
     <div class="cover-container">
       <div class="cover-image" [style.backgroundImage]="'url(' + resolveCommunityImage(community.coverUrl) + ')'"></div>
@@ -11,29 +15,32 @@
         <div class="logo-box">
           <img [src]="resolveCommunityImage(community.imageUrl)" alt="Community Logo">
         </div>
-        
+
         <div class="text-details">
           <h1>{{ community.name }}</h1>
           <p class="meta">
             <span class="badge-type">{{ community.type === 5 ? 'Public Resources' : 'Community' }}</span>
-            &bull; 
+            &bull;
             <span><i class="bi bi-people-fill"></i> {{ community.memberCount }} Members</span>
           </p>
         </div>
 
         <div class="action-box">
-          
-          <button *ngIf="!isJoined" 
-                  class="btn-action btn-join" 
-                  (click)="onJoinCommunity()" 
-                  [disabled]="isJoinLoading">
+
+          <!-- Management Button (Owner Only) -->
+          <button *ngIf="isOwner" class="btn-action btn-manage"
+            [routerLink]="['/public/community', community.slug, 'manage']">
+            <i class="bi bi-gear-fill"></i> Manage
+          </button>
+
+          <button *ngIf="!isJoined" class="btn-action btn-join" (click)="onJoinCommunity()" [disabled]="isJoinLoading">
             <span *ngIf="isJoinLoading" class="spinner-border spinner-border-sm"></span>
             <span *ngIf="!isJoinLoading"><i class="bi bi-person-plus-fill"></i> Join Community</span>
           </button>
 
           <div *ngIf="isJoined" class="joined-dropdown">
             <button class="btn-action btn-status">
-              <i class="bi bi-check-circle-fill"></i> 
+              <i class="bi bi-check-circle-fill"></i>
               {{ isOwner ? 'Owner' : (memberRole === 2 ? 'Moderator' : 'Member') }}
             </button>
             <button *ngIf="!isOwner" class="btn-leave-sm" (click)="onLeaveCommunity()" title="Leave Community">
@@ -64,19 +71,19 @@
   </div>
 
   <div class="community-body container">
-    
+
     <aside class="side-panel">
       <div class="widget about-widget">
         <h3>About Community</h3>
         <p class="desc">{{ community.description || 'Welcome to our community! Join the conversation.' }}</p>
-        
+
         <div class="stat-row">
           <div class="stat"><strong>{{ community.memberCount }}</strong> <span>Members</span></div>
           <div class="stat"><strong>{{ posts.length }}</strong> <span>Posts</span></div>
         </div>
-        
+
         <hr>
-        
+
         <div class="meta-list">
           <div class="meta-item"><i class="bi bi-calendar3"></i> Created in 2026</div>
           <div class="meta-item" *ngIf="isJoined"><i class="bi bi-shield-check"></i> You are a member</div>
@@ -85,9 +92,9 @@
     </aside>
 
     <main class="main-content">
-      
+
       <ng-container *ngIf="activeTab === 'discussion'">
-        
+
         <div class="create-post-box" *ngIf="isJoined">
           <div class="input-trigger" [routerLink]="['/public/community', community.id, 'create-post']">
             <span>Start a discussion...</span>
@@ -103,15 +110,100 @@
                 <small>{{ post.createdAt | date:'mediumDate' }}</small>
               </div>
             </div>
-            <div class="card-body">
+            <div class="card-body" [routerLink]="['/public/post', post.id]" style="cursor: pointer;">
               <p>{{ post.content }}</p>
               <div class="media-preview" *ngIf="post.attachments && post.attachments.length > 0">
                 <img [src]="resolvePostImage(post.attachments[0].url)">
               </div>
             </div>
             <div class="card-foot">
-      
-         
+              <!-- Action Buttons Row -->
+              <div class="interaction-bar">
+                <button class="action-btn" [class.active]="post.currentUserInteraction === InteractionType.Like"
+                  (click)="toggleInteraction(post, InteractionType.Like)">
+                  <i class="bi"
+                    [ngClass]="post.currentUserInteraction === InteractionType.Like ? 'bi-hand-thumbs-up-fill' : 'bi-hand-thumbs-up'"></i>
+                  <span>Like</span>
+                  <span class="count" *ngIf="post.stats.likes > 0">{{ post.stats.likes }}</span>
+                </button>
+
+                <!-- Comment Toggle -->
+                <button class="action-btn" (click)="toggleComments(post)">
+                  <i class="bi bi-chat-text"></i>
+                  <span>Comment</span>
+                  <span class="count" *ngIf="post.stats.comments > 0">{{ post.stats.comments }}</span>
+                </button>
+              </div>
+
+              <!-- Comments Section -->
+              <div class="comments-wrapper" *ngIf="post.showComments">
+
+                <!-- Comment Input Area -->
+                <div class="comment-input-area">
+                  <img [src]="resolveUserAvatar(null)" class="user-avatar-sm">
+                  <div class="input-media-box">
+                    <input type="text" class="modern-input" placeholder="Write a thoughtful comment..."
+                      [(ngModel)]="post.newCommentContent" (keydown.enter)="submitComment(post)">
+                    <button class="btn-send" (click)="submitComment(post)" [disabled]="!post.newCommentContent?.trim()">
+                      <i class="bi bi-send-fill"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="section-divider-sm"></div>
+
+                <!-- Comments List -->
+                <div class="comments-list">
+                  <div class="comment-item" *ngFor="let comment of post.comments">
+                    <div class="c-flex">
+                      <img [src]="resolveUserAvatar(comment.author.imageUrl)" class="user-avatar-md" loading="lazy">
+                      <div class="c-content">
+                        <div class="c-bubble">
+                          <div class="c-header">
+                            <span class="c-name">{{ comment.author.name }}</span>
+                            <span class="c-time">{{ comment.createdAt | date:'shortDate' }}</span>
+                          </div>
+                          <p class="c-text">{{ comment.content }}</p>
+                        </div>
+
+                        <div class="c-actions">
+                          <button (click)="toggleInteraction(post, InteractionType.Like)" class="tiny-btn">Like</button>
+                          <span class="dot">•</span>
+                          <button (click)="openReplyInput(post, comment.id)" class="tiny-btn">Reply</button>
+                        </div>
+
+                        <!-- Reply Input -->
+                        <div *ngIf="post.activeReplyId === comment.id" class="reply-input-box"
+                          style="position: relative; margin-top: 8px;">
+                          <input #replyInput type="text" class="reply-field" placeholder="Write a reply..."
+                            style="width: 100%; border-radius: 12px; padding: 8px 35px 8px 12px; border: 1px solid #ddd;"
+                            (keydown.enter)="submitReply(post, comment, replyInput.value)">
+                          <button (click)="submitReply(post, comment, replyInput.value)"
+                            [disabled]="!replyInput.value.trim()"
+                            style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); border: none; background: transparent; color: #ff7f50; font-size: 1rem; cursor: pointer;">
+                            <i class="bi bi-send-fill"></i>
+                          </button>
+                        </div>
+
+                        <!-- Replies -->
+                        <div class="replies-list" *ngIf="comment.replies.length">
+                          <div *ngFor="let reply of comment.replies" class="reply-item">
+                            <div class="r-bubble">
+                              <span class="r-name">{{ reply.author.name }}</span>
+                              <p class="r-text">{{ reply.content }}</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div *ngIf="!post.comments?.length" class="empty-comments">
+                    <i class="bi bi-chat-square-dots"></i>
+                    <p>Be the first to comment!</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </ng-container>
@@ -153,7 +245,11 @@
               </div>
             </div>
           </div>
-          <ng-template #loader><div class="spinner-center"><div class="spinner"></div></div></ng-template>
+          <ng-template #loader>
+            <div class="spinner-center">
+              <div class="spinner"></div>
+            </div>
+          </ng-template>
         </div>
       </ng-container>
 

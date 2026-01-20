@@ -1,0 +1,11 @@
+<div class="hero-container" [style.border-left-color]="customColor">
+  <div class="hero-img" [routerLink]="link" style="cursor: pointer;">
+    <img [src]="image" alt="Hero" appImgFallback="post">
+  </div>
+  <div class="hero-content">
+    <span class="meta">{{ metaText }}</span>
+    <h2 class="merriweather-font" [routerLink]="link" style="cursor: pointer;">{{ title }}</h2>
+    <p>{{ description }}</p>
+    <button [routerLink]="link" [style.background-color]="customColor">Read Full Article</button>
+  </div>
+</div>

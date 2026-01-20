@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { CommunityRequestsService } from '../../services/community-requests';
 import { CommunityRequestDto } from '../../models/community-requests';
 import { environment } from '../../../../../../environments/environment';
+import { ToastService } from '../../../../../../shared/services/toast.service';
 
 @Component({
   selector: 'app-community-requests',
@@ -15,8 +16,9 @@ import { environment } from '../../../../../../environments/environment';
 })
 export class CommunityRequestsComponent implements OnInit {
   @Input() communityId!: number;
-  
+
   private service = inject(CommunityRequestsService);
+  private toastService = inject(ToastService);
   requests: CommunityRequestDto[] = [];
   isLoading = true;
 
@@ -36,14 +38,20 @@ export class CommunityRequestsComponent implements OnInit {
   }
 
   handleAction(req: CommunityRequestDto, action: 'approve' | 'reject') {
-    const apiCall = action === 'approve' 
+    const apiCall = action === 'approve'
       ? this.service.approveRequest(this.communityId, req.userId)
       : this.service.rejectRequest(this.communityId, req.userId);
 
-    apiCall.subscribe(res => {
-      if (res.isSuccess) {
-        this.requests = this.requests.filter(r => r.userId !== req.userId);
-      }
+    apiCall.subscribe({
+      next: (res) => {
+        if (res.isSuccess) {
+          this.requests = this.requests.filter(r => r.userId !== req.userId);
+          this.toastService.success(`Request ${action === 'approve' ? 'approved' : 'rejected'} successfully.`);
+        } else {
+          this.toastService.error(`Failed to ${action} request.`);
+        }
+      },
+      error: () => this.toastService.error('An error occurred.')
     });
   }
 

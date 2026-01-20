@@ -1,0 +1,303 @@
+@use "sass:color";
+// Theme Variables
+$primary-green: #00695C;
+$bg-light-green: #E0F2F1;
+$active-green: #2E7D32;
+$closed-red: #C62828;
+$text-dark: #2c2c2c;
+$text-muted: #666;
+$white: #ffffff;
+$radius: 16px;
+$font-header: 'Merriweather', serif;
+$font-body: 'Inter', sans-serif;
+
+.my-offers-page {
+  background-color: #fcfcfc;
+  min-height: 100vh;
+  font-family: $font-body;
+  color: $text-dark;
+  padding-bottom: 60px;
+}
+
+.merriweather-font {
+  font-family: $font-header;
+}
+
+// --- Header ---
+.dashboard-header {
+  background: linear-gradient(to right, $primary-green, color.adjust($primary-green, $lightness: -5%));
+  color: $white;
+  padding: 60px 0 80px; // Extra padding bottom for overlap
+
+  h1 {
+    font-weight: 700;
+    margin-bottom: 5px;
+  }
+
+  .btn-create-job {
+    background: $white;
+    color: $primary-green;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 50px;
+    font-weight: 700;
+    transition: 0.3s;
+
+    &:hover {
+      background: $bg-light-green;
+      transform: translateY(-2px);
+    }
+  }
+}
+
+// --- Main Content ---
+.main-content {
+  margin-top: -40px;
+}
+
+// Overlap effect
+
+// --- Filter Bar ---
+.filter-bar {
+  background: $white;
+  border-radius: $radius;
+  padding: 15px 25px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid #eee;
+
+  .tabs {
+    display: flex;
+    gap: 20px;
+
+    button {
+      background: none;
+      border: none;
+      font-weight: 600;
+      color: $text-muted;
+      padding: 10px 5px;
+      border-bottom: 3px solid transparent;
+      transition: 0.2s;
+
+      &.active {
+        color: $primary-green;
+        border-color: $primary-green;
+      }
+
+      &:hover:not(.active) {
+        color: $primary-green;
+      }
+
+      .badge-count {
+        background: #eee;
+        color: #555;
+        font-size: 0.75rem;
+        padding: 2px 8px;
+        border-radius: 10px;
+        margin-left: 5px;
+      }
+    }
+  }
+}
+
+// --- Offer Card ---
+.offer-card {
+  background: $white;
+  border-radius: $radius;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #eee;
+  transition: 0.3s;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05) !important;
+
+    .offer-title {
+      color: $primary-green;
+    }
+  }
+
+  .card-status-strip {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 5px;
+    background: #ddd;
+
+    &.active {
+      background: $active-green;
+    }
+  }
+
+  .card-content {
+    padding: 25px 25px 25px 35px; // Extra left padding for strip
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 20px;
+    }
+  }
+
+  .info-section {
+    flex: 1;
+
+    .status-badge {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 4px;
+      background: #eee;
+      color: #666;
+
+      &.active {
+        background: rgba($active-green, 0.1);
+        color: $active-green;
+      }
+    }
+
+    .date-text {
+      font-size: 0.85rem;
+    }
+
+    .offer-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin: 10px 0;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .salary-text {
+      color: $text-muted;
+      font-weight: 500;
+      margin: 0;
+
+      i {
+        color: $primary-green;
+      }
+    }
+  }
+
+  .stats-section {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+
+    @media (max-width: 768px) {
+      width: 100%;
+      justify-content: space-between;
+    }
+
+    .stat-box {
+      text-align: center;
+      padding: 0 20px;
+      border-left: 1px solid #eee;
+
+      @media (max-width: 768px) {
+        border: none;
+        padding: 0;
+        text-align: left;
+      }
+
+      .stat-num {
+        display: block;
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: $primary-green;
+        line-height: 1;
+      }
+
+      .stat-label {
+        font-size: 0.8rem;
+        color: $text-muted;
+        text-transform: uppercase;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+      }
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+
+      .btn-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 1px solid #eee;
+        background: $white;
+        color: $text-muted;
+        transition: 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &:hover {
+          border-color: $primary-green;
+          color: $primary-green;
+          background: $bg-light-green;
+        }
+      }
+    }
+  }
+}
+
+// --- Pagination ---
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+
+  .page-nav {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid #eee;
+    background: $white;
+    color: $primary-green;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover:not(:disabled) {
+      background: $primary-green;
+      color: $white;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+  }
+
+  .page-info {
+    font-weight: 600;
+    color: $text-muted;
+  }
+}
+
+// --- Empty State Button ---
+.btn-create-job.mt-2 {
+  background: $primary-green;
+  color: $white;
+  border: none;
+  padding: 10px 25px;
+  border-radius: 50px;
+  font-weight: 700;
+  transition: 0.3s;
+
+  &:hover {
+    background: color.adjust($primary-green, $lightness: -5%);
+  }
+}

@@ -1,12 +1,11 @@
 // src/app/routes/admin.routes.ts
 import { Routes } from '@angular/router';
-import { AdminLayoutComponent } from '../pages/Layout/admin-layout/admin-layout.component';
 import { authGuard } from '../guard/auth-guard';
 
 export const ADMIN_ROUTES: Routes = [
   {
-    path: 'admin',
-    component: AdminLayoutComponent,
+    path: '',
+    loadComponent: () => import('../pages/Layout/admin-layout/admin-layout.component').then(m => m.AdminLayoutComponent),
     canActivate: [authGuard],
     data: { roles: ['Admin', 'SuperAdmin'] },
     children: [
@@ -33,8 +32,24 @@ export const ADMIN_ROUTES: Routes = [
       { path: 'posts/details/:id', loadComponent: () => import('../pages/Public/pages/posts/post-details/post-details').then(m => m.PostDetailsComponent) },
 
       // Trending & Flags
-      { path: 'trending', loadComponent: () => import('../pages/Dashboard/pages/posts/trending/trending').then(m => m.TrendingComponent) },
-      { path: 'flags', loadComponent: () => import('../pages/Dashboard/pages/posts/flags-list/flags-list').then(m => m.FlagsListComponent) }
+      { path: 'trending', loadComponent: () => import('../pages/Dashboard/pages/trending/trending').then(m => m.TrendingComponent) },
+      { path: 'flags', loadComponent: () => import('../pages/Dashboard/pages/flags-list/flags-list').then(m => m.FlagsListComponent) },
+
+      //tags 
+      { path: 'tags', loadComponent: () => import('../pages/Dashboard/pages/tags/pages/tags-list/tags-list').then(m => m.TagsListComponent) },
+      { path: 'tags/create', loadComponent: () => import('../pages/Dashboard/pages/tags/pages/tag-create/tag-create').then(m => m.TagCreateComponent) },
+      { path: 'tags/update/:id', loadComponent: () => import('../pages/Dashboard/pages/tags/pages/tag-update/tag-update').then(m => m.TagUpdateComponent) },
+      { path: 'tags/verifications', loadComponent: () => import('../pages/Dashboard/pages/tags/pages/tag-verifications/tag-verifications').then(m => m.TagVerificationsComponent) },
+
+      // Locations
+      { path: 'locations', loadComponent: () => import('../pages/Dashboard/pages/locations/pages/locations-list/locations-list').then(m => m.LocationsListComponent) },
+      { path: 'locations/create', loadComponent: () => import('../pages/Dashboard/pages/locations/pages/location-form/location-form').then(m => m.LocationFormComponent) },
+      { path: 'locations/edit/:id', loadComponent: () => import('../pages/Dashboard/pages/locations/pages/location-form/location-form').then(m => m.LocationFormComponent) },
+
+      // Communities
+      { path: 'communities/list', loadComponent: () => import('../pages/Dashboard/pages/communities/pages/communities-list/communities-list').then(m => m.CommunitiesListComponent) },
+      { path: 'communities/disband-requests', loadComponent: () => import('../pages/Dashboard/pages/communities/pages/disband-requests/disband-requests').then(m => m.DisbandRequestsComponent) },
+      { path: 'communities/moderation/:id', loadComponent: () => import('../pages/Dashboard/pages/communities/pages/community-moderation/community-moderation').then(m => m.CommunityModerationComponent) }
     ]
   }
 ];

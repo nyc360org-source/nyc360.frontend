@@ -1,113 +1,258 @@
-// Variables (نفس المتغيرات السابقة)
-$bg-page: #f8f9fa;
-$card-bg: #ffffff;
-$gold: #DAA520;
-$text-main: #333;
-$text-muted: #6c757d;
-$border: #e9ecef;
+// Luxury Theme Variables
+$gold: #D4AF37;
+$dark: #1A1A1A;
+$white: #FFFFFF;
+$light-gray: #F8F9FA;
+$border: #E0E0E0;
+$radius: 16px;
 
-// ... (نفس الستايلات السابقة للأقسام العلوية)
-
-.page-container {
-  padding: 30px;
+.luxury-theme {
+  font-family: 'DM Sans', sans-serif;
+  background: #f4f7fc;
   min-height: 100vh;
-  background-color: $bg-page;
-  color: $text-main;
-  font-family: 'Segoe UI', sans-serif;
+  padding: 40px 20px;
 }
 
-// --- Header ---
 .page-header {
-  display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;
-  .title-section { h2 { font-weight: 800; margin-bottom: 5px; } p { color: $text-muted; font-size: 0.95rem; } }
-  
-  .btn-back {
-    background: transparent; border: 1px solid $border; color: $text-muted;
-    padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 600;
-    display: flex; align-items: center; gap: 5px; transition: 0.2s;
-    &:hover { border-color: $gold; color: $gold; }
-  }
-}
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 900px;
+  margin: 0 auto 30px;
 
-// --- Form Card ---
-.form-card {
-  background: $card-bg; border: 1px solid $border; border-radius: 12px;
-  padding: 40px; max-width: 900px; margin: 0 auto;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.03);
-}
+  .title-section {
+    h2 {
+      font-weight: 800;
+      color: $dark;
+      margin: 0;
+      font-size: 2rem;
 
-// --- Inputs ---
-.form-group {
-  margin-bottom: 20px;
-  label { display: block; margin-bottom: 8px; font-weight: 600; color: $text-main; font-size: 0.9rem; }
-  
-  .input-wrapper {
-    position: relative;
-    i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: $text-muted; }
-    
-    input[type="text"], select {
-      width: 100%; padding: 12px 15px 12px 40px; 
-      border: 1px solid $border; border-radius: 8px;
-      font-size: 1rem; color: $text-main; transition: 0.3s; background: #fff;
-      &:focus { outline: none; border-color: $gold; box-shadow: 0 0 0 3px rgba($gold, 0.1); }
+      &.gold-text {
+        color: $dark;
+        border-bottom: 3px solid $gold;
+        display: inline-block;
+        padding-bottom: 5px;
+      }
+    }
+
+    .subtitle {
+      color: #777;
+      margin: 5px 0 0;
+      font-size: 0.95rem;
     }
   }
 
-  textarea {
-    width: 100%; padding: 15px; border: 1px solid $border; border-radius: 8px;
-    font-size: 1rem; color: $text-main; transition: 0.3s; background: #fff; resize: vertical;
-    &:focus { outline: none; border-color: $gold; box-shadow: 0 0 0 3px rgba($gold, 0.1); }
+  .btn-back {
+    background: transparent;
+    border: 1px solid $border;
+    border-radius: 50px;
+    padding: 10px 20px;
+    font-weight: 600;
+    color: #555;
+    transition: 0.3s;
+
+    &:hover {
+      background: $dark;
+      color: $gold;
+      border-color: $dark;
+    }
   }
-  
-  .text-danger { color: #dc3545; font-size: 0.8rem; margin-top: 5px; display: block; }
 }
 
-// --- Custom File Input ---
-.file-input-wrapper {
-  input[type="file"] { display: none; }
-  
-  .file-label {
-    display: block; width: 100%; padding: 12px;
-    background: #f9f9f9; border: 2px dashed darken($border, 10%);
-    border-radius: 8px; text-align: center; cursor: pointer; color: $text-muted; font-weight: 600; transition: 0.2s;
-    
-    i { font-size: 1.2rem; margin-right: 5px; vertical-align: middle; }
-    
-    &:hover { background: #f1f1f1; border-color: $gold; color: $gold; }
-  }
+.glass-panel {
+  background: $white;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px;
+  border-radius: $radius;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.02);
 }
 
 .form-row {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
-  @media(max-width: 768px) { grid-template-columns: 1fr; }
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+
+  .form-group {
+    flex: 1;
+    min-width: 250px;
+  }
 }
 
-// --- New Preview Grid System ---
-.previews-container {
+.form-group {
   margin-bottom: 25px;
-  background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid $border;
 
-  p { margin-bottom: 10px; font-size: 0.85rem; color: $text-muted; text-transform: uppercase; font-weight: 700; width: 100%; }
+  label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 8px;
+    display: block;
+    letter-spacing: 1px;
 
-  .preview-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 15px;
-    
-    .preview-item {
-      width: 100px;
-      height: 100px;
-      border-radius: 6px;
-      overflow: hidden;
+    .req {
+      color: #e74c3c;
+    }
+  }
+
+  .input-wrapper,
+  .textarea-wrapper {
+    position: relative;
+
+    i {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: $gold;
+      opacity: 0.7;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 14px 15px 14px 45px;
       border: 1px solid $border;
-      position: relative;
-      background: #fff;
-      
-      img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
+      border-radius: 12px;
+      font-size: 1rem;
+      background: #FAFAFA;
+      transition: 0.3s;
+
+      &:focus {
+        border-color: $gold;
+        outline: none;
+        background: $white;
+        box-shadow: 0 0 0 4px rgba($gold, 0.1);
+      }
+    }
+  }
+
+  .textarea-wrapper textarea {
+    width: 100%;
+    padding: 15px;
+    border: 1px solid $border;
+    border-radius: 12px;
+    background: #FAFAFA;
+    font-size: 1rem;
+
+    &:focus {
+      border-color: $gold;
+      outline: none;
+      background: $white;
+      box-shadow: 0 0 0 4px rgba($gold, 0.1);
+    }
+  }
+
+  .error-msg {
+    color: #e74c3c;
+    font-size: 0.8rem;
+    margin-top: 5px;
+    display: block;
+    font-weight: 500;
+  }
+}
+
+// --- File Upload ---
+.file-upload-zone {
+  position: relative;
+
+  .hidden-input {
+    display: none;
+  }
+
+  .upload-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+    border: 2px dashed $border;
+    border-radius: 12px;
+    background: #FAFAFA;
+    cursor: pointer;
+    transition: 0.3s;
+
+    i {
+      font-size: 2rem;
+      color: $gold;
+      margin-bottom: 10px;
+    }
+
+    span {
+      font-weight: 600;
+      color: #666;
+    }
+
+    &:hover {
+      border-color: $gold;
+      background: rgba($gold, 0.05);
+    }
+  }
+}
+
+.attachments-preview {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 15px;
+
+  .preview-item {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    border-radius: 10px;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .btn-remove {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      background: rgba(0, 0, 0, 0.6);
+      color: #fff;
+      border: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+  }
+}
+
+// --- Tag Badges ---
+.tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+
+  .tag-badge {
+    background: $gold;
+    color: $white;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+
+    .remove-tag {
+      cursor: pointer;
+      opacity: 0.8;
+
+      &:hover {
+        opacity: 1;
       }
     }
   }
@@ -115,19 +260,128 @@ $border: #e9ecef;
 
 // --- Actions ---
 .form-actions {
-  margin-top: 30px; padding-top: 20px; border-top: 1px solid $border;
-  display: flex; justify-content: flex-end; gap: 15px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
 
   .btn-ghost {
-    background: transparent; border: 1px solid $border; color: $text-muted;
-    padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: 600;
-    &:hover { background: #f1f1f1; }
+    background: transparent;
+    color: #666;
+    border: none;
+    font-weight: 700;
+    padding: 12px 25px;
+
+    &:hover {
+      color: $dark;
+      text-decoration: underline;
+    }
   }
 
-  .btn-gold {
-    background: $gold; color: #fff; border: none; padding: 12px 35px; border-radius: 8px;
-    font-weight: 700; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 8px;
-    &:hover:not(:disabled) { background: darken($gold, 10%); box-shadow: 0 4px 12px rgba($gold, 0.3); }
-    &:disabled { opacity: 0.6; cursor: not-allowed; }
+  .btn-luxury {
+    background: $dark;
+    color: $gold;
+    border: 1px solid $dark;
+    padding: 12px 40px;
+    border-radius: 50px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: 0.3s;
+
+    &:hover:not(:disabled) {
+      background: $gold;
+      color: $dark;
+      border-color: $gold;
+      box-shadow: 0 10px 20px rgba($gold, 0.3);
+      transform: translateY(-2px);
+    }
+
+    &:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+  }
+}
+
+// Animations
+.fade-in-down {
+  animation: fadeInDown 0.6s ease;
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.6s ease 0.1s backwards;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// --- Search Dropdowns ---
+.position-relative {
+  position: relative;
+}
+
+.dropdown-results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  max-height: 250px;
+  overflow-y: auto;
+  z-index: 1000;
+  list-style: none;
+  padding: 0;
+  margin: 5px 0 0;
+
+  li {
+    padding: 12px 15px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    transition: 0.2s;
+    display: flex;
+    flex-direction: column;
+
+    strong {
+      color: $dark;
+      font-size: 0.95rem;
+    }
+
+    small {
+      color: #888;
+      font-size: 0.8rem;
+    }
+
+    &:hover {
+      background: rgba($gold, 0.1);
+      color: $dark;
+    }
+
+    &:last-child {
+      border-bottom: none;
+    }
   }
 }

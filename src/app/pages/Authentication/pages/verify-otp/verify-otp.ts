@@ -1,19 +1,18 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-// 1. استيراد المكتبات الخاصة بالفورم
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { trigger, style, animate, transition } from '@angular/animations';
-import { AuthService } from '../../Service/auth'; // تأكد من المسار الصحيح للخدمة
 import { LoginService } from '../../Service/login-service';
+import { ToastService } from '../../../../shared/services/toast.service';
+import { AuthSuccessModalComponent } from '../../../../shared/components/auth-success-modal/auth-success-modal.component';
 
 @Component({
   selector: 'app-verify-otp',
   standalone: true,
-  // 2. تأكد من وجود ReactiveFormsModule هنا لحل مشكلة Can't bind to formGroup
-  imports: [CommonModule, ReactiveFormsModule, RouterLink], 
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, AuthSuccessModalComponent],
   templateUrl: './verify-otp.html',
-  styleUrls: ['../login/login.scss'], // استخدام الستايل الموحد
+  styleUrls: ['../login/login.scss'],
   animations: [
     trigger('fadeInUp', [
       transition(':enter', [
@@ -24,55 +23,73 @@ import { LoginService } from '../../Service/login-service';
   ]
 })
 export class VerifyOtpComponent implements OnInit {
+
+
   
-  // --- Dependencies ---
   private fb = inject(FormBuilder);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
-private loginService = inject(LoginService);  // --- State ---
+  private loginService = inject(LoginService);
+  private toastService = inject(ToastService);
 
-
-  form!: FormGroup; 
+  form!: FormGroup;
   email = '';
   isLoading = false;
-  errorMessage: string | null = null;
+
+  // Modal State
+  showModal = false;
+  modalTitle = 'Verification Successful';
+  modalMessage = 'You have successfully verified your identity.';
+  redirectUrl = '/public/home';
 
   ngOnInit() {
-    // جلب الإيميل من الرابط
     this.email = this.route.snapshot.queryParamMap.get('email') || '';
-    
-    // إعادة التوجيه إذا لم يوجد إيميل
+
     if (!this.email) {
+      this.toastService.error('Missing email information.');
       this.router.navigate(['/auth/login']);
       return;
     }
 
-    // تهيئة الفورم
     this.form = this.fb.group({
       code: ['', [Validators.required, Validators.minLength(6), Validators.pattern('^[0-9]*$')]]
     });
   }
 
-  // 4. تعريف دالة onSubmit لحل مشكلة Property 'onSubmit' does not exist
   onSubmit() {
-    if (this.form.invalid) return;
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
 
     this.isLoading = true;
-    this.errorMessage = null;
 
     this.loginService.verify2FA(this.email, this.form.value.code).subscribe({
       next: (res) => {
         this.isLoading = false;
         if (res.isSuccess) {
-          this.router.navigate(['/']);
+          this.modalTitle = 'Verification Successful';
+          this.modalMessage = 'You have successfully verified your identity.';
+          this.redirectUrl = '/public/home';
+          this.showModal = true;
         } else {
-          this.errorMessage = res.error?.message || 'Invalid verification code.';
+          this.toastService.error(res.error?.message || 'Invalid verification code.');
         }
       },
       error: () => {
         this.isLoading = false;
-        this.errorMessage = 'Verification failed. Please try again.';
+        this.toastService.error('Verification failed. Please try again.');
       }
     });
+  }
+
+  isFieldInvalid(fieldName: string): boolean {
+    const field = this.form.get(fieldName);
+    return !!(field && field.invalid && (field.dirty || field.touched));
+  }
+
+  onModalClose() {
+    this.showModal = false;
+    this.router.navigateByUrl(this.redirectUrl);
   }
 }

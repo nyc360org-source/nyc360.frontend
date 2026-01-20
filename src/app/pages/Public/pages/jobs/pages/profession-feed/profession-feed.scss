@@ -1,0 +1,311 @@
+$primary-green: #00695C;
+$bg-mint: #E0F2F1;
+$radius: 16px;
+$font-header: 'Merriweather', serif;
+
+.profession-feed-page {
+  background: #fcfdfd;
+  min-height: 100vh;
+
+  img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+}
+
+.merriweather-font {
+  font-family: $font-header;
+  color: #2c2c2c;
+}
+
+.page-header {
+  background: linear-gradient(135deg, $bg-mint 0%, #B2DFDB 100%);
+  padding: 100px 20px;
+  border-bottom: 1px solid rgba(0, 105, 92, 0.1);
+
+  h1 {
+    font-size: clamp(2.5rem, 8vw, 4rem);
+    color: #004D40;
+    font-weight: 900;
+  }
+
+  p {
+    color: #5a8a7d;
+    font-size: 1.2rem;
+  }
+}
+
+.btn-view-all {
+  font-weight: 700;
+  color: #5a8a7d;
+  text-decoration: none;
+  border: 1.5px solid #ddd;
+  padding: 8px 24px;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  transition: 0.3s;
+
+  &:hover {
+    border-color: $primary-green;
+    color: $primary-green;
+  }
+
+  &.text-white {
+    border-color: rgba(255, 255, 255, 0.4);
+
+    &:hover {
+      border-color: #fff;
+    }
+  }
+}
+
+.hiring-section {
+  background: linear-gradient(145deg, #2D8A6D 0%, #1B5E20 100%);
+  border-radius: $radius;
+  position: relative;
+  overflow: hidden;
+
+  @media (max-width: 768px) {
+    padding: 30px 20px;
+  }
+}
+
+.job-card-white {
+  background: #fff;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.3s;
+
+  &:hover {
+    transform: translateY(-5px);
+  }
+
+  .hiring-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 1rem;
+
+    .company-avatar {
+      width: 45px;
+      height: 45px;
+      border-radius: 8px;
+      object-fit: cover;
+      background: #f0f0f0;
+      border: 1px solid #eee;
+    }
+
+    h4 {
+      margin: 0;
+      color: #111;
+      font-size: 1.1rem;
+    }
+  }
+}
+
+// --- Universal Card Designs (Shared across sections) ---
+.text-card-design {
+  background: #ffffff;
+  border: 1px solid #eaeaea;
+  border-radius: 20px;
+  padding: clamp(20px, 4vw, 40px);
+  height: 100%;
+  transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-left: 6px solid $primary-green;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+  width: 100%;
+  overflow: hidden; // Critical to prevent image breakout
+
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    border-color: $primary-green;
+  }
+
+  .card-top-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+
+    .pill-tag {
+      background-color: #e0f2f1;
+      color: $primary-green;
+      padding: 6px 18px;
+      border-radius: 50px;
+      font-weight: 800;
+      font-size: 0.75rem;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .post-time {
+      font-size: 0.8rem;
+      color: #777;
+      font-weight: 500;
+    }
+  }
+
+  .text-title {
+    font-family: $font-header;
+    font-size: clamp(1.2rem, 3vw, 1.8rem);
+    font-weight: 800;
+    color: #111;
+    line-height: 1.25;
+    margin-bottom: 15px;
+  }
+
+  .text-excerpt {
+    font-size: 1.05rem;
+    color: #444;
+    margin-bottom: 25px;
+    line-height: 1.6;
+  }
+
+  .card-footer-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+    padding-top: 20px;
+    border-top: 1px solid #f0f0f0;
+    margin-top: auto;
+
+    .author-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #333;
+      font-weight: 700;
+    }
+
+    .mini-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #fff;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .read-more-link {
+      color: $primary-green;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: gap 0.2s;
+
+      &:hover {
+        gap: 10px;
+      }
+    }
+  }
+}
+
+// --- Shared Post (LinkedIn Style) ---
+.shared-post-box {
+  margin-top: 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fdfdfd;
+  transition: all 0.2s;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+
+  &:hover {
+    background: #f8f9f9;
+    border-color: #ccc;
+  }
+
+  .shared-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 15px;
+    background: #fafafa;
+    border-bottom: 1px solid #f0f0f0;
+
+    .shared-avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+    }
+
+    .author-info {
+      display: flex;
+      flex-direction: column;
+
+      .author-name {
+        font-size: 0.9rem;
+        font-weight: 800;
+        color: #222;
+        line-height: 1.2;
+      }
+
+      .post-date {
+        font-size: 0.75rem;
+        color: #888;
+      }
+    }
+  }
+
+  .shared-img-wrapper {
+    width: 100%;
+    max-height: 350px;
+    overflow: hidden;
+    background: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    img {
+      width: 100%;
+      height: auto;
+      max-height: 350px;
+      object-fit: cover;
+    }
+  }
+
+  .shared-content {
+    padding: 15px;
+
+    h4 {
+      font-family: $font-header;
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: #111;
+    }
+
+    p {
+      font-size: 0.95rem;
+      color: #555;
+      margin: 0;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      line-height: 1.5;
+    }
+  }
+}
+
+// --- Specific Section Wrappers ---
+.text-only-section {
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+}
+
+// Support for grid spacing
+.row.g-4 {
+  --bs-gutter-x: 2rem;
+  --bs-gutter-y: 2rem;
+}

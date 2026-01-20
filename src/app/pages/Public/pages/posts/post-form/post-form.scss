@@ -1,107 +1,434 @@
-// --- Variables ---
-$bg-page: #f8f9fa;
-$card-bg: #ffffff;
-$gold: #DAA520;
-$text-main: #333;
-$text-muted: #6c757d;
-$border: #e9ecef;
+// --- Modern Luxury Design Tokens ---
+$primary: #000000;
+$gold: #D4AF37;
+$bg-faint: #f8f9fc;
+$white: #ffffff;
+$border-light: rgba(0, 0, 0, 0.06);
+$text-main: #1a1a1a;
+$text-muted: #64748b;
+$radius-lg: 24px;
+$radius-md: 16px;
+$shadow-elegant: 0 20px 40px -15px rgba(0, 0, 0, 0.08);
 
-.page-container {
-  padding: 30px;
+.luxury-theme {
+  font-family: 'DM Sans', -apple-system, sans-serif;
+  background: $bg-faint;
   min-height: 100vh;
-  background-color: $bg-page;
+  padding: clamp(20px, 8vw, 60px) clamp(10px, 4vw, 20px);
   color: $text-main;
-  font-family: 'Segoe UI', sans-serif;
 }
 
-// --- Header ---
 .page-header {
-  display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;
-  .title-section { h2 { font-weight: 800; margin-bottom: 5px; } p { color: $text-muted; font-size: 0.95rem; } }
-  
-  .btn-back {
-    background: transparent; border: 1px solid $border; color: $text-muted;
-    padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 600;
-    display: flex; align-items: center; gap: 5px; transition: 0.2s;
-    &:hover { border-color: $gold; color: $gold; }
-  }
-}
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  max-width: 800px;
+  margin: 0 auto 40px;
 
-// --- Form Card ---
-.form-card {
-  background: $card-bg; border: 1px solid $border; border-radius: 12px;
-  padding: 40px; max-width: 900px; margin: 0 auto;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.03);
-}
+  .title-section {
+    h2 {
+      font-weight: 900;
+      color: $primary;
+      margin: 0;
+      font-size: clamp(1.8rem, 6vw, 2.5rem);
+      letter-spacing: -0.04em;
+      line-height: 1;
+      font-family: 'Playfair Display', serif;
+    }
 
-// --- Inputs ---
-.form-group {
-  margin-bottom: 20px;
-  label { display: block; margin-bottom: 8px; font-weight: 600; color: $text-main; font-size: 0.9rem; }
-  
-  .input-wrapper {
-    position: relative;
-    i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: $text-muted; }
-    
-    input[type="text"], select {
-      width: 100%; padding: 12px 15px 12px 40px; // Space for icon
-      border: 1px solid $border; border-radius: 8px;
-      font-size: 1rem; color: $text-main; transition: 0.3s; background: #fff;
-      &:focus { outline: none; border-color: $gold; box-shadow: 0 0 0 3px rgba($gold, 0.1); }
+    .subtitle {
+      color: $text-muted;
+      margin: 12px 0 0;
+      font-size: 1.1rem;
+      font-weight: 500;
     }
   }
 
-  textarea {
-    width: 100%; padding: 15px; border: 1px solid $border; border-radius: 8px;
-    font-size: 1rem; color: $text-main; transition: 0.3s; background: #fff; resize: vertical;
-    &:focus { outline: none; border-color: $gold; box-shadow: 0 0 0 3px rgba($gold, 0.1); }
+  .btn-back {
+    background: $white;
+    border: 1px solid $border-light;
+    border-radius: 50px;
+    padding: 12px 24px;
+    font-weight: 700;
+    color: $primary;
+    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+
+    &:hover {
+      background: $primary;
+      color: $white;
+      transform: translateX(-5px);
+    }
   }
-  
-  .text-danger { color: #dc3545; font-size: 0.8rem; margin-top: 5px; display: block; }
 }
 
-// --- Custom File Input ---
-.file-input-wrapper {
-  input[type="file"] { display: none; }
-  
-  .file-label {
-    display: block; width: 100%; padding: 12px;
-    background: #f9f9f9; border: 2px dashed darken($border, 10%);
-    border-radius: 8px; text-align: center; cursor: pointer; color: $text-muted; font-weight: 600; transition: 0.2s;
-    
-    i { font-size: 1.2rem; margin-right: 5px; vertical-align: middle; }
-    
-    &:hover { background: #f1f1f1; border-color: $gold; color: $gold; }
+.glass-panel {
+  background: $white;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 50px;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-elegant;
+  border: 1px solid $white;
+
+  @media (max-width: 768px) {
+    padding: 30px 20px;
   }
 }
 
 .form-row {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
-  @media(max-width: 768px) { grid-template-columns: 1fr; }
+  display: flex;
+  gap: 30px;
+  flex-wrap: wrap;
+
+  .form-group {
+    flex: 1;
+    min-width: 250px;
+  }
 }
 
-// --- Preview ---
-.img-preview-box {
-  margin-bottom: 25px; text-align: center; background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid $border;
-  p { margin-bottom: 10px; font-size: 0.85rem; color: $text-muted; text-transform: uppercase; font-weight: 700; }
-  img { max-height: 250px; border-radius: 6px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-}
+.form-group {
+  margin-bottom: 35px;
 
-// --- Actions ---
-.form-actions {
-  margin-top: 30px; padding-top: 20px; border-top: 1px solid $border;
-  display: flex; justify-content: flex-end; gap: 15px;
+  label {
+    font-size: 0.85rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: $primary;
+    margin-bottom: 12px;
+    display: block;
+    letter-spacing: 0.05em;
 
-  .btn-ghost {
-    background: transparent; border: 1px solid $border; color: $text-muted;
-    padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: 600;
-    &:hover { background: #f1f1f1; }
+    .req {
+      color: #ef4444;
+      margin-left: 4px;
+    }
   }
 
-  .btn-gold {
-    background: $gold; color: #fff; border: none; padding: 12px 35px; border-radius: 8px;
-    font-weight: 700; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 8px;
-    &:hover:not(:disabled) { background: darken($gold, 10%); box-shadow: 0 4px 12px rgba($gold, 0.3); }
-    &:disabled { opacity: 0.6; cursor: not-allowed; }
+  .input-wrapper,
+  .textarea-wrapper {
+    position: relative;
+
+    i {
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: $text-muted;
+      font-size: 1.1rem;
+      transition: 0.3s;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 16px 20px 16px 52px;
+      border: 2px solid #edeff5;
+      border-radius: $radius-md;
+      font-size: 1rem;
+      background: #fbfbfd;
+      color: $text-main;
+      transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      font-weight: 500;
+
+      &::placeholder {
+        color: #a0aec0;
+      }
+
+      &:focus {
+        border-color: $primary;
+        background: $white;
+        box-shadow: 0 10px 20px -10px rgba(0, 0, 0, 0.1);
+        outline: none;
+
+        +i {
+          color: $primary;
+        }
+      }
+    }
+  }
+
+  .textarea-wrapper textarea {
+    width: 100%;
+    padding: 20px;
+    border: 2px solid #edeff5;
+    border-radius: $radius-md;
+    background: #fbfbfd;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    min-height: 250px;
+    resize: vertical;
+    transition: 0.3s;
+
+    &:focus {
+      border-color: $primary;
+      background: $white;
+      outline: none;
+    }
+  }
+
+  .error-msg {
+    color: #ef4444;
+    font-size: 0.8rem;
+    margin-top: 8px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+
+    &:before {
+      content: '●';
+      font-size: 0.6rem;
+    }
+  }
+}
+
+// --- Enhanced File Upload ---
+.file-upload-zone {
+  .upload-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 50px;
+    border: 2px dashed #cbd5e0;
+    border-radius: $radius-md;
+    background: #f8fafc;
+    cursor: pointer;
+    transition: 0.3s ease;
+
+    i {
+      font-size: 3rem;
+      color: $gold;
+      margin-bottom: 15px;
+    }
+
+    span {
+      font-weight: 700;
+      color: $text-main;
+      font-size: 1.1rem;
+    }
+
+    &:hover {
+      border-color: $gold;
+      background: rgba($gold, 0.03);
+      transform: scale(0.99);
+    }
+  }
+}
+
+.attachments-preview {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  margin-top: 25px;
+
+  .preview-item {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    border-radius: $radius-md;
+    overflow: hidden;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.08);
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .btn-remove {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: rgba(0, 0, 0, 0.7);
+      color: $white;
+      border: none;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: 0.2s;
+
+      &:hover {
+        background: #ef4444;
+        transform: scale(1.1);
+      }
+    }
+
+    &.new-file {
+      border: 3px solid $gold;
+
+      .new-badge {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: $gold;
+        color: $white;
+        font-size: 0.7rem;
+        font-weight: 900;
+        text-align: center;
+        padding: 3px 0;
+      }
+    }
+  }
+}
+
+// --- Modern Tags ---
+.tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+
+  .tag-badge {
+    background: #f1f5f9;
+    color: $primary;
+    padding: 8px 16px;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: 0.2s;
+
+    &:hover {
+      background: $primary;
+      color: $white;
+      border-color: $primary;
+    }
+
+    .remove-tag {
+      cursor: pointer;
+      color: #94a3b8;
+
+      &:hover {
+        color: #f87171;
+      }
+    }
+  }
+}
+
+// --- Action Buttons ---
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 20px;
+  padding-top: 40px;
+  margin-top: 40px;
+  border-top: 1px solid #edf2f7;
+
+  .btn-ghost {
+    background: none;
+    border: none;
+    color: $text-muted;
+    font-weight: 700;
+    padding: 12px 30px;
+    transition: 0.3s;
+
+    &:hover {
+      color: $primary;
+      transform: translateY(-2px);
+    }
+  }
+
+  .btn-luxury {
+    background: $primary;
+    color: $white;
+    padding: 16px 50px;
+    border-radius: 50px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border: none;
+    transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+
+    &:hover:not(:disabled) {
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 0 20px 35px rgba(0, 0, 0, 0.15);
+      background: #222;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      filter: grayscale(1);
+    }
+  }
+}
+
+// Dropdown Results
+.dropdown-results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: $white;
+  border-radius: $radius-md;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+  max-height: 250px;
+  overflow-y: auto;
+  z-index: 1000;
+  margin-top: 10px;
+  border: 1px solid #edf2f7;
+  list-style: none;
+  padding: 8px;
+
+  li {
+    padding: 12px 18px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.2s;
+    display: flex;
+    flex-direction: column;
+
+    strong {
+      color: $primary;
+      font-weight: 700;
+    }
+
+    small {
+      color: $text-muted;
+      font-size: 0.8rem;
+    }
+
+    &:hover {
+      background: #f8fafc;
+    }
+  }
+}
+
+// --- Animations ---
+.fade-in-down {
+  animation: fadeInDown 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.8s cubic-bezier(0.23, 1, 0.32, 1) 0.1s backwards;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

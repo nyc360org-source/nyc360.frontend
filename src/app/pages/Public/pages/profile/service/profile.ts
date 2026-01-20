@@ -27,7 +27,7 @@ export class ProfileService {
   uploadAvatar(file: File): Observable<ApiResponse<string>> {
     const formData = new FormData();
     // Key must match API: "Avatar"
-    formData.append('Avatar', file); 
+    formData.append('Avatar', file);
     return this.http.post<ApiResponse<string>>(`${this.baseUrl}/profile/avatar`, formData);
   }
 
@@ -76,6 +76,10 @@ export class ProfileService {
 
   updateSocialLink(data: SocialLinkDto): Observable<ApiResponse<void>> {
     return this.http.put<ApiResponse<void>>(`${this.baseUrl}/profile/social-links`, data);
+  }
+
+  deleteSocialLink(linkId: number): Observable<ApiResponse<void>> {
+    return this.http.delete<ApiResponse<void>>(`${this.baseUrl}/profile/social-links/${linkId}`);
   }
 
   // 7. Security (2FA)

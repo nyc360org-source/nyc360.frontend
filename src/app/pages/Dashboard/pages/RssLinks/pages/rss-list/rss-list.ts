@@ -4,8 +4,7 @@ import { RouterLink, Router } from '@angular/router';
 import { environment } from '../../../../../../environments/environment';
 import { RssService } from '../../services/rss';
 import { RssSource } from '../../models/rss';
-import { CATEGORY_LIST } from '../../../../../models/category-list';
-// 🔥 Import the shared category list
+import { CATEGORY_THEMES, CategoryEnum } from '../../../../../Public/Widgets/feeds/models/categories';
 
 @Component({
   selector: 'app-rss-list',
@@ -15,22 +14,28 @@ import { CATEGORY_LIST } from '../../../../../models/category-list';
   styleUrls: ['./rss-list.scss']
 })
 export class RssListComponent implements OnInit {
-  
-  // Make environment public for HTML
+
   protected readonly environment = environment;
-  
-  // Dependencies
+
   private rssService = inject(RssService);
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
 
-  // State
   rssList: RssSource[] = [];
   isLoading = true;
   errorMessage = '';
-  
-  // 🔥 Use the shared list
-  categories = CATEGORY_LIST;
+
+  categories = Object.entries(CATEGORY_THEMES).map(([key, value]) => ({
+    id: Number(key),
+    ...value
+  }));
+
+  // Dashboard Stats
+  stats = {
+    total: 0,
+    active: 0,
+    categoriesCount: 0
+  };
 
   ngOnInit() {
     this.loadRssFeeds();
@@ -42,14 +47,13 @@ export class RssListComponent implements OnInit {
 
     this.rssService.getAllRssSources().subscribe({
       next: (res) => {
-        console.log('RSS Response:', res);
-
         if (res.isSuccess) {
           this.rssList = res.data || [];
+          this.calculateStats();
         } else {
           this.errorMessage = res.error?.message || 'Failed to load RSS feeds.';
         }
-        
+
         this.isLoading = false;
         this.cdr.detectChanges();
       },
@@ -62,18 +66,29 @@ export class RssListComponent implements OnInit {
     });
   }
 
-  // Helper to get Category Name from ID
+  calculateStats() {
+    this.stats.total = this.rssList.length;
+    this.stats.active = this.rssList.filter(r => r.isActive).length;
+    // Count unique categories used
+    const cats = new Set(this.rssList.map(r => r.category));
+    this.stats.categoriesCount = cats.size;
+  }
+
   getCategoryName(id: number): string {
     const cat = this.categories.find(c => c.id === id);
-    return cat ? cat.name : 'Unknown';
+    return cat ? cat.label : 'Unknown';
+  }
+
+  getCategoryTheme(id: number) {
+    return CATEGORY_THEMES[id as CategoryEnum] || { color: '#333', label: 'Unknown', path: '' };
   }
 
   onDelete(id: number) {
-    if(confirm('Are you sure you want to delete this source?')) {
-      this.isLoading = true;
+    if (confirm('Are you sure you want to delete this source?')) {
+      this.isLoading = true; // Show loading
       this.rssService.deleteRssSource(id).subscribe({
         next: () => {
-          this.loadRssFeeds(); // Reload list
+          this.loadRssFeeds();
         },
         error: () => {
           alert('Failed to delete.');
@@ -84,6 +99,6 @@ export class RssListComponent implements OnInit {
   }
 
   onEdit(item: RssSource) {
-    this.router.navigate(['/admin/rss/edit'], { state: { data: item } }); 
+    this.router.navigate(['/admin/rss/edit'], { state: { data: item } });
   }
 }

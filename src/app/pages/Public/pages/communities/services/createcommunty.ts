@@ -8,7 +8,7 @@ import { ApiResponse, LocationSearchResult } from '../models/createcommunty';
   providedIn: 'root',
 })
 export class CreateCommunityService {
-  
+
   private http = inject(HttpClient);
   private baseUrl = `${environment.apiBaseUrl}`; // Base API URL
 
@@ -20,8 +20,21 @@ export class CreateCommunityService {
     const params = new HttpParams()
       .set('Query', query)
       .set('Limit', limit);
-      
+
     return this.http.get<ApiResponse<LocationSearchResult[]>>(`${this.baseUrl}/locations/search`, { params });
+  }
+
+  /**
+   * Search Tags API
+   * GET /api/tags/list?SearchTerm=...
+   */
+  searchTags(query: string, page: number = 1, pageSize: number = 20): Observable<ApiResponse<import('../models/createcommunty').Tag[]>> {
+    const params = new HttpParams()
+      .set('SearchTerm', query)
+      .set('Page', page)
+      .set('PageSize', pageSize);
+
+    return this.http.get<ApiResponse<import('../models/createcommunty').Tag[]>>(`${this.baseUrl}/tags/list`, { params });
   }
 
   /**

@@ -64,6 +64,7 @@ export interface ChangePasswordRequest {
 // --- Existing interfaces... ---
 
 // 1. Normal User Registration Payload
+// 1. Normal User Registration Payload
 export interface RegisterNormalUserRequest {
   firstName: string;
   lastName: string;
@@ -71,6 +72,7 @@ export interface RegisterNormalUserRequest {
   email: string;
   password: string;
   userType: 'Visitor' | 'NewYorker'; // To distinguish between the first two options
+  interests: number[];
 }
 
 // 2. Organization Registration Payload
@@ -79,5 +81,8 @@ export interface RegisterOrganizationRequest {
   username: string;
   email: string;
   password: string;
-  // Add other fields specific to orgs (e.g., Tax ID, Website) if needed
+  profitModel: number;
+  organizationType: number;
+  industry: number;
+  interests: number[];
 }

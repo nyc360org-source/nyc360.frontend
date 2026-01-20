@@ -3,8 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 
-import { MyCommunitiesService } from '../../services/mycommunities'; 
+import { MyCommunitiesService } from '../../services/mycommunities';
 import { MyCommunity } from '../../models/mycommuinties';
+import { ToastService } from '../../../../../../shared/services/toast.service';
 
 @Component({
   selector: 'app-mycommunities',
@@ -16,10 +17,11 @@ import { MyCommunity } from '../../models/mycommuinties';
 export class MycommunitiesComponent implements OnInit {
 
   private communityService = inject(MyCommunitiesService);
+  private toastService = inject(ToastService);
 
   // Data
   communities: MyCommunity[] = [];
-  
+
   // State
   searchText: string = '';
   selectedType: number | null = null;
@@ -30,8 +32,8 @@ export class MycommunitiesComponent implements OnInit {
   pageSize: number = 12;
   totalCount: number = 0;
   totalPages: number = 1;
-  
-  imgBaseUrl = 'https://nyc360.runasp.net/communities/'; 
+
+  imgBaseUrl = 'https://nyc360.runasp.net/communities/';
 
   // Mapping types (same as discovery for consistency)
   communityTypes = [
@@ -115,18 +117,23 @@ export class MycommunitiesComponent implements OnInit {
   // Optional: Leave Community Logic
   leaveCommunity(comm: MyCommunity, event: Event) {
     event.stopPropagation(); // Prevent card click
-    if(!confirm('Are you sure you want to leave this community?')) return;
+    if (!confirm('Are you sure you want to leave this community?')) return;
 
-    comm.isLoadingJoin = true; // reusing loading state
+    comm.isLoadingJoin = true;
     this.communityService.leaveCommunity(comm.id).subscribe({
       next: (res) => {
-        if(res.isSuccess) {
-           // Remove from list or reload
-           this.communities = this.communities.filter(c => c.id !== comm.id);
+        if (res.isSuccess) {
+          this.communities = this.communities.filter(c => c.id !== comm.id);
+          this.toastService.success('You have left the community.');
+        } else {
+          this.toastService.error('Failed to leave community.');
         }
         comm.isLoadingJoin = false;
       },
-      error: () => comm.isLoadingJoin = false
+      error: () => {
+        comm.isLoadingJoin = false;
+        this.toastService.error('An error occurred.');
+      }
     })
   }
 }

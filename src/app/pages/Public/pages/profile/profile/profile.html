@@ -1,208 +1,151 @@
 <div class="profile-page-container">
-  
-  <div *ngIf="isLoading" class="loading-center">
-    <div class="spinner"></div>
-  </div>
 
-  <div *ngIf="!isLoading && user" class="profile-wrapper">
-    
-    <div class="header-card">
-      <div class="cover-area" [style.backgroundImage]="'url(' + resolveCover(user.coverImageUrl) + ')'">
-        <button *ngIf="isOwner" class="btn-edit-cover">
-          <i class="bi bi-camera-fill"></i> Edit Cover
-          <input type="file" (change)="onCoverSelected($event)" accept="image/*">
-        </button>
-        <button class="btn-share-top" (click)="shareProfile()" title="Share"><i class="bi bi-share-fill"></i></button>
+   <!-- 1. LOADING STATE -->
+   <div *ngIf="isLoading" class="loading-center">
+      <div class="loader-diamond"></div>
+   </div>
+
+   <div *ngIf="!isLoading && user" class="profile-wrapper">
+
+      <!-- 2. HEADER SECTION (Widgetized Premium Design) -->
+      <app-profile-header [user]="user" [isOwner]="isOwner" [activeTab]="activeTab" (tabChange)="switchTab($event)"
+         (profileUpdate)="loadProfile(currentUsername)">
+      </app-profile-header>
+
+      <!-- 4. CONTENT GRID -->
+      <div class="layout-grid" [ngSwitch]="activeTab">
+
+         <!-- LEFT SIDEBAR -->
+         <aside class="side-col">
+            <!-- About Me Card -->
+            <div class="premium-card" *ngIf="user.bio || isOwner">
+               <div class="sidebar-header">
+                  <h4>About Me</h4>
+               </div>
+               <p class="about-bio" *ngIf="user.bio">{{ user.bio }}</p>
+               <p class="about-bio" *ngIf="!user.bio && isOwner" style="opacity: 0.5;">Add a bio to tell people who you
+                  are.</p>
+            </div>
+
+            <!-- Social Links Card -->
+            <div class="premium-card" *ngIf="user.socialLinks.length || isOwner">
+               <div class="sidebar-header">
+                  <h4>Connect</h4>
+               </div>
+               <div class="social-grid-premium">
+                  <a *ngFor="let link of user.socialLinks" [href]="link.url" target="_blank" class="social-link-item"
+                     [title]="getPlatformName(link.platform)">
+                     <i class="bi" [ngClass]="getPlatformIcon(link.platform)"></i>
+                  </a>
+                  <div *ngIf="!user.socialLinks.length && isOwner" class="about-bio"
+                     style="opacity: 0.5; font-size: 0.85rem;">No social links added yet.</div>
+               </div>
+            </div>
+
+            <!-- Communities Card (Moved from Right) -->
+            <div class="premium-card" *ngIf="user.topCommunities.length">
+               <div class="sidebar-header">
+                  <h4>Communities</h4>
+               </div>
+               <div class="community-list" style="display: flex; flex-direction: column; gap: 16px;">
+                  <div *ngFor="let comm of user.topCommunities" class="comm-item" (click)="navigateToCommunity(comm)"
+                     style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
+                     <div class="comm-badge"
+                        style="width: 40px; height: 40px; background: #F3F3F3; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.8rem;">
+                        {{ getInitials(comm.name) }}</div>
+                     <div class="comm-info">
+                        <h6 style="margin: 0; font-size: 0.9rem; font-weight: 700;">{{ comm.name }}</h6>
+                        <p style="margin: 0; font-size: 0.75rem; color: #999;">Active Member</p>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </aside>
+
+         <!-- MAIN FEED -->
+         <main class="feed-col">
+
+            <!-- Timeline Tab -->
+            <div *ngSwitchCase="'posts'" class="animate__animated animate__fadeIn">
+               <!-- Create Post Trigger (Premium STYLE) -->
+               <div class="create-post-trigger-premium" *ngIf="isOwner" (click)="viewPostDetails('create', $event)">
+                  <img [src]="resolveImage(user.imageUrl)" class="trigger-avatar">
+                  <span>Share a new update...</span>
+                  <div class="plus-icon"><i class="bi bi-plus-lg"></i></div>
+               </div>
+
+               <!-- Empty Case -->
+               <div *ngIf="!user.recentPosts.length" class="empty-state-premium">
+                  <div class="icon-box"><i class="bi bi-journals"></i></div>
+                  <h3>No posts yet</h3>
+                  <p>Shared updates and insights will appear here when posted.</p>
+               </div>
+
+               <app-profile-post *ngFor="let post of user.recentPosts" [post]="post" [isOwner]="isOwner"
+                  [currentUserId]="currentUserId" [displayName]="displayName"
+                  [authorImageUrl]="getAuthorImage(post.author)">
+               </app-profile-post>
+            </div>
+
+            <!-- About Tab -->
+            <div *ngSwitchCase="'about'" class="animate__animated animate__fadeIn">
+               <div class="premium-card">
+                  <div class="sidebar-header">
+                     <h4>Work Experience</h4>
+                     <span class="edit-pill" *ngIf="isOwner" (click)="switchTab('manage')">Add</span>
+                  </div>
+                  <div class="timeline-premium">
+                     <div *ngFor="let pos of user.positions" class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="time-period">{{ pos.startDate | date:'MMM yyyy' }} - {{ pos.isCurrent ? 'Present' :
+                           (pos.endDate | date:'MMM yyyy') }}</div>
+                        <h4>{{ pos.title }}</h4>
+                        <h5>{{ pos.company }}</h5>
+                     </div>
+                     <div *ngIf="!user.positions.length" class="about-bio" style="opacity: 0.5;">No professional history
+                        shared yet.</div>
+                  </div>
+               </div>
+
+               <div class="premium-card">
+                  <div class="sidebar-header">
+                     <h4>Education</h4>
+                     <span class="edit-pill" *ngIf="isOwner" (click)="switchTab('manage')">Add</span>
+                  </div>
+                  <div class="timeline-premium">
+                     <div *ngFor="let edu of user.education" class="timeline-item">
+                        <div class="timeline-dot" style="background: #6366F1;"></div>
+                        <div class="time-period">{{ edu.startDate | date:'yyyy' }}</div>
+                        <h4>{{ edu.school }}</h4>
+                        <h5>{{ edu.degree }} • {{ edu.fieldOfStudy }}</h5>
+                     </div>
+                     <div *ngIf="!user.education.length" class="about-bio" style="opacity: 0.5;">No educational
+                        background shared.</div>
+                  </div>
+               </div>
+            </div>
+
+            <!-- Saved Posts Tab -->
+            <div *ngSwitchCase="'saved'" class="animate__animated animate__fadeIn">
+               <div *ngIf="isSavedLoading" class="text-center py-5">
+                  <div class="spinner-border text-primary" role="status"></div>
+               </div>
+
+               <div *ngIf="!isSavedLoading && !savedPosts.length" class="empty-state-premium">
+                  <div class="icon-box"><i class="bi bi-bookmark"></i></div>
+                  <h3>No saved items</h3>
+                  <p>Items you bookmark will appear here for private viewing.</p>
+               </div>
+
+               <app-profile-post *ngFor="let post of savedPosts" [post]="post" [isOwner]="isOwner"
+                  [currentUserId]="currentUserId" [displayName]="getAuthorName(post.author)"
+                  [authorImageUrl]="getAuthorImage(post.author)">
+               </app-profile-post>
+            </div>
+
+         </main>
+
+
       </div>
-
-      <div class="user-info-bar">
-        <div class="avatar-holder">
-          <img [src]="resolveImage(user.imageUrl)" alt="User">
-          <label *ngIf="isOwner" class="upload-overlay">
-             <i class="bi bi-camera"></i>
-             <input type="file" (change)="onAvatarSelected($event)" accept="image/*">
-          </label>
-        </div>
-        <div class="info-details">
-          <div class="name-row">
-            <h1>{{ displayName }}</h1>
-            <span class="badge-ny">New Yorker</span>
-            <button *ngIf="isOwner" class="btn-icon-edit" (click)="openBasicModal()">
-              <i class="bi bi-pencil-fill"></i> Edit Intro
-            </button>
-          </div>
-          <p class="headline">{{ user.profile.headline || 'No headline' }}</p>
-          <div class="location" *ngIf="user.profile.locationId">
-             <i class="bi bi-geo-alt-fill"></i> New York, USA
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="dashboard-section">
-       <div class="h-scroll-cards">
-          <div class="status-card" *ngFor="let card of topCards" [class.event-card]="card.isEvent">
-             <div class="card-top">
-                <span class="badge-status">{{ card.type }}</span>
-                <span class="time-badge">{{ card.sub }}</span>
-             </div>
-             <h3>{{ card.title }}</h3>
-             <div class="card-meta">
-                <p><i class="bi bi-building"></i> {{ card.detail }}</p>
-                <p *ngIf="card.isEvent"><i class="bi bi-geo-alt"></i> Manhattan</p>
-             </div>
-             <div class="card-footer">
-                <span>{{ card.status }}</span>
-                <button class="btn-check">{{ card.action }}</button>
-             </div>
-          </div>
-       </div>
-    </div>
-
-    <div class="nav-tabs-custom">
-      <a [class.active]="activeTab === 'posts'" (click)="switchTab('posts')">Posts</a>
-      <a [class.active]="activeTab === 'about'" (click)="switchTab('about')">About</a>
-      <a [class.active]="activeTab === 'saved'" (click)="switchTab('saved')" *ngIf="isOwner">Saved</a>
-    </div>
-
-    <div class="content-grid">
-      
-      <aside class="left-sidebar">
-         
-         <div class="sidebar-widget">
-            <h4>Intro</h4>
-            <div class="info-item" *ngIf="user.profile.bio">
-               <i class="bi bi-text-left"></i> <span>{{ user.profile.bio }}</span>
-            </div>
-            <div class="info-item" *ngFor="let link of user.profile.socialLinks">
-               <i class="bi" [ngClass]="getPlatformIcon(link.platform)"></i>
-               <a [href]="link.url" target="_blank">{{ getPlatformName(link.platform) }}</a>
-            </div>
-            <button *ngIf="isOwner" class="btn-see-all" (click)="openAddSocial()">Edit Links</button>
-         </div>
-
-         <div class="sidebar-widget">
-            <h4>My Communities</h4>
-            <div class="comm-item">
-               <div class="comm-icon">BT</div>
-               <div class="comm-info">
-                  <h5>Brooklyn Tech</h5>
-                  <small>2.4k members</small>
-               </div>
-            </div>
-            <div class="comm-item">
-               <div class="comm-icon">GD</div>
-               <div class="comm-info">
-                  <h5>Graphic Design</h5>
-                  <small>12k members</small>
-               </div>
-            </div>
-            <button class="btn-see-all">View All Communities</button>
-         </div>
-
-      </aside>
-
-      <main class="main-feed" [ngSwitch]="activeTab">
-
-         <div *ngSwitchCase="'posts'">
-            <div class="create-post" *ngIf="isOwner">
-               <div class="cp-row">
-                  <img [src]="resolveImage(user.imageUrl)">
-                  <div class="fake-input" routerLink="/public/posts/create">What's on your mind?</div>
-               </div>
-            </div>
-
-            <div class="post-card" *ngFor="let post of user.profile.recentPosts">
-               <div class="post-header">
-                  <img [src]="resolveImage(user.imageUrl)">
-                  <div>
-                     <h4>{{ displayName }}</h4>
-                     <small>{{ post.createdAt | date:'mediumDate' }}</small>
-                  </div>
-               </div>
-               <div class="post-body">
-                  <h2>{{ post.title }}</h2>
-                  <p>{{ post.content }}</p>
-               </div>
-                      <div class="post-img-container" *ngIf="post.attachments && post.attachments.length > 0">
-          <img [src]="resolvePostImage(post)" class="post-main-img">
-        </div>
-            </div>
-
-            <div *ngIf="user.profile.recentPosts.length === 0" class="empty-state">
-               <i class="bi bi-postcard"></i>
-               <p>No posts to show.</p>
-            </div>
-         </div>
-
-         <div *ngSwitchCase="'about'">
-            <div class="about-box">
-               <div class="box-header"><h3>Experience</h3> <button *ngIf="isOwner" (click)="openAddPos()"><i class="bi bi-plus-lg"></i></button></div>
-               <div class="list-item" *ngFor="let pos of user.profile.positions">
-                  <div class="icon"><i class="bi bi-briefcase"></i></div>
-                  <div class="text">
-                     <h4>{{ pos.title }}</h4>
-                     <span>{{ pos.company }}</span>
-                     <small>{{ pos.startDate | date:'MMM yyyy' }} - {{ pos.isCurrent ? 'Present' : (pos.endDate | date:'MMM yyyy') }}</small>
-                  </div>
-               </div>
-               <div *ngIf="!user.profile.positions.length" class="text-muted">No experience added.</div>
-            </div>
-
-            <div class="about-box">
-               <div class="box-header"><h3>Education</h3> <button *ngIf="isOwner" (click)="openAddEdu()"><i class="bi bi-plus-lg"></i></button></div>
-               <div class="list-item" *ngFor="let edu of user.profile.education">
-                  <div class="icon"><i class="bi bi-mortarboard"></i></div>
-                  <div class="text">
-                     <h4>{{ edu.school }}</h4>
-                     <span>{{ edu.degree }}</span>
-                     <small>{{ edu.startDate | date:'yyyy' }} - {{ edu.endDate | date:'yyyy' }}</small>
-                  </div>
-               </div>
-            </div>
-         </div>
-
-         <div *ngSwitchCase="'saved'">
-             <div class="post-card" *ngFor="let post of savedPosts">
-               <div class="post-header">
-                  <img [src]="getAuthorImage(post.author)">
-                  <div>
-                     <h4>{{ getAuthorName(post.author) }}</h4>
-                     <small>Saved Post</small>
-                  </div>
-               </div>
-               <div class="post-body">
-                  <h2>{{ post.title }}</h2>
-                  <p>{{ post.content }}</p>
-               </div>
-            </div>
-         </div>
-
-      </main>
-    </div>
-  </div>
-
-  <div class="modal-backdrop" *ngIf="modalState.basic">
-     <div class="modal-content">
-        <div class="modal-header"><h3>Edit Intro</h3><button (click)="closeModals()">&times;</button></div>
-        <form [formGroup]="basicForm" (ngSubmit)="saveBasicInfo()">
-           <div class="form-group"><label>First Name</label><input formControlName="firstName"></div>
-           <div class="form-group"><label>Last Name</label><input formControlName="lastName"></div>
-           <div class="form-group"><label>Headline</label><input formControlName="headline"></div>
-           <div class="form-group"><label>Bio</label><textarea formControlName="bio"></textarea></div>
-           <div class="modal-footer"><button type="submit" class="btn-save">Save</button></div>
-        </form>
-     </div>
-  </div>
-  <div class="modal-backdrop" *ngIf="modalState.social">
-    <div class="modal-content">
-      <div class="modal-header"><h3>Social Link</h3><button (click)="closeModals()">&times;</button></div>
-      <form [formGroup]="socialForm" (ngSubmit)="saveSocial()">
-         <div class="form-group"><label>Platform</label><select formControlName="platform"><option *ngFor="let p of socialPlatforms" [value]="p.id">{{ p.name }}</option></select></div>
-         <div class="form-group"><label>URL</label><input formControlName="url"></div>
-         <div class="modal-footer"><button type="submit" class="btn-save">Save</button></div>
-      </form>
-    </div>
-  </div>
-
+   </div>
 </div>

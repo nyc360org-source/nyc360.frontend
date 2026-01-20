@@ -1,0 +1,189 @@
+<div class="profession-feed-page">
+
+  <header class="page-header">
+    <div class="container text-center">
+      <small class="text-uppercase tracking-wider">Welcome at NYC360</small>
+      <h1 class="merriweather-font display-4 fw-bold my-3">Profession</h1>
+      <p class="lead mx-auto" style="max-width: 650px;">
+        Opportunities, career insights, and professional life in New York City.
+      </p>
+    </div>
+  </header>
+
+  <div class="container py-5" *ngIf="!isLoading">
+
+    <!-- Hero Article (Visual or Shared) -->
+    <section class="mb-5" *ngIf="heroArticle">
+      <!-- Regular Hero -->
+      <app-article-hero *ngIf="!heroArticle.parentPost" [image]="getArticleImage(heroArticle)"
+        [title]="heroArticle.title" [description]="heroArticle.content"
+        [metaText]="'Published: ' + (heroArticle.createdAt | date:'MMM d, y')"
+        [link]="['/public/posts/details', heroArticle.id]" [customColor]="'#00695C'">
+      </app-article-hero>
+
+      <!-- Shared Hero LinkedIn Style -->
+      <div class="text-card-design p-4 shadow-sm" *ngIf="heroArticle.parentPost"
+        [routerLink]="['/public/posts/details', heroArticle.id]"
+        style="cursor: pointer; border-left: 8px solid #00695C; max-width: 1000px; margin: 0 auto;">
+        <div class="card-top-row">
+          <span class="pill-tag" style="background: #00695C; color: white;">FEATURED SHARE</span>
+          <span class="post-time">{{ heroArticle.createdAt | date:'MMM d, y' }}</span>
+        </div>
+        <h2 class="merriweather-font mb-3" style="font-size: 1.8rem;">{{ heroArticle.title }}</h2>
+        <p class="mb-4" *ngIf="heroArticle.content">{{ heroArticle.content }}</p>
+
+        <div class="shared-post-box">
+          <div class="shared-header">
+            <img [src]="getAuthorAvatar(heroArticle.parentPost.author)" class="shared-avatar" alt="Avatar"
+              appImgFallback="avatar">
+            <div class="author-info">
+              <span class="author-name">{{ heroArticle.parentPost.author.name || heroArticle.parentPost.author.fullName
+                ||
+                heroArticle.parentPost.author.username }}</span>
+              <span class="post-date">{{ heroArticle.parentPost.createdAt | date:'mediumDate' }}</span>
+            </div>
+          </div>
+          <div class="shared-img-wrapper"
+            *ngIf="imageService.resolvePostImage(heroArticle.parentPost) !== imageService.DEFAULT_POST">
+            <img [src]="getArticleImage(heroArticle.parentPost)" alt="Shared Image" appImgFallback="post">
+          </div>
+          <div class="shared-content">
+            <h4 class="merriweather-font" *ngIf="heroArticle.parentPost.title">{{ heroArticle.parentPost.title }}</h4>
+            <p>{{ heroArticle.parentPost.content }}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Visual Grid Articles -->
+    <section class="mt-5" *ngIf="visualArticles.length > 0">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="merriweather-font h3 border-start border-4 border-success ps-3">Career Path Articles</h2>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-lg-4 col-md-6" *ngFor="let article of visualArticles">
+          <!-- Regular Grid Card -->
+          <app-article-grid-card *ngIf="!article.parentPost" [image]="getArticleImage(article)" [title]="article.title"
+            [description]="article.content" [link]="['/public/posts/details', article.id]" [customColor]="'#26A69A'">
+          </app-article-grid-card>
+
+          <!-- Shared Grid Card LinkedIn Style -->
+          <div class="text-card-design p-3 h-100" *ngIf="article.parentPost"
+            [routerLink]="['/public/posts/details', article.id]" style="cursor: pointer;">
+            <div class="card-top-row">
+              <span class="pill-tag">SHARED</span>
+              <span class="post-time">{{ article.createdAt | date:'shortDate' }}</span>
+            </div>
+            <h4 class="merriweather-font mb-2" style="font-size: 1.1rem; font-weight: 700;">{{ article.title |
+              slice:0:60 }}</h4>
+
+            <div class="shared-post-box mt-2" style="transform: scale(0.95); margin-left: -2.5%; width: 105%;">
+              <div class="shared-header py-1 px-2">
+                <img [src]="getAuthorAvatar(article.parentPost.author)" class="shared-avatar"
+                  style="width: 18px; height: 18px;" appImgFallback="avatar">
+                <div class="author-info">
+                  <span class="author-name" style="font-size: 0.75rem;">{{ article.parentPost.author.name ||
+                    article.parentPost.author.username }}</span>
+                </div>
+              </div>
+              <div class="shared-img-wrapper" style="max-height: 140px;"
+                *ngIf="imageService.resolvePostImage(article.parentPost) !== imageService.DEFAULT_POST">
+                <img [src]="getArticleImage(article.parentPost)" alt="Shared" appImgFallback="post">
+              </div>
+              <div class="shared-content p-2">
+                <p
+                  style="font-size: 0.8rem; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                  {{ article.parentPost.content }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Text-Only Articles (Bottom Section) -->
+    <section class="text-only-section mt-5 fade-in-up" *ngIf="textArticles.length > 0">
+      <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+        <h2 class="merriweather-font h3 text-dark">Community Updates</h2>
+        <!-- <span class="badge bg-light text-dark">{{ textArticles.length }} New</span> -->
+      </div>
+
+      <div class="row g-4">
+        <div class="col-md-6" *ngFor="let post of textArticles">
+          <div class="text-card-design" [routerLink]="['/public/posts/details', post.id]" style="cursor: pointer;">
+            <div class="card-top-row">
+              <span class="pill-tag">PROFESSION</span>
+              <span class="post-time">{{ post.createdAt | date:'shortTime' }} ago</span>
+            </div>
+            <h3 class="text-title" *ngIf="post.title">“{{ post.title }}”</h3>
+            <p class="text-excerpt" *ngIf="post.content">{{ post.content | slice:0:120 }}{{ post.content.length > 120 ?
+              '...' : '' }}</p>
+
+            <!-- LinkedIn Style Shared Post Box -->
+            <div class="shared-post-box" *ngIf="post.parentPost">
+              <div class="shared-header">
+                <img [src]="getAuthorAvatar(post.parentPost.author)" class="shared-avatar" alt="Avatar"
+                  appImgFallback="avatar">
+                <div class="author-info">
+                  <span class="author-name">{{ post.parentPost.author.name || post.parentPost.author.fullName ||
+                    post.parentPost.author.username }}</span>
+                  <span class="post-date">{{ post.parentPost.createdAt | date:'mediumDate' }}</span>
+                </div>
+              </div>
+              <div class="shared-img-wrapper"
+                *ngIf="imageService.resolvePostImage(post.parentPost) !== imageService.DEFAULT_POST">
+                <img [src]="getArticleImage(post.parentPost)" alt="Shared Image" appImgFallback="post">
+              </div>
+              <div class="shared-content">
+                <h4 *ngIf="post.parentPost.title">{{ post.parentPost.title }}</h4>
+                <p>{{ post.parentPost.content }}</p>
+              </div>
+            </div>
+
+            <div class="card-footer-meta mt-3">
+              <div class="author-group">
+                <img [src]="getAuthorAvatar(post.author)" class="mini-avatar" appImgFallback="avatar">
+                <span>{{ post.author.fullName || post.author.username || 'Member' }}</span>
+              </div>
+              <span class="read-more-link">Read <i class="bi bi-arrow-right"></i></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Hiring News -->
+    <section class="hiring-section mt-5 p-5 shadow-lg" *ngIf="hiringNews.length > 0">
+      <div class="d-flex justify-content-between align-items-center mb-4 text-white">
+        <h2 class="merriweather-font h3 m-0">Hiring News</h2>
+        <a routerLink="/public/profession/jobs" class="btn-view-all text-white border-white">View All</a>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-md-6" *ngFor="let job of hiringNews">
+          <div class="job-card-white shadow-sm h-100" [routerLink]="['/public/job-profile', job.id]">
+            <div class="p-4">
+              <div class="hiring-header">
+                <img [src]="imageService.resolveAvatar({imageUrl: job.authorAvatarUrl})" class="company-avatar"
+                  appImgFallback="avatar">
+                <h4 class="fw-bold">"{{ job.companyName }} is expanding"</h4>
+              </div>
+              <p class="text-secondary small mb-4">
+                Explore the latest roles and career opportunities at {{ job.companyName }}.
+              </p>
+              <div class="d-flex align-items-center text-success fw-bold small">
+                See Open Roles <i class="bi bi-arrow-right ms-2"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="text-center py-5" *ngIf="!heroArticle && visualArticles.length === 0 && textArticles.length === 0">
+      <p class="text-muted italic">No career articles available at the moment.</p>
+    </div>
+
+  </div>
+</div>

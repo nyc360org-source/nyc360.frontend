@@ -13,7 +13,7 @@ import { RouterLink } from '@angular/router';
   styleUrls: ['./community.scss']
 })
 export class CommunityComponent implements OnInit {
-  
+
   private communityService = inject(CommunityService);
   private cdr = inject(ChangeDetectorRef);
   protected readonly environment = environment;
@@ -21,7 +21,7 @@ export class CommunityComponent implements OnInit {
   // Data Containers
   suggestions: CommunitySuggestion[] = [];
   posts: CommunityPost[] = [];
-  featuredPost: CommunityPost | null = null; 
+  featuredPost: CommunityPost | null = null;
 
   isLoading = true;
 
@@ -37,7 +37,7 @@ export class CommunityComponent implements OnInit {
         if (res.isSuccess && res.data) {
           // 1. Communities Cards
           this.suggestions = res.data.suggestions || [];
-          
+
           // 2. Feed Posts
           const allPosts = res.data.feed?.data || [];
           if (allPosts.length > 0) {
@@ -59,7 +59,7 @@ export class CommunityComponent implements OnInit {
     if (comm.isJoined) return; // منع التكرار
 
     comm.isLoadingJoin = true; // تفعيل اللودينج
-    
+
     // نمرر comm.id (رقم) للسيرفس
     this.communityService.joinCommunity(comm.id).subscribe({
       next: (res) => {
@@ -67,7 +67,7 @@ export class CommunityComponent implements OnInit {
         if (res.isSuccess) {
           comm.isJoined = true; // تغيير الحالة لـ Joined
           comm.memberCount++; // زيادة العداد
-          
+
           alert('You have joined the community successfully!');
         } else {
           console.error('Join Error:', res.error);
@@ -91,13 +91,15 @@ export class CommunityComponent implements OnInit {
   }
 
   resolvePostImage(url?: string): string {
-    // لو مفيش رابط، اعرض الصورة الافتراضية
-    if (!url) return 'assets/images/nyc-city.jpg';
-    
-    // لو الرابط كامل (خارجي)، رجعه زي ما هو
-    if (url.includes('http')) return url;
-    
-    // التعديل هنا: إضافة /communities/ للمسار
-    return `${environment.apiBaseUrl2}/posts/${url}`; 
+    if (!url || url.trim() === '') return 'assets/images/nyc-city.jpg';
+
+    // تنظيف المسار
+    const cleanUrl = url.replace('@local://', '');
+
+    // لو لينك خارجي
+    if (cleanUrl.startsWith('http')) return cleanUrl;
+
+    // لو صورة من السيرفر (posts)
+    return `${this.environment.apiBaseUrl3}/${cleanUrl}`;
   }
 }

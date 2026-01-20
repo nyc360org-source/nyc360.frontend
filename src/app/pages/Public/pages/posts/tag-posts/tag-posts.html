@@ -1,9 +1,9 @@
 <div class="tag-page-container">
-  
+
   <div class="layout-grid">
-    
+
     <main class="main-content">
-      
+
       <header class="tag-header">
         <div class="icon-wrapper">
           <i class="bi bi-hash"></i>
@@ -18,13 +18,16 @@
         <div class="post-card" *ngFor="let post of posts" [routerLink]="['/public/posts/details', post.id]">
           <div class="card-img">
             <img [src]="resolvePostImage(post)" loading="lazy" alt="Post Image">
-            <span class="category-badge">{{ getCategoryName(post.category) }}</span>
+            <span class="category-badge" [style.--cat-color]="getCategoryColor(post.category)">
+              <img [src]="getCategoryIcon(post.category)" alt="icon">
+              {{ getCategoryName(post.category) }}
+            </span>
           </div>
-          
+
           <div class="card-body">
             <h2 class="title">{{ post.title }}</h2>
             <p class="excerpt">{{ post.content | slice:0:110 }}...</p>
-            
+
             <div class="meta">
               <div class="author">
                 <i class="bi bi-person-fill"></i>
@@ -32,9 +35,9 @@
               </div>
               <span class="date">{{ post.createdAt | date:'MMM d' }}</span>
             </div>
-            
+
             <div class="mini-tags" *ngIf="post.tags && post.tags.length > 0">
-               <span *ngFor="let t of post.tags | slice:0:2">#{{ t }}</span>
+              <span *ngFor="let t of post.tags | slice:0:2">#{{ t }}</span>
             </div>
           </div>
         </div>
@@ -53,13 +56,11 @@
       <div class="widget" *ngIf="relatedTags.length > 0">
         <h3><i class="bi bi-tags-fill"></i> Related Topics</h3>
         <p class="subtitle">Tags found in these posts</p>
-        
+
         <div class="tags-cloud">
-          <a *ngFor="let tag of relatedTags; let i = index" 
-             [routerLink]="['/public/posts/tags', tag]" 
-             class="tag-pill"
-             [ngClass]="['c1', 'c2', 'c3', 'c4', 'c5'][i % 5]">
-             {{ tag }}
+          <a *ngFor="let tag of relatedTags; let i = index" [routerLink]="['/public/posts/tags', tag]" class="tag-pill"
+            [ngClass]="['c1', 'c2', 'c3', 'c4', 'c5'][i % 5]">
+            {{ tag }}
           </a>
         </div>
       </div>

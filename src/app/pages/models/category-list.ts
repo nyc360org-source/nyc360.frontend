@@ -1,32 +1,33 @@
-// src/app/shared/models/category-list.ts
+import { CATEGORY_THEMES } from '../Public/Widgets/feeds/models/categories';
 
 export interface CategoryModel {
-  id: number | null; // null or -1 for 'All'
+  id: any;
   name: string;
   icon: string;
+  path?: string;
+  color?: string;
+  route?: string;
+  topLinks?: any[];
 }
 
-// هذه القائمة تطابق الـ C# Enum بالمللي (للتعامل مع الداتا بيز)
-// Community=0, Culture=1, ..., Tv=11
-export const CATEGORY_LIST: CategoryModel[] = [
-  { id: 0, name: 'Community', icon: 'bi-people-fill' },
-  { id: 1, name: 'Culture', icon: 'bi-palette-fill' },
-  { id: 2, name: 'Education', icon: 'bi-mortarboard-fill' },
-  { id: 3, name: 'Events', icon: 'bi-calendar-event-fill' },
-  { id: 4, name: 'Health', icon: 'bi-heart-fill' },
-  { id: 5, name: 'Legal', icon: 'bi-hammer' },
-  { id: 6, name: 'Lifestyle', icon: 'bi-person-arms-up' },
-  { id: 7, name: 'News', icon: 'bi-newspaper' },
-  { id: 8, name: 'Professions', icon: 'bi-briefcase-fill' },
-  { id: 9, name: 'Social', icon: 'bi-globe' },
-  { id: 10, name: 'Tour', icon: 'bi-airplane-fill' },
-  { id: 11, name: 'TV', icon: 'bi-tv-fill' }
-];
+// Generate the list dynamically from the Source of Truth (CategoryEnum + CATEGORY_THEMES)
+// Generate the list dynamically directly from CATEGORY_THEMES
+export const CATEGORY_LIST: CategoryModel[] = Object.entries(CATEGORY_THEMES).map(([key, theme]: [string, any]) => {
+  return {
+    id: Number(key),
+    name: theme.label,
+    icon: theme.icon,
+    path: theme.path,
+    color: theme.color,
+    route: theme.route,
+    topLinks: theme.topLinks
+  };
+});
 
-// دالة مساعدة لو عايز القائمة ومعاها "All" عشان الفلترة في الهوم والناف بار
+// Helper function to get list with 'All'
 export function getCategoriesWithAll(): CategoryModel[] {
   return [
-    { id: -1, name: 'All', icon: 'bi-grid-fill' }, // -1 for UI handling
+    { id: -1, name: 'All', icon: 'bi-grid-fill' },
     ...CATEGORY_LIST
   ];
 }

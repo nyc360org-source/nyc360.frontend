@@ -6,6 +6,7 @@ import { CommunityService, LocationDto } from '../../services/community';
 import { CommunitySuggestion } from '../../models/community';
 import { environment } from '../../../../../../environments/environment';
 import { Subject, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
+import { ToastService } from '../../../../../../shared/services/toast.service';
 
 @Component({
   selector: 'app-community-discovery',
@@ -15,18 +16,18 @@ import { Subject, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
   styleUrls: ['./community-discovery.scss']
 })
 export class CommunityDiscoveryComponent implements OnInit {
-  
+
   private communityService = inject(CommunityService);
   protected readonly environment = environment;
 
   // Data
   communities: (CommunitySuggestion & { showSuccess?: boolean })[] = [];
-  
+
   // State
   searchText: string = '';
   selectedType: number | null = null;
   selectedLocationId: number | null = null;
-  
+
   // Location Search State
   locationSearchText: string = '';
   locationSuggestions: LocationDto[] = [];
@@ -35,10 +36,10 @@ export class CommunityDiscoveryComponent implements OnInit {
 
   // Pagination
   currentPage: number = 1;
-  pageSize: number = 6; 
+  pageSize: number = 6;
   totalCount: number = 0;
-  totalPages: number = 1; 
-  
+  totalPages: number = 1;
+
   isLoading = false;
 
   communityTypes = [
@@ -57,7 +58,7 @@ export class CommunityDiscoveryComponent implements OnInit {
   ];
 
   ngOnInit() {
-    this.loadCommunities(); 
+    this.loadCommunities();
     this.setupLocationSearch();
   }
 
@@ -82,15 +83,15 @@ export class CommunityDiscoveryComponent implements OnInit {
 
   loadCommunities() {
     this.isLoading = true;
-    
+
     const typeParam = this.selectedType ? this.selectedType : undefined;
     const locParam = this.selectedLocationId ? this.selectedLocationId : undefined;
 
     this.communityService.discoverCommunities(
-      this.currentPage, 
-      this.pageSize, 
-      this.searchText, 
-      typeParam, 
+      this.currentPage,
+      this.pageSize,
+      this.searchText,
+      typeParam,
       locParam
     ).subscribe({
       next: (res) => {
@@ -104,7 +105,7 @@ export class CommunityDiscoveryComponent implements OnInit {
       error: () => {
         this.isLoading = false;
         this.communities = [];
-        this.totalPages = 1; 
+        this.totalPages = 1;
       }
     });
   }
@@ -112,7 +113,7 @@ export class CommunityDiscoveryComponent implements OnInit {
   // --- Actions ---
 
   onSearch() {
-    this.currentPage = 1; 
+    this.currentPage = 1;
     this.loadCommunities();
   }
 
@@ -128,7 +129,7 @@ export class CommunityDiscoveryComponent implements OnInit {
       this.selectedLocationId = null;
       this.showLocationDropdown = false;
       this.currentPage = 1;
-      this.loadCommunities(); 
+      this.loadCommunities();
     }
   }
 
@@ -157,6 +158,8 @@ export class CommunityDiscoveryComponent implements OnInit {
     }
   }
 
+  private toastService = inject(ToastService);
+
   joinCommunity(comm: CommunitySuggestion & { showSuccess?: boolean }) {
     if (comm.isJoined) return;
 
@@ -167,15 +170,21 @@ export class CommunityDiscoveryComponent implements OnInit {
         if (res.isSuccess) {
           comm.isJoined = true;
           comm.memberCount++;
-          
+          this.toastService.success('Successfully joined the community!');
+
           // Show success message temporarily
           comm.showSuccess = true;
           setTimeout(() => {
             comm.showSuccess = false;
-          }, 3000); 
+          }, 3000);
+        } else {
+          this.toastService.error((res as any).message || 'Failed to join community.');
         }
       },
-      error: () => comm.isLoadingJoin = false
+      error: () => {
+        comm.isLoadingJoin = false;
+        this.toastService.error('An error occurred while joining.');
+      }
     });
   }
 

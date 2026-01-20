@@ -10,12 +10,12 @@ import { Role } from '../models/role'; // Role model should include 'contentLimi
   selector: 'app-roles-list',
   standalone: true,
   // Note: CurrencyPipe is added to imports for robust number formatting, though 'number' pipe is sufficient for KB.
-  imports: [CommonModule, RouterModule], 
+  imports: [CommonModule, RouterModule],
   templateUrl: './roles-list.html',
   styleUrls: ['./roles-list.scss']
 })
 export class RolesListComponent implements OnInit {
-  
+
   // --- Dependency Injection ---
   private rolesService = inject(RolesService);
   private cdr = inject(ChangeDetectorRef); // To manually trigger change detection after async calls
@@ -38,14 +38,14 @@ export class RolesListComponent implements OnInit {
     this.errorMessage = '';
 
     this.rolesService.getAllRoles().subscribe({
-      next: (res) => {
+      next: (res: any) => {
         this.isLoading = false;
 
-        if (res.isSuccess) {
-          this.roles = res.data || [];
+        if (res.isSuccess || res.IsSuccess) {
+          this.roles = res.data || res.Data || [];
           this.cdr.detectChanges(); // Trigger change detection
         } else {
-          this.errorMessage = res.error?.message || 'Failed to load roles.';
+          this.errorMessage = (res.error?.message || res.Error?.Message) || 'Failed to load roles.';
         }
       },
       error: (err) => {

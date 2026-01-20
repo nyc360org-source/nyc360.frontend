@@ -10,7 +10,7 @@ import { NavigationControlsComponent } from "../navigation-controls/navigation-c
   imports: [CommonModule, RouterLink, RouterLinkActive, NavigationControlsComponent],
   templateUrl: './nav-bar.component.html',
   styleUrls: ['./nav-bar.component.scss'],
-  providers: [DatePipe] 
+  providers: [DatePipe]
 })
 export class NavBarComponent {
 
@@ -24,17 +24,15 @@ export class NavBarComponent {
   canViewRoles = false;
   canViewRSS = false;
   canViewDashboard = false;
+  canViewCommunities = false;
 
   ngOnInit() {
-
-      
-
-        // Check Permissions Dynamically
-        this.canViewUsers = this.authService.hasPermission('Permissions.Users.View');
-        this.canViewRoles = this.authService.hasPermission('Permissions.Roles.View');
-        this.canViewRSS = this.authService.hasPermission('Permissions.Posts.View'); // Or RSS permission
-        this.canViewDashboard = this.authService.hasPermission('Permissions.Dashboard.View')
-
+    // Check Permissions Dynamically
+    this.canViewUsers = this.authService.hasPermission('Permissions.Users.View');
+    this.canViewRoles = this.authService.hasPermission('Permissions.Roles.View');
+    this.canViewRSS = this.authService.hasPermission('Permissions.Posts.View'); // Or RSS permission
+    this.canViewDashboard = this.authService.hasPermission('Permissions.Dashboard.View');
+    this.canViewCommunities = this.authService.hasPermission('Permissions.Communities.View');
   }
 
 

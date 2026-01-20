@@ -5,6 +5,7 @@ import { Router, RouterLink } from '@angular/router';
 import { debounceTime, distinctUntilChanged, switchMap, filter } from 'rxjs/operators';
 import { CreateCommunityService } from '../../services/createcommunty';
 import { COMMUNITY_TYPES_LIST, LocationSearchResult } from '../../models/createcommunty';
+import { ToastService } from '../../../../../../shared/services/toast.service';
 
 @Component({
   selector: 'app-create-community',
@@ -14,10 +15,11 @@ import { COMMUNITY_TYPES_LIST, LocationSearchResult } from '../../models/createc
   styleUrls: ['./create-community.scss']
 })
 export class CreateCommunityComponent implements OnInit {
-  
+
   private fb = inject(FormBuilder);
   private communityService = inject(CreateCommunityService);
   private router = inject(Router);
+  private toastService = inject(ToastService);
 
   // Data
   typesList = COMMUNITY_TYPES_LIST;
@@ -122,13 +124,13 @@ export class CreateCommunityComponent implements OnInit {
       this.form.markAllAsTouched();
       // If location is missing but typed
       if (!this.selectedLocation && this.locationSearchControl.value) {
-        alert('Please select a valid location from the list.');
+        this.toastService.error('Please select a valid location from the list.');
       }
       return;
     }
 
     this.isSubmitting = true;
-    
+
     const formData = this.form.value;
 
     this.communityService.createCommunity(formData, this.avatarFile || undefined, this.coverFile || undefined)
@@ -136,16 +138,16 @@ export class CreateCommunityComponent implements OnInit {
         next: (res) => {
           this.isSubmitting = false;
           if (res.isSuccess) {
-            alert('Community created successfully!');
+            this.toastService.success('Community created successfully!');
             this.router.navigate(['/public/community']);
           } else {
-            alert('Error: ' + (res.error?.message || 'Something went wrong'));
+            this.toastService.error('Error: ' + (res.error?.message || 'Something went wrong'));
           }
         },
         error: (err) => {
           this.isSubmitting = false;
           console.error(err);
-          alert('Failed to connect to server.');
+          this.toastService.error('Failed to connect to server.');
         }
       });
   }

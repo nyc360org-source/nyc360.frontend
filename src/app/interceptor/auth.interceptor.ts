@@ -4,12 +4,12 @@ import { catchError, switchMap, throwError } from 'rxjs';
 import { AuthService } from '../pages/Authentication/Service/auth';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  
+
   // 1. Lazy Injection to prevent Circular Dependency
   // We don't inject AuthService here yet, we assume we can read from localStorage directly first if needed
   // OR we use inject() but ensure AuthService doesn't inject HttpClient which uses this interceptor directly in a loop.
   // The safest way in modern Angular functional interceptors:
-  
+
   let authReq = req;
   let token = null;
 
@@ -25,23 +25,23 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     });
   }
 
+  const authService = inject(AuthService);
+
   return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {
-      
-      // 🛑 If 401 Unauthorized (Token Expired)
+
+      // 🛑 Case 1: 401 Unauthorized (Token Expired or Invalid)
       if (error.status === 401 && !req.url.includes('/auth/login') && !req.url.includes('/auth/refresh-token')) {
-        
-        // Now we inject AuthService to handle the refresh logic
-        const authService = inject(AuthService);
+
         const refreshToken = authService.getRefreshToken();
-        const currentToken = token; // The expired one
+        const currentToken = token;
 
         if (refreshToken && currentToken) {
-          
-          // 🔄 Call Refresh Token API
-          return authService.refreshToken({ 
-            accessToken: currentToken, 
-            refreshToken: refreshToken 
+
+          // 🔄 Attempt Refresh Token
+          return authService.refreshToken({
+            accessToken: currentToken,
+            refreshToken: refreshToken
           }).pipe(
             switchMap((res: any) => {
               if (res.isSuccess) {
@@ -51,21 +51,34 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
                 });
                 return next(newReq);
               } else {
-                // ❌ Refresh failed (maybe refresh token expired too) -> Logout
+                // ❌ Refresh rejected by server -> Security Breach or Session Dead -> Forced Logout
                 authService.logout();
                 return throwError(() => error);
               }
             }),
             catchError((refreshErr) => {
-              // API Call failed -> Logout
+              // ❌ Network/Server error during refresh -> Forced Logout
               authService.logout();
               return throwError(() => refreshErr);
             })
           );
         } else {
-            // No tokens found -> Logout
-            authService.logout();
+          // ❌ No credentials to refresh -> Forced Logout
+          authService.logout();
         }
+      }
+
+      // 🛑 Case 2: 403 Forbidden (Accessing unauthorized resource)
+      // Strict Security: If a user tries to access a forbidden resource, we assume a potential breach or role mismatch.
+      if (error.status === 403) {
+        console.warn('⛔ Security Alert: 403 Forbidden access attempt.');
+        // Optional: You could logout here too if you want to be extremely strict
+        // authService.logout(); 
+      }
+
+      // 🛑 Case 3: 0 Unknown Error (Server Down or CORS)
+      if (error.status === 0) {
+        console.error('⚠️ Network security check failed: Server unreachable.');
       }
 
       return throwError(() => error);

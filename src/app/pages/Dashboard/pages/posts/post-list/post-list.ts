@@ -3,9 +3,11 @@ import { CommonModule } from '@angular/common';
 import { RouterLink, Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { environment } from '../../../../../environments/environment';
-import { Post, PostCategoryList, InteractionType, Comment, FlagReasonType } from '../models/posts';
+import { Post, InteractionType, Comment, FlagReasonType } from '../models/posts';
 import { PostsService } from '../services/posts';
 import { AuthService } from '../../../../Authentication/Service/auth';
+import { CATEGORY_THEMES, CategoryEnum } from '../../../../Public/Widgets/feeds/models/categories';
+import { ToastService } from '../../../../../shared/services/toast.service';
 
 @Component({
   selector: 'app-post-list',
@@ -15,42 +17,56 @@ import { AuthService } from '../../../../Authentication/Service/auth';
   styleUrls: ['./post-list.scss']
 })
 export class PostListComponent implements OnInit {
-  
+
   protected readonly environment = environment;
   protected readonly InteractionType = InteractionType;
-  
+
   private postsService = inject(PostsService);
-  private authService = inject(AuthService); 
+  private authService = inject(AuthService);
   private cdr = inject(ChangeDetectorRef);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private toastService = inject(ToastService);
 
   // --- Data ---
-  posts: Post[] = [];
-  categories = PostCategoryList;
+  allPosts: Post[] = []; // Store all fetched posts
+  filteredPosts: Post[] = []; // Store posts after filter/search
+  categories = Object.entries(CATEGORY_THEMES).map(([key, value]) => ({
+    id: Number(key),
+    ...value
+  }));
+
   isLoading = true;
   errorMessage = '';
-  selectedCategoryId: number | null = null;
+
+  // --- Admin State ---
   currentUserId: string | null = null;
   currentUserData: any = null;
   isAdmin = false;
+  viewMode: 'table' | 'grid' = 'table'; // Admin view mode
 
-  // --- UI State Maps ---
-  commentInputs: { [postId: number]: string } = {}; 
-  replyInputs: { [commentId: number]: string } = {}; 
-  showComments: { [postId: number]: boolean } = {}; 
-  commentLimits: { [postId: number]: number } = {}; 
-  activeReplyId: number | null = null;
-  openMenuId: number | null = null; // For Dropdown
+  // --- Filters & Sort ---
+  searchTerm = '';
+  selectedCategoryId: number = -1; // -1 for All
+  sortBy: 'latest' | 'oldest' | 'popular' = 'latest';
 
-  // --- Report Modal State ---
+  // --- Stats ---
+  dashboardStats = [
+    { title: 'Total Posts', value: 0, icon: 'bi-grid-fill', color: 'gold' },
+    { title: 'Most Active', value: 'General', icon: 'bi-activity', color: 'blue' },
+    { title: 'Engagement', value: '0', icon: 'bi-graph-up-arrow', color: 'green' }
+  ];
+
+  // --- UI State Maps (Legacy support for simple interactions if needed) ---
+  openMenuId: number | null = null;
+
+  // --- Report Modal (Admin Action) ---
   isReportModalOpen = false;
   reportPostId: number | null = null;
   reportReason: number | null = null;
   reportDetails: string = '';
   isReporting = false;
 
-  // Report Reasons List for Select Box
   reportReasonsList = [
     { id: FlagReasonType.Spam, label: 'Spam' },
     { id: FlagReasonType.HateSpeech, label: 'Hate Speech' },
@@ -72,7 +88,7 @@ export class PostListComponent implements OnInit {
 
     this.route.queryParams.subscribe(params => {
       const catId = params['category'];
-      this.selectedCategoryId = catId ? Number(catId) : null;
+      this.selectedCategoryId = catId ? Number(catId) : -1;
       this.loadPosts();
     });
   }
@@ -80,118 +96,96 @@ export class PostListComponent implements OnInit {
   loadPosts() {
     this.isLoading = true;
     this.errorMessage = '';
-    const categoryParam = this.selectedCategoryId !== null ? this.selectedCategoryId : undefined;
+
+    // Fetch ALL posts to handle filtering client-side for smoother Admin experience
+    // Or fetch by category if selected. For Admin Dashboard, fetching all (paginated) is usually better, 
+    // but here we stick to the service structure.
+    const categoryParam = this.selectedCategoryId !== -1 ? this.selectedCategoryId : undefined;
 
     this.postsService.getAllPosts(categoryParam).subscribe({
       next: (res) => {
         this.isLoading = false;
         if (res?.isSuccess && Array.isArray(res.data)) {
-           this.posts = res.data.map(p => {
-             this.commentLimits[p.id] = 3; 
-             return {
-               ...p,
-               stats: p.stats || { likes: 0, comments: 0, views: 0, dislikes: 0, shares: 0 },
-               comments: p.comments || []
-             };
-           });
+          this.allPosts = res.data.map(p => ({
+            ...p,
+            stats: p.stats || { likes: 0, comments: 0, views: 0, dislikes: 0, shares: 0 },
+            comments: p.comments || []
+          }));
+          this.applyFilters();
+          this.calculateStats();
         } else {
-           this.posts = [];
+          this.allPosts = [];
+          this.filteredPosts = [];
         }
         this.cdr.detectChanges();
       },
-      error: () => { this.isLoading = false; this.errorMessage = 'Could not load feed.'; this.cdr.detectChanges(); }
-    });
-  }
-
-  // --- Interaction Logic ---
-  toggleLike(post: Post) {
-    if (!this.currentUserId) return alert('Please login.');
-    if (!post.stats) post.stats = { likes: 0, comments: 0, views: 0, dislikes: 0, shares: 0 };
-
-    const isLiked = post.currentUserInteraction === InteractionType.Like;
-    const previousState = post.currentUserInteraction;
-
-    if (isLiked) {
-      post.currentUserInteraction = 0; post.stats.likes--;
-    } else {
-      post.currentUserInteraction = InteractionType.Like; post.stats.likes++;
-      if (previousState === InteractionType.Dislike) post.stats.dislikes--;
-    }
-
-    this.postsService.interact(post.id, InteractionType.Like).subscribe({
       error: () => {
-        post.currentUserInteraction = previousState;
-        if (isLiked) post.stats!.likes++; else post.stats!.likes--;
+        this.isLoading = false;
+        this.errorMessage = 'Could not load feed.';
+        this.toastService.error('Failed to load posts data.');
+        this.cdr.detectChanges();
       }
     });
   }
 
-  toggleComments(postId: number) {
-    this.showComments[postId] = !this.showComments[postId];
+  applyFilters() {
+    let temp = [...this.allPosts];
+
+    // 1. Category Filter (already handled by API mostly, but good for client-side search)
+    if (this.selectedCategoryId !== -1) {
+      temp = temp.filter(p => p.category === this.selectedCategoryId);
+    }
+
+    // 2. Search
+    if (this.searchTerm.trim()) {
+      const term = this.searchTerm.toLowerCase();
+      temp = temp.filter(p =>
+        p.title?.toLowerCase().includes(term) ||
+        p.content?.toLowerCase().includes(term) ||
+        (p.author as any)?.fullName?.toLowerCase().includes(term)
+      );
+    }
+
+    // 3. Sort
+    if (this.sortBy === 'latest') {
+      temp.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    } else if (this.sortBy === 'oldest') {
+      temp.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+    } else if (this.sortBy === 'popular') {
+      temp.sort((a, b) => (b.stats?.likes || 0) - (a.stats?.likes || 0));
+    }
+
+    this.filteredPosts = temp;
   }
 
-  toggleCommentLimit(post: Post) {
-    const total = post.comments?.length || 0;
-    const current = this.commentLimits[post.id];
-    this.commentLimits[post.id] = (current < total) ? total : 3;
-  }
+  calculateStats() {
+    const total = this.allPosts.length;
 
-  submitComment(post: Post) {
-    const content = this.commentInputs[post.id];
-    if (!content?.trim()) return;
-    if (!this.currentUserId) return alert('Please login.');
+    // Most Active Category
+    const catCounts: Record<number, number> = {};
+    let maxCount = 0;
+    let maxCatId = -1;
+    let totalEngagement = 0;
 
-    if (!post.comments) post.comments = [];
-    if (!post.stats) post.stats = { likes: 0, comments: 0, views: 0, dislikes: 0, shares: 0 };
-
-    // Optimistic UI
-    const tempComment: any = {
-      id: -Date.now(), content: content,
-      author: { fullName: this.currentUserData?.fullName || 'Me', imageUrl: this.currentUserData?.imageUrl },
-      createdAt: new Date().toISOString(), replies: []
-    };
-
-    post.comments.unshift(tempComment); 
-    post.stats.comments++;
-    this.commentInputs[post.id] = ''; 
-    this.showComments[post.id] = true; 
-    this.commentLimits[post.id] = (this.commentLimits[post.id] || 3) + 1;
-
-    this.postsService.addComment(post.id, content).subscribe({
-      next: (res) => { if (res.isSuccess) { post.comments!.shift(); post.comments!.unshift(res.data as any); } },
-      error: () => { post.comments!.shift(); post.stats!.comments--; this.commentInputs[post.id] = content; }
+    this.allPosts.forEach(p => {
+      catCounts[p.category] = (catCounts[p.category] || 0) + 1;
+      if (catCounts[p.category] > maxCount) {
+        maxCount = catCounts[p.category];
+        maxCatId = p.category;
+      }
+      totalEngagement += (p.stats?.likes || 0) + (p.stats?.comments || 0);
     });
+
+    const activeCatName = maxCatId !== -1 ? this.getCategoryTheme(maxCatId).label : 'N/A';
+
+    this.dashboardStats = [
+      { title: 'Total Posts', value: total, icon: 'bi-grid-fill', color: 'gold' },
+      { title: 'Trending Category', value: activeCatName, icon: 'bi-activity', color: 'blue' },
+      { title: 'Total Engagement', value: totalEngagement.toLocaleString(), icon: 'bi-graph-up-arrow', color: 'green' }
+    ];
   }
 
-  openReplyInput(commentId: number) {
-    this.activeReplyId = this.activeReplyId === commentId ? null : commentId;
-  }
-
-  submitReply(post: Post, parentComment: Comment) {
-    const content = this.replyInputs[parentComment.id];
-    if (!content?.trim()) return;
-    if (!this.currentUserId) return alert('Please login.');
-
-    if (!parentComment.replies) parentComment.replies = [];
-
-    const tempReply: any = {
-      id: -Date.now(), content: content,
-      author: { fullName: this.currentUserData?.fullName || 'Me', imageUrl: this.currentUserData?.imageUrl },
-      createdAt: new Date().toISOString()
-    };
-
-    parentComment.replies.push(tempReply);
-    this.replyInputs[parentComment.id] = '';
-    this.activeReplyId = null;
-    if(post.stats) post.stats.comments++;
-
-    this.postsService.addComment(post.id, content, parentComment.id).subscribe({
-      next: (res) => { if (res.isSuccess) { parentComment.replies!.pop(); parentComment.replies!.push(res.data as any); } },
-      error: () => { parentComment.replies!.pop(); if(post.stats) post.stats.comments--; }
-    });
-  }
-
-  // --- Menu & Report Logic ---
+  // --- Interaction Logic (Admin shortcuts) ---
   toggleMenu(postId: number, event: Event) {
     event.stopPropagation();
     this.openMenuId = this.openMenuId === postId ? null : postId;
@@ -213,11 +207,34 @@ export class PostListComponent implements OnInit {
     this.postsService.reportPost(this.reportPostId, this.reportReason, this.reportDetails).subscribe({
       next: (res) => {
         this.isReporting = false;
-        if (res.isSuccess) { alert('Report submitted successfully.'); this.closeReportModal(); }
-        else { alert(res.error?.message || 'Failed to submit.'); }
+        if (res.isSuccess) {
+          this.toastService.success('Report submitted successfully.');
+          this.closeReportModal();
+        } else {
+          this.toastService.error(res.error?.message || 'Failed to submit.');
+        }
       },
-      error: () => { this.isReporting = false; alert('Network error.'); }
+      error: () => {
+        this.isReporting = false;
+        this.toastService.error('Network error during report submission.');
+      }
     });
+  }
+
+  onDelete(id: number) {
+    if (confirm('Are you sure you want to permanently delete this post? This action cannot be undone.')) {
+      this.postsService.deletePost(id).subscribe({
+        next: (res) => { // Assuming response might have success flag
+          this.toastService.success('Post deleted successfully');
+          this.allPosts = this.allPosts.filter(p => p.id !== id);
+          this.applyFilters();
+          this.calculateStats();
+        },
+        error: () => {
+          this.toastService.error('Failed to delete post');
+        }
+      });
+    }
   }
 
   // --- Helpers ---
@@ -239,24 +256,12 @@ export class PostListComponent implements OnInit {
     return null;
   }
 
-  filterByCategory(id: number | null) {
-    this.selectedCategoryId = id;
-    this.router.navigate([], { relativeTo: this.route, queryParams: { category: id } });
+  // Dynamic Theme Helper
+  getCategoryTheme(id: number) {
+    return CATEGORY_THEMES[id as CategoryEnum] || { color: '#333', label: 'Unknown', path: '' };
   }
 
-  getCategoryName(id: number): string { return this.categories.find(c => c.id === id)?.name || 'General'; }
-
-  // Check Permissions
-  isOwnerOrAdmin(post: Post): boolean {
-    if (this.isAdmin) return true;
-    if (!this.currentUserId || !post.author) return false;
-    const authorId = (typeof post.author === 'object') ? (post.author as any).id : post.author;
-    return String(authorId) === String(this.currentUserId);
-  }
-
-  onDelete(id: number) {
-    if (confirm('Delete post?')) {
-      this.postsService.deletePost(id).subscribe({ next: () => this.posts = this.posts.filter(p => p.id !== id) });
-    }
+  toggleViewMode(mode: 'table' | 'grid') {
+    this.viewMode = mode;
   }
 }

@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router } from '@angular/router';
 import { RssService } from '../../services/rss';
 import { RssSource } from '../../models/rss';
-import { CATEGORY_LIST } from '../../../../../models/category-list';
+import { CATEGORY_THEMES, CategoryEnum } from '../../../../../Public/Widgets/feeds/models/categories';
 
 @Component({
   selector: 'app-rss-form',
@@ -14,7 +14,7 @@ import { CATEGORY_LIST } from '../../../../../models/category-list';
   styleUrls: ['./rss-form.scss']
 })
 export class RssFormComponent implements OnInit {
-  
+
   private fb = inject(FormBuilder);
   private rssService = inject(RssService);
   private router = inject(Router);
@@ -23,10 +23,13 @@ export class RssFormComponent implements OnInit {
   form!: FormGroup;
   isEditMode = false;
   editId: number | null = null;
-  
+
   // القائمة المشتركة
-  categories = CATEGORY_LIST; 
-  
+  categories = Object.entries(CATEGORY_THEMES).map(([key, value]) => ({
+    id: Number(key),
+    ...value
+  }));
+
   isLoading = false;
   selectedFile: File | null = null;
 
@@ -75,7 +78,7 @@ export class RssFormComponent implements OnInit {
       this.form.markAllAsTouched();
       return;
     }
-    
+
     this.isLoading = true;
 
     if (this.isEditMode && this.editId) {
@@ -98,7 +101,7 @@ export class RssFormComponent implements OnInit {
         // تأكد من تحويلها لرقم، حتى لو كانت 0
         category: Number(this.form.value.category)
       };
-      
+
       this.rssService.createRssSource(payload)
         .subscribe({
           next: (res: any) => {

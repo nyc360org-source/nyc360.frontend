@@ -1,0 +1,223 @@
+<div class="job-profile-page">
+
+  <div class="job-profile-container" *ngIf="job">
+
+    <section class="profile-header">
+      <div class="cover-photo"></div>
+      <div class="container header-card-wrapper">
+        <div class="floating-card shadow-lg">
+          <div class="card-left">
+            <div class="logo-wrapper">
+              <img [src]="getAvatarUrl(job.author.imageUrl)" alt="Company Logo">
+            </div>
+            <div class="job-main-info">
+              <span class="badge-category">{{ getType(job.employmentType) | uppercase }}</span>
+              <h1>{{ job.title }}</h1>
+              <p class="company-name text-muted mb-2">by <strong>{{ job.author.fullName }}</strong></p>
+              <div class="meta-row">
+                <span><i class="bi bi-geo-alt-fill"></i> {{ job.address.location.neighborhood }}, {{
+                  job.address.location.borough
+                  }}</span>
+                <span class="sep"></span>
+                <span><i class="bi bi-briefcase-fill"></i> {{ getType(job.employmentType) }}</span>
+                <span class="sep"></span>
+                <span><i class="bi bi-clock"></i> Posted {{ job.createdAt | date:'shortDate' }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="card-right">
+            <button *ngIf="!isAuthor" class="btn-primary-action" (click)="showApplyModal = true">
+              <i class="bi bi-send"></i> Apply
+            </button>
+
+
+
+            <div class="secondary-actions">
+              <button class="btn-outline-action" (click)="openShareModal()">
+                <i class="bi bi-share"></i> Share
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="container main-content-grid">
+
+      <main class="details-column">
+
+        <nav class="tabs-nav">
+          <button [class.active]="activeTab === 'overview'" (click)="onTabChange('overview')">Overview</button>
+          <button [class.active]="activeTab === 'responsibilities'"
+            (click)="onTabChange('responsibilities')">Responsibilities</button>
+          <button [class.active]="activeTab === 'requirements'"
+            (click)="onTabChange('requirements')">Requirements</button>
+
+          <button *ngIf="isAuthor" [class.active]="activeTab === 'applicants'" (click)="onTabChange('applicants')"
+            style="color: #e67e22; border-color: #e67e22;">
+            <i class="bi bi-people-fill"></i> Applicants
+          </button>
+        </nav>
+
+        <div class="tab-content-area">
+
+          <section class="content-section" *ngIf="activeTab === 'overview'">
+            <h2 class="font-header">Job Overview</h2>
+            <div class="card-content">
+              <p class="text-body">{{ job.description }}</p>
+              <h3 class="font-header mt-4">Benefits</h3>
+              <p class="text-body">{{ job.benefits }}</p>
+            </div>
+          </section>
+
+          <section class="content-section" *ngIf="activeTab === 'responsibilities'">
+            <h2 class="font-header">Key Responsibilities</h2>
+            <div class="card-content">
+              <ul class="styled-list" *ngIf="job.responsibilities">
+                <li *ngFor="let res of job.responsibilities.split('\n')">
+                  <i class="bi bi-check2-circle"></i> {{ res }}
+                </li>
+              </ul>
+              <p *ngIf="!job.responsibilities" class="text-muted">Detailed responsibilities will be provided during
+                interview.</p>
+            </div>
+          </section>
+
+          <section class="content-section" *ngIf="activeTab === 'requirements'">
+            <h2 class="font-header">Requirements & Skills</h2>
+            <div class="requirements-grid">
+              <div class="req-box essential">
+                <h4 class="font-header"><i class="bi bi-star-fill"></i> Essential</h4>
+                <p>{{ job.requirements }}</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="content-section" *ngIf="activeTab === 'applicants' && isAuthor">
+            <h2 class="font-header" style="border-color: #e67e22;">Applicants ({{applicants.length}})</h2>
+
+            <div *ngIf="isLoadingApplicants" class="text-center py-4">
+              <div class="spinner-border text-warning"></div>
+            </div>
+
+            <div class="applicants-grid" *ngIf="!isLoadingApplicants">
+              <div class="applicant-card" *ngFor="let app of applicants">
+                <div class="app-header">
+                  <img [src]="getAvatarUrl(app.candidate.imageUrl)" class="app-img" alt="Candidate">
+                  <div class="app-info">
+                    <h5>{{ app.candidate.username }}</h5>
+                    <small>{{ app.appliedAt | date:'mediumDate' }}</small>
+                  </div>
+                </div>
+                <div class="cover-preview">
+                  "{{ app.coverLetter || 'No cover letter provided.' }}"
+                </div>
+
+                <div class="status-action-row">
+                  <label class="small-label">Status:</label>
+                  <select [ngModel]="app.status" (ngModelChange)="onStatusChange(app, $event)" class="status-select"
+                    [ngClass]="{'status-hired': app.status == 4, 'status-rejected': app.status == 3}">
+                    <option *ngFor="let opt of statusOptions" [value]="opt.value">{{ opt.label }}</option>
+                  </select>
+                </div>
+
+                <div class="mt-3 text-end">
+                  <button class="btn btn-sm btn-outline-dark rounded-pill">View Full Profile</button>
+                </div>
+              </div>
+
+              <div *ngIf="applicants.length === 0" class="text-center w-100 p-3 text-muted">
+                No applicants yet.
+              </div>
+            </div>
+          </section>
+
+          <section class="content-section no-border" *ngIf="activeTab !== 'applicants'">
+            <h2 class="font-header">Work Model</h2>
+            <div class="work-model-card">
+              <div class="model-info">
+                <h3 class="font-header">{{ getArrangement(job.workArrangement) }} Schedule</h3>
+                <p>This role follows the standard {{ getArrangement(job.workArrangement) }} work program.</p>
+              </div>
+              <div class="model-map-placeholder">
+                <div class="location-pin">{{ job.address.location.neighborhood }}</div>
+              </div>
+              <div class="address-details mt-3" *ngIf="job.address.street">
+                <p class="text-muted small">
+                  <i class="bi bi-pin-map-fill"></i>
+                  {{ job.address.street }} {{ job.address.buildingNumber }}, {{ job.address.location.neighborhood }}, {{
+                  job.address.zipCode }}
+                </p>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+
+      <aside class="sidebar-column">
+        <div class="widget glance-widget shadow-sm">
+          <h3 class="font-header"><i class="bi bi-info-circle-fill"></i> At a Glance</h3>
+          <ul class="glance-list">
+            <li><span>Salary Range</span> <strong>${{ job.salaryMin/1000 }}K - ${{ job.salaryMax/1000 }}K / yr</strong>
+            </li>
+            <li><span>Job ID</span> <strong>#{{ job.id }}</strong></li>
+            <li><span>Date Posted</span> <strong>{{ job.createdAt | date:'MMM d, y' }}</strong></li>
+            <li><span>Experience</span> <strong>{{ getLevel(job.employmentLevel) }}</strong></li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <div class="modal-overlay" *ngIf="showApplyModal">
+    <div class="apply-modal-card animate__animated animate__fadeInUp">
+      <div class="modal-header">
+        <h2 class="font-header">Job Application</h2>
+        <button class="btn-close-modal" (click)="showApplyModal = false">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="mb-3">You are applying for: <strong>{{ job?.title }}</strong></p>
+        <label class="fw-bold mb-2">Cover Letter / Introduction</label>
+        <textarea [(ngModel)]="coverLetterText" class="form-control" rows="5"
+          placeholder="Tell us why you are the best fit..."></textarea>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="showApplyModal = false">Cancel</button>
+        <button class="btn-confirm" [disabled]="isSubmittingApply || !coverLetterText.trim()"
+          (click)="onConfirmApply()">
+          <span *ngIf="isSubmittingApply" class="spinner-border spinner-border-sm me-2"></span>
+          Confirm & Send
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" *ngIf="showShareModal">
+    <div class="apply-modal-card animate__animated animate__fadeInUp">
+      <div class="modal-header">
+        <h2 class="font-header">Share Opportunity</h2>
+        <button class="btn-close-modal" (click)="showShareModal = false">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="mb-3">Share this job offer with your network.</p>
+
+        <div class="share-link-box mb-4"
+          style="background: #f8f9fa; padding: 10px; border-radius: 8px; display: flex; gap: 10px;">
+          <input type="text" [value]="shareLink" readonly class="form-control form-control-sm"
+            style="background: transparent; border: none;">
+          <button class="btn btn-sm btn-outline-secondary" (click)="copyLink()">Copy</button>
+        </div>
+
+        <p class="text-muted small">Clicking "Share Now" will publish this to your feed/network.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="showShareModal = false">Close</button>
+        <button class="btn-confirm" [disabled]="isSharing" (click)="confirmShare()">
+          <span *ngIf="isSharing" class="spinner-border spinner-border-sm me-2"></span>
+          Share Now
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>

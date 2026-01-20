@@ -1,5 +1,5 @@
-import { ApplicationConfig } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { provideRouter, withInMemoryScrolling, withPreloading, PreloadAllModules } from '@angular/router'; // Import updated
 import { routes } from './Routes/app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
@@ -10,17 +10,25 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 // 2. استيراد مكتبات جوجل والإنترسبتور
 import { SocialAuthServiceConfig, GoogleLoginProvider } from '@abacritt/angularx-social-login';
 import { authInterceptor } from './interceptor/auth.interceptor';
+import { globalLoaderInterceptor } from './interceptor/global-loader.interceptor';
 import { loaderInterceptor } from './interceptor/loader-interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideRouter(routes),
-    
+    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideRouter(
+      routes,
+      withInMemoryScrolling({
+        scrollPositionRestoration: 'top', // ✅ الحل السحري: العودة لأعلى الصفحة عند التنقل
+        anchorScrolling: 'enabled'
+      }),
+      withPreloading(PreloadAllModules) // ✅ تحميل الوحدات في الخلفية لتحسين الأداء
+    ),
+
     provideClientHydration(withEventReplay()),
-    provideHttpClient(withInterceptors([loaderInterceptor])),
     provideHttpClient(
       withFetch(),
-      withInterceptors([authInterceptor]) 
+      withInterceptors([authInterceptor, loaderInterceptor, globalLoaderInterceptor])
     ),
 
     provideAnimations(),

@@ -1,13 +1,17 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormControl } from '@angular/forms';
+import { debounceTime, distinctUntilChanged, switchMap, filter } from 'rxjs/operators';
 import { CommunityPostService } from '../../services/community-post';
+import { CreateCommunityService } from '../../services/createcommunty'; // Use this for tag search
+import { Tag } from '../../models/createcommunty';
+import { ToastService } from '../../../../../../shared/services/toast.service';
 
 @Component({
   selector: 'app-create-community-post',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './create-community-post.html',
   styleUrls: ['./create-community-post.scss']
 })
@@ -16,16 +20,21 @@ export class CreateCommunityPostComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private locationService = inject(Location);
   private postService = inject(CommunityPostService);
+  private communityService = inject(CreateCommunityService); // For searching tags
   private cdr = inject(ChangeDetectorRef);
+  private toastService = inject(ToastService);
 
   // Data
   communityId: number = 0;
   title: string = '';
   content: string = '';
-  
-  // Tags Logic (Manual String Tags)
-  tags: string[] = [];
-  currentTagInput: string = ''; 
+
+  // Tags Logic (Searchable)
+  tags: Tag[] = [];
+  tagSearchControl = new FormControl('');
+  tagResults: Tag[] = [];
+  isSearchingTags = false;
+  showTagResults = false;
 
   // Images
   images: File[] = [];
@@ -35,26 +44,54 @@ export class CreateCommunityPostComponent implements OnInit {
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) this.communityId = +id;
+
+    // Tag Search Setup
+    this.tagSearchControl.valueChanges.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      filter(term => (term || '').length >= 1),
+      switchMap(term => {
+        this.isSearchingTags = true;
+        this.showTagResults = true;
+        return this.communityService.searchTags(term || '');
+      })
+    ).subscribe({
+      next: (res) => {
+        this.isSearchingTags = false;
+        if (res.isSuccess) {
+          const selectedIds = new Set(this.tags.map(t => t.id));
+          this.tagResults = (res.data || []).filter(t => !selectedIds.has(t.id));
+        } else {
+          this.tagResults = [];
+        }
+      },
+      error: () => {
+        this.isSearchingTags = false;
+        this.tagResults = [];
+      }
+    });
   }
 
   // --- Tags Management ---
-  addTag() {
-    const val = this.currentTagInput.trim();
-    if (val && !this.tags.includes(val)) {
-      this.tags.push(val);
-      this.currentTagInput = ''; // تفريغ الحقل
+  onTagSelect(tag: Tag) {
+    if (this.tags.length >= 5) {
+      this.toastService.error('You can select up to 5 tags.');
+      return;
     }
+    if (!this.tags.find(t => t.id === tag.id)) {
+      this.tags.push(tag);
+    }
+    this.tagSearchControl.setValue('', { emitEvent: false });
+    this.showTagResults = false;
+    this.tagResults = [];
   }
 
-  onTagKeyup(event: KeyboardEvent) {
-    if (event.key === 'Enter') {
-      event.preventDefault(); // منع سطر جديد
-      this.addTag();
-    }
+  removeTag(tag: Tag) {
+    this.tags = this.tags.filter(t => t.id !== tag.id);
   }
 
-  removeTag(index: number) {
-    this.tags.splice(index, 1);
+  onTagBlur() {
+    setTimeout(() => this.showTagResults = false, 200);
   }
 
   // --- Images Management ---
@@ -85,24 +122,34 @@ export class CreateCommunityPostComponent implements OnInit {
 
     this.isPosting = true;
 
+    // We send tag NAMES or IDs? 
+    // Usually existing tags have IDs, but new tags?
+    // The simplified version sends just names usually, or IDs if specifically required.
+    // Based on `create-community` update I did earlier (which I reverted), it sent IDs.
+    // Let's assume for posts we want names (hashtags) or IDs.
+    // I'll send NAMES for now to match the previous string[] behavior, unless I can confirm IDs are supported.
+    // Actually `createPost` interface: let's assume it can take strings.
+    const tagNames = this.tags.map(t => t.name);
+
     this.postService.createPost({
       communityId: this.communityId,
       title: this.title,
       content: this.content,
-      tags: this.tags,        // إرسال التاجات كنصوص
+      tags: tagNames, // Sending names as strings
       attachments: this.images
     }).subscribe({
       next: (res) => {
         this.isPosting = false;
         if (res.isSuccess) {
-          this.locationService.back(); // العودة للصفحة السابقة عند النجاح
+          this.toastService.success('Post created successfully!');
+          this.locationService.back();
         } else {
-          alert(res.error?.message || 'Failed to create post');
+          this.toastService.error(res.error?.message || 'Failed to create post');
         }
       },
       error: () => {
         this.isPosting = false;
-        alert('Network error, please try again.');
+        this.toastService.error('Network error, please try again.');
       }
     });
   }

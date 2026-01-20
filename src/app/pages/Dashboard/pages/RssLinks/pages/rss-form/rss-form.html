@@ -1,5 +1,5 @@
 <div class="page-container">
-  
+
   <div class="page-header">
     <div class="title-section">
       <h2>{{ isEditMode ? 'Edit RSS Source' : 'Add New RSS Feed' }}</h2>
@@ -21,17 +21,17 @@
             Valid URL is required (https://...)
           </small>
         </div>
-        
+
         <div class="form-group">
           <label>Category</label>
           <select formControlName="category">
             <option [ngValue]="null" disabled>Select Category</option>
-            
+
             <option *ngFor="let cat of categories" [ngValue]="cat.id">
-              {{ cat.name }}
+              {{ cat.label }}
             </option>
           </select>
-          
+
           <small class="text-danger" *ngIf="form.get('category')?.invalid && form.get('category')?.touched">
             Category is required.
           </small>
@@ -39,7 +39,7 @@
       </ng-container>
 
       <ng-container *ngIf="isEditMode">
-        
+
         <div class="form-row">
           <div class="form-group">
             <label>Source Name</label>
@@ -49,7 +49,7 @@
             <label>Category</label>
             <select formControlName="category">
               <option *ngFor="let cat of categories" [ngValue]="cat.id">
-                {{ cat.name }}
+                {{ cat.label }}
               </option>
             </select>
           </div>
@@ -79,7 +79,7 @@
 
       <div class="form-actions">
         <button type="button" (click)="goBack()" class="btn-ghost">Cancel</button>
-        
+
         <button type="submit" class="btn-gold" [disabled]="isLoading || form.invalid">
           <span *ngIf="!isLoading">{{ isEditMode ? 'Save Changes' : 'Create Feed' }}</span>
           <span *ngIf="isLoading">Processing...</span>

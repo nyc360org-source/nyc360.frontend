@@ -1,4 +1,4 @@
-import { Post } from "../../posts/models/posts"; 
+import { Post, PostComment, PostStats } from "../../posts/models/posts";
 
 export enum UserType {
   Normal = 0, Organization = 1, Admin = 2
@@ -21,8 +21,8 @@ export interface DashboardCard {
 
 // --- Domain Models based on your JSON ---
 export interface UserSocialLink {
-  id?: number; 
-  linkId?: number; 
+  id?: number;
+  linkId?: number;
   platform: SocialPlatform;
   url: string;
 }
@@ -64,44 +64,37 @@ export interface UserStats {
 
 // Updated Post interface to match the nesting in your JSON
 export interface ProfilePost {
+  id: number;
+  title: string | null;
+  content: string | null;
+  sourceType: number;
+  postType: number;
+  category: number;
+  createdAt: string;
+  attachments: any[];
+  imageUrl?: string | null;
+
+  parentPost?: ProfilePost | null; // For shared posts
+  author?: {
     id: number;
-    title: string | null;
-    content: string | null;
-    sourceType: number;
-    postType: number;
-    category: number;
-    createdAt: string;
-    attachments: any[];
-    parentPost?: ProfilePost | null; // For shared posts
-    author?: {
-        id: number;
-        username: string;
-        fullName: string;
-        imageUrl: string;
-    };
-    stats?: {
-        views: number;
-        likes: number;
-        comments: number;
-        shares: number;
-    };
+    username: string;
+    fullName: string;
+    imageUrl: string;
+  };
+  stats?: PostStats;
+  userInteraction?: number | null;
+  showComments?: boolean;
+  newCommentContent?: string;
+  comments?: PostComment[];
 }
 
-export interface ProfileDetails {
-  firstName: string;
-  lastName: string;
-  headline: string;
-  bio: string;
-  email: string;
-  phoneNumber: string;
-  locationId: number | null;
-  location?: string;
-  positions: Position[];
-  education: Education[];
-  topCommunities: CommunitySummary[];
-  recentPosts: ProfilePost[]; // Use the updated interface
-  socialLinks: UserSocialLink[];
-  stats?: UserStats; 
+export interface UserLocation {
+  id: number;
+  borough: string;
+  neighborhood: string;
+  zipCode: number;
+  neighborhoodNet?: string;
+  code?: string;
 }
 
 export interface UserProfileData {
@@ -109,7 +102,22 @@ export interface UserProfileData {
   type: UserType;
   imageUrl: string | null;
   coverImageUrl: string | null;
-  profile: ProfileDetails;
+  firstName: string;
+  lastName: string;
+  headline: string;
+  bio: string;
+  email: string;
+  phoneNumber: string;
+  locationId: number | null;
+  location: UserLocation | null;
+  positions: Position[];
+  education: Education[];
+  topCommunities: CommunitySummary[];
+  recentPosts: ProfilePost[];
+  socialLinks: UserSocialLink[];
+  stats?: UserStats | null;
+  tags?: any[];
+  interests?: number[];
 }
 
 // --- Request DTOs ---

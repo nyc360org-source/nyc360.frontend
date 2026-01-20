@@ -21,6 +21,19 @@ $radius: 16px;
 .post-page-container {
   max-width: 800px;
   margin: 0 auto;
+  animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 // ==========================================
@@ -31,6 +44,7 @@ $radius: 16px;
 
   .badge-row {
     margin-bottom: 15px;
+
     .badge-highlight {
       background-color: #ffe4d6; // Light orange background
       color: $primary-orange;
@@ -51,7 +65,7 @@ $radius: 16px;
     line-height: 1.2;
     margin-bottom: 20px;
     font-weight: 700;
-    
+
     @media (max-width: 768px) {
       font-size: 1.8rem;
     }
@@ -85,9 +99,9 @@ $radius: 16px;
   margin-bottom: 40px;
   border-radius: $radius;
   overflow: hidden;
-  height: 400px; 
+  height: 400px;
   background-color: #f0f0f0;
-  
+
   img.hero-img {
     width: 100%;
     height: 100%;
@@ -113,21 +127,22 @@ $radius: 16px;
   ::ng-deep p {
     margin-bottom: 24px;
   }
-  
+
   ::ng-deep img {
     max-width: 100%;
     border-radius: 8px;
     margin: 20px 0;
   }
 
-  ::ng-deep h2, ::ng-deep h3 {
+  ::ng-deep h2,
+  ::ng-deep h3 {
     font-family: $font-sans;
     color: $text-dark;
     margin-top: 40px;
     margin-bottom: 20px;
     font-weight: 700;
   }
-  
+
   ::ng-deep blockquote {
     border-left: 4px solid $primary-orange;
     padding-left: 20px;
@@ -145,17 +160,17 @@ $radius: 16px;
   border-radius: $radius;
   padding: 40px;
   text-align: center;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.04);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
   margin-bottom: 50px;
   border: 1px solid $light-border;
-  
+
   h2 {
     font-family: $font-serif;
     font-size: 1.8rem;
     margin-bottom: 15px;
     color: $text-dark;
   }
-  
+
   p {
     color: $text-gray;
     max-width: 500px;
@@ -175,7 +190,7 @@ $radius: 16px;
     cursor: pointer;
     transition: background 0.3s;
     font-family: $font-sans;
-    
+
     &:hover {
       background-color: $primary-hover;
     }
@@ -190,16 +205,16 @@ $radius: 16px;
   padding: 15px 20px;
   border-radius: $radius;
   border: 1px solid $light-border;
-  
+
   button.btn {
     border: none;
     font-family: $font-sans;
     font-weight: 500;
-    
+
     &:hover {
       opacity: 0.9;
     }
-    
+
     i {
       font-size: 1.1rem;
     }
@@ -219,10 +234,10 @@ $radius: 16px;
     border: 1px solid $light-border;
     cursor: pointer;
     transition: transform 0.2s, box-shadow 0.2s;
-    
+
     &:hover {
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     }
 
     h4 {
@@ -231,18 +246,18 @@ $radius: 16px;
       margin-bottom: 10px;
       color: $text-dark;
     }
-    
+
     .rel-meta {
       display: flex;
       justify-content: space-between;
       align-items: center;
       font-family: $font-sans;
-      
+
       .text-primary {
         color: $primary-orange !important;
         font-size: 0.9rem;
       }
-      
+
       .date {
         font-size: 0.85rem;
         color: #999;
@@ -262,19 +277,24 @@ $radius: 16px;
 // ==========================================
 .comments-section {
   margin-bottom: 50px;
-  
+
   .sec-head {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 25px;
-    
+
     h3 {
       font-family: $font-serif;
       font-size: 1.5rem;
-      .count { color: $text-gray; font-size: 1.2rem; font-weight: normal;}
+
+      .count {
+        color: $text-gray;
+        font-size: 1.2rem;
+        font-weight: normal;
+      }
     }
-    
+
     .filter-btn {
       background: none;
       border: none;
@@ -291,12 +311,12 @@ $radius: 16px;
     padding: 25px;
     border-radius: $radius;
     border: 1px solid rgba($primary-orange, 0.1);
-    
+
     .comment-header {
       display: flex;
       align-items: center;
       margin-bottom: 15px;
-      
+
       .c-avatar {
         width: 40px;
         height: 40px;
@@ -304,29 +324,29 @@ $radius: 16px;
         margin-right: 12px;
         border: 2px solid white;
       }
-      
+
       .c-meta {
         display: flex;
         flex-direction: column;
-        
+
         .name-row {
           font-family: $font-sans;
           font-size: 0.95rem;
           margin-bottom: 2px;
           color: $text-dark;
-          
+
           .verified-badge {
-             font-size: 0.7rem;
-             color: $primary-orange;
-             background: rgba(255,255,255,0.6);
-             padding: 2px 6px;
-             border-radius: 4px;
-             margin-left: 8px;
-             font-weight: 700;
-             text-transform: uppercase;
+            font-size: 0.7rem;
+            color: $primary-orange;
+            background: rgba(255, 255, 255, 0.6);
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 8px;
+            font-weight: 700;
+            text-transform: uppercase;
           }
         }
-        
+
         .c-date {
           font-size: 0.8rem;
           color: $text-gray;
@@ -346,8 +366,8 @@ $radius: 16px;
     .c-actions {
       margin-top: 15px;
       padding-top: 15px;
-      border-top: 1px solid rgba(0,0,0,0.05);
-      
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+
       .btn-reply {
         color: $primary-orange;
         background: none;
@@ -359,8 +379,10 @@ $radius: 16px;
         display: flex;
         align-items: center;
         gap: 5px;
-        
-        &:hover { text-decoration: underline; }
+
+        &:hover {
+          text-decoration: underline;
+        }
       }
     }
   }
@@ -374,7 +396,7 @@ $radius: 16px;
   justify-content: center;
   align-items: center;
   height: 60vh;
-  
+
   .spinner {
     width: 50px;
     height: 50px;
@@ -386,6 +408,11 @@ $radius: 16px;
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }

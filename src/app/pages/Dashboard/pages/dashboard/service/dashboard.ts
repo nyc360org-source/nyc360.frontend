@@ -20,20 +20,20 @@ export class DashboardService {
   getDashboardAnalytics(): Observable<{ stats: DashboardStats, recentUsers: UserSummary[] }> {
     const params = new HttpParams().set('page', 1).set('pageSize', 100);
 
-    return this.http.get<UsersApiResponse>(`${this.baseUrl}/all`, { params }).pipe(
+    return this.http.get<any>(`${this.baseUrl}/all`, { params }).pipe(
       map(response => {
-        // Safe access: Ensure data is an array, even if API returns null
-        const users: UserSummary[] = response.data || [];
-        
+        // Safe access: Support both camelCase and PascalCase from API
+        const users: UserSummary[] = response.data || response.Data || [];
+
         // --- 1. Calculate Statistics ---
         const stats: DashboardStats = {
-          totalUsers: response.totalCount || users.length,
-          
+          totalUsers: response.totalCount ?? response.TotalCount ?? users.length,
+
           // Role Distribution
           totalAdmins: users.filter(u => u.role === 'SuperAdmin').length,
           totalOrganizations: users.filter(u => u.role === 'Organization').length,
           totalRegularUsers: users.filter(u => u.role === 'User' || !u.role).length,
-          
+
           // Account Status
           verifiedAccounts: users.filter(u => u.emailConfirmed).length,
           pendingAccounts: users.filter(u => !u.emailConfirmed).length,
@@ -46,15 +46,15 @@ export class DashboardService {
 
         return { stats, recentUsers };
       }),
-      
+
       // --- Error Handling ---
       // If API fails, return empty stats so the page doesn't crash (Infinite Load Fix)
       catchError(error => {
         console.error('Dashboard Analytics Error:', error);
         return of({
-          stats: { 
+          stats: {
             totalUsers: 0, totalAdmins: 0, totalOrganizations: 0, totalRegularUsers: 0,
-            verifiedAccounts: 0, pendingAccounts: 0, lockedAccounts: 0 
+            verifiedAccounts: 0, pendingAccounts: 0, lockedAccounts: 0
           },
           recentUsers: []
         });

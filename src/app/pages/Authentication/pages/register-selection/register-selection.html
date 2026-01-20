@@ -1,5 +1,8 @@
 <div class="selection-container">
-  
+  <a routerLink="/" class="landing-btn">
+    <i class="bi bi-house-door"></i> Back to Home
+  </a>
+
   <div class="brand-panel">
     <div class="brand-content">
       <div class="logo-box">
@@ -15,16 +18,14 @@
     <div class="content-wrapper">
 
       <div *ngIf="currentStep === 'selection'" @fadeSlide>
-        
+
         <div class="header-section">
           <h2 class="main-question">How do you identify?</h2>
           <p class="sub-text">Choose your profile type to proceed.</p>
         </div>
 
         <div class="cards-grid" [@listAnimation]="selectionOptions.length">
-          <div class="selection-card" 
-               *ngFor="let option of selectionOptions" 
-               (click)="onSelect(option.id)">
+          <div class="selection-card" *ngFor="let option of selectionOptions" (click)="onSelect(option.id)">
             <div class="card-icon">
               <i class="bi" [ngClass]="option.icon"></i>
             </div>
@@ -44,7 +45,7 @@
       </div>
 
       <div *ngIf="currentStep === 'form' && form" @fadeSlide class="form-container">
-        
+
         <button class="btn-back" (click)="goBack()">
           <i class="bi bi-arrow-left"></i> Back
         </button>
@@ -54,32 +55,29 @@
           <p class="sub-text">Complete your details securely.</p>
         </div>
 
-        <div *ngIf="errorMessage" class="alert-box">
-          <i class="bi bi-exclamation-circle-fill"></i> {{ errorMessage }}
-        </div>
-
         <form [formGroup]="form" (ngSubmit)="onSubmit()">
-          
+
           <div *ngIf="!isOrganization" class="form-fields">
             <div class="row-group">
               <div class="form-group">
                 <label>First Name</label>
                 <div class="input-wrapper">
                   <i class="bi bi-person"></i>
-                  <input type="text" formControlName="firstName" placeholder="John" 
-                         [class.invalid]="isFieldInvalid('firstName')">
+                  <input type="text" formControlName="firstName" placeholder="John"
+                    [class.is-invalid]="isFieldInvalid('firstName')">
                 </div>
-                <div *ngIf="isFieldInvalid('firstName')" class="error-msg">Name is required (min 2 chars).</div>
+                <div *ngIf="isFieldInvalid('firstName')" class="invalid-feedback d-block">First name is required (min 2
+                  chars).</div>
               </div>
-              
+
               <div class="form-group">
                 <label>Last Name</label>
                 <div class="input-wrapper">
                   <i class="bi bi-person"></i>
                   <input type="text" formControlName="lastName" placeholder="Doe"
-                         [class.invalid]="isFieldInvalid('lastName')">
+                    [class.is-invalid]="isFieldInvalid('lastName')">
                 </div>
-                <div *ngIf="isFieldInvalid('lastName')" class="error-msg">Last name is required.</div>
+                <div *ngIf="isFieldInvalid('lastName')" class="invalid-feedback d-block">Last name is required.</div>
               </div>
             </div>
 
@@ -88,9 +86,10 @@
               <div class="input-wrapper">
                 <i class="bi bi-at"></i>
                 <input type="text" formControlName="username" placeholder="johndoe_nyc"
-                       [class.invalid]="isFieldInvalid('username')">
+                  [class.is-invalid]="isFieldInvalid('username')">
               </div>
-              <div *ngIf="isFieldInvalid('username')" class="error-msg">Username required (min 4 chars).</div>
+              <div *ngIf="isFieldInvalid('username')" class="invalid-feedback d-block">Username required (min 4 chars).
+              </div>
             </div>
           </div>
 
@@ -100,19 +99,58 @@
               <div class="input-wrapper">
                 <i class="bi bi-building"></i>
                 <input type="text" formControlName="Name" placeholder="Official Company Name"
-                       [class.invalid]="isFieldInvalid('Name')">
+                  [class.is-invalid]="isFieldInvalid('Name')">
               </div>
-              <div *ngIf="isFieldInvalid('Name')" class="error-msg">Organization name required.</div>
+              <div *ngIf="isFieldInvalid('Name')" class="invalid-feedback d-block">Organization name required.</div>
             </div>
-            
+
             <div class="form-group">
               <label>Username</label>
               <div class="input-wrapper">
                 <i class="bi bi-person-badge"></i>
                 <input type="text" formControlName="username" placeholder="org_official"
-                       [class.invalid]="isFieldInvalid('username')">
+                  [class.is-invalid]="isFieldInvalid('username')">
               </div>
-              <div *ngIf="isFieldInvalid('username')" class="error-msg">Username required (min 4 chars).</div>
+              <div *ngIf="isFieldInvalid('username')" class="invalid-feedback d-block">Username required (min 4 chars).
+              </div>
+            </div>
+
+            <div class="row-group" *ngIf="selectedType === 'organization'">
+              <div class="form-group">
+                <label>Profit Model</label>
+                <div class="input-wrapper">
+                  <i class="bi bi-graph-up-arrow"></i>
+                  <select formControlName="profitModel" [class.is-invalid]="isFieldInvalid('profitModel')">
+                    <option [ngValue]="null" disabled>Select Model</option>
+                    <option *ngFor="let model of profitModels" [ngValue]="model.value">{{ model.label }}</option>
+                  </select>
+                </div>
+                <div *ngIf="isFieldInvalid('profitModel')" class="invalid-feedback d-block">Required</div>
+              </div>
+
+              <div class="form-group">
+                <label>Org Type</label>
+                <div class="input-wrapper">
+                  <i class="bi bi-diagram-3"></i>
+                  <select formControlName="organizationType" [class.is-invalid]="isFieldInvalid('organizationType')">
+                    <option [ngValue]="null" disabled>Select Type</option>
+                    <option *ngFor="let type of organizationTypes" [ngValue]="type.value">{{ type.label }}</option>
+                  </select>
+                </div>
+                <div *ngIf="isFieldInvalid('organizationType')" class="invalid-feedback d-block">Required</div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Industry</label>
+              <div class="input-wrapper">
+                <i class="bi bi-briefcase"></i>
+                <select formControlName="industry" [class.is-invalid]="isFieldInvalid('industry')">
+                  <option [ngValue]="null" disabled>Select Industry</option>
+                  <option *ngFor="let ind of industries" [ngValue]="ind.id">{{ ind.name }}</option>
+                </select>
+              </div>
+              <div *ngIf="isFieldInvalid('industry')" class="invalid-feedback d-block">Required</div>
             </div>
           </div>
 
@@ -121,9 +159,9 @@
             <div class="input-wrapper">
               <i class="bi bi-envelope"></i>
               <input type="email" formControlName="email" placeholder="email@example.com"
-                     [class.invalid]="isFieldInvalid('email')">
+                [class.is-invalid]="isFieldInvalid('email')">
             </div>
-            <div *ngIf="isFieldInvalid('email')" class="error-msg">Please enter a valid email.</div>
+            <div *ngIf="isFieldInvalid('email')" class="invalid-feedback d-block">Please enter a valid email.</div>
           </div>
 
           <div class="form-group">
@@ -131,27 +169,23 @@
             <div class="input-wrapper">
               <i class="bi bi-lock"></i>
               <input type="password" formControlName="password" placeholder="Strong password"
-                     [class.invalid]="isFieldInvalid('password')">
+                [class.is-invalid]="isFieldInvalid('password')">
             </div>
-            <div *ngIf="isFieldInvalid('password')" class="error-msg">Min 6 chars, 1 digit, 1 lowercase.</div>
+            <div *ngIf="isFieldInvalid('password')" class="invalid-feedback d-block">Min 6 chars, 1 digit, 1 lowercase.
+            </div>
           </div>
 
           <div class="interests-section">
-            <label class="section-label">Select Interests ({{ selectedInterestIds.length }}) <span class="req">*</span></label>
+            <label class="section-label">Select Interests ({{ selectedInterestIds.length }}) <span
+                class="req">*</span></label>
             <div class="chips-grid">
-              <div 
-                class="interest-chip" 
-                *ngFor="let interest of interestsList"
-                [class.active]="isSelected(interest.id)"
+              <div class="interest-chip" *ngFor="let interest of interestsList" [class.active]="isSelected(interest.id)"
                 (click)="toggleInterest(interest.id)">
                 <i class="bi" [ngClass]="interest.icon"></i>
                 <span>{{ interest.name }}</span>
               </div>
             </div>
           </div>
-
-
-          <!-- <div *ngIf="isFieldInvalid('terms')" class="error-msg terms-error">You must accept the terms.</div> -->
 
           <button type="submit" class="btn-submit" [disabled]=" isLoading">
             <span *ngIf="!isLoading">Create Account</span>
@@ -163,4 +197,10 @@
 
     </div>
   </div>
+
+  <!-- Success Modal -->
+  <app-auth-success-modal [visible]="showModal" [title]="modalTitle" [message]="modalMessage"
+    buttonText="Review & Login" (closed)="onModalClose()">
+  </app-auth-success-modal>
+
 </div>

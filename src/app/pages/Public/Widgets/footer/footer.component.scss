@@ -1,14 +1,14 @@
 // --- Variables ---
-$bg-dark: #002147;      // Deep Blue (From Image)
+$bg-dark: #002147; // Deep Blue (From Image)
 $text-white: #ffffff;
-$text-gray: #B0B0B0;    // Light Gray for links
+$text-gray: #B0B0B0; // Light Gray for links
 $border-color: rgba(255, 255, 255, 0.1); // Faint divider
 $font-main: 'Segoe UI', Helvetica, Arial, sans-serif;
 
 .footer-section {
   background-color: $bg-dark;
   color: $text-white;
-  padding: 80px 0 30px; // Top padding 80px, Bottom 30px
+  padding: clamp(40px, 8vw, 80px) 0 clamp(20px, 4vw, 30px);
   font-family: $font-main;
   font-size: 14px;
 }
@@ -16,13 +16,22 @@ $font-main: 'Segoe UI', Helvetica, Arial, sans-serif;
 // 1. Logo Column
 .logo-col {
   padding-right: 40px; // Spacing for desktop
-  
+
   .footer-logo {
-    height: 40px; // Adjust based on your actual logo
-    width: auto;
+    max-width: 100%;
+    height: auto;
     object-fit: contain;
-    // Fallback if using text logo
-    // &.text-logo { font-size: 1.8rem; font-weight: 800; color: white; span { color: #FFA500; } }
+
+    @media (max-width: 768px) {
+      max-width: 250px;
+      margin: 0 auto;
+      display: block;
+    }
+  }
+
+  @media (max-width: 768px) {
+    text-align: center;
+    padding-right: 0;
   }
 }
 
@@ -44,22 +53,24 @@ $font-main: 'Segoe UI', Helvetica, Arial, sans-serif;
 
   li {
     margin-bottom: 12px;
-    
+
     a {
       text-decoration: none;
       color: $text-gray;
       font-size: 14px;
       transition: color 0.2s ease;
-      
+
       &:hover {
         color: $text-white;
         text-decoration: underline;
       }
     }
   }
-  
+
   // Specific spacing for the main links under logo
-  &.main-links li { margin-bottom: 15px; }
+  &.main-links li {
+    margin-bottom: 15px;
+  }
 }
 
 // 4. Social Media
@@ -71,17 +82,17 @@ $font-main: 'Segoe UI', Helvetica, Arial, sans-serif;
     letter-spacing: 1px;
     margin-bottom: 15px;
   }
-  
+
   .social-icons {
     display: flex;
     gap: 15px;
-    
+
     a {
       color: $text-white;
       font-size: 18px;
       width: 36px;
       height: 36px;
-      border: 1px solid rgba(255,255,255,0.3);
+      border: 1px solid rgba(255, 255, 255, 0.3);
       border-radius: 50%; // Circle
       display: flex;
       align-items: center;
@@ -103,12 +114,15 @@ $font-main: 'Segoe UI', Helvetica, Arial, sans-serif;
   margin-top: 60px;
   padding-top: 25px;
   border-top: 1px solid $border-color;
-  
+
   p {
     color: $text-gray;
     font-size: 12px;
     margin-bottom: 10px; // For mobile stacking
-    @media (min-width: 768px) { margin-bottom: 0; }
+
+    @media (min-width: 768px) {
+      margin-bottom: 0;
+    }
   }
 
   .legal-links {
@@ -118,20 +132,34 @@ $font-main: 'Segoe UI', Helvetica, Arial, sans-serif;
     display: inline-flex;
     gap: 20px;
     justify-content: center; // Mobile center
-    @media (min-width: 768px) { justify-content: flex-end; } // Desktop right
+
+    @media (min-width: 768px) {
+      justify-content: flex-end;
+    }
+
+    // Desktop right
 
     li a {
       color: $text-gray;
       font-size: 12px;
       text-decoration: none;
       transition: color 0.2s;
-      &:hover { color: $text-white; }
+
+      &:hover {
+        color: $text-white;
+      }
     }
   }
 }
 
 // Responsive Tweaks
 @media (max-width: 991px) {
-  .logo-col { margin-bottom: 40px; padding-right: 0; }
-  .footer-links { margin-bottom: 30px; }
+  .logo-col {
+    margin-bottom: 40px;
+    padding-right: 0;
+  }
+
+  .footer-links {
+    margin-bottom: 30px;
+  }
 }

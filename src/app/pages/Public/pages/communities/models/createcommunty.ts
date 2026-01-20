@@ -40,6 +40,15 @@ export interface LocationSearchResult {
   zipCode: number;
 }
 
+export interface Tag {
+  id: number;
+  name: string;
+  type: number;
+  division?: number | null;
+  parent?: string | null;
+  children?: string[] | null;
+}
+
 export interface ApiResponse<T> {
   isSuccess: boolean;
   data: T;

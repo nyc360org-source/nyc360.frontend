@@ -1,10 +1,11 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { FormsModule } from '@angular/forms'; 
+import { FormsModule } from '@angular/forms';
 import { PostService } from '../../services/post';
 import { environment } from '../../../../../../environments/environment';
 import { AuthService } from '../../../../../Authentication/Service/auth';
+import { ToastService } from '../../../../../../shared/services/toast.service';
 import { InteractionType, Post, PostComment, RelatedPost } from '../../models/post-details';
 
 @Component({
@@ -15,26 +16,27 @@ import { InteractionType, Post, PostComment, RelatedPost } from '../../models/po
   styleUrls: ['./post-details.scss']
 })
 export class PostDetailsComponent implements OnInit {
-  
+
   private route = inject(ActivatedRoute);
   private postService = inject(PostService);
-  private authService = inject(AuthService); 
+  private authService = inject(AuthService);
   private cdr = inject(ChangeDetectorRef);
+  private toastService = inject(ToastService);
 
   // البيانات
   post: Post | null = null;
   comments: PostComment[] = []; // التعليقات مفصولة هنا بناءً على الواجهة الجديدة
   relatedPosts: RelatedPost[] = [];
-  
+
   // حالة الصفحة
   isLoading = true;
   errorMsg = '';
-  
+
   // متغيرات التفاعل
   currentUserId: string | null = null;
   newCommentContent = '';
   activeReplyId: number | null = null;
-  
+
   // لكي نستخدم الـ Enum في HTML
   protected readonly InteractionType = InteractionType;
 
@@ -57,10 +59,10 @@ export class PostDetailsComponent implements OnInit {
       next: (res) => {
         if (res.isSuccess && res.data) {
           this.post = res.data.post;
-          
+
           // حسب الواجهة: التعليقات تأتي منفصلة في data.comments
           this.comments = res.data.comments || [];
-          
+
           this.relatedPosts = res.data.relatedPosts || [];
         } else {
           this.errorMsg = 'Could not load post details.';
@@ -81,16 +83,16 @@ export class PostDetailsComponent implements OnInit {
 
   submitComment() {
     if (!this.newCommentContent.trim() || !this.post || !this.currentUserId) return;
-    
+
     this.postService.addComment(this.post.id, this.newCommentContent).subscribe({
       next: (res) => {
         if (res.isSuccess) {
           // إضافة التعليق للمصفوفة المحلية
-          this.comments.unshift(res.data); 
-          
+          this.comments.unshift(res.data);
+
           // تحديث العداد
-          if(this.post?.stats) this.post.stats.comments++;
-          
+          if (this.post?.stats) this.post.stats.comments++;
+
           this.newCommentContent = '';
           this.cdr.detectChanges();
         }
@@ -111,10 +113,10 @@ export class PostDetailsComponent implements OnInit {
         if (res.isSuccess) {
           if (!parentComment.replies) parentComment.replies = [];
           parentComment.replies.push(res.data);
-          
+
           if (this.post?.stats) this.post.stats.comments++;
-          
-          this.activeReplyId = null; 
+
+          this.activeReplyId = null;
           this.cdr.detectChanges();
         }
       }
@@ -136,7 +138,7 @@ export class PostDetailsComponent implements OnInit {
     // لاحظ استخدام currentUserInteraction حسب الواجهة الجديدة
     if (this.post.currentUserInteraction === type) {
       // إزالة التفاعل
-      this.post.currentUserInteraction = InteractionType.None; 
+      this.post.currentUserInteraction = InteractionType.None;
       if (this.post.stats) type === InteractionType.Like ? this.post.stats.likes-- : this.post.stats.dislikes--;
     } else {
       // تغيير التفاعل
@@ -149,15 +151,15 @@ export class PostDetailsComponent implements OnInit {
     }
 
     this.postService.interact(this.post.id, type).subscribe({
-      error: () => { 
-        if (this.post) this.post.currentUserInteraction = oldInteraction; 
+      error: () => {
+        if (this.post) this.post.currentUserInteraction = oldInteraction;
         this.cdr.detectChanges();
       }
     });
   }
 
   openShareModal() {
-     alert('Share functionality coming soon!');
+    alert('Share functionality coming soon!');
   }
 
   // --- دوال الصور ---
@@ -168,7 +170,7 @@ export class PostDetailsComponent implements OnInit {
       if (imgUrl.startsWith('http')) return imgUrl;
       return `${environment.apiBaseUrl2}/posts/${imgUrl}`;
     }
-    return 'assets/images/park-placeholder.jpg'; 
+    return 'assets/images/park-placeholder.jpg';
   }
 
   getAuthorImage(author: any): string {
@@ -176,6 +178,6 @@ export class PostDetailsComponent implements OnInit {
       if (author.imageUrl.startsWith('http')) return author.imageUrl;
       return `${environment.apiBaseUrl2}/posts/${author.imageUrl}`;
     }
-    return 'assets/images/default-avatar.png'; 
+    return 'assets/images/default-avatar.png';
   }
 }
