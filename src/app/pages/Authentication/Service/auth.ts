@@ -1,6 +1,6 @@
 import { Injectable, inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, map } from 'rxjs';
 import { Router } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { jwtDecode } from 'jwt-decode';
@@ -116,7 +116,90 @@ export class AuthService {
   }
 
   fetchFullUserInfo(): Observable<AuthResponse<UserInfo>> {
-    return this.http.get<AuthResponse<UserInfo>>(`${environment.apiBaseUrl}/users/my-info`);
+    return this.http.get<any>(`${environment.apiBaseUrl}/users/my-info`).pipe(
+      map(response => {
+        // 1. Map Response Wrapper (PascalCase -> camelCase)
+        const isSuccess = response.IsSuccess ?? response.isSuccess ?? false;
+        const error = response.Error || response.error || null;
+        let data: UserInfo | any = null;
+
+        // 2. Map Data Object if exists
+        const rawData = response.Data || response.data;
+        if (rawData) {
+          data = this.mapToUserInfo(rawData);
+        }
+
+        return {
+          isSuccess,
+          data,
+          error
+        };
+      })
+    );
+  }
+
+  // ============================================================
+  // 5. DATA MAPPING HELPERS (Fix PascalCase <-> camelCase)
+  // ============================================================
+
+  private mapToUserInfo(data: any): UserInfo {
+    return {
+      type: data.Type ?? data.type,
+      firstName: data.FirstName ?? data.firstName,
+      lastName: data.LastName ?? data.lastName,
+      headline: data.Headline ?? data.headline,
+      bio: data.Bio ?? data.bio,
+      email: data.Email ?? data.email,
+      phoneNumber: data.PhoneNumber ?? data.phoneNumber,
+      avatarUrl: data.AvatarUrl ?? data.avatarUrl,
+      coverImageUrl: data.CoverImageUrl ?? data.coverImageUrl,
+      twoFactorEnabled: data.TwoFactorEnabled ?? data.twoFactorEnabled,
+      isVerified: data.IsVerified ?? data.isVerified,
+
+      location: data.Location ? {
+        id: data.Location.Id ?? data.Location.id,
+        borough: data.Location.Borough ?? data.Location.borough,
+        code: data.Location.Code ?? data.Location.code,
+        neighborhoodNet: data.Location.NeighborhoodNet ?? data.Location.neighborhoodNet,
+        neighborhood: data.Location.Neighborhood ?? data.Location.neighborhood,
+        zipCode: data.Location.ZipCode ?? data.Location.zipCode,
+      } : (data.location || null),
+
+      interests: data.Interests ?? data.interests ?? [],
+
+      socialLinks: (data.SocialLinks ?? data.socialLinks ?? []).map((l: any) => ({
+        id: l.Id ?? l.id,
+        platform: l.Platform ?? l.platform,
+        url: l.Url ?? l.url
+      })),
+
+      positions: (data.Positions ?? data.positions ?? []).map((p: any) => ({
+        title: p.Title ?? p.title,
+        company: p.Company ?? p.company,
+        startDate: p.StartDate ?? p.startDate,
+        endDate: p.EndDate ?? p.endDate,
+        isCurrent: p.IsCurrent ?? p.isCurrent
+      })),
+
+      education: (data.Education ?? data.education ?? []).map((e: any) => ({
+        school: e.School ?? e.school,
+        degree: e.Degree ?? e.degree,
+        fieldOfStudy: e.FieldOfStudy ?? e.fieldOfStudy,
+        startDate: e.StartDate ?? e.startDate,
+        endDate: e.EndDate ?? e.endDate
+      })),
+
+      tags: (data.Tags ?? data.tags ?? []).map((t: any) => ({
+        id: t.Id ?? t.id,
+        name: t.Name ?? t.name
+      })),
+
+      businessInfo: data.BusinessInfo ? {
+        organizationType: data.BusinessInfo.OrganizationType ?? data.BusinessInfo.organizationType,
+        profitModel: data.BusinessInfo.ProfitModel ?? data.BusinessInfo.profitModel,
+        industry: data.BusinessInfo.Industry ?? data.BusinessInfo.industry
+      } : (data.businessInfo || null)
+    };
   }
 
   // ============================================================
