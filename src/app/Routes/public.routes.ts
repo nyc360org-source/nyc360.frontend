@@ -34,6 +34,10 @@ export const PUBLIC_ROUTES: Routes = [
       { path: 'profession/my-offers', loadComponent: () => import('../pages/Public/pages/jobs/pages/my-offers/my-offers').then(m => m.MyOffersComponent) },
       { path: 'edit-offer/:id', loadComponent: () => import('../pages/Public/pages/jobs/pages/edit-offer/edit-offer').then(m => m.EditOfferComponent) },
 
+      // events
+      { path: 'events/list', loadComponent: () => import('../pages/Public/pages/events/pages/events-list/events-list').then(m => m.EventsListComponent) },
+      { path: 'events/create', loadComponent: () => import('../pages/Public/pages/events/pages/create-event/create-event').then(m => m.CreateEventComponent) },
+
       // category home
       {
         path: 'category/:categoryPath',
