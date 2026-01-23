@@ -1,6 +1,6 @@
 import { Injectable, inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, map } from 'rxjs';
+import { BehaviorSubject, Observable, map, tap } from 'rxjs';
 import { Router } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { jwtDecode } from 'jwt-decode';
@@ -26,6 +26,7 @@ export class AuthService {
 
   private tokenKey = 'nyc360_token';
   private refreshTokenKey = 'nyc360_refresh_token';
+  private userInfoKey = 'nyc360_user_info';
 
   // User State
   public currentUser$ = new BehaviorSubject<any>(null);
@@ -134,6 +135,15 @@ export class AuthService {
           data,
           error
         };
+      }),
+      tap((res) => {
+        if (res.isSuccess && res.data) {
+          // ✅ تخزين البيانات في LocalStorage عشان تكون متاحة علطول
+          this.fullUserInfoSubject.next(res.data);
+          if (isPlatformBrowser(this.platformId)) {
+            localStorage.setItem(this.userInfoKey, JSON.stringify(res.data));
+          }
+        }
       })
     );
   }
@@ -210,6 +220,7 @@ export class AuthService {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem(this.tokenKey);
       localStorage.removeItem(this.refreshTokenKey);
+      localStorage.removeItem(this.userInfoKey); // ✅ مسح بيانات المستخدم عند الخروج
     }
     this.currentUser$.next(null);
     this.fullUserInfoSubject.next(null);
@@ -314,11 +325,22 @@ export class AuthService {
         // تحديث الحالة فوراً
         this.currentUser$.next(user);
 
+        // ✅ محاولة استرجاع البيانات من LocalStorage أولاً (Cache First)
+        const cachedInfo = localStorage.getItem(this.userInfoKey);
+        if (cachedInfo) {
+          try {
+            this.fullUserInfoSubject.next(JSON.parse(cachedInfo));
+          } catch (e) {
+            console.error('Error parsing cached user info', e);
+          }
+        }
+
         // جلب البيانات الكاملة للمستخدم
         this.fetchFullUserInfo().subscribe({
           next: (res) => {
             if (res.isSuccess) {
-              this.fullUserInfoSubject.next(res.data);
+              // Subject is already updated in the `tap` of fetchFullUserInfo
+              // this.fullUserInfoSubject.next(res.data); <--- Done in tap
             }
           },
           error: (err) => {
