@@ -80,10 +80,16 @@
                 <span class="link-text">Locations</span>
             </a>
 
-            <a class="nav-item" *ngIf="canViewRSS" routerLink="/admin/communities/list" routerLinkActive="active"
-                (click)="closeMobileMenu()">
-                <i class="bi bi-geo-alt-fill"></i>
+            <a class="nav-item" *ngIf="canViewCommunities" routerLink="/admin/communities/list"
+                routerLinkActive="active" (click)="closeMobileMenu()">
+                <i class="bi bi-people-fill"></i>
                 <span class="link-text">Communities</span>
+            </a>
+
+            <a class="nav-item" *ngIf="canViewSupport" routerLink="/admin/support" routerLinkActive="active"
+                (click)="closeMobileMenu()">
+                <i class="bi bi-headset"></i>
+                <span class="link-text">Support Tickets</span>
             </a>
         </div>
     </div>

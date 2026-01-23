@@ -14,13 +14,14 @@ import { ToastService } from '../../../../shared/services/toast.service';
 import { ImageService } from '../../../../shared/services/image.service';
 import { ImgFallbackDirective } from '../../../../shared/directives/img-fallback.directive';
 import { GlobalLoaderService } from '../../../../shared/components/global-loader/global-loader.service';
+import { StatusModalComponent } from '../../../../shared/components/status-modal/status-modal.component';
 
 interface Alert { type: 'yellow' | 'blue' | 'red'; title: string; desc: string; icon: string; }
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, ImgFallbackDirective],
+  imports: [CommonModule, RouterLink, FormsModule, ImgFallbackDirective, StatusModalComponent],
   templateUrl: './home.html',
   styleUrls: ['./home.scss']
 })
@@ -68,6 +69,13 @@ export class Home implements OnInit {
   showTicketModal: boolean = false;
   ticketSubject: string = '';
   ticketMessage: string = '';
+
+  // Status Modal State
+  statusModalOpen: boolean = false;
+  statusModalType: 'success' | 'error' = 'success';
+  statusModalTitle: string = '';
+  statusModalMessage: string = '';
+
   private http = inject(HttpClient); // Inject HttpClient directly here as it wasn't present before
 
   ngOnInit() {
@@ -107,18 +115,30 @@ export class Home implements OnInit {
 
     this.http.post<any>(url, payload).subscribe({
       next: (res) => {
-        if (res.IsSuccess) {
-          this.toastService.success('Request sent to support!');
+        if (res && (res.IsSuccess || res.isSuccess)) {
           this.closeTicketModal();
+          this.openModal('success', 'Request Sent', 'Your request has been sent to support!');
         } else {
-          this.toastService.error('Failed to send request.');
+          const errorMsg = res.message || res.error || res.Message || 'Failed to send request.';
+          this.openModal('error', 'Request Failed', errorMsg);
         }
       },
       error: (err) => {
         console.error(err);
-        this.toastService.error('Error sending request.');
+        this.openModal('error', 'Error', 'Error sending request. Please check your connection.');
       }
     });
+  }
+
+  openModal(type: 'success' | 'error', title: string, message: string) {
+    this.statusModalType = type;
+    this.statusModalTitle = title;
+    this.statusModalMessage = message;
+    this.statusModalOpen = true;
+  }
+
+  closeModal() {
+    this.statusModalOpen = false;
   }
 
   getRealWeather() {

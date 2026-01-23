@@ -247,15 +247,8 @@
     </div>
   </section>
 
-  <div class="success-popup-overlay" *ngIf="showSuccessPopup">
-    <div class="success-card">
-      <div class="checkmark-wrapper">
-        <i class="bi bi-check-lg"></i>
-      </div>
-      <h3>Message Sent</h3>
-      <p>Your ticket has been successfully submitted to our support team.</p>
-      <button class="btn btn-primary" (click)="closePopup()">Done</button>
-    </div>
-  </div>
+  <app-status-modal [isOpen]="statusModalOpen" [type]="statusModalType" [title]="statusModalTitle"
+    [message]="statusModalMessage" (close)="closeModal()">
+  </app-status-modal>
 
 </div>

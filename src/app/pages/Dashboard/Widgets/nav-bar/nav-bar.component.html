@@ -88,7 +88,7 @@
         </li>
         <li *ngIf="canViewSupport">
           <a routerLink="/admin/support" routerLinkActive="active">
-            <i class="bi bi-headset"></i> Support
+            <i class="bi bi-headset"></i> Support Tickets
           </a>
         </li>
         <li *ngIf="canViewCommunities">
@@ -148,9 +148,9 @@
           <span>Locations</span> <i class="bi bi-geo-alt"></i>
         </a>
       </li>
-      <li *ngIf="canViewSupport"> <!-- Assuming Support permission -->
+      <li *ngIf="canViewSupport">
         <a routerLink="/admin/support" routerLinkActive="active" (click)="toggleMenu()">
-          <span>Support</span> <i class="bi bi-headset"></i>
+          <span>Support Tickets</span> <i class="bi bi-headset"></i>
         </a>
       </li>
       <li *ngIf="canViewCommunities">

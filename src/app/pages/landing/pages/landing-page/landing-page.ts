@@ -1,14 +1,14 @@
 import { Component, OnInit, AfterViewInit, ElementRef, ViewChildren, QueryList, Inject, PLATFORM_ID, OnDestroy } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { environment } from '../../../../environments/environment';
+import { StatusModalComponent } from '../../../../shared/components/status-modal/status-modal.component';
 
 @Component({
   selector: 'app-landing-page',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, StatusModalComponent],
   templateUrl: './landing-page.html',
   styleUrls: ['./landing-page.scss'],
 })
@@ -23,8 +23,13 @@ export class LandingPage implements OnInit, AfterViewInit, OnDestroy {
   subject: string = '';
   message: string = '';
 
-  showSuccessPopup: boolean = false;
   isSubmitting: boolean = false;
+
+  // Status Modal State
+  statusModalOpen: boolean = false;
+  statusModalType: 'success' | 'error' = 'success';
+  statusModalTitle: string = '';
+  statusModalMessage: string = '';
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
@@ -72,18 +77,32 @@ export class LandingPage implements OnInit, AfterViewInit, OnDestroy {
     this.http.post<any>(url, payload).subscribe({
       next: (res) => {
         this.isSubmitting = false;
-        if (res && res.IsSuccess) {
-          this.showSuccessPopup = true;
+        // Check for both cases just to be safe, though user showed isSuccess (camelCase)
+        if (res && (res.IsSuccess || res.isSuccess)) {
+          this.openModal('success', 'Message Sent', 'Your ticket has been successfully submitted to our support team.');
           this.resetForm();
         } else {
-          // Handle specific API error format if needed
+          const jsError = res.message || res.error || (res.Message ? res.Message : null);
+          this.openModal('error', 'Submission Failed', jsError || 'Something went wrong. Please try again.');
         }
       },
       error: (err) => {
         this.isSubmitting = false;
         console.error('Error sending support ticket', err);
+        this.openModal('error', 'Error', 'Failed to connect to the server. Please check your internet connection.');
       }
     });
+  }
+
+  openModal(type: 'success' | 'error', title: string, message: string) {
+    this.statusModalType = type;
+    this.statusModalTitle = title;
+    this.statusModalMessage = message;
+    this.statusModalOpen = true;
+  }
+
+  closeModal() {
+    this.statusModalOpen = false;
   }
 
   resetForm() {
@@ -91,10 +110,6 @@ export class LandingPage implements OnInit, AfterViewInit, OnDestroy {
     this.email = '';
     this.subject = '';
     this.message = '';
-  }
-
-  closePopup() {
-    this.showSuccessPopup = false;
   }
 
   ngOnDestroy() {

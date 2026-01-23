@@ -31,9 +31,14 @@ export class SupportListComponent implements OnInit {
     private http = inject(HttpClient);
 
     tickets: Ticket[] = [];
+    filteredTickets: Ticket[] = [];
     isLoading = true;
     page = 1;
-    pageSize = 20;
+    pageSize = 50; // Increased to handle filtering better locally if needed
+
+    // Search & Filter
+    searchTerm: string = '';
+    statusFilter: string = 'all';
 
     // Modal State
     selectedTicketId: number | null = null;
@@ -61,6 +66,7 @@ export class SupportListComponent implements OnInit {
                         createdAt: t.createdAt || t.CreatedAt,
                         assignedAdminName: t.assignedAdminName || t.AssignedAdminName
                     }));
+                    this.filterTickets();
                 }
                 this.isLoading = false;
             },
@@ -69,6 +75,33 @@ export class SupportListComponent implements OnInit {
                 this.isLoading = false;
             }
         });
+    }
+
+    filterTickets() {
+        const search = this.searchTerm ? this.searchTerm.toLowerCase().trim() : '';
+
+        this.filteredTickets = this.tickets.filter(t => {
+            const subject = (t.subject || '').toLowerCase();
+            const creator = (t.creatorName || '').toLowerCase();
+            const email = (t.creatorEmail || '').toLowerCase();
+            const id = (t.id ? t.id.toString() : '');
+
+            const matchesSearch = !search ||
+                subject.includes(search) ||
+                creator.includes(search) ||
+                id.includes(search) ||
+                email.includes(search);
+
+            const matchesStatus = this.statusFilter === 'all' ||
+                (this.statusFilter === 'active' && t.status === TicketStatus.Active) ||
+                (this.statusFilter === 'closed' && t.status === TicketStatus.Closed);
+
+            return matchesSearch && matchesStatus;
+        });
+    }
+
+    onSearch() {
+        this.filterTickets();
     }
 
     // --- Actions ---

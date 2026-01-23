@@ -21,12 +21,16 @@ export class SidebarComponent implements OnInit {
     canViewRoles = false;
     canViewRSS = false;
     canViewDashboard = false;
+    canViewCommunities = false;
+    canViewSupport = false;
 
     ngOnInit() {
         this.canViewUsers = this.authService.hasPermission('Permissions.Users.View');
         this.canViewRoles = this.authService.hasPermission('Permissions.Roles.View');
         this.canViewRSS = this.authService.hasPermission('Permissions.Posts.View');
         this.canViewDashboard = this.authService.hasPermission('Permissions.Dashboard.View');
+        this.canViewCommunities = this.authService.hasPermission('Permissions.Communities.View');
+        this.canViewSupport = true; // Based on NavBar implementation
     }
 
     toggleSidebar() {

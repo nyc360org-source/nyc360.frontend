@@ -1361,64 +1361,214 @@ $nyc-shadow-glow: 0 0 20px rgba(212, 175, 55, 0.3);
 }
 
 // Pending Alert Styles
+// Start of Premium Components
+
+// Ultra-Premium Support Alert (Chat Style 2.0)
+// Compact Professional Alert
 .pending-alert {
-    background: linear-gradient(135deg, #fff3cd 0%, #ffecb5 100%);
-    border-left: 5px solid #ffca2c;
-    border-radius: 8px;
-    padding: 16px 20px;
-    margin-bottom: 30px;
-    box-shadow: 0 4px 12px rgba(255, 202, 44, 0.15);
+    position: relative;
+    max-width: 900px;
+    margin: 0 auto 40px;
+    background: #FFFCF2; // Very light warm background
+    border: 1px solid rgba(212, 175, 55, 0.15); // Subtle gold border
+    border-radius: 16px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.03);
+    overflow: hidden;
+    transition: transform 0.3s;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.06);
+    }
+
+    // Left accent bar
+    &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 5px;
+        background: $nyc-gold;
+    }
 
     .alert-content {
         display: flex;
-        align-items: flex-start;
-        gap: 15px;
+        align-items: center;
+        padding: 1.25rem 2rem;
+        gap: 25px;
 
-        i {
-            font-size: 1.5rem;
-            color: #856404;
-            margin-top: 2px;
+        @media(max-width: 768px) {
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 1.5rem;
+            gap: 15px;
+        }
+    }
+
+    .status-icon-wrapper {
+        position: relative;
+        flex-shrink: 0;
+
+        .icon-circle {
+            width: 44px;
+            height: 44px;
+            background: white;
+            color: $nyc-gold;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            box-shadow: 0 4px 10px rgba(212, 175, 55, 0.1);
         }
 
-        .text {
-            strong {
-                display: block;
-                color: #856404;
-                font-size: 1rem;
-                margin-bottom: 4px;
-                font-weight: 700;
-                font-family: 'Inter', sans-serif;
-            }
+        .pulse-ring {
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            animation: pulse-ring 2s infinite;
+        }
+    }
 
-            p {
+    .alert-details {
+        flex: 1;
+
+        .alert-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 4px;
+            flex-wrap: wrap;
+
+            h4 {
                 margin: 0;
-                color: #856404;
-                font-size: 0.9rem;
-                opacity: 0.9;
-                line-height: 1.4;
+                font-size: 1.05rem;
+                font-weight: 800;
+                color: $nyc-navy;
+                font-family: 'Outfit', sans-serif; // Ensure clean font
+            }
+
+            .verification-tag {
+                background: white;
+                color: #B45309;
+                font-size: 0.7rem;
+                font-weight: 700;
+                padding: 3px 10px;
+                border-radius: 20px;
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                border: 1px solid rgba(180, 83, 9, 0.1);
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+        }
+
+        p {
+            margin: 0;
+            font-size: 0.95rem;
+            color: lighten($nyc-navy, 30%);
+            line-height: 1.5;
+        }
+    }
+
+    .alert-actions {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+
+        @media(max-width: 768px) {
+            width: 100%;
+            justify-content: space-between;
+            padding-top: 15px;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            margin-top: 5px;
+        }
+
+        .wait-info {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #94a3b8;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .btn-support-compact {
+            background: white;
+            border: 1px solid #e2e8f0;
+            padding: 8px 18px;
+            border-radius: 50px;
+            color: $nyc-navy;
+            font-weight: 700;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+
+            &:hover {
+                border-color: $nyc-navy;
+                background: $nyc-navy;
+                color: white;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             }
         }
     }
 }
 
-.btn-contact-support {
-    background: #856404;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 6px;
-    font-weight: 600;
-    cursor: pointer;
-    font-size: 0.85rem;
-    white-space: nowrap;
-    transition: 0.2s;
-    align-self: center; // Align button vertically in alert
+@keyframes pulse-ring {
+    0% {
+        transform: scale(0.9);
+        opacity: 1;
+    }
 
-    &:hover {
-        background: #533f03;
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
     }
 }
 
+// Keyframes
+@keyframes shimmer-border {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    100% {
+        background-position: 100% 50%;
+    }
+}
+
+@keyframes spin-slow {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes pulse-green {
+    0% {
+        box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.4);
+    }
+
+    70% {
+        box-shadow: 0 0 0 6px rgba(46, 204, 113, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(46, 204, 113, 0);
+    }
+}
 
 // ------------------------------------------
 // 6. Premium Modal (Glassmorphism & Luxury)

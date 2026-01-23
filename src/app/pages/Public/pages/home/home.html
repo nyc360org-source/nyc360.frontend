@@ -5,17 +5,37 @@
 
     <!-- Account Pending Alert -->
     <!-- Account Pending Alert -->
+    <!-- Premium Account Verification Status -->
+    <!-- Account Pending Alert (Compact & Professional) -->
     <div class="pending-alert animate__animated animate__fadeInDown" *ngIf="isPendingUser">
       <div class="alert-content">
-        <i class="bi bi-hourglass-split"></i>
-        <div class="text">
-          <strong>Account Pending Approval</strong>
-          <p>Your account is currently under review. Some features may be limited until verified.</p>
+        <div class="status-icon-wrapper">
+          <div class="icon-circle">
+            <i class="bi bi-shield-lock-fill"></i>
+          </div>
+          <div class="pulse-ring"></div>
+        </div>
+
+        <div class="alert-details">
+          <div class="alert-header">
+            <h4>Account Under Review</h4>
+            <span class="verification-tag">
+              <i class="bi bi-patch-check-fill"></i> Processing
+            </span>
+          </div>
+          <p>Your profile is currently being verified by the NYC360 Team. Access is limited during this process.</p>
+        </div>
+
+        <div class="alert-actions">
+          <div class="wait-info">
+            <i class="bi bi-clock-history"></i>
+            <span>Est. Look: 24hrs</span>
+          </div>
+          <button class="btn-support-compact" (click)="openTicketModal()">
+            <i class="bi bi-headset"></i> Support
+          </button>
         </div>
       </div>
-      <button class="btn-contact-support" (click)="openTicketModal()">
-        Contact Support
-      </button>
     </div>
 
     <!-- Support Ticket Modal -->
@@ -263,6 +283,10 @@
       <h3>No Updates Today</h3>
       <p>Please check back later for more NYC news.</p>
     </div>
+
+    <app-status-modal [isOpen]="statusModalOpen" [type]="statusModalType" [title]="statusModalTitle"
+      [message]="statusModalMessage" (close)="closeModal()">
+    </app-status-modal>
 
   </div>
 </div>
