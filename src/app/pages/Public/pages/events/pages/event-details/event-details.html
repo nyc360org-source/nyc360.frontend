@@ -1,0 +1,143 @@
+<div class="event-details-wrapper animate__animated animate__fadeIn" *ngIf="!isLoading && event">
+    <!-- Full Width Header Image -->
+    <section class="event-hero">
+        <div class="hero-image-overlay"></div>
+        <img [src]="event.BannerUrl || 'assets/images/placeholder-event.jpg'"
+            class="hero-img w-100 h-100 object-fit-cover" alt="Event Banner">
+        <div class="hero-content container">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="event-meta mb-3">
+                        <span class="badge bg-gold text-navy px-3 py-2 rounded-pill me-2">LIVE EVENT</span>
+                        <span class="text-white fw-bold"><i class="bi bi-tag-fill me-1"></i> Theater</span>
+                    </div>
+                    <h1 class="display-3 fw-bold text-white mb-4">{{event.Title}}</h1>
+                    <div class="d-flex flex-wrap gap-4 text-white lead fw-medium">
+                        <span><i class="bi bi-calendar-event text-gold me-2"></i> {{event.StartDateTime | date:'EEEE,
+                            MMM d, y'}}</span>
+                        <span><i class="bi bi-clock text-gold me-2"></i> {{event.StartDateTime | date:'h:mm a'}} -
+                            {{event.EndDateTime | date:'h:mm a'}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content Area -->
+    <div class="container py-5">
+        <div class="row g-5">
+            <!-- Left Side: Event Details -->
+            <div class="col-lg-8">
+                <!-- Quick Info Bar -->
+                <div class="info-strip bg-light-gray p-4 rounded-4 mb-5 d-flex flex-wrap gap-5">
+                    <div class="info-item">
+                        <small class="text-muted text-uppercase fw-bold d-block mb-1">Duration</small>
+                        <span class="fw-bold">Approx. 3h</span>
+                    </div>
+                    <div class="info-item">
+                        <small class="text-muted text-uppercase fw-bold d-block mb-1">Language</small>
+                        <span class="fw-bold">English</span>
+                    </div>
+                    <div class="info-item">
+                        <small class="text-muted text-uppercase fw-bold d-block mb-1">Age Policy</small>
+                        <span class="fw-bold">All Ages</span>
+                    </div>
+                </div>
+
+                <!-- Description Section -->
+                <div class="detail-section mb-5">
+                    <h3 class="section-title text-navy fw-bold mb-4">About this event</h3>
+                    <div class="event-description text-muted" [innerHTML]="event.Description"></div>
+                </div>
+
+                <!-- Venue Section -->
+                <div class="detail-section mb-5">
+                    <h3 class="section-title text-navy fw-bold mb-4">Location</h3>
+                    <div class="venue-card p-4 rounded-4 bg-white border shadow-sm d-flex align-items-center gap-4">
+                        <div class="venue-icon bg-light-gray rounded-circle p-3">
+                            <i class="bi bi-geo-alt-fill text-gold h3 m-0"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold m-0">{{event.VenueName}}</h5>
+                            <p class="text-muted m-0">{{event.Address.Street}} {{event.Address.BuildingNumber}}, NYC
+                                {{event.Address.ZipCode}}</p>
+                        </div>
+                        <button class="btn btn-navy-outline ms-auto rounded-pill">View Map</button>
+                    </div>
+                </div>
+
+                <!-- Organizer Section -->
+                <div class="detail-section mb-5">
+                    <h3 class="section-title text-navy fw-bold mb-4">About the organizer</h3>
+                    <div class="organizer-card p-4 rounded-4 bg-navy text-white d-flex align-items-center gap-4">
+                        <div class="organizer-img rounded-circle bg-white p-1 overflow-hidden"
+                            style="width: 80px; height: 80px;">
+                            <img src="https://ui-avatars.com/api/?name=Organizer&background=D4AF37&color=0F172A"
+                                class="w-100" alt="Organizer">
+                        </div>
+                        <div>
+                            <h5 class="fw-bold m-0">{{event.OrganizerName || 'Event Organizer'}}</h5>
+                            <p class="text-white-50 small m-0">Organizing premium NYC experiences since 2018</p>
+                        </div>
+                        <button class="btn btn-gold ms-auto rounded-pill px-4">Follow</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Sticky Ticket Card -->
+            <div class="col-lg-4">
+                <div class="sticky-sidebar">
+                    <div class="ticket-card bg-white shadow-lg rounded-5 overflow-hidden">
+                        <div class="card-header bg-navy text-white p-4 text-center">
+                            <h4 class="fw-bold m-0">Tickets</h4>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="pricing-range text-center mb-4">
+                                <span class="text-muted small">Starting from</span>
+                                <h2 class="display-5 fw-bold text-navy m-0">${{getMinPrice()}}</h2>
+                            </div>
+
+                            <div class="tier-list mb-4">
+                                <div *ngFor="let tier of event.Tiers"
+                                    class="tier-item py-3 border-bottom d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="fw-bold m-0">{{tier.Name}}</h6>
+                                        <small class="text-muted">{{tier.Description}}</small>
+                                    </div>
+                                    <span class="fw-bold text-gold">${{tier.Price}}</span>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-navy w-100 py-3 rounded-pill fw-bold h5 mb-3">GET TICKETS
+                                NOW</button>
+                            <p class="text-center text-muted small"><i class="bi bi-shield-check me-1 text-success"></i>
+                                Secure Checkout by NYC360</p>
+                        </div>
+                    </div>
+
+                    <div class="share-actions mt-4 d-flex justify-content-center gap-3">
+                        <button class="btn btn-outline-secondary rounded-circle p-3"><i
+                                class="bi bi-share"></i></button>
+                        <button class="btn btn-outline-secondary rounded-circle p-3"><i
+                                class="bi bi-heart"></i></button>
+                        <button class="btn btn-outline-secondary rounded-circle p-3"><i
+                                class="bi bi-printer"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading & Error States -->
+<div *ngIf="isLoading" class="text-center py-5 my-5">
+    <div class="spinner-border text-gold" style="width: 3rem; height: 3rem;" role="status"></div>
+    <p class="mt-4 lead text-muted">Opening the curtain for you...</p>
+</div>
+
+<div *ngIf="!isLoading && !event" class="text-center py-5 my-5">
+    <i class="bi bi-exclamation-triangle display-1 text-danger mb-4"></i>
+    <h2 class="fw-bold">Oops! Event not found</h2>
+    <p class="lead text-muted">It might have been moved or canceled.</p>
+    <button class="btn btn-navy rounded-pill mt-3 px-5" routerLink="/events/list">Back to Events</button>
+</div>
