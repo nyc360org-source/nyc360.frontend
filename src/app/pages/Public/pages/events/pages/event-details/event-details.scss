@@ -1,0 +1,167 @@
+$navy: #0F172A;
+$gold: #D4AF37;
+$light-gray: #F8FAFC;
+$border-color: #E2E8F0;
+
+.event-details-wrapper {
+    background: #ffffff;
+    font-family: 'Outfit', sans-serif;
+
+    .bg-light-gray {
+        background-color: $light-gray !important;
+    }
+
+    .bg-navy {
+        background-color: $navy !important;
+    }
+
+    .btn-gold {
+        background-color: $gold;
+        color: $navy;
+        font-weight: 700;
+
+        &:hover {
+            background-color: lighten($gold, 10%);
+        }
+    }
+
+    .btn-navy {
+        background-color: $navy;
+        color: #ffffff;
+
+        &:hover {
+            background-color: lighten($navy, 5%);
+        }
+    }
+
+    .btn-navy-outline {
+        border: 2px solid $navy;
+        color: $navy;
+        font-weight: 700;
+
+        &:hover {
+            background: $navy;
+            color: #fff;
+        }
+    }
+
+    // --- Hero Section ---
+    .event-hero {
+        height: 60vh;
+        min-height: 500px;
+        position: relative;
+        display: flex;
+        align-items: flex-end;
+        overflow: hidden;
+
+        .hero-image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, rgba($navy, 0.9) 0%, rgba($navy, 0.4) 50%, transparent 100%);
+            z-index: 1;
+        }
+
+        .hero-img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 0;
+            transition: transform 10s linear;
+        }
+
+        &:hover .hero-img {
+            transform: scale(1.1);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            padding-bottom: 5rem;
+        }
+    }
+
+    // --- Sections ---
+    .detail-section {
+        .section-title {
+            letter-spacing: -1px;
+            position: relative;
+            display: inline-block;
+
+            &::after {
+                content: '';
+                position: absolute;
+                bottom: -8px;
+                left: 0;
+                width: 40px;
+                height: 4px;
+                background: $gold;
+                border-radius: 2px;
+            }
+        }
+    }
+
+    .event-description {
+        font-size: 1.15rem;
+        line-height: 1.8;
+    }
+
+    .venue-card {
+        border: 1px solid $border-color !important;
+        transition: all 0.3s ease;
+
+        &:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.05) !important;
+        }
+    }
+
+    // --- Sticky Sidebar ---
+    .sticky-sidebar {
+        position: sticky;
+        top: 100px;
+        z-index: 10;
+    }
+
+    .ticket-card {
+        border: none;
+
+        .card-header {
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+    }
+
+    .tier-item {
+        &:last-child {
+            border-bottom: none !important;
+        }
+
+        h6 {
+            font-weight: 700;
+        }
+
+        small {
+            font-size: 0.8rem;
+        }
+    }
+}
+
+@media (max-width: 991px) {
+    .event-hero {
+        height: 50vh;
+
+        .display-3 {
+            font-size: 2.5rem;
+        }
+    }
+
+    .sticky-sidebar {
+        position: relative;
+        top: 0;
+        margin-top: 2rem;
+    }
+}
