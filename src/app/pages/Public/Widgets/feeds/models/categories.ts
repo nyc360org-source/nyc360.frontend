@@ -11,7 +11,8 @@ export enum CategoryEnum {
   Professions = 8,
   Social = 9,
   Transportation = 10,
-  Tv = 11
+  Tv = 11,
+  Events = 12
 }
 
 // 2. خريطة الألوان والأيقونات والروابط لكل قسم (المصدر الموحد للموقع)
@@ -114,6 +115,15 @@ export const CATEGORY_THEMES: { [key: number]: any } = {
     topLinks: [
       { label: 'Feed', route: '/public/feed/tv' },
       { label: 'initiatives', route: '/public/initiatives/tv' }
+    ]
+  },
+  [CategoryEnum.Events]: {
+    color: '#D4AF37', label: 'Events', path: 'events', icon: '/icon-category/culture.png',
+    route: '/events/list',
+    topLinks: [
+      { label: 'Browse', route: '/events/list' },
+      { label: 'Create', route: '/events/create' },
+      { label: 'My Events', route: '/coming-soon' }
     ]
   }
 };

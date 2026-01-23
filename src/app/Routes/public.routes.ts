@@ -36,6 +36,7 @@ export const PUBLIC_ROUTES: Routes = [
 
       // events
       { path: 'events/list', loadComponent: () => import('../pages/Public/pages/events/pages/events-list/events-list').then(m => m.EventsListComponent) },
+      { path: 'events/details/:id', loadComponent: () => import('../pages/Public/pages/events/pages/event-details/event-details').then(m => m.EventDetailsComponent) },
       { path: 'events/create', loadComponent: () => import('../pages/Public/pages/events/pages/create-event/create-event').then(m => m.CreateEventComponent) },
 
       // category home

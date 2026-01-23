@@ -22,6 +22,7 @@ $c-professions: #2ecc71;
 $c-social: #17a2b8;
 $c-transportation: #f1c40f;
 $c-tv: #0d47a1;
+$c-events: #D4AF37;
 
 // SCSS Map to loop through colors easily
 $cat-colors: (
@@ -37,7 +38,8 @@ $cat-colors: (
   'professions': $c-professions,
   'social': $c-social,
   'transportation': $c-transportation,
-  'tv': $c-tv
+  'tv': $c-tv,
+  'events': $c-events
 );
 
 // MIXIN FOR DESKTOP (Hover + Active)

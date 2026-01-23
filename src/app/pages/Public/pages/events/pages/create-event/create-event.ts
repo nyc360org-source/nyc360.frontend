@@ -227,7 +227,7 @@ export class CreateEventComponent implements OnInit {
 
                 if (success) {
                     this.toastService.success('🎊 Success! Your event has been created and published.');
-                    this.router.navigate(['/public/home']);
+                    this.router.navigate(['/events/list']);
                 } else {
                     this.toastService.error(`Failed: ${errorMsg}`);
                 }
