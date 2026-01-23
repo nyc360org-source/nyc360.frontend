@@ -2,6 +2,43 @@
 
   <div class="content-wrapper">
     <!-- 1. Top Section: Featured & Weather -->
+
+    <!-- Account Pending Alert -->
+    <!-- Account Pending Alert -->
+    <div class="pending-alert animate__animated animate__fadeInDown" *ngIf="isPendingUser">
+      <div class="alert-content">
+        <i class="bi bi-hourglass-split"></i>
+        <div class="text">
+          <strong>Account Pending Approval</strong>
+          <p>Your account is currently under review. Some features may be limited until verified.</p>
+        </div>
+      </div>
+      <button class="btn-contact-support" (click)="openTicketModal()">
+        Contact Support
+      </button>
+    </div>
+
+    <!-- Support Ticket Modal -->
+    <div class="modal-overlay" *ngIf="showTicketModal">
+      <div class="modal-card animate__animated animate__zoomIn">
+        <div class="modal-header">
+          <h3>Contact Support</h3>
+          <button class="btn-close-modal" (click)="closeTicketModal()"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div class="modal-body">
+          <label>Subject</label>
+          <input type="text" [(ngModel)]="ticketSubject" placeholder="Subject">
+
+          <label>Message</label>
+          <textarea [(ngModel)]="ticketMessage" placeholder="Explain your issue..." rows="5"></textarea>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" (click)="closeTicketModal()">Cancel</button>
+          <button class="btn btn-primary" (click)="submitTicket()">Send Request</button>
+        </div>
+      </div>
+    </div>
+
     <header class="section-title-main">
       <h1>NYC360 Featured Posts</h1>
     </header>

@@ -10,6 +10,7 @@ export interface UserInfo {
   coverImageUrl: string;
   twoFactorEnabled: boolean;
   isVerified: boolean;
+  isPending: boolean;
   location: UserLocation | null;
   interests: number[];
   socialLinks: SocialLink[];

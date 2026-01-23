@@ -1,0 +1,287 @@
+@use "sass:color";
+
+// Variables
+$primary-color: #0A3D85;
+$bg-color: #f4f6f9;
+$text-dark: #1e293b;
+$text-light: #64748b;
+$success-color: #10b981;
+$danger-color: #ef4444;
+$warning-color: #f59e0b;
+
+.support-dashboard-container {
+    padding: 30px;
+    background-color: $bg-color;
+    min-height: 100vh;
+
+    .header-section {
+        margin-bottom: 30px;
+
+        h2 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: $text-dark;
+            margin-bottom: 5px;
+        }
+
+        p {
+            color: $text-light;
+        }
+    }
+
+    .table-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        border: 1px solid #e2e8f0;
+    }
+
+    .modern-table {
+        width: 100%;
+        border-collapse: collapse;
+
+        thead {
+            background-color: #f8fafc;
+
+            th {
+                padding: 16px;
+                text-align: left;
+                font-weight: 600;
+                color: $text-light;
+                font-size: 0.85rem;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+        }
+
+        tbody {
+            tr {
+                border-bottom: 1px solid #f1f5f9;
+                transition: background-color 0.2s;
+
+                &:last-child {
+                    border-bottom: none;
+                }
+
+                &:hover {
+                    background-color: #f8fafc;
+                }
+
+                td {
+                    padding: 16px;
+                    vertical-align: middle;
+                    font-size: 0.95rem;
+                    color: $text-dark;
+
+                    &.subject-col {
+                        font-weight: 600;
+                        color: $primary-color;
+                        max-width: 300px;
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                    }
+                }
+            }
+        }
+    }
+
+    // Status Badges
+    .status-badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 700;
+
+        &.status-active {
+            background-color: rgba($warning-color, 0.1);
+            color: $warning-color;
+        }
+
+        &.status-closed {
+            background-color: rgba($success-color, 0.1);
+            color: $success-color;
+        }
+    }
+
+    // Buttons
+    .actions-group {
+        display: flex;
+        gap: 8px;
+
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.2s;
+
+            &.btn-reply {
+                background-color: rgba($primary-color, 0.1);
+                color: $primary-color;
+
+                &:hover {
+                    background-color: $primary-color;
+                    color: white;
+                }
+            }
+
+            &.btn-close-ticket {
+                background-color: rgba($success-color, 0.1);
+                color: $success-color;
+
+                &:hover {
+                    background-color: $success-color;
+                    color: white;
+                }
+            }
+        }
+    }
+
+    // Empty State
+    .empty-state {
+        padding: 60px;
+        text-align: center;
+        color: $text-light;
+
+        i {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+    }
+
+    // Loading State
+    .loading-state {
+        padding: 60px;
+        text-align: center;
+    }
+}
+
+// Modal Styles
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+
+    .modal-card {
+        background: white;
+        width: 90%;
+        max-width: 600px;
+        border-radius: 16px;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            h3 {
+                margin: 0;
+                font-size: 1.25rem;
+                font-weight: 700;
+            }
+
+            .btn-close-modal {
+                background: none;
+                border: none;
+                font-size: 1.5rem;
+                cursor: pointer;
+                color: $text-light;
+
+                &:hover {
+                    color: $danger-color;
+                }
+            }
+        }
+
+        .modal-body {
+            padding: 24px;
+
+            textarea {
+                width: 100%;
+                padding: 12px;
+                border: 2px solid #e2e8f0;
+                border-radius: 8px;
+                resize: vertical;
+                font-family: inherit;
+                outline: none;
+                transition: border-color 0.2s;
+
+                &:focus {
+                    border-color: $primary-color;
+                }
+            }
+        }
+
+        .modal-footer {
+            padding: 20px 24px;
+            background-color: #f8fafc;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+
+            .btn {
+                padding: 10px 20px;
+                border-radius: 8px;
+                border: none;
+                font-weight: 600;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+
+                &.btn-secondary {
+                    background: #e2e8f0;
+                    color: $text-dark;
+
+                    &:hover {
+                        background: #cbd5e1;
+                    }
+                }
+
+                &.btn-primary {
+                    background: $primary-color;
+                    color: white;
+
+                    &:hover {
+                        background: color.adjust($primary-color, $lightness: 5%);
+                    }
+
+                    &:disabled {
+                        opacity: 0.6;
+                        cursor: not-allowed;
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Responsive
+@media (max-width: 768px) {
+    .support-dashboard-container {
+        padding: 15px;
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+    }
+}

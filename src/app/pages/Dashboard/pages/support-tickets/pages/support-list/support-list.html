@@ -1,0 +1,86 @@
+<div class="support-dashboard-container animate__animated animate__fadeIn">
+
+    <div class="header-section">
+        <h2>Support Dashboard</h2>
+        <p>Manage and respond to user inquiries.</p>
+    </div>
+
+    <div class="table-card">
+        <div class="table-responsive">
+            <table class="modern-table" *ngIf="!isLoading && tickets.length > 0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Subject</th>
+                        <th>Sender</th>
+                        <th>Email</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let ticket of tickets">
+                        <td>#{{ ticket.id }}</td>
+                        <td class="subject-col">{{ ticket.subject }}</td>
+                        <td>{{ ticket.creatorName }}</td>
+                        <td>{{ ticket.creatorEmail }}</td>
+                        <td>{{ ticket.createdAt | date:'short' }}</td>
+                        <td>
+                            <span class="status-badge" [ngClass]="getStatusClass(ticket.status)">
+                                {{ getStatusName(ticket.status) }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="actions-group">
+                                <!-- Reply Button -->
+                                <button class="btn-icon btn-reply" (click)="openReply(ticket.id)" title="Reply">
+                                    <i class="bi bi-reply-fill"></i>
+                                </button>
+
+                                <!-- Close Button -->
+                                <button class="btn-icon btn-close-ticket" *ngIf="ticket.status === 1"
+                                    (click)="closeTicket(ticket.id)" title="Close Ticket">
+                                    <i class="bi bi-check-circle-fill"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Empty State -->
+            <div class="empty-state" *ngIf="!isLoading && tickets.length === 0">
+                <i class="bi bi-inbox"></i>
+                <p>No support tickets found.</p>
+            </div>
+
+            <!-- Loading State -->
+            <div class="loading-state" *ngIf="isLoading">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reply Modal Overlay -->
+    <div class="modal-overlay" *ngIf="showReplyModal">
+        <div class="modal-card animate__animated animate__zoomIn">
+            <div class="modal-header">
+                <h3>Reply to Ticket #{{ selectedTicketId }}</h3>
+                <button class="btn-close-modal" (click)="closeReply()"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <div class="modal-body">
+                <textarea [(ngModel)]="replyMessage" placeholder="Type your reply here..." rows="6"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" (click)="closeReply()">Cancel</button>
+                <button class="btn btn-primary" (click)="submitReply()" [disabled]="!replyMessage.trim()">
+                    <i class="bi bi-send-fill"></i> Send Reply
+                </button>
+            </div>
+        </div>
+    </div>
+
+</div>

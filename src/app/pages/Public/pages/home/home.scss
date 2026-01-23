@@ -1359,3 +1359,229 @@ $nyc-shadow-glow: 0 0 20px rgba(212, 175, 55, 0.3);
         color: #64748b;
     }
 }
+
+// Pending Alert Styles
+.pending-alert {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffecb5 100%);
+    border-left: 5px solid #ffca2c;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 12px rgba(255, 202, 44, 0.15);
+
+    .alert-content {
+        display: flex;
+        align-items: flex-start;
+        gap: 15px;
+
+        i {
+            font-size: 1.5rem;
+            color: #856404;
+            margin-top: 2px;
+        }
+
+        .text {
+            strong {
+                display: block;
+                color: #856404;
+                font-size: 1rem;
+                margin-bottom: 4px;
+                font-weight: 700;
+                font-family: 'Inter', sans-serif;
+            }
+
+            p {
+                margin: 0;
+                color: #856404;
+                font-size: 0.9rem;
+                opacity: 0.9;
+                line-height: 1.4;
+            }
+        }
+    }
+}
+
+.btn-contact-support {
+    background: #856404;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    transition: 0.2s;
+    align-self: center; // Align button vertically in alert
+
+    &:hover {
+        background: #533f03;
+    }
+}
+
+
+// ------------------------------------------
+// 6. Premium Modal (Glassmorphism & Luxury)
+// ------------------------------------------
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.6); // Deep Navy Dim
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    backdrop-filter: blur(8px);
+    padding: 20px;
+
+    .modal-card {
+        background: #ffffff;
+        width: 100%;
+        max-width: 550px;
+        border-radius: 24px;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        display: flex;
+        flex-direction: column;
+
+        .modal-header {
+            padding: 24px 30px;
+            background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            h3 {
+                margin: 0;
+                font-family: 'Merriweather', serif;
+                font-size: 1.5rem;
+                font-weight: 900;
+                color: $nyc-navy;
+                letter-spacing: -0.5px;
+            }
+
+            .btn-close-modal {
+                background: rgba(0, 0, 0, 0.05);
+                border: none;
+                width: 36px;
+                height: 36px;
+                border-radius: 50%;
+                font-size: 1.1rem;
+                color: $nyc-navy;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                &:hover {
+                    background: #fee2e2; // Soft red bg
+                    color: #ef4444; // Red icon
+                    transform: rotate(90deg);
+                }
+            }
+        }
+
+        .modal-body {
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            background: white;
+
+            .form-group {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+
+                label {
+                    font-weight: 700;
+                    font-size: 0.85rem;
+                    color: #64748b;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                    margin-left: 5px;
+                }
+
+                input,
+                textarea {
+                    padding: 14px 18px;
+                    background: #f8fafc;
+                    border: 2px solid #e2e8f0;
+                    border-radius: 12px;
+                    font-family: 'Outfit', sans-serif;
+                    font-size: 1rem;
+                    color: $nyc-navy;
+                    width: 100%;
+                    outline: none;
+                    transition: all 0.3s ease;
+                    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+
+                    &::placeholder {
+                        color: #94a3b8;
+                    }
+
+                    &:focus {
+                        background: white;
+                        border-color: $nyc-gold;
+                        box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.15);
+                        transform: translateY(-1px);
+                    }
+                }
+
+                textarea {
+                    resize: vertical;
+                    min-height: 120px;
+                }
+            }
+        }
+
+        .modal-footer {
+            padding: 24px 30px;
+            background: #f8fafc;
+            border-top: 1px solid rgba(0, 0, 0, 0.03);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+
+            .btn {
+                padding: 12px 24px;
+                border-radius: 12px;
+                border: none;
+                cursor: pointer;
+                font-weight: 700;
+                font-size: 0.95rem;
+                transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+                &.btn-secondary {
+                    background: white;
+                    color: #64748b;
+                    border: 1px solid #e2e8f0;
+
+                    &:hover {
+                        background: #f1f5f9;
+                        color: $nyc-navy;
+                    }
+                }
+
+                &.btn-primary {
+                    background: linear-gradient(135deg, $nyc-gold 0%, #b4932c 100%);
+                    color: white;
+                    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+
+                    &:hover {
+                        transform: translateY(-2px);
+                        box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+                    }
+
+                    &:active {
+                        transform: translateY(0);
+                    }
+                }
+            }
+        }
+    }
+}

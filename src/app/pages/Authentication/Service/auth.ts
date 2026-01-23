@@ -165,6 +165,7 @@ export class AuthService {
       coverImageUrl: data.CoverImageUrl ?? data.coverImageUrl,
       twoFactorEnabled: data.TwoFactorEnabled ?? data.twoFactorEnabled,
       isVerified: data.IsVerified ?? data.isVerified,
+      isPending: data.IsPending ?? data.isPending ?? false,
 
       location: data.Location ? {
         id: data.Location.Id ?? data.Location.id,

@@ -25,6 +25,7 @@ export class NavBarComponent {
   canViewRSS = false;
   canViewDashboard = false;
   canViewCommunities = false;
+  canViewSupport = false;
 
   ngOnInit() {
     // Check Permissions Dynamically
@@ -33,6 +34,8 @@ export class NavBarComponent {
     this.canViewRSS = this.authService.hasPermission('Permissions.Posts.View'); // Or RSS permission
     this.canViewDashboard = this.authService.hasPermission('Permissions.Dashboard.View');
     this.canViewCommunities = this.authService.hasPermission('Permissions.Communities.View');
+    // For now, allow Support view if Dashboard view is allowed, or add specific permission
+    this.canViewSupport = true; // this.authService.hasPermission('Permissions.Support.View'); 
   }
 
 

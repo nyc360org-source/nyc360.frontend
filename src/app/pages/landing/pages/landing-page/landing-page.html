@@ -67,12 +67,36 @@
         <p>Building a platform New Yorkers can trust.</p>
       </div>
       <div class="values-grid">
-        <div class="value-card hidden-up" #animEl><div class="icon-square"><i class="bi bi-people-fill"></i></div><h3>Community-First</h3><p>Neighbors before numbers.</p></div>
-        <div class="value-card hidden-up delay-100" #animEl><div class="icon-square"><i class="bi bi-eye-fill"></i></div><h3>Transparency</h3><p>No hidden agendas.</p></div>
-        <div class="value-card hidden-up delay-200" #animEl><div class="icon-square"><i class="bi bi-heart-fill"></i></div><h3>Inclusivity</h3><p>Every borough, every voice.</p></div>
-        <div class="value-card hidden-up" #animEl><div class="icon-square"><i class="bi bi-geo-alt-fill"></i></div><h3>Local Impact</h3><p>Supporting neighborhood economies.</p></div>
-        <div class="value-card hidden-up delay-100" #animEl><div class="icon-square"><i class="bi bi-shield-check"></i></div><h3>Trust & Credibility</h3><p>Verified information.</p></div>
-        <div class="value-card hidden-up delay-200" #animEl><div class="icon-square"><i class="bi bi-lightbulb-fill"></i></div><h3>Innovation</h3><p>Solving urban challenges.</p></div>
+        <div class="value-card hidden-up" #animEl>
+          <div class="icon-square"><i class="bi bi-people-fill"></i></div>
+          <h3>Community-First</h3>
+          <p>Neighbors before numbers.</p>
+        </div>
+        <div class="value-card hidden-up delay-100" #animEl>
+          <div class="icon-square"><i class="bi bi-eye-fill"></i></div>
+          <h3>Transparency</h3>
+          <p>No hidden agendas.</p>
+        </div>
+        <div class="value-card hidden-up delay-200" #animEl>
+          <div class="icon-square"><i class="bi bi-heart-fill"></i></div>
+          <h3>Inclusivity</h3>
+          <p>Every borough, every voice.</p>
+        </div>
+        <div class="value-card hidden-up" #animEl>
+          <div class="icon-square"><i class="bi bi-geo-alt-fill"></i></div>
+          <h3>Local Impact</h3>
+          <p>Supporting neighborhood economies.</p>
+        </div>
+        <div class="value-card hidden-up delay-100" #animEl>
+          <div class="icon-square"><i class="bi bi-shield-check"></i></div>
+          <h3>Trust & Credibility</h3>
+          <p>Verified information.</p>
+        </div>
+        <div class="value-card hidden-up delay-200" #animEl>
+          <div class="icon-square"><i class="bi bi-lightbulb-fill"></i></div>
+          <h3>Innovation</h3>
+          <p>Solving urban challenges.</p>
+        </div>
       </div>
     </div>
   </section>
@@ -92,7 +116,8 @@
           <div class="timeline-marker"><i class="bi bi-people-fill"></i></div>
           <div class="timeline-content purple-card">
             <h3>Community-Driven Content</h3>
-            <p>Empowering locals to share real stories, hidden gems, and authentic reviews. We believe the best guide to the city is the people who live in it.</p>
+            <p>Empowering locals to share real stories, hidden gems, and authentic reviews. We believe the best guide to
+              the city is the people who live in it.</p>
             <div class="content-img"><img src="d8369bcb67a7c7a947aef36c6eccb42090d57a29.jpg" alt="Community"></div>
           </div>
         </div>
@@ -101,7 +126,8 @@
           <div class="timeline-marker"><i class="bi bi-shield-check"></i></div>
           <div class="timeline-content white-card">
             <h3>Trusted Institutions</h3>
-            <p>We partner directly with verified organizations like the MTA, city government to ensure data accuracy you can rely on.</p>
+            <p>We partner directly with verified organizations like the MTA, city government to ensure data accuracy you
+              can rely on.</p>
           </div>
         </div>
 
@@ -123,7 +149,8 @@
           <div class="timeline-marker"><i class="bi bi-geo-alt-fill"></i></div>
           <div class="timeline-content white-card">
             <h3>Location-Aware Experience</h3>
-            <p>Our geolocation technology unlocks the city around you in real-time. Get contextual history, transit alerts, and special offers.</p>
+            <p>Our geolocation technology unlocks the city around you in real-time. Get contextual history, transit
+              alerts, and special offers.</p>
             <div class="content-img"><img src="newyorl-location.png" alt="Map"></div>
           </div>
         </div>
@@ -136,7 +163,9 @@
     <div class="contact-header-bg">
       <div class="container hidden-up" #animEl>
         <h2 class="header-title">Let's Start a Conversation</h2>
-        <p class="header-sub">Whether you are a city institution, curious New Yorker, or a visitor. <strong>NYC360</strong> is here to help.</p>
+        <p class="header-sub">Whether you are a city institution, curious New Yorker, or a visitor.
+          <strong>NYC360</strong> is here to help.
+        </p>
       </div>
     </div>
 
@@ -163,22 +192,70 @@
 
         <div class="contact-card form-side hidden-right" #animEl>
           <h3>Send us a message</h3>
-          <form>
+          <form (ngSubmit)="onSubmit()" #contactForm="ngForm">
             <div class="row-inputs">
-              <div class="form-group"><label>First Name</label><input type="text" placeholder="Jane" class="input-modern"></div>
-              <div class="form-group"><label>Last Name</label><input type="text" placeholder="Doe" class="input-modern"></div>
+              <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" placeholder="Your Name" class="input-modern" [(ngModel)]="name" name="name" required
+                  minlength="3" maxlength="50" #nameInput="ngModel">
+                <div *ngIf="nameInput.invalid && (nameInput.dirty || nameInput.touched)" class="validation-error">
+                  <small *ngIf="nameInput.errors?.['required']">Name is required.</small>
+                  <small *ngIf="nameInput.errors?.['minlength']">Name must be at least 3 chars.</small>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Subject</label>
+                <input type="text" placeholder="Subject" class="input-modern" [(ngModel)]="subject" name="subject"
+                  required minlength="5" maxlength="100" #subjectInput="ngModel">
+                <div *ngIf="subjectInput.invalid && (subjectInput.dirty || subjectInput.touched)"
+                  class="validation-error">
+                  <small *ngIf="subjectInput.errors?.['required']">Subject is required.</small>
+                  <small *ngIf="subjectInput.errors?.['minlength']">Subject must be at least 5 chars.</small>
+                </div>
+              </div>
             </div>
-            <div class="form-group"><label>Email Address</label><input type="email" placeholder="jane@example.com" class="input-modern"></div>
-            <div class="form-group"><label>Message</label><textarea rows="4" placeholder="How can we help you?" class="input-modern"></textarea></div>
-            <button type="submit" class="btn btn-block btn-primary-dark hover-lift">Send Message</button>
+            <div class="form-group">
+              <label>Email Address</label>
+              <input type="email" placeholder="name@example.com" class="input-modern" [(ngModel)]="email" name="email"
+                required email #emailInput="ngModel">
+              <div *ngIf="emailInput.invalid && (emailInput.dirty || emailInput.touched)" class="validation-error">
+                <small *ngIf="emailInput.errors?.['required']">Email is required.</small>
+                <small *ngIf="emailInput.errors?.['email']">Please enter a valid email.</small>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Message</label>
+              <textarea rows="4" placeholder="How can we help you?" class="input-modern" [(ngModel)]="message"
+                name="message" required minlength="10" maxlength="1000" #messageInput="ngModel"></textarea>
+              <div *ngIf="messageInput.invalid && (messageInput.dirty || messageInput.touched)"
+                class="validation-error">
+                <small *ngIf="messageInput.errors?.['required']">Message is required.</small>
+                <small *ngIf="messageInput.errors?.['minlength']">Message must be at least 10 chars.</small>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-block btn-primary-dark hover-lift"
+              [disabled]="!contactForm.valid || isSubmitting">
+              {{ isSubmitting ? 'Sending...' : 'Send Message' }}
+            </button>
           </form>
         </div>
 
 
 
-        
+
       </div>
     </div>
   </section>
+
+  <div class="success-popup-overlay" *ngIf="showSuccessPopup">
+    <div class="success-card">
+      <div class="checkmark-wrapper">
+        <i class="bi bi-check-lg"></i>
+      </div>
+      <h3>Message Sent</h3>
+      <p>Your ticket has been successfully submitted to our support team.</p>
+      <button class="btn btn-primary" (click)="closePopup()">Done</button>
+    </div>
+  </div>
 
 </div>

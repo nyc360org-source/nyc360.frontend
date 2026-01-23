@@ -49,7 +49,10 @@ export const ADMIN_ROUTES: Routes = [
       // Communities
       { path: 'communities/list', loadComponent: () => import('../pages/Dashboard/pages/communities/pages/communities-list/communities-list').then(m => m.CommunitiesListComponent) },
       { path: 'communities/disband-requests', loadComponent: () => import('../pages/Dashboard/pages/communities/pages/disband-requests/disband-requests').then(m => m.DisbandRequestsComponent) },
-      { path: 'communities/moderation/:id', loadComponent: () => import('../pages/Dashboard/pages/communities/pages/community-moderation/community-moderation').then(m => m.CommunityModerationComponent) }
+      { path: 'communities/moderation/:id', loadComponent: () => import('../pages/Dashboard/pages/communities/pages/community-moderation/community-moderation').then(m => m.CommunityModerationComponent) },
+
+      // Support Tickets
+      { path: 'support', loadComponent: () => import('../pages/Dashboard/pages/support-tickets/pages/support-list/support-list').then(m => m.SupportListComponent) }
     ]
   }
 ];

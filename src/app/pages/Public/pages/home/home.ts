@@ -1,5 +1,6 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../Authentication/Service/auth';
@@ -61,7 +62,20 @@ export class Home implements OnInit {
   selectedCategoryId: number = -1;
   categories = [{ id: -1, name: 'All', icon: 'bi-grid' }, ...CATEGORY_LIST];
 
+  isPendingUser: boolean = false;
+
+  // Ticket Modal State
+  showTicketModal: boolean = false;
+  ticketSubject: string = '';
+  ticketMessage: string = '';
+  private http = inject(HttpClient); // Inject HttpClient directly here as it wasn't present before
+
   ngOnInit() {
+    // Check for pending status
+    this.authService.fullUserInfo$.subscribe(info => {
+      this.isPendingUser = info?.isPending === true;
+    });
+
     this.route.queryParams.subscribe(params => {
       const cat = params['category'];
       this.selectedCategoryId = cat !== undefined ? +cat : -1;
@@ -69,6 +83,42 @@ export class Home implements OnInit {
     });
 
     this.getRealWeather();
+  }
+
+  openTicketModal() {
+    this.ticketSubject = 'Account Pending Verification';
+    this.ticketMessage = 'My account is pending. Please review my profile.';
+    this.showTicketModal = true;
+  }
+
+  closeTicketModal() {
+    this.showTicketModal = false;
+  }
+
+  submitTicket() {
+    if (!this.ticketMessage || !this.ticketSubject) return;
+
+    const payload = {
+      Subject: this.ticketSubject,
+      Message: this.ticketMessage
+    };
+
+    const url = `${environment.apiBaseUrl}/support-tickets/ticket/create/private`;
+
+    this.http.post<any>(url, payload).subscribe({
+      next: (res) => {
+        if (res.IsSuccess) {
+          this.toastService.success('Request sent to support!');
+          this.closeTicketModal();
+        } else {
+          this.toastService.error('Failed to send request.');
+        }
+      },
+      error: (err) => {
+        console.error(err);
+        this.toastService.error('Error sending request.');
+      }
+    });
   }
 
   getRealWeather() {
