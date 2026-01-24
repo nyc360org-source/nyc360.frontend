@@ -21,7 +21,6 @@ export const CATEGORY_THEMES: { [key: number]: any } = {
     color: '#ff7f50', label: 'Community', path: 'community', icon: '/icon-category/commumity.png',
     route: '/public/community',
     topLinks: [
-      { label: 'Feed', route: '/public/community' },
       { label: 'Explore', route: '/public/discover' },
       { label: 'My Communities', route: '/public/my-communities' }
     ]
@@ -117,28 +116,6 @@ export const CATEGORY_THEMES: { [key: number]: any } = {
       { label: 'initiatives', route: '/public/initiatives/tv' }
     ]
   },
-  [CategoryEnum.Events]: {
-    color: '#D4AF37', label: 'Events', path: 'events', icon: '/icon-category/culture.png',
-    route: '/events/list',
-    topLinks: [
-      { label: 'Browse', route: '/events/list' },
-      { label: 'Create', route: '/events/create' },
-      { label: 'My Events', route: '/coming-soon' }
-    ]
-  }
+
+  
 };
-// // 1. نفس الـ Enum اللي في الـ Backend بالظبط
-// export enum CategoryEnum {
-//   Community = 0,
-//   Culture = 1,
-//   Education = 2,
-//   Health = 3,
-//   Housing = 4,
-//   Lifestyle = 5,
-//   Legal = 6,
-//   News = 7,
-//   Professions = 8,
-//   Social = 9,
-//   Transportation = 10,
-//   Tv = 11
-// }

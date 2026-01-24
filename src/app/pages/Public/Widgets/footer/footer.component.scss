@@ -1,165 +1,320 @@
-// --- Variables ---
-$bg-dark: #002147; // Deep Blue (From Image)
-$text-white: #ffffff;
-$text-gray: #B0B0B0; // Light Gray for links
-$border-color: rgba(255, 255, 255, 0.1); // Faint divider
-$font-main: 'Segoe UI', Helvetica, Arial, sans-serif;
+@import "../../../../../styles.scss";
 
 .footer-section {
-  background-color: $bg-dark;
-  color: $text-white;
-  padding: clamp(40px, 8vw, 80px) 0 clamp(20px, 4vw, 30px);
-  font-family: $font-main;
-  font-size: 14px;
+  background-color: var(--luxury-navy);
+  color: white;
+  padding: 80px 0 30px;
+  position: relative;
+  overflow: hidden;
+
+  // Background decoration
+  &::before {
+    content: '';
+    position: absolute;
+    top: -100px;
+    right: -100px;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.05) 0%, transparent 70%);
+    pointer-events: none;
+  }
 }
 
-// 1. Logo Column
-.logo-col {
-  padding-right: 40px; // Spacing for desktop
+.footer-main {
+  margin-bottom: 60px;
+}
 
-  .footer-logo {
-    max-width: 100%;
-    height: auto;
-    object-fit: contain;
+// Logo & Info Column
+.brand-column {
+  .brand-box {
+    margin-bottom: 25px;
 
-    @media (max-width: 768px) {
-      max-width: 250px;
-      margin: 0 auto;
-      display: block;
+    .footer-logo {
+      height: 60px;
+      width: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.1));
     }
   }
 
-  @media (max-width: 768px) {
-    text-align: center;
-    padding-right: 0;
+  .brand-desc {
+    color: var(--luxury-slate);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 25px;
+    max-width: 320px;
   }
 }
 
-// 2. Titles
-.col-title {
-  font-size: 13px;
+// Footer Titles
+.footer-title {
+  color: white;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.1rem;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: $text-white;
-  margin-bottom: 25px;
+  margin-bottom: 30px;
+  position: relative;
+  padding-bottom: 12px;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 35px;
+    height: 2px;
+    background: var(--luxury-gold);
+    border-radius: 2px;
+  }
 }
 
-// 3. Links List
+// Links Styling
 .footer-links {
   list-style: none;
   padding: 0;
   margin: 0;
 
   li {
-    margin-bottom: 12px;
+    margin-bottom: 14px;
+    transition: transform 0.3s ease;
 
-    a {
-      text-decoration: none;
-      color: $text-gray;
-      font-size: 14px;
-      transition: color 0.2s ease;
-
-      &:hover {
-        color: $text-white;
-        text-decoration: underline;
-      }
-    }
-  }
-
-  // Specific spacing for the main links under logo
-  &.main-links li {
-    margin-bottom: 15px;
-  }
-}
-
-// 4. Social Media
-.social-box {
-  .social-title {
-    font-size: 13px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 15px;
-  }
-
-  .social-icons {
-    display: flex;
-    gap: 15px;
-
-    a {
-      color: $text-white;
-      font-size: 18px;
-      width: 36px;
-      height: 36px;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      border-radius: 50%; // Circle
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.3s;
-      text-decoration: none;
-
-      &:hover {
-        background-color: $text-white;
-        color: $bg-dark;
-        border-color: $text-white;
-      }
-    }
-  }
-}
-
-// 5. Bottom Bar
-.footer-bottom {
-  margin-top: 60px;
-  padding-top: 25px;
-  border-top: 1px solid $border-color;
-
-  p {
-    color: $text-gray;
-    font-size: 12px;
-    margin-bottom: 10px; // For mobile stacking
-
-    @media (min-width: 768px) {
+    &:last-child {
       margin-bottom: 0;
     }
+
+    a {
+      color: var(--luxury-slate);
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+      display: inline-block;
+      position: relative;
+
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 0;
+        height: 1px;
+        background-color: var(--luxury-gold);
+        transition: width 0.3s ease;
+      }
+
+      &:hover {
+        color: white;
+
+        &::after {
+          width: 100%;
+        }
+      }
+    }
+
+    &:hover {
+      transform: translateX(5px);
+    }
+  }
+}
+
+// Social Media Links
+.social-links {
+  display: flex;
+  gap: 12px;
+  margin-top: 25px;
+
+  .social-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+
+    &:hover {
+      background: var(--luxury-gold);
+      border-color: var(--luxury-gold);
+      color: white;
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(212, 175, 55, 0.2);
+    }
+  }
+}
+
+// Newsletter Section
+.newsletter-box {
+  background: rgba(255, 255, 255, 0.03);
+  padding: 30px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  margin-top: 40px;
+
+  .newsletter-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: white;
   }
 
-  .legal-links {
+  .newsletter-desc {
+    color: var(--luxury-slate);
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+  }
+
+  .input-group {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 5px;
+    display: flex;
+
+    input {
+      background: transparent;
+      border: none;
+      color: white;
+      padding: 10px 15px;
+      flex: 1;
+      font-size: 0.9rem;
+
+      &:focus {
+        outline: none;
+      }
+
+      &::placeholder {
+        color: rgba(255, 255, 255, 0.3);
+      }
+    }
+
+    button {
+      background: var(--luxury-gold);
+      color: white;
+      border: none;
+      padding: 0 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: var(--luxury-gold-dark);
+        transform: scale(1.02);
+      }
+    }
+  }
+}
+
+// Footer Bottom
+.footer-bottom {
+  padding-top: 30px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+
+  .copyright {
+    color: var(--luxury-slate);
+    font-size: 0.9rem;
+    margin: 0;
+  }
+
+  .bottom-links {
     list-style: none;
     padding: 0;
     margin: 0;
-    display: inline-flex;
-    gap: 20px;
-    justify-content: center; // Mobile center
-
-    @media (min-width: 768px) {
-      justify-content: flex-end;
-    }
-
-    // Desktop right
+    display: flex;
+    gap: 25px;
+    justify-content: flex-end;
 
     li a {
-      color: $text-gray;
-      font-size: 12px;
+      color: var(--luxury-slate);
       text-decoration: none;
-      transition: color 0.2s;
+      font-size: 0.85rem;
+      transition: color 0.3s ease;
 
       &:hover {
-        color: $text-white;
+        color: var(--luxury-gold);
       }
     }
   }
 }
 
-// Responsive Tweaks
-@media (max-width: 991px) {
-  .logo-col {
-    margin-bottom: 40px;
-    padding-right: 0;
+// Responsive Adjustments
+@media (max-width: 991.98px) {
+  .footer-section {
+    padding: 60px 0 30px;
+  }
+
+  .brand-column {
+    text-align: center;
+    margin-bottom: 50px;
+
+    .brand-box .footer-logo {
+      margin: 0 auto;
+    }
+
+    .brand-desc {
+      margin: 0 auto 25px;
+    }
+
+    .social-links {
+      justify-content: center;
+    }
+  }
+
+  .footer-title {
+    margin-top: 30px;
+    text-align: center;
+
+    &::after {
+      left: 50%;
+      transform: translateX(-50%);
+    }
   }
 
   .footer-links {
-    margin-bottom: 30px;
+    text-align: center;
+
+    li:hover {
+      transform: none;
+    }
+  }
+
+  .bottom-links {
+    justify-content: center !important;
+    margin-top: 20px;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+
+  .copyright {
+    text-align: center;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .newsletter-box {
+    padding: 20px;
+
+    .input-group {
+      flex-direction: column;
+      gap: 10px;
+      padding: 0;
+      border: none;
+      background: transparent;
+
+      input {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+      }
+
+      button {
+        padding: 12px;
+        border-radius: 12px;
+      }
+    }
   }
 }
