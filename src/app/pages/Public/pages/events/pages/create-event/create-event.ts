@@ -1,10 +1,9 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormArray, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { environment } from '../../../../../../environments/environment';
 import { ToastService } from '../../../../../../shared/services/toast.service';
+import { CreateEventService } from '../../service/create-event.service';
 
 @Component({
     selector: 'app-create-event',
@@ -15,7 +14,7 @@ import { ToastService } from '../../../../../../shared/services/toast.service';
 })
 export class CreateEventComponent implements OnInit {
     private fb = inject(FormBuilder);
-    private http = inject(HttpClient);
+    private createEventService = inject(CreateEventService);
     private router = inject(Router);
     private toastService = inject(ToastService);
     private cdr = inject(ChangeDetectorRef);
@@ -218,8 +217,7 @@ export class CreateEventComponent implements OnInit {
             formData.append('Attachments', file);
         });
 
-        const url = `${environment.apiBaseUrl}/events/create`;
-        this.http.post<any>(url, formData).subscribe({
+        this.createEventService.createEvent(formData).subscribe({
             next: (res) => {
                 this.isSubmitting = false;
                 const success = res.isSuccess || res.IsSuccess;

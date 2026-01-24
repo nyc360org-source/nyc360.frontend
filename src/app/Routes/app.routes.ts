@@ -53,7 +53,7 @@ export const routes: Routes = [
   // ============================================================
   {
     path: 'access-denied',
-    loadComponent: () => import('../pages/Public/pages/access-denied/access-denied.component').then(m => m.AccessDeniedComponent)
+    loadComponent: () => import('../pages/Public/Widgets/access-denied/access-denied.component').then(m => m.AccessDeniedComponent)
   },
 
   {
