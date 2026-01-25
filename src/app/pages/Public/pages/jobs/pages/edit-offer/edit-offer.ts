@@ -58,21 +58,22 @@ export class EditOfferComponent implements OnInit {
 
   initForm() {
     this.editForm = this.fb.group({
-      title: ['', Validators.required],
-      description: ['', Validators.required],
+      title: ['', [Validators.required, Validators.minLength(5)]],
+      description: ['', [Validators.required, Validators.minLength(20)]],
       requirements: [''],
       benefits: [''],
       responsibilities: [''],
-      salaryMin: [0, [Validators.required, Validators.min(0)]],
-      salaryMax: [0, [Validators.required, Validators.min(0)]],
+      salaryMin: [null, [Validators.min(0)]],
+      salaryMax: [null, [Validators.min(0)]],
       workArrangement: [0, Validators.required],
       employmentType: [0, Validators.required],
       employmentLevel: [1, Validators.required],
-      locationId: [0, Validators.required]
+      locationId: [null] // Location is not editable, so we keep it optional but bound
     });
   }
 
   loadOfferDetails() {
+    this.isLoading = true;
     this.offersService.getOfferById(this.offerId).subscribe({
       next: (res) => {
         if (res.isSuccess && res.data?.offer) {
@@ -97,12 +98,12 @@ export class EditOfferComponent implements OnInit {
           });
         }
         this.isLoading = false;
-        this.cdr.detectChanges(); // Force update
+        this.cdr.detectChanges();
       },
-      error: () => {
+      error: (err) => {
+        console.error('Error loading offer:', err);
         this.toastService.error('Failed to load offer details');
         this.locationService.back();
-        this.cdr.detectChanges(); // Force update
       }
     });
   }
@@ -110,41 +111,55 @@ export class EditOfferComponent implements OnInit {
   onSubmit() {
     if (this.editForm.invalid) {
       this.editForm.markAllAsTouched();
+      this.toastService.error('Please fix the errors in the form.');
+      this.cdr.detectChanges();
       return;
     }
 
     this.isSubmitting = true;
     const formValue = this.editForm.value;
 
+    // Use Address object to match backend expectations from create-offer
+    const address = formValue.locationId ? {
+      AddressId: 0,
+      LocationId: Number(formValue.locationId),
+      Street: null,
+      BuildingNumber: null,
+      ZipCode: null
+    } : null;
+
     const payload = {
       Title: formValue.title,
       Description: formValue.description,
-      Requirements: formValue.requirements,
-      Benefits: formValue.benefits,
-      Responsibilities: formValue.responsibilities,
-      SalaryMin: Number(formValue.salaryMin),
-      SalaryMax: Number(formValue.salaryMax),
+      Requirements: formValue.requirements || null,
+      Benefits: formValue.benefits || null,
+      Responsibilities: formValue.responsibilities || null,
+      SalaryMin: formValue.salaryMin !== null ? Number(formValue.salaryMin) : null,
+      SalaryMax: formValue.salaryMax !== null ? Number(formValue.salaryMax) : null,
       WorkArrangement: Number(formValue.workArrangement),
       EmploymentType: Number(formValue.employmentType),
       EmploymentLevel: Number(formValue.employmentLevel),
-      LocationId: Number(formValue.locationId)
+      Address: address
     };
+
+    console.log('Updating job with payload:', payload);
 
     this.offersService.updateOffer(this.offerId, payload).subscribe({
       next: (res) => {
+        this.isSubmitting = false;
         if (res.isSuccess) {
           this.toastService.success('Job offer updated successfully!');
           this.router.navigate(['/public/profession/my-offers']);
         } else {
           this.toastService.error(res.error?.message || 'Update failed');
         }
-        this.isSubmitting = false;
-        this.cdr.detectChanges(); // Force update
+        this.cdr.detectChanges();
       },
-      error: () => {
-        this.toastService.error('Something went wrong');
+      error: (err) => {
+        console.error('Update error:', err);
         this.isSubmitting = false;
-        this.cdr.detectChanges(); // Force update
+        this.toastService.error('Something went wrong during the update.');
+        this.cdr.detectChanges();
       }
     });
   }
