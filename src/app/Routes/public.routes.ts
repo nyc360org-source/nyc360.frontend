@@ -35,9 +35,17 @@ export const PUBLIC_ROUTES: Routes = [
       { path: 'edit-offer/:id', loadComponent: () => import('../pages/Public/pages/jobs/pages/edit-offer/edit-offer').then(m => m.EditOfferComponent) },
 
       // events
-      { path: 'events/list', loadComponent: () => import('../pages/Public/pages/events/pages/events-list/events-list').then(m => m.EventsListComponent) },
-      { path: 'events/details/:id', loadComponent: () => import('../pages/Public/pages/events/pages/event-details/event-details').then(m => m.EventDetailsComponent) },
-      { path: 'events/create', loadComponent: () => import('../pages/Public/pages/events/pages/create-event/create-event').then(m => m.CreateEventComponent) },
+      {
+        path: 'events',
+        loadComponent: () => import('../pages/Public/pages/events/pages/event-layout/event-layout').then(m => m.EventLayoutComponent),
+        children: [
+          { path: 'home', loadComponent: () => import('../pages/Public/pages/events/pages/event-home/event-home').then(m => m.EventHomeComponent) },
+          { path: 'list', loadComponent: () => import('../pages/Public/pages/events/pages/events-list/events-list').then(m => m.EventsListComponent) },
+          { path: 'details/:id', loadComponent: () => import('../pages/Public/pages/events/pages/event-details/event-details').then(m => m.EventDetailsComponent) },
+          { path: 'create', loadComponent: () => import('../pages/Public/pages/events/pages/create-event/create-event').then(m => m.CreateEventComponent) },
+          { path: '', redirectTo: 'home', pathMatch: 'full' }
+        ]
+      },
 
       // category home
       {

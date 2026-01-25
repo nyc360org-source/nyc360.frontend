@@ -4,6 +4,9 @@ import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { EventsListService } from '../../service/events-list.service';
 import { EventListItem } from '../../models/events-list.model';
+import { CATEGORY_THEMES } from '../../../../Widgets/feeds/models/categories';
+import { LocationDashboardService } from '../../../../../Dashboard/pages/locations/service/location-dashboard.service';
+import { LocationModel } from '../../../../../Dashboard/pages/locations/models/location.model';
 
 @Component({
     selector: 'app-events-list',
@@ -14,64 +17,123 @@ import { EventListItem } from '../../models/events-list.model';
 })
 export class EventsListComponent implements OnInit {
     private eventsService = inject(EventsListService);
+    private locationService = inject(LocationDashboardService);
     private router = inject(Router);
 
     events: EventListItem[] = [];
     isLoading = true;
-    searchTerm = '';
-    selectedCategory = 0;
 
-    categories = [
-        { id: 0, name: 'All', icon: 'bi-grid' },
-        { id: 1, name: 'Music', icon: 'bi-music-note-beamed' },
-        { id: 2, name: 'Theater', icon: 'bi-theater-masks' },
-        { id: 3, name: 'Sports', icon: 'bi-trophy' },
-        { id: 4, name: 'Food & Drink', icon: 'bi-cup-hot' },
-        { id: 5, name: 'Networking', icon: 'bi-people' },
-        { id: 6, name: 'Community', icon: 'bi-globe' },
-        { id: 7, name: 'Outdoor', icon: 'bi-tree' },
-        { id: 8, name: 'Dance', icon: 'bi-activity' }
+    // Filters
+    searchTerm = '';
+    selectedCategory: number | null = null;
+    selectedLocation: number | null = null;
+    selectedStatus: number | null = null;
+    fromDate: string = '';
+    toDate: string = '';
+
+    // Pagination
+    pageNumber = 1;
+    pageSize = 12;
+    totalCount = 0;
+    totalPages = 1;
+
+    // Lookups
+    locations: LocationModel[] = [];
+    categoriesList = Object.entries(CATEGORY_THEMES).map(([id, theme]: [any, any]) => ({
+        id: parseInt(id),
+        name: theme.label,
+        icon: theme.icon ? 'bi-tag' : 'bi-tag' // Fallback to icon name if needed or use theme icon URL
+    }));
+
+    // For icons, CATEGORY_THEMES uses image URLs, but we might prefer bootstrap icons for pills
+    uiCategories = [
+        { id: null, name: 'All', icon: 'bi-grid' },
+        { id: 2, name: 'Education', icon: 'bi-mortarboard' },
+        { id: 1, name: 'Culture', icon: 'bi-palette' },
+        { id: 5, name: 'Lifestyle', icon: 'bi-cup-hot' },
+        { id: 12, name: 'Events', icon: 'bi-calendar-event' },
+        { id: 0, name: 'Community', icon: 'bi-people' }
     ];
 
     ngOnInit() {
+        this.fetchLocations();
         this.fetchEvents();
+    }
+
+    fetchLocations() {
+        this.locationService.getLocations(1, 100).subscribe({
+            next: (res: any) => {
+                if (res.isSuccess) {
+                    this.locations = res.data;
+                }
+            }
+        });
     }
 
     fetchEvents() {
         this.isLoading = true;
-        this.eventsService.getEvents().subscribe({
-            next: (data) => {
-                this.events = data;
+        const params = {
+            PageSize: this.pageSize,
+            PageNumber: this.pageNumber,
+            SearchTerm: this.searchTerm,
+            Category: this.selectedCategory,
+            LocationId: this.selectedLocation,
+            Status: this.selectedStatus,
+            FromDate: this.fromDate,
+            ToDate: this.toDate
+        };
+
+        this.eventsService.getEvents(params).subscribe({
+            next: (res: any) => {
+                this.events = res.data || [];
+                this.totalCount = res.totalCount;
+                this.totalPages = res.totalPages;
                 this.isLoading = false;
             },
-            error: (err) => {
+            error: (err: any) => {
                 console.error('Error fetching events:', err);
                 this.isLoading = false;
             }
         });
     }
 
-    get filteredEvents() {
-        return this.events.filter(event => {
-            const matchesSearch = event.Title?.toLowerCase().includes(this.searchTerm.toLowerCase());
-            const matchesCategory = this.selectedCategory === 0 || event.Category === this.selectedCategory;
-            return matchesSearch && matchesCategory;
-        });
+    onSearch() {
+        this.pageNumber = 1;
+        this.fetchEvents();
     }
 
-    getCategoryIcon(id: any): string {
-        const cat = this.categories.find(c => c.id == id);
-        return cat ? cat.icon : 'bi-calendar-event';
+    onFilterChange() {
+        this.pageNumber = 1;
+        this.fetchEvents();
     }
 
-    getCategoryName(id: any): string {
-        const cat = this.categories.find(c => c.id == id);
-        return cat ? cat.name : 'Event';
+    selectCategory(catId: number | null) {
+        this.selectedCategory = catId;
+        this.pageNumber = 1;
+        this.fetchEvents();
     }
 
-    getMinPrice(event: any): number {
-        if (!event.Tiers || event.Tiers.length === 0) return 0;
-        const prices = event.Tiers.map((t: any) => t.Price || 0);
+    changePage(newPage: number) {
+        if (newPage >= 1 && newPage <= this.totalPages) {
+            this.pageNumber = newPage;
+            this.fetchEvents();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }
+
+    getCategoryIcon(catId: number): string {
+        const theme = CATEGORY_THEMES[catId];
+        return theme ? 'bi-calendar-check' : 'bi-calendar-event';
+    }
+
+    getCategoryName(catId: number): string {
+        const theme = CATEGORY_THEMES[catId];
+        return theme ? theme.label : 'Event';
+    }
+
+    getMinPrice(event: EventListItem): number {
+        if (!event.tiers || event.tiers.length === 0) return 0;
+        const prices = event.tiers.map(t => t.price || 0);
         return Math.min(...prices);
     }
 }

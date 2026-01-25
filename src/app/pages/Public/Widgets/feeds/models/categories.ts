@@ -115,7 +115,5 @@ export const CATEGORY_THEMES: { [key: number]: any } = {
       { label: 'Feed', route: '/public/feed/tv' },
       { label: 'initiatives', route: '/public/initiatives/tv' }
     ]
-  },
-
-  
+  }
 };

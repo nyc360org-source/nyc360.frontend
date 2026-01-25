@@ -352,6 +352,19 @@ $cat-colors: (
           }
         }
 
+        &.events-link {
+          color: $c-events;
+          font-weight: 800;
+
+          i {
+            color: $c-events;
+          }
+
+          &:hover {
+            background-color: rgba($c-events, 0.08);
+          }
+        }
+
         &.logout-item {
           color: #DC3545;
 
@@ -583,6 +596,14 @@ $cat-colors: (
 
           i {
             color: $c-professions;
+          }
+        }
+
+        &.events-link {
+          color: $c-events;
+
+          i {
+            color: $c-events;
           }
         }
       }

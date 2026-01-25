@@ -1,17 +1,50 @@
 export interface EventTier {
-    Price: number;
+    id: number;
+    name: string;
+    description: string;
+    price: number;
+    quantityAvailable: number;
+    minPerOrder: number;
+    maxPerOrder: number;
+    saleStart: string;
+    saleEnd: string;
+}
+
+export interface EventAddress {
+    addressId: number;
+    locationId: number;
+    street: string;
+    buildingNumber: string;
+    zipCode: string;
 }
 
 export interface EventListItem {
-    Id: number | string;
-    Title: string;
-    Category: number;
-    StartDateTime: string;
-    VenueName: string;
-    BannerUrl: string;
-    Tiers?: EventTier[];
+    id: number;
+    title: string;
+    description: string;
+    category: number;
+    startDateTime: string;
+    endDateTime: string;
+    status: number;
+    visibility: number;
+    address: EventAddress | null;
+    tiers: EventTier[];
+    isPaid: boolean;
+    bannerUrl?: string;
 }
 
-export interface EventListResponse {
+export interface PaginatedEventResponse {
+    isSuccess: boolean;
     data: EventListItem[];
+    page: number;
+    pageSize: number;
+    totalCount: number;
+    totalPages: number;
+    error: any;
+}
+
+export interface ApiResponse<T> {
+    isSuccess: boolean;
+    data: T;
+    error: any;
 }

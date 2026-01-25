@@ -53,9 +53,13 @@
             <a routerLink="/public/profile/settings" class="dropdown-item">
               <i class="bi bi-gear"></i> Settings
             </a>
+
             <a *ngIf="authService.hasPermission('Permissions.Dashboard.View')" routerLink="/admin/dashboard"
               class="dropdown-item dashboard-link">
               <i class="bi bi-speedometer2"></i> Dashboard
+            </a>
+            <a routerLink="/public/events/home" class="dropdown-item events-link">
+              <i class="bi bi-calendar-event"></i> Events
             </a>
             <div class="dropdown-divider"></div>
             <button (click)="logout()" class="dropdown-item logout-item">
@@ -122,6 +126,9 @@
       <a *ngIf="authService.hasPermission('Permissions.Dashboard.View')" routerLink="/admin/dashboard"
         (click)="toggleMenu()" class="mobile-sub-link-item dashboard-link">
         <i class="bi bi-speedometer2"></i> Dashboard
+      </a>
+      <a routerLink="/public/events/home" (click)="toggleMenu()" class="mobile-sub-link-item events-link">
+        <i class="bi bi-calendar-event"></i> Events
       </a>
       <hr style="border-top: 1px solid #eee; margin: 15px 0;">
     </div>

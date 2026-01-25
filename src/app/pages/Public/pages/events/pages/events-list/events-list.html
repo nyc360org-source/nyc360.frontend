@@ -1,25 +1,47 @@
 <div class="events-list-wrapper animate__animated animate__fadeIn">
     <!-- Hero Section -->
-    <header class="events-hero py-5 mb-5">
+    <header class="events-hero py-5 mb-4">
         <div class="container text-center">
-            <h1 class="display-3 fw-bold text-navy mb-3">Discover <span class="text-gold">NYC</span> Events</h1>
-            <p class="lead text-muted mb-5">The best concerts, festivals, and activities in the city that never sleeps.
-            </p>
+            <h1 class="display-3 fw-bold text-navy mb-3">Event <span class="text-gold">Feed</span></h1>
+            <p class="lead text-muted mb-5">Stay updated with the latest events happening across NYC.</p>
 
             <!-- Search & Filter Bar -->
             <div class="search-box mx-auto shadow-lg rounded-pill p-2 bg-white d-flex align-items-center mb-4">
                 <i class="bi bi-search ms-3 text-muted"></i>
                 <input type="text" class="form-control border-0 bg-transparent ms-2" [(ngModel)]="searchTerm"
-                    placeholder="Search events, venues, organizers...">
-                <button class="btn btn-navy rounded-pill px-4 ms-2">Find Events</button>
+                    (keyup.enter)="onSearch()" placeholder="Search events, venues...">
+                <button class="btn btn-navy rounded-pill px-4 ms-2" (click)="onSearch()">Find Events</button>
             </div>
 
             <!-- Category Pills -->
-            <div class="category-pills d-flex flex-wrap justify-content-center gap-2">
-                <button *ngFor="let cat of categories" class="btn category-pill"
-                    [class.active]="selectedCategory === cat.id" (click)="selectedCategory = cat.id">
+            <div class="category-pills d-flex flex-wrap justify-content-center gap-2 mb-4">
+                <button *ngFor="let cat of uiCategories" class="btn category-pill"
+                    [class.active]="selectedCategory === cat.id" (click)="selectCategory(cat.id)">
                     <i [class]="'bi ' + cat.icon + ' me-1'"></i> {{cat.name}}
                 </button>
+            </div>
+
+            <!-- Advanced Filters -->
+            <div class="advanced-filters container d-flex flex-wrap justify-content-center gap-3">
+                <div class="filter-item">
+                    <select class="form-select rounded-pill border-0 shadow-sm px-4" [(ngModel)]="selectedLocation"
+                        (change)="onFilterChange()">
+                        <option [ngValue]="null">All Locations</option>
+                        <option *ngFor="let loc of locations" [ngValue]="loc.id">{{loc.borough}} - {{loc.neighborhood}}
+                        </option>
+                    </select>
+                </div>
+                <!-- <div class="filter-item">
+                    <input type="date" class="form-control rounded-pill border-0 shadow-sm px-4" [(ngModel)]="fromDate" (change)="onFilterChange()" placeholder="From Date">
+                </div> -->
+                <div class="filter-item">
+                    <select class="form-select rounded-pill border-0 shadow-sm px-4" [(ngModel)]="selectedStatus"
+                        (change)="onFilterChange()">
+                        <option [ngValue]="null">Any Status</option>
+                        <option [ngValue]="0">Upcoming</option>
+                        <option [ngValue]="1">Ongoing</option>
+                    </select>
+                </div>
             </div>
         </div>
     </header>
@@ -27,11 +49,9 @@
     <div class="container pb-5">
         <!-- Results Info -->
         <div class="d-flex justify-content-between align-items-center mb-4 px-2">
-            <h4 class="fw-bold m-0" *ngIf="!isLoading"> Showing {{filteredEvents.length}} Events</h4>
-            <div class="dropdown" *ngIf="!isLoading">
-                <button class="btn btn-outline-secondary dropdown-toggle rounded-pill" type="button">
-                    Sort by: Date
-                </button>
+            <h4 class="fw-bold m-0" *ngIf="!isLoading"> Showing {{totalCount}} Events</h4>
+            <div class="pagination-summary" *ngIf="!isLoading && totalPages > 1">
+                <span class="text-muted small">Page {{pageNumber}} of {{totalPages}}</span>
             </div>
         </div>
 
@@ -46,16 +66,16 @@
         <!-- Events Grid -->
         <div class="row g-4" *ngIf="!isLoading">
             <div class="col-md-6 col-lg-4 animate__animated animate__fadeInUp"
-                *ngFor="let event of filteredEvents; let i = index" [style.animation-delay]="(i * 0.1) + 's'">
+                *ngFor="let event of events; let i = index" [style.animation-delay]="(i * 0.1) + 's'">
 
                 <div class="event-card h-100 bg-white rounded-4 overflow-hidden border-0 shadow-sm"
-                    [routerLink]="['/events/details', event.Id]">
+                    [routerLink]="['/public/events/details', event.id]">
                     <div class="event-img-container">
-                        <img [src]="event.BannerUrl || 'assets/images/placeholder-event.jpg'"
-                            class="event-img w-100 object-fit-cover" alt="Event Banner">
+                        <img [src]="event.bannerUrl || 'image_0_0.jpg'" class="event-img w-100 object-fit-cover"
+                            alt="Event Banner">
                         <div class="event-category-badge">
-                            <i [class]="'bi ' + getCategoryIcon(event.Category)"></i>
-                            {{getCategoryName(event.Category)}}
+                            <i [class]="'bi ' + getCategoryIcon(event.category)"></i>
+                            {{getCategoryName(event.category)}}
                         </div>
                         <div class="event-price-tag" *ngIf="getMinPrice(event) > 0">
                             ${{getMinPrice(event)}}
@@ -68,31 +88,50 @@
                     <div class="event-body p-4">
                         <div class="event-date text-gold fw-bold small text-uppercase mb-2">
                             <i class="bi bi-calendar3 me-1"></i>
-                            {{event.StartDateTime | date:'EEE, MMM d • h:mm a'}}
+                            {{event.startDateTime | date:'EEE, MMM d • h:mm a'}}
                         </div>
-                        <h5 class="event-title fw-bold text-navy mb-3">{{event.Title}}</h5>
+                        <h5 class="event-title fw-bold text-navy mb-3 line-clamp-2">{{event.title}}</h5>
                         <div class="event-venue text-muted small mt-auto">
                             <i class="bi bi-geo-alt-fill me-1"></i>
-                            {{event.VenueName}}
+                            <span *ngIf="event.address">{{event.address.street}},
+                                {{event.address.buildingNumber}}</span>
+                            <span *ngIf="!event.address">Online / Location TBA</span>
                         </div>
                     </div>
 
                     <div class="event-footer px-4 py-3 border-top d-flex justify-content-between align-items-center">
                         <div class="d-flex align-items-center">
                             <i class="bi bi-person-circle text-muted me-2"></i>
-                            <span class="small text-muted">Organizer Name</span>
+                            <span class="small text-muted">Verified Organizer</span>
                         </div>
-                        <i class="bi bi-heart heart-icon" (click)="$event.stopPropagation()"></i>
+                        <button class="btn btn-link p-0 text-gold shadow-none">
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
 
+        <!-- Pagination Bar -->
+        <nav class="mt-5 d-flex justify-content-center" *ngIf="!isLoading && totalPages > 1">
+            <ul class="pagination pagination-md">
+                <li class="page-item" [class.disabled]="pageNumber === 1">
+                    <a class="page-link rounded-start-pill px-3" (click)="changePage(pageNumber - 1)">Previous</a>
+                </li>
+                <li class="page-item active"><a class="page-link px-4">{{pageNumber}}</a></li>
+                <li class="page-item" [class.disabled]="pageNumber === totalPages">
+                    <a class="page-link rounded-end-pill px-4" (click)="changePage(pageNumber + 1)">Next</a>
+                </li>
+            </ul>
+        </nav>
+
         <!-- No Results -->
-        <div *ngIf="!isLoading && filteredEvents.length === 0" class="text-center py-5">
+        <div *ngIf="!isLoading && events.length === 0" class="text-center py-5">
             <i class="bi bi-calendar-x display-1 text-light-gray mb-3"></i>
             <h3>No events found</h3>
             <p class="text-muted">Try adjusting your filters or search term.</p>
+            <button class="btn btn-navy rounded-pill mt-3 px-4"
+                (click)="searchTerm = ''; selectedCategory = null; onFilterChange()">Reset Filters</button>
         </div>
     </div>
 
@@ -101,7 +140,7 @@
         <div class="container">
             <h2 class="fw-bold mb-3">Hosting an event in NYC?</h2>
             <p class="mb-4">NYC360 is the best place to reach locals and tourists looking for what to do.</p>
-            <button class="btn btn-gold rounded-pill px-5 py-3 fw-bold" routerLink="/events/create">
+            <button class="btn btn-gold rounded-pill px-5 py-3 fw-bold" routerLink="/public/events/create">
                 CREATE EVENT +
             </button>
         </div>
