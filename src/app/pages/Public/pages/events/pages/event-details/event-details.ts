@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { EventDetailsService } from '../../service/event-details.service';
 import { EventDetail } from '../../models/event-details.model';
+import { Title } from '@angular/platform-browser';
 
 @Component({
     selector: 'app-event-details',
@@ -14,15 +15,24 @@ import { EventDetail } from '../../models/event-details.model';
 export class EventDetailsComponent implements OnInit {
     private route = inject(ActivatedRoute);
     private eventService = inject(EventDetailsService);
+    private titleService = inject(Title);
 
     event: EventDetail | null = null;
     isLoading = true;
 
+    // Helper for category names
+    categoryMap: { [key: number]: string } = {
+        1: 'Music', 2: 'Theater', 3: 'Sports', 4: 'Food & Drink',
+        5: 'Networking', 6: 'Community', 7: 'Outdoor', 8: 'Dance'
+    };
+
     ngOnInit() {
-        const id = this.route.snapshot.paramMap.get('id');
-        if (id) {
-            this.fetchEventDetails(id);
-        }
+        this.route.paramMap.subscribe(params => {
+            const id = params.get('id');
+            if (id) {
+                this.fetchEventDetails(id);
+            }
+        });
     }
 
     fetchEventDetails(id: string) {
@@ -31,17 +41,27 @@ export class EventDetailsComponent implements OnInit {
             next: (data) => {
                 this.event = data;
                 this.isLoading = false;
+                if (this.event) {
+                    this.titleService.setTitle(`${this.event.title} | NYC360`);
+                }
             },
             error: (err) => {
-                console.error('Error fetching event details:', err);
                 this.isLoading = false;
             }
         });
     }
 
     getMinPrice(): number {
-        if (!this.event?.Tiers || this.event.Tiers.length === 0) return 0;
-        const prices = this.event.Tiers.map(t => t.Price || 0);
+        if (!this.event?.tiers || this.event.tiers.length === 0) return 0;
+        const prices = this.event.tiers.map(t => t.price || 0);
         return Math.min(...prices);
+    }
+
+    getCategoryName(catId: number): string {
+        return this.categoryMap[catId] || 'Event';
+    }
+
+    getOrganizer() {
+        return this.event?.staff?.[0] || null;
     }
 }
