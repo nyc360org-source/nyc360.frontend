@@ -3,7 +3,7 @@
 **NYC360 Frontend** is a fully-featured Angular 21 application with **Server-Side Rendering (SSR)** for SEO optimization and fast performance.  
 It demonstrates professional frontend development skills, including advanced UI/UX design, dual layouts for users and admins, user and role management, authentication flows, interactive dashboards, and RSS feed management.
 
----
+--- 
 
 ## 🚀 Technologies & Tools
 - **Angular 21 + SSR**: SEO-friendly and high-performance web application  
