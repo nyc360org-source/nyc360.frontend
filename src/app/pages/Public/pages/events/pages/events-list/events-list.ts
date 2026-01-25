@@ -3,8 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { EventsListService } from '../../service/events-list.service';
-import { EventListItem } from '../../models/events-list.model';
-import { CATEGORY_THEMES } from '../../../../Widgets/feeds/models/categories';
+import { EventListItem, EventCategory, EventStatus } from '../../models/events-list.model';
 import { LocationDashboardService } from '../../../../../Dashboard/pages/locations/service/location-dashboard.service';
 import { LocationModel } from '../../../../../Dashboard/pages/locations/models/location.model';
 
@@ -39,20 +38,26 @@ export class EventsListComponent implements OnInit {
 
     // Lookups
     locations: LocationModel[] = [];
-    categoriesList = Object.entries(CATEGORY_THEMES).map(([id, theme]: [any, any]) => ({
-        id: parseInt(id),
-        name: theme.label,
-        icon: theme.icon ? 'bi-tag' : 'bi-tag' // Fallback to icon name if needed or use theme icon URL
-    }));
 
-    // For icons, CATEGORY_THEMES uses image URLs, but we might prefer bootstrap icons for pills
-    uiCategories = [
+    categories = [
         { id: null, name: 'All', icon: 'bi-grid' },
-        { id: 2, name: 'Education', icon: 'bi-mortarboard' },
-        { id: 1, name: 'Culture', icon: 'bi-palette' },
-        { id: 5, name: 'Lifestyle', icon: 'bi-cup-hot' },
-        { id: 12, name: 'Events', icon: 'bi-calendar-event' },
-        { id: 0, name: 'Community', icon: 'bi-people' }
+        { id: EventCategory.Music, name: 'Music', icon: 'bi-music-note-beamed' },
+        { id: EventCategory.Theater, name: 'Theater', icon: 'bi-theater-masks' },
+        { id: EventCategory.Sports, name: 'Sports', icon: 'bi-trophy' },
+        { id: EventCategory.FoodAndDrink, name: 'Food & Drink', icon: 'bi-cup-hot' },
+        { id: EventCategory.Networking, name: 'Networking', icon: 'bi-people' },
+        { id: EventCategory.Community, name: 'Community', icon: 'bi-globe' },
+        { id: EventCategory.Outdoor, name: 'Outdoor', icon: 'bi-tree' },
+        { id: EventCategory.Dance, name: 'Dance', icon: 'bi-activity' }
+    ];
+
+    statuses = [
+        { id: 0, name: 'Draft' },
+        { id: 1, name: 'Published' },
+        { id: 2, name: 'Cancelled' },
+        { id: 3, name: 'Completed' },
+        { id: 4, name: 'Archived' },
+        { id: 5, name: 'Hidden' }
     ];
 
     ngOnInit() {
@@ -84,15 +89,16 @@ export class EventsListComponent implements OnInit {
         };
 
         this.eventsService.getEvents(params).subscribe({
-            next: (res: any) => {
+            next: (res) => {
                 this.events = res.data || [];
                 this.totalCount = res.totalCount;
                 this.totalPages = res.totalPages;
                 this.isLoading = false;
             },
-            error: (err: any) => {
+            error: (err) => {
                 console.error('Error fetching events:', err);
                 this.isLoading = false;
+                this.events = [];
             }
         });
     }
@@ -122,18 +128,19 @@ export class EventsListComponent implements OnInit {
     }
 
     getCategoryIcon(catId: number): string {
-        const theme = CATEGORY_THEMES[catId];
-        return theme ? 'bi-calendar-check' : 'bi-calendar-event';
+        const cat = this.categories.find(c => c.id === catId);
+        return cat ? cat.icon : 'bi-calendar-event';
     }
 
     getCategoryName(catId: number): string {
-        const theme = CATEGORY_THEMES[catId];
-        return theme ? theme.label : 'Event';
+        const cat = this.categories.find(c => c.id === catId);
+        return cat ? cat.name : 'Other';
     }
 
-    getMinPrice(event: EventListItem): number {
-        if (!event.tiers || event.tiers.length === 0) return 0;
-        const prices = event.tiers.map(t => t.price || 0);
-        return Math.min(...prices);
+    getPriceDisplay(event: EventListItem): string {
+        if (event.priceStart === null || event.priceEnd === null) return 'Price TBA';
+        if (event.priceStart === 0 && event.priceEnd === 0) return 'FREE';
+        if (event.priceStart === event.priceEnd) return `$${event.priceStart}`;
+        return `$${event.priceStart} - $${event.priceEnd}`;
     }
 }

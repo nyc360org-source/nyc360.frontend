@@ -1,7 +1,8 @@
-$navy: #0F172A;
+$navy: #4a148c; // Deep Purple for text
+$primary-purple: #9b59b6; // Main Purple from navbar
 $gold: #D4AF37;
-$light-gray: #F8FAFC;
-$border-color: #E2E8F0;
+$light-purple: #fdfafd; // Soft Lavender for backgrounds
+$border-color: #f1e6f5;
 
 .events-list-wrapper {
     background: #ffffff;
@@ -12,6 +13,10 @@ $border-color: #E2E8F0;
         color: $navy !important;
     }
 
+    .text-purple {
+        color: $primary-purple !important;
+    }
+
     .text-gold {
         color: $gold !important;
     }
@@ -20,9 +25,13 @@ $border-color: #E2E8F0;
         background-color: $navy !important;
     }
 
+    .bg-purple {
+        background-color: $primary-purple !important;
+    }
+
     // --- Hero Section ---
     .events-hero {
-        background: linear-gradient(to bottom, rgba($light-gray, 0.8), #ffffff);
+        background: linear-gradient(to bottom, rgba($light-purple, 0.8), #ffffff);
         position: relative;
         overflow: hidden;
 
@@ -33,7 +42,7 @@ $border-color: #E2E8F0;
             right: -100px;
             width: 400px;
             height: 400px;
-            background: radial-gradient(circle, rgba($gold, 0.05) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba($primary-purple, 0.05) 0%, transparent 70%);
             border-radius: 50%;
             z-index: 0;
         }
@@ -108,15 +117,15 @@ $border-color: #E2E8F0;
         flex-direction: column;
 
         &:hover {
-            transform: translateY(-12px);
-            box-shadow: 0 30px 60px rgba($navy, 0.1) !important;
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba($primary-purple, 0.12) !important;
 
             .event-img {
-                transform: scale(1.08);
+                transform: scale(1.05);
             }
 
             .event-title {
-                color: $gold;
+                color: $primary-purple;
             }
         }
 
@@ -156,16 +165,17 @@ $border-color: #E2E8F0;
                 position: absolute;
                 bottom: 15px;
                 right: 15px;
-                background: $navy;
+                background: $primary-purple;
                 color: white;
                 padding: 5px 15px;
                 border-radius: 12px;
                 font-weight: 800;
                 font-size: 0.9rem;
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+                box-shadow: 0 4px 15px rgba($primary-purple, 0.3);
 
                 &.free {
                     background: #22C55E;
+                    box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
                 }
             }
         }
@@ -274,6 +284,72 @@ $border-color: #E2E8F0;
         }
     }
 }
+
+// --- Event Badges ---
+.event-status-badge {
+    font-size: 0.65rem;
+    padding: 4px 10px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+
+    &.status-0 {
+        background: #F1F5F9;
+        color: #475569;
+    }
+
+    // Draft
+    &.status-1 {
+        background: #DCFCE7;
+        color: #166534;
+    }
+
+    // Published
+    &.status-2 {
+        background: #FEE2E2;
+        color: #991B1B;
+    }
+
+    // Cancelled
+    &.status-3 {
+        background: #DBEAFE;
+        color: #1E40AF;
+    }
+
+    // Completed
+    &.status-4 {
+        background: #F3F4F6;
+        color: #374151;
+    }
+
+    // Archived
+    &.status-5 {
+        background: #FFEDD5;
+        color: #9A3412;
+    }
+
+    // Hidden
+}
+
+// --- Placeholders ---
+.no-img-placeholder {
+    height: 100%;
+    background: $light-purple;
+    border-bottom: 1px solid rgba($primary-purple, 0.05);
+}
+
+.user-avatar-mini {
+    width: 32px;
+    height: 32px;
+    background: $light-purple;
+    border: 1px solid rgba($primary-purple, 0.1);
+}
+
+.event-footer {
+    img {
+        border: 1.5px solid rgba($gold, 0.3);
+    }
+}
+
 
 .line-clamp-2 {
     display: -webkit-box;

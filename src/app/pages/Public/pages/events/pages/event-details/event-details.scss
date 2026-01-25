@@ -1,14 +1,15 @@
-$navy: #0F172A;
+$navy: #4a148c; // Deep Purple for text
+$primary-purple: #9b59b6; // Main Purple from navbar
 $gold: #D4AF37;
-$light-gray: #F8FAFC;
-$border-color: #E2E8F0;
+$light-purple: #fdfafd; // Soft Lavender for backgrounds
+$border-color: #f1e6f5;
 
 .event-details-wrapper {
     background: #ffffff;
     font-family: 'Outfit', sans-serif;
 
     .bg-light-gray {
-        background-color: $light-gray !important;
+        background-color: $light-purple !important;
     }
 
     .bg-navy {
@@ -16,12 +17,13 @@ $border-color: #E2E8F0;
     }
 
     .btn-gold {
-        background-color: $gold;
-        color: $navy;
+        background-color: $primary-purple; // Standardized to purple for "calm" look
+        color: #fff;
         font-weight: 700;
+        border: none;
 
         &:hover {
-            background-color: lighten($gold, 10%);
+            background-color: darken($primary-purple, 10%);
         }
     }
 
@@ -35,12 +37,12 @@ $border-color: #E2E8F0;
     }
 
     .btn-navy-outline {
-        border: 2px solid $navy;
-        color: $navy;
+        border: 2px solid $primary-purple;
+        color: $primary-purple;
         font-weight: 700;
 
         &:hover {
-            background: $navy;
+            background: $primary-purple;
             color: #fff;
         }
     }
@@ -60,7 +62,7 @@ $border-color: #E2E8F0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(to top, rgba($navy, 0.9) 0%, rgba($navy, 0.4) 50%, transparent 100%);
+            background: linear-gradient(to top, rgba($navy, 0.95) 0%, rgba($navy, 0.3) 60%, transparent 100%);
             z-index: 1;
         }
 
@@ -97,7 +99,7 @@ $border-color: #E2E8F0;
                 left: 0;
                 width: 40px;
                 height: 4px;
-                background: $gold;
+                background: $primary-purple;
                 border-radius: 2px;
             }
         }
