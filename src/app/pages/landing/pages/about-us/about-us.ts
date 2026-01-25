@@ -1,4 +1,5 @@
-import { Component, AfterViewInit, ElementRef, ViewChildren, QueryList, inject, PLATFORM_ID } from '@angular/core';
+import { Component, AfterViewInit, ElementRef, ViewChildren, QueryList, inject, PLATFORM_ID, OnInit } from '@angular/core';
+import { Title, Meta } from '@angular/platform-browser';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
@@ -9,9 +10,21 @@ import { RouterLink } from '@angular/router';
   templateUrl: './about-us.html',
   styleUrls: ['./about-us.scss']
 })
-export class AboutUsComponent implements AfterViewInit {
-  
+export class AboutUsComponent implements OnInit, AfterViewInit {
+
   private platformId = inject(PLATFORM_ID);
+  private titleService = inject(Title);
+  private metaService = inject(Meta);
+
+  ngOnInit() {
+    this.updateSeoTags();
+  }
+
+  updateSeoTags() {
+    this.titleService.setTitle('About NYC360 - Our Mission, Vision & Values');
+    this.metaService.updateTag({ name: 'description', content: 'Learn more about NYC360, our mission to connect New Yorkers, and our vision for the digital future of the city.' });
+    this.metaService.updateTag({ name: 'keywords', content: 'NYC360 About, NYC360 Mission, NYC360 Team, New York Neighborhoods, Community Platform' });
+  }
 
   // The 12 Organizational Pillars
   // Note: Colors are removed here to enforce a unified professional theme in CSS

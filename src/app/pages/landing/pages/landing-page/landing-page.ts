@@ -1,4 +1,5 @@
 import { Component, OnInit, AfterViewInit, ElementRef, ViewChildren, QueryList, Inject, PLATFORM_ID, OnDestroy } from '@angular/core';
+import { Title, Meta } from '@angular/platform-browser';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
@@ -33,10 +34,23 @@ export class LandingPage implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
-    private http: HttpClient
+    private http: HttpClient,
+    private titleService: Title,
+    private metaService: Meta
   ) { }
 
   ngOnInit() {
+    this.updateSeoTags();
+  }
+
+  updateSeoTags() {
+    this.titleService.setTitle('NYC360 - Explore New York City | Your Ultimate Digital Window');
+    this.metaService.updateTag({ name: 'description', content: 'Explore the vibrant ecosystem of New York City with NYC360. Your one-stop platform for events, community stories, and city treasures.' });
+    this.metaService.updateTag({ name: 'keywords', content: 'NYC360, New York City, NYC Events, Local NYC, NYC Community, Smart City Platform' });
+
+    // OG Tags
+    this.metaService.updateTag({ property: 'og:title', content: 'NYC360 - Discover New York City' });
+    this.metaService.updateTag({ property: 'og:description', content: 'Join NYC360 to explore the best of New York City, from local stories to verified city data.' });
   }
 
   ngAfterViewInit() {
