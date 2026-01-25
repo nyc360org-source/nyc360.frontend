@@ -653,35 +653,56 @@ $font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
 }
 
 @media (max-width: 768px) {
-  .hero-section .hero-content .text-side .headline {
-    font-size: 2.5rem;
+  .hero-section {
+    padding: 60px 0;
+
+    .hero-content .text-side {
+      .logo-text {
+        font-size: 2.2rem;
+      }
+
+      .headline {
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+      }
+
+      .subtext {
+        font-size: 1.1rem;
+        margin-bottom: 30px;
+      }
+
+      .hero-buttons {
+        flex-direction: column;
+        gap: 12px;
+
+        .btn {
+          width: 100%;
+        }
+      }
+    }
   }
 
   .about-section .cards-wrapper,
   .values-section .values-grid {
     grid-template-columns: 1fr;
+    padding: 0 10px;
   }
 
-  // *** ROADMAP MOBILE FIX ***
   .roadmap-section .timeline-container-vertical {
     .timeline-line {
       left: 30px;
       transform: none;
     }
 
-    // Move line to left
     .timeline-item {
       flex-direction: column;
-      padding-left: 70px; // Make space for line and icon
+      padding-left: 70px;
 
       .timeline-marker {
         left: 30px;
         transform: translateX(-50%);
       }
 
-      // Align icon with new line pos
-
-      // Reset width for mobile
       &.left .timeline-content,
       &.right .timeline-content {
         width: 100%;
@@ -691,7 +712,7 @@ $font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
   }
 
   .contact-section .header-title {
-    font-size: 2rem;
+    font-size: 2.2rem;
   }
 
   .form-side .row-inputs {

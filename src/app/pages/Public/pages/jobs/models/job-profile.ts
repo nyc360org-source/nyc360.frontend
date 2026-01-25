@@ -44,7 +44,7 @@ export interface JobProfile {
   workArrangement: number;
   employmentType: number;
   employmentLevel: number;
-  address: Address;
+  address?: Address | null;
   author: Author;
   createdAt: string;
 }

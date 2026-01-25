@@ -10,9 +10,32 @@
   --luxury-green: #2ecc71;
   --luxury-slate: #64748b;
   --luxury-bg: #f8fafc;
+  --luxury-white: #ffffff;
   --glass-bg: rgba(255, 255, 255, 0.85);
   --glass-border: rgba(255, 255, 255, 0.3);
   --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+}
+
+// --- Responsive Mixins ---
+@mixin mobile {
+  @media (max-width: 576px) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media (max-width: 768px) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (max-width: 992px) {
+    @content;
+  }
 }
 
 html,
@@ -23,8 +46,11 @@ body {
   min-height: 100%;
   overflow-x: hidden;
   position: relative;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Outfit', 'Inter', sans-serif;
   background-color: var(--luxury-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
 }
 
 *,
@@ -158,6 +184,72 @@ body {
     outline: none;
     border-color: var(--luxury-gold);
     box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.1);
+  }
+}
+
+// --- Global Responsive Utilities ---
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+
+  @include tablet {
+    padding: 0 16px;
+  }
+}
+
+.responsive-grid {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+
+  @include mobile {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+.mobile-hide {
+  @include mobile {
+    display: none !important;
+  }
+}
+
+.mobile-only {
+  display: none !important;
+
+  @include mobile {
+    display: block !important;
+  }
+}
+
+.text-luxury {
+  &.h1 {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    line-height: 1.1;
+  }
+
+  &.h2 {
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    font-weight: 700;
+  }
+
+  &.p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: var(--luxury-slate);
+  }
+}
+
+// Adjust Bootstrap Utility if needed
+.row.g-responsive {
+  --bs-gutter-x: 2rem;
+  --bs-gutter-y: 2rem;
+
+  @include tablet {
+    --bs-gutter-x: 1rem;
+    --bs-gutter-y: 1rem;
   }
 }
 

@@ -41,11 +41,10 @@ export class EditOfferComponent implements OnInit {
   ];
 
   employmentLevels = [
-    { id: 0, name: 'Entry Level' },
-    { id: 1, name: 'Mid Level' },
-    { id: 2, name: 'Senior' },
-    { id: 3, name: 'Manager' },
-    { id: 4, name: 'Director' }
+    { id: 1, name: 'Junior' },
+    { id: 2, name: 'Mid' },
+    { id: 3, name: 'Senior' },
+    { id: 4, name: 'Executive' }
   ];
 
   selectedLocationName: string = '';

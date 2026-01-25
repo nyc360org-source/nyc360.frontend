@@ -195,7 +195,7 @@ export class JobProfileComponent implements OnInit {
   // Helpers
   getArrangement(v: number) { return ['On-Site', 'Remote', 'Hybrid'][v] || 'On-Site'; }
   getType(v: number) { return ['Full-time', 'Part-time', 'Contract', 'Internship', 'Freelance'][v] || 'Full-time'; }
-  getLevel(v: number) { return ['Entry', 'Junior', 'Mid-Level', 'Senior-Mid', 'Senior'][v] || 'N/A'; }
+  getLevel(v: number) { return ['N/A', 'Junior', 'Mid', 'Senior', 'Executive'][v] || 'N/A'; }
 
   // Helper for UI Badge (للواجهة فقط إذا لم نستخدم الـ Dropdown)
   getApplicantStatusLabel(s: number) {

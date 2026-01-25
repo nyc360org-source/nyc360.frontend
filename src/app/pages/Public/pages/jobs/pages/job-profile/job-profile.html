@@ -15,9 +15,12 @@
               <h1>{{ job.title }}</h1>
               <p class="company-name text-muted mb-2">by <strong>{{ job.author.fullName }}</strong></p>
               <div class="meta-row">
-                <span><i class="bi bi-geo-alt-fill"></i> {{ job.address.location.neighborhood }}, {{
-                  job.address.location.borough
-                  }}</span>
+                <span *ngIf="job.address?.location">
+                  <i class="bi bi-geo-alt-fill"></i>
+                  {{ job.address?.location?.neighborhood || 'N/A' }},
+                  {{ job.address?.location?.borough || 'N/A' }}
+                </span>
+                <span *ngIf="!job.address?.location"><i class="bi bi-geo-alt-fill"></i> Location Not Found</span>
                 <span class="sep"></span>
                 <span><i class="bi bi-briefcase-fill"></i> {{ getType(job.employmentType) }}</span>
                 <span class="sep"></span>
@@ -64,9 +67,9 @@
           <section class="content-section" *ngIf="activeTab === 'overview'">
             <h2 class="font-header">Job Overview</h2>
             <div class="card-content">
-              <p class="text-body">{{ job.description }}</p>
+              <p class="text-body">{{ job.description || 'Description Not Found' }}</p>
               <h3 class="font-header mt-4">Benefits</h3>
-              <p class="text-body">{{ job.benefits }}</p>
+              <p class="text-body" [class.text-muted]="!job.benefits">{{ job.benefits || 'Benefits Not Found' }}</p>
             </div>
           </section>
 
@@ -88,7 +91,7 @@
             <div class="requirements-grid">
               <div class="req-box essential">
                 <h4 class="font-header"><i class="bi bi-star-fill"></i> Essential</h4>
-                <p>{{ job.requirements }}</p>
+                <p [class.text-muted]="!job.requirements">{{ job.requirements || 'Requirements Not Found' }}</p>
               </div>
             </div>
           </section>
@@ -133,20 +136,30 @@
           </section>
 
           <section class="content-section no-border" *ngIf="activeTab !== 'applicants'">
-            <h2 class="font-header">Work Model</h2>
+            <h2 class="font-header">Work Model & Location</h2>
             <div class="work-model-card">
               <div class="model-info">
                 <h3 class="font-header">{{ getArrangement(job.workArrangement) }} Schedule</h3>
                 <p>This role follows the standard {{ getArrangement(job.workArrangement) }} work program.</p>
               </div>
+
               <div class="model-map-placeholder">
-                <div class="location-pin">{{ job.address.location.neighborhood }}</div>
+                <div class="location-pin" *ngIf="job.address?.location">{{ job.address?.location?.neighborhood }}</div>
+                <div class="location-pin" *ngIf="!job.address?.location">NYC</div>
               </div>
-              <div class="address-details mt-3" *ngIf="job.address.street">
-                <p class="text-muted small">
-                  <i class="bi bi-pin-map-fill"></i>
-                  {{ job.address.street }} {{ job.address.buildingNumber }}, {{ job.address.location.neighborhood }}, {{
-                  job.address.zipCode }}
+
+              <div class="address-details mt-3">
+                <div *ngIf="job.address">
+                  <p class="text-muted small">
+                    <i class="bi bi-pin-map-fill"></i>
+                    <span *ngIf="job.address.street">{{ job.address.street }} {{ job.address.buildingNumber }}, </span>
+                    <span *ngIf="job.address.location">{{ job.address.location.neighborhood }}, {{
+                      job.address.location.borough }}</span>
+                    <span *ngIf="job.address.zipCode">, {{ job.address.zipCode }}</span>
+                  </p>
+                </div>
+                <p class="text-muted small" *ngIf="!job.address">
+                  <i class="bi bi-geo-alt"></i> Exact address not provided.
                 </p>
               </div>
             </div>
