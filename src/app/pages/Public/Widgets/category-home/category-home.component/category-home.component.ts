@@ -34,6 +34,12 @@ export class CategoryHomeComponent implements OnInit {
   // --- Theme ---
   activeTheme: any = null;
   isLoading = true;
+  isHousingCategory = false;
+
+  // Housing specific buckets
+  homesForSale: CategoryPost[] = [];
+  homesForRent: CategoryPost[] = [];
+  officialPosts: CategoryPost[] = [];
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
@@ -49,9 +55,11 @@ export class CategoryHomeComponent implements OnInit {
     if (categoryEntry) {
       this.activeTheme = categoryEntry[1];
       const divisionId = Number(categoryEntry[0]);
+      this.isHousingCategory = (divisionId === 4); // CategoryEnum.Housing
       this.fetchData(divisionId);
     } else {
       this.activeTheme = { label: 'News', color: '#333' }; // Fallback
+      this.isHousingCategory = false;
       this.isLoading = false;
     }
   }
@@ -65,20 +73,28 @@ export class CategoryHomeComponent implements OnInit {
           const allIncoming = [...(res.data.featured || []), ...(res.data.latest || [])];
 
           // 1. فصل البوستات: "بصور" vs "بدون صور"
-          const withImages = allIncoming.filter(p => this.hasImage(p));
-          const noImages = allIncoming.filter(p => !this.hasImage(p));
+          let allPosts = allIncoming.map(p => this.parsePostData(p));
+          const withImages = allPosts.filter(p => this.hasImage(p));
+          const noImages = allPosts.filter(p => !this.hasImage(p));
 
-          // 2. توزيع البوستات التي لها صور على الأقسام العلوية
-          this.heroPost = withImages[0] || null;
-          this.topSidePosts = withImages.slice(1, 5); // 4 بوستات جانبية
-          this.gridPosts = withImages.slice(5, 8);    // 3 بوستات في الشبكة
-          this.moreNewsPosts = withImages.slice(8, 12); // 4 بوستات في القائمة السفلية
+          if (this.isHousingCategory) {
+            this.heroPost = withImages[0] || null;
+            this.homesForSale = withImages.filter(p => p.housingMetadata && !p.housingMetadata.IsRenting);
+            this.homesForRent = withImages.filter(p => p.housingMetadata && p.housingMetadata.IsRenting);
+            this.officialPosts = allPosts.filter(p => p.author?.type === 2); // Official posts
+          } else {
+            // Standard layout
+            this.heroPost = withImages[0] || null;
+            this.topSidePosts = withImages.slice(1, 5); // 4 بوستات جانبية
+            this.gridPosts = withImages.slice(5, 8);    // 3 بوستات في الشبكة
+            this.moreNewsPosts = withImages.slice(8, 12); // 4 بوستات في القائمة السفلية
+          }
 
           // 3. وضع البوستات النصية في القسم الجديد بالأسفل
           this.textOnlyPosts = noImages;
 
           // 4. التريند
-          this.trendingPosts = res.data.trending || [];
+          this.trendingPosts = res.data.trending?.map(p => this.parsePostData(p)) || [];
         }
         this.isLoading = false;
         this.cdr.detectChanges();
@@ -140,5 +156,24 @@ export class CategoryHomeComponent implements OnInit {
 
   getAuthorImg(author: any): string {
     return this.imageService.resolveAvatar(author);
+  }
+
+  private parsePostData(post: any): any {
+    if (!post.content) return post;
+
+    // Check for JSON in content
+    if (post.content.includes('{') && post.content.includes('}')) {
+      try {
+        const parts = post.content.split('\n\n\n');
+        const jsonPart = parts.find((p: string) => p.trim().startsWith('{'));
+        if (jsonPart) {
+          post.housingMetadata = JSON.parse(jsonPart.trim());
+          post.cleanDescription = parts.find((p: string) => !p.trim().startsWith('{')) || '';
+        }
+      } catch (e) {
+        console.error('Failed to parse post metadata', e);
+      }
+    }
+    return post;
   }
 }

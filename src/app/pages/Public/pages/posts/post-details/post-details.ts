@@ -67,6 +67,10 @@ export class PostDetailsComponent implements OnInit {
   reportSuccess = false;
   isReportingAttempted = false;
 
+  // Extension Data for structured posts (Real Estate, Jobs, etc.)
+  structuredExtension: any = null;
+  sanitizedContent: string = '';
+
   reportReasonsList = [
     { id: FlagReasonType.Spam, label: 'Spam', icon: 'bi-mailbox' },
     { id: FlagReasonType.HateSpeech, label: 'Hate Speech', icon: 'bi-megaphone' },
@@ -149,10 +153,43 @@ export class PostDetailsComponent implements OnInit {
       if (this.post?.stats) this.post.stats.comments = apiData.comments.length;
     }
 
+    this.parseContent(this.post?.content || '');
+
     if (apiData.relatedPosts) {
       this.relatedPosts = apiData.relatedPosts;
     } else {
       this.relatedPosts = [];
+    }
+  }
+
+  private parseContent(content: string) {
+    if (!content) return;
+
+    // Split by the triple newline separator
+    const parts = content.split('\n\n\n');
+    let hasJson = false;
+    let jsonIndex = -1;
+
+    for (let i = 0; i < parts.length; i++) {
+      const trimmed = parts[i].trim();
+      if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
+        try {
+          this.structuredExtension = JSON.parse(trimmed);
+          hasJson = true;
+          jsonIndex = i;
+          break;
+        } catch (e) {
+          // Not valid JSON, continue
+        }
+      }
+    }
+
+    if (hasJson) {
+      // Sanitized content is the part that is NOT JSON
+      this.sanitizedContent = parts.filter((_, idx) => idx !== jsonIndex).join('\n\n');
+    } else {
+      this.structuredExtension = null;
+      this.sanitizedContent = content;
     }
   }
 

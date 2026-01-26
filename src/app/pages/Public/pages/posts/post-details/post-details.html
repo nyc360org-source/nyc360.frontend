@@ -36,6 +36,11 @@
           </a>
         </div>
 
+        <div class="location-ribbon" *ngIf="post.location">
+          <i class="bi bi-geo-alt-fill"></i>
+          <span>{{ post.location.neighborhood }}, {{ post.location.borough }}</span>
+        </div>
+
         <h1 class="article-title">{{ post.title }}</h1>
 
         <div class="meta-row">
@@ -79,7 +84,68 @@
         </div>
       </div>
 
-      <div class="article-body animate__animated animate__fadeInUp" [innerHTML]="post.content"></div>
+      <div class="article-body animate__animated animate__fadeInUp">
+        <!-- Structured Extension Data (Specs Grid) -->
+        <div class="extension-specs" *ngIf="structuredExtension">
+          <div class="spec-item status-badge" *ngIf="structuredExtension.IsRenting !== undefined">
+            <i class="bi bi-info-circle-fill"></i>
+            <div class="spec-meta">
+              <span class="label">Status</span>
+              <span class="value">{{ structuredExtension.IsRenting ? 'FOR RENT' : 'FOR SALE' }}</span>
+            </div>
+          </div>
+          <div class="spec-item" *ngIf="structuredExtension.Price">
+            <i class="bi bi-tag-fill"></i>
+            <div class="spec-meta">
+              <span class="label">Price</span>
+              <span class="value">{{ structuredExtension.Price | currency:'USD':'symbol':'1.0-0' }}{{
+                structuredExtension.IsRenting ? '/mo' : '' }}</span>
+            </div>
+          </div>
+          <div class="spec-item" *ngIf="structuredExtension.Rooms">
+            <i class="bi bi-door-open-fill"></i>
+            <div class="spec-meta">
+              <span class="label">Rooms</span>
+              <span class="value">{{ structuredExtension.Rooms }} Bed</span>
+            </div>
+          </div>
+          <div class="spec-item" *ngIf="structuredExtension.Bathrooms">
+            <i class="bi bi-droplet-fill"></i>
+            <div class="spec-meta">
+              <span class="label">Bathrooms</span>
+              <span class="value">{{ structuredExtension.Bathrooms }} Bath</span>
+            </div>
+          </div>
+          <div class="spec-item" *ngIf="structuredExtension.SizeSqFt">
+            <i class="bi bi-arrows-fullscreen"></i>
+            <div class="spec-meta">
+              <span class="label">Total Area</span>
+              <span class="value">{{ structuredExtension.SizeSqFt }} Sq Ft</span>
+            </div>
+          </div>
+          <div class="spec-item" *ngIf="structuredExtension.Type">
+            <i class="bi bi-building-fill"></i>
+            <div class="spec-meta">
+              <span class="label">Type</span>
+              <span class="value">{{ structuredExtension.Type }}</span>
+            </div>
+          </div>
+
+          <!-- Generic items from extension -->
+          <ng-container *ngFor="let item of structuredExtension | keyvalue">
+            <div class="spec-item"
+              *ngIf="['Price', 'SizeSqFt', 'Bathrooms', 'Rooms', 'Type', 'IsRenting', 'Description', 'content'].indexOf($any(item.key)) === -1">
+              <i class="bi bi-info-circle-fill"></i>
+              <div class="spec-meta">
+                <span class="label">{{ item.key }}</span>
+                <span class="value">{{ item.value }}</span>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+
+        <div class="rich-content" [innerHTML]="sanitizedContent"></div>
+      </div>
 
       <!-- Parent/Shared Post Section -->
       <div class="shared-post-container animate__animated animate__fadeInUp" *ngIf="post.parentPost">
@@ -144,7 +210,8 @@
         </button>
 
         <button class="share-btn-accent" (click)="openShareModal()">
-          <i class="bi bi-share-fill"></i> SHARE
+          <i class="bi bi-send-fill"></i>
+          <span>SHARE POST</span>
         </button>
       </div>
 
@@ -215,9 +282,12 @@
     <aside class="sidebar-column animate__animated animate__fadeInRight">
 
       <div class="premium-sidebar-card author-card">
+        <div class="sidebar-avatar-wrapper">
+          <img [src]="getAuthorAvatar(post.author)" alt="Author" appImgFallback="avatar">
+        </div>
         <h4>{{ getAuthorName(post.author) }}</h4>
-        <span class="author-role">Contributor</span>
-        <p>Committed to bringing the most relevant and high-quality content to NYC360 readers.</p>
+        <span class="author-role">Verified Contributor</span>
+        <p>Providing high-quality insights and local updates for the NYC360 community.</p>
       </div>
 
       <div class="premium-sidebar-card" *ngIf="relatedPosts.length > 0">

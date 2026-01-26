@@ -4,17 +4,34 @@ export interface CategoryPost {
   content: string | null;
   category: number;
   createdAt: string;
-  author: { 
-    id: number; 
-    username?: string; 
-    name?: string; 
-    imageUrl: string 
+  author: {
+    id: number;
+    username?: string;
+    name?: string;
+    imageUrl: string;
+    type?: number;
   };
   attachments: { id: number; url: string }[];
   stats: { views: number; likes: number; shares: number; comments: number };
-  parentPost?: CategoryPost; 
+  parentPost?: CategoryPost;
   isSavedByUser: boolean;
   sourceType?: number;
+
+  // New fields for Housing and metadata support
+  location?: {
+    borough: string;
+    neighborhood: string;
+    zipCode: number;
+  };
+  housingMetadata?: {
+    Type: string;
+    IsRenting: boolean;
+    Rooms: number;
+    Bathrooms: number;
+    SizeSqFt: number;
+    Price: number;
+  };
+  cleanDescription?: string;
 }
 
 export interface CategoryHomeData {

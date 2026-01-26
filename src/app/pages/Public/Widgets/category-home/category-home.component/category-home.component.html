@@ -40,9 +40,9 @@
   <div class="content-wrapper" *ngIf="!isLoading" [style.--theme-color]="activeTheme?.color || '#333'">
     <header class="category-header">
       <div class="container text-center">
-        <p class="top-meta">NYC360 EXPERIENCE</p>
+        <p class="top-meta">Welcome at NYC360</p>
         <h1 class="main-title">{{ activeTheme?.label || 'News' }}</h1>
-        <p class="sub-meta">{{ dynamicDescription }}</p>
+        <p class="sub-meta">Where New Yorkers can share ideas, discussions, and local conversations</p>
       </div>
     </header>
 
@@ -97,17 +97,21 @@
 
           <!-- Right: Actions -->
           <div class="d-flex align-items-center gap-3">
-            <div class="nav nav-pills bg-light rounded-pill p-1 gap-1 d-inline-flex">
-              <button class="nav-link rounded-pill px-3 active bg-white shadow-sm text-dark fw-bold"
-                (click)="navigateToFeed({ tab: 'explore' })">Explore</button>
-              <button class="nav-link rounded-pill px-3 text-muted fw-bold"
-                (click)="navigateToFeed({ tab: 'mynews' })">My
-                Feed</button>
-            </div>
-
-            <button class="btn-pill dark ms-2" [routerLink]="['/public/posts/create']">
-              <i class="bi bi-plus-lg me-1"></i> Create Post
+            <button class="btn-pill accent" (click)="navigateToFeed({ tab: 'explore' })">
+              <i class="bi bi-compass me-1"></i> Explore Homes
             </button>
+            <button class="btn-pill secondary" (click)="navigateToFeed({ tab: 'inquiries' })">
+              <i class="bi bi-chat-left-text me-1"></i> My Inquiries
+            </button>
+
+            <div class="ms-auto d-flex gap-2">
+              <button class="btn-pill outline" [routerLink]="['/public/posts/create']">
+                <i class="bi bi-plus-lg me-1"></i> Post Listing
+              </button>
+              <button class="btn-pill" [routerLink]="['/public/posts/create']">
+                <i class="bi bi-pencil-square me-1"></i> Create Post
+              </button>
+            </div>
           </div>
 
         </div>
@@ -123,7 +127,8 @@
         </div>
       </section>
 
-      <section class="latest-grid-section mb-5 fade-in-up" *ngIf="gridPosts.length > 0">
+      <!-- Standard Dashboard (Non-Housing) -->
+      <section class="latest-grid-section mb-5 fade-in-up" *ngIf="gridPosts.length > 0 && !isHousingCategory">
         <div class="section-header mb-3">
           <h3>Highlights</h3>
           <a [routerLink]="['/public/feed', activeTheme?.path]" class="view-all">View All</a>
@@ -146,6 +151,108 @@
           </div>
         </div>
       </section>
+
+      <!-- Housing Specific Sections -->
+      <ng-container *ngIf="isHousingCategory">
+
+        <!-- Housing Filter Bar Sub -->
+        <div class="housing-sub-filters mb-5">
+          <button class="filter-btn">Location <i class="bi bi-chevron-down"></i></button>
+          <button class="filter-btn">Privacy Type <i class="bi bi-chevron-down"></i></button>
+          <button class="filter-btn">Property Type <i class="bi bi-chevron-down"></i></button>
+          <button class="filter-btn">Rooms/Baths <i class="bi bi-chevron-down"></i></button>
+          <button class="filter-btn">Price <i class="bi bi-chevron-down"></i></button>
+          <button class="filter-btn accent ms-auto">Open Now</button>
+        </div>
+
+        <!-- Homes for Sale -->
+        <section class="housing-row-section mb-5" *ngIf="homesForSale.length > 0">
+          <div class="section-header d-flex justify-content-between align-items-center mb-4">
+            <h2 class="section-title">Homes For Sale</h2>
+            <a class="view-all-link">View All</a>
+          </div>
+          <div class="row g-4">
+            <div class="col-lg-4 col-md-6" *ngFor="let post of homesForSale | slice:0:3">
+              <div class="housing-premium-card">
+                <div class="img-box">
+                  <img [src]="getImg(post)" alt="home" appImgFallback="post">
+                </div>
+                <div class="card-body">
+                  <h4 class="property-title">{{ post.title }}</h4>
+                  <div class="specs-row">
+                    <span class="spec"><i class="bi bi-arrows-fullscreen"></i> {{ post.housingMetadata?.SizeSqFt }}
+                      sqft</span>
+                    <span class="spec"><i class="bi bi-house-door"></i> {{ post.housingMetadata?.Rooms }} rooms</span>
+                    <span class="spec"><i class="bi bi-droplet"></i> {{ post.housingMetadata?.Bathrooms }} baths</span>
+                  </div>
+                  <div class="price-row">
+                    <span class="price">{{ post.housingMetadata?.Price | currency:'USD':'symbol':'1.0-0' }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Homes for Rent -->
+        <section class="housing-row-section mb-5" *ngIf="homesForRent.length > 0">
+          <div class="section-header d-flex justify-content-between align-items-center mb-4">
+            <h2 class="section-title">Homes For Rent</h2>
+            <a class="view-all-link">View All</a>
+          </div>
+          <div class="row g-4">
+            <div class="col-lg-3 col-md-6" *ngFor="let post of homesForRent | slice:0:4">
+              <div class="rental-premium-card">
+                <div class="img-box">
+                  <img [src]="getImg(post)" alt="rental" appImgFallback="post">
+                </div>
+                <div class="card-body">
+                  <div class="location-tag">{{ post.location.borough | uppercase }}</div>
+                  <h4 class="price">{{ post.housingMetadata.Price | currency:'USD':'symbol':'1.0-0' }}<span
+                      class="period">/mo</span></h4>
+                  <p class="building-name">{{ post.title }}</p>
+                  <div class="specs-grid" *ngIf="post.housingMetadata">
+                    <span class="spec-pill"><i class="bi bi-door-open"></i> {{ post.housingMetadata.Rooms }} Bed</span>
+                    <span class="spec-pill"><i class="bi bi-droplet"></i> {{ post.housingMetadata.Bathrooms }}
+                      Bath</span>
+                    <button class="details-btn">Details</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Official Programs -->
+        <section class="housing-row-section mb-5" *ngIf="officialPosts.length > 0">
+          <div class="section-header d-flex justify-content-between align-items-center mb-4">
+            <h2 class="section-title">NYC Housing Programs Official Posts</h2>
+            <a class="view-all-link">View All</a>
+          </div>
+          <div class="row g-4">
+            <div class="col-lg-4 col-md-6" *ngFor="let post of officialPosts | slice:0:3">
+              <div class="housing-premium-card official">
+                <div class="img-box">
+                  <img [src]="getImg(post)" alt="program" appImgFallback="post">
+                </div>
+                <div class="card-body">
+                  <h4 class="property-title">{{ post.title }}</h4>
+                  <div class="specs-row" *ngIf="post.housingMetadata">
+                    <span class="spec"><i class="bi bi-arrows-fullscreen"></i> {{ post.housingMetadata.SizeSqFt }}
+                      sqft</span>
+                    <span class="spec"><i class="bi bi-house-door"></i> {{ post.housingMetadata.Rooms }} rooms</span>
+                    <span class="spec"><i class="bi bi-droplet"></i> {{ post.housingMetadata.Bathrooms }} baths</span>
+                  </div>
+                  <div class="price-row" *ngIf="post.housingMetadata">
+                    <span class="price">{{ post.housingMetadata.Price | currency:'USD':'symbol':'1.0-0' }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </ng-container>
 
       <div class="row g-5 mb-5 fade-in-up">
         <div class="col-lg-8" *ngIf="moreNewsPosts.length > 0">
