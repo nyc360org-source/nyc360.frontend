@@ -41,7 +41,9 @@ export class JobProfileComponent implements OnInit {
 
   // Apply Modal State
   showApplyModal: boolean = false;
+  showSuccessModal: boolean = false;
   coverLetterText: string = '';
+  selectedFile: File | undefined;
   isSubmittingApply: boolean = false;
 
   // ✅ Share Modal State
@@ -171,16 +173,25 @@ export class JobProfileComponent implements OnInit {
     return `${this.imgBase}/avatars/${imageName}`;
   }
 
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile = file;
+    }
+  }
+
   onConfirmApply(): void {
     if (!this.job || !this.coverLetterText.trim()) return;
     this.isSubmittingApply = true;
-    this.jobService.applyToOffer(this.job.id, this.coverLetterText).subscribe({
+    this.jobService.applyToOffer(this.job.id, this.coverLetterText, this.selectedFile).subscribe({
       next: (res) => {
         this.isSubmittingApply = false;
         if (res.isSuccess) {
-          alert('Application sent successfully!');
+          // alert('Application sent successfully!'); // Removed alert
           this.showApplyModal = false;
+          this.showSuccessModal = true; // Show Success Modal
           this.coverLetterText = '';
+          this.selectedFile = undefined;
         }
         this.cdr.detectChanges();
       },

@@ -14,9 +14,13 @@ export class JobProfileService {
     return this.http.get<ApiResponse<JobProfileResponse>>(`${this.apiUrl}/${offerId}`);
   }
 
-  applyToOffer(jobId: number, coverLetter: string): Observable<ApiResponse<number>> {
-    const body = { CoverLetter: coverLetter };
-    return this.http.post<ApiResponse<number>>(`${this.apiUrl}/${jobId}/apply`, body);
+  applyToOffer(jobId: number, coverLetter: string, file?: File): Observable<ApiResponse<number>> {
+    const formData = new FormData();
+    formData.append('CoverLetter', coverLetter);
+    if (file) {
+      formData.append('CV', file);
+    }
+    return this.http.post<ApiResponse<number>>(`${this.apiUrl}/${jobId}/apply`, formData);
   }
 
   getJobApplicants(offerId: number, page: number = 1, pageSize: number = 20): Observable<ApiResponse<Applicant[]>> {
@@ -27,7 +31,7 @@ export class JobProfileService {
   // ✅ New: Update Application Status
   updateApplicationStatus(applicationId: number, status: number): Observable<ApiResponse<boolean>> {
     // حسب الـ API، الـ Body هو JSON يحتوي على الداتا
-    const body = { applicationId, status }; 
+    const body = { applicationId, status };
     return this.http.put<ApiResponse<boolean>>(`${environment.apiBaseUrl}/professions/offers/update-application`, body);
   }
 
