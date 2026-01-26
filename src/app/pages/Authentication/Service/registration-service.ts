@@ -38,4 +38,9 @@ export class RegistrationService {
   registerVisitor(data: any): Observable<AuthResponse<any>> {
     return this.http.post<AuthResponse<any>>(`${this.apiUrl}/register/visitor`, data);
   }
+
+  // --- 5. Business Registration ---
+  registerBusiness(data: any): Observable<AuthResponse<any>> {
+    return this.http.post<AuthResponse<any>>(`${this.apiUrl}/register/business`, data);
+  }
 }

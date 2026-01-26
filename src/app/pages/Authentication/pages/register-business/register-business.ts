@@ -1,0 +1,310 @@
+import { Component, inject, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Router, RouterLink } from '@angular/router';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormArray } from '@angular/forms';
+import { RegistrationService } from '../../Service/registration-service';
+import { ToastService } from '../../../../shared/services/toast.service';
+import { CATEGORY_LIST } from '../../../models/category-list';
+import { AuthSuccessModalComponent } from '../../../../shared/components/auth-success-modal/auth-success-modal.component';
+import { SocialPlatform } from '../../../Public/pages/profile/models/profile';
+import { JobSearchService } from '../../../Public/pages/jobs/service/job-search';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
+
+// Enums as requested
+export enum BusinessSize {
+    Freelancer = 0,
+    SmallBusiness = 1,
+    MediumBusiness = 2,
+    Enterprise = 3
+}
+
+export enum Industry {
+    None = 0,
+    Technology = 1,
+    Finance = 2,
+    Healthcare = 3,
+    Education = 4,
+    Retail = 5,
+    Hospitality = 6,
+    Food = 7,
+    Media = 8,
+    RealEstate = 9,
+    Construction = 10,
+    Transportation = 11,
+    Manufacturing = 12,
+    Fashion = 13,
+    Legal = 14,
+    Marketing = 15,
+    Sports = 16,
+    Energy = 17,
+    Telecommunications = 18,
+    Automotive = 19,
+    Aerospace = 20,
+    Agriculture = 21,
+    Other = 99
+}
+
+export enum Services {
+    Consulting = 0,
+    SoftwareDevelopment = 1,
+    ItSupport = 2,
+    Marketing = 3,
+    Design = 4,
+    Hr = 5,
+    CustomerSupport = 6,
+    Sales = 7,
+    Operations = 8,
+    Manufacturing = 9,
+    Installation = 10,
+    Finance = 11,
+    Training = 12,
+    EventServices = 13
+}
+
+export enum ServiceArea {
+    Citywide = 0,
+    BoroughSpecific = 1,
+    NeighborhoodSpecific = 2,
+    Online = 3
+}
+
+export enum OwnershipType {
+    Minority = 0,
+    Woman = 1,
+    Veteran = 2,
+    Other = 3
+}
+
+@Component({
+    selector: 'app-register-business',
+    standalone: true,
+    imports: [CommonModule, ReactiveFormsModule, RouterLink, AuthSuccessModalComponent],
+    templateUrl: './register-business.html',
+    styleUrls: ['./register-business.scss']
+})
+export class RegisterBusinessComponent implements OnInit {
+    private fb = inject(FormBuilder);
+    private router = inject(Router);
+    private registrationService = inject(RegistrationService);
+    private toastService = inject(ToastService);
+    private jobSearchService = inject(JobSearchService);
+
+    form!: FormGroup;
+    isLoading = false;
+
+    // Data Lists
+    interestsList = CATEGORY_LIST;
+    selectedInterestIds: number[] = [];
+
+    // Enum Options
+    businessSizes = [
+        { value: BusinessSize.Freelancer, label: 'Freelancer' },
+        { value: BusinessSize.SmallBusiness, label: 'Small Business' },
+        { value: BusinessSize.MediumBusiness, label: 'Medium Business' },
+        { value: BusinessSize.Enterprise, label: 'Enterprise' }
+    ];
+
+    industries = [
+        { value: Industry.Technology, label: 'Technology' },
+        { value: Industry.Finance, label: 'Finance' },
+        { value: Industry.Healthcare, label: 'Healthcare' },
+        { value: Industry.Education, label: 'Education' },
+        { value: Industry.Retail, label: 'Retail' },
+        { value: Industry.Hospitality, label: 'Hospitality' },
+        { value: Industry.Food, label: 'Food & Beverage' },
+        { value: Industry.Media, label: 'Media' },
+        { value: Industry.RealEstate, label: 'Real Estate' },
+        { value: Industry.Construction, label: 'Construction' },
+        { value: Industry.Transportation, label: 'Transportation' },
+        { value: Industry.Other, label: 'Other' }
+    ];
+
+    servicesOptions = [
+        { value: Services.Consulting, label: 'Consulting' },
+        { value: Services.SoftwareDevelopment, label: 'Software Development' },
+        { value: Services.Marketing, label: 'Marketing' },
+        { value: Services.Design, label: 'Design' },
+        { value: Services.Finance, label: 'Finance' },
+        { value: Services.EventServices, label: 'Event Services' }
+    ];
+
+    serviceAreas = [
+        { value: ServiceArea.Citywide, label: 'Citywide' },
+        { value: ServiceArea.BoroughSpecific, label: 'Borough Specific' },
+        { value: ServiceArea.NeighborhoodSpecific, label: 'Neighborhood Specific' },
+        { value: ServiceArea.Online, label: 'Online' }
+    ];
+
+    ownershipTypes = [
+        { value: OwnershipType.Minority, label: 'Minority-Owned' },
+        { value: OwnershipType.Woman, label: 'Woman-Owned' },
+        { value: OwnershipType.Veteran, label: 'Veteran-Owned' },
+        { value: OwnershipType.Other, label: 'Other' }
+    ];
+
+    socialPlatforms = [
+        { value: SocialPlatform.Facebook, label: 'Facebook', icon: 'bi-facebook' },
+        { value: SocialPlatform.Twitter, label: 'Twitter', icon: 'bi-twitter-x' },
+        { value: SocialPlatform.Instagram, label: 'Instagram', icon: 'bi-instagram' },
+        { value: SocialPlatform.LinkedIn, label: 'LinkedIn', icon: 'bi-linkedin' },
+        { value: SocialPlatform.Website, label: 'Website', icon: 'bi-globe' }
+    ];
+
+    // Location Search
+    locations: any[] = [];
+    isSearchingLocations = false;
+
+    // Modal State
+    showModal = false;
+    modalTitle = 'Welcome to NYC360 Business!';
+    modalMessage = '';
+
+    ngOnInit() {
+        this.initForm();
+        this.setupLocationSearch();
+    }
+
+    initForm() {
+        this.form = this.fb.group({
+            Name: ['', [Validators.required, Validators.minLength(2)]],
+            Username: ['', [Validators.required, Validators.minLength(4)]],
+            Email: ['', [Validators.required, Validators.email]],
+            Password: ['', [Validators.required, Validators.minLength(6), Validators.pattern(/^(?=.*[a-z])(?=.*\d).{6,}$/)]],
+            Industry: [null, Validators.required],
+            BusinessSize: [null, Validators.required],
+            ServiceArea: [null, Validators.required],
+            Services: [null, Validators.required],
+            Website: [''],
+            PhoneNumber: ['', [Validators.pattern(/^\+?[0-9\s-]{10,15}$/)]],
+            Description: ['', [Validators.maxLength(500)]],
+            MakeProfilePublic: [true],
+            IsLicensedInNyc: [false],
+            IsInsured: [false],
+            OwnershipType: [null, Validators.required],
+            Address: this.fb.group({
+                Street: ['', Validators.required],
+                BuildingNumber: ['', Validators.required],
+                ZipCode: ['', Validators.required],
+                LocationId: [null, Validators.required]
+            }),
+            SocialLinks: this.fb.array([])
+        });
+    }
+
+    get socialLinks() {
+        return this.form.get('SocialLinks') as FormArray;
+    }
+
+    addSocialLink() {
+        this.socialLinks.push(this.fb.group({
+            Platform: [null, Validators.required],
+            Url: ['', [Validators.required, Validators.pattern(/https?:\/\/.+/)]]
+        }));
+    }
+
+    removeSocialLink(index: number) {
+        this.socialLinks.removeAt(index);
+    }
+
+    setupLocationSearch() {
+        const addressGroup = this.form.get('Address') as FormGroup;
+        // We can't easily debounce on a single input inside a group without a separate control or using valueChanges on the whole group
+        // But for registration, we might just use a simple lookup or search input
+    }
+
+    searchLocations(query: string) {
+        if (query.length < 2) {
+            this.locations = [];
+            return;
+        }
+        this.isSearchingLocations = true;
+        this.jobSearchService.searchLocations(query).subscribe({
+            next: (res) => {
+                this.locations = res.data;
+                this.isSearchingLocations = false;
+            },
+            error: () => this.isSearchingLocations = false
+        });
+    }
+
+    selectLocation(loc: any) {
+        this.form.get('Address.LocationId')?.setValue(loc.id);
+        this.locations = []; // clear results
+        // You could also set a display property for the UI
+    }
+
+    toggleInterest(id: number) {
+        const index = this.selectedInterestIds.indexOf(id);
+        if (index >= 0) {
+            this.selectedInterestIds.splice(index, 1);
+        } else {
+            this.selectedInterestIds.push(id);
+        }
+    }
+
+    isSelected(id: number): boolean {
+        return this.selectedInterestIds.includes(id);
+    }
+
+    isFieldInvalid(fieldName: string): boolean {
+        const field = this.form.get(fieldName);
+        return !!(field && field.invalid && (field.dirty || field.touched));
+    }
+
+    isAddressFieldInvalid(fieldName: string): boolean {
+        const field = this.form.get(`Address.${fieldName}`);
+        return !!(field && field.invalid && (field.dirty || field.touched));
+    }
+
+    onSubmit() {
+        if (this.form.invalid) {
+            this.form.markAllAsTouched();
+            this.scrollToFirstInvalidControl();
+            this.toastService.warning('Please complete all required fields.');
+            return;
+        }
+
+        if (this.selectedInterestIds.length === 0) {
+            this.toastService.warning('Please select at least one interest.');
+            return;
+        }
+
+        this.isLoading = true;
+        const formValue = this.form.value;
+
+        const payload = {
+            ...formValue,
+            Interests: this.selectedInterestIds
+        };
+
+        this.registrationService.registerBusiness(payload).subscribe({
+            next: (res) => {
+                this.isLoading = false;
+                if (res.isSuccess) {
+                    this.modalTitle = 'Account Created!';
+                    this.modalMessage = 'Your business registration was successful. Welcome to the NYC360 network!';
+                    this.showModal = true;
+                } else {
+                    this.toastService.error(res.error?.message || 'Registration failed.');
+                }
+            },
+            error: (err) => {
+                this.isLoading = false;
+                this.toastService.error('An error occurred. Please try again.');
+            }
+        });
+    }
+
+    onModalClose() {
+        this.showModal = false;
+        this.router.navigate(['/auth/login']);
+    }
+
+    private scrollToFirstInvalidControl() {
+        const firstInvalidControl: HTMLElement = document.querySelector('.ng-invalid[formControlName], .ng-invalid[formArrayName], .ng-invalid textarea, .ng-invalid select') as HTMLElement;
+        if (firstInvalidControl) {
+            firstInvalidControl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            firstInvalidControl.focus();
+        }
+    }
+}

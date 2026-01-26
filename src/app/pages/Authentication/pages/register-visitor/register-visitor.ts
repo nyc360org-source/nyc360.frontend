@@ -105,6 +105,7 @@ export class RegisterVisitorComponent {
     onSubmit() {
         if (this.form.invalid) {
             this.form.markAllAsTouched();
+            this.scrollToFirstInvalidControl();
             this.toastService.warning('Please complete all required fields.');
             return;
         }
@@ -146,5 +147,13 @@ export class RegisterVisitorComponent {
     onModalClose() {
         this.showModal = false;
         this.router.navigate(['/auth/login']);
+    }
+
+    private scrollToFirstInvalidControl() {
+        const firstInvalidControl: HTMLElement = document.querySelector('.ng-invalid[formControlName], .ng-invalid[formArrayName], .ng-invalid textarea, .ng-invalid select') as HTMLElement;
+        if (firstInvalidControl) {
+            firstInvalidControl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            firstInvalidControl.focus();
+        }
     }
 }

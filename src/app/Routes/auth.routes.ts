@@ -12,7 +12,8 @@ export const AUTH_ROUTES: Routes = [
       { path: 'forgot-password', loadComponent: () => import('../pages/Authentication/pages/forgot-password/forgot-password').then(m => m.ForgotPasswordComponent) },
       { path: 'confirm-email', loadComponent: () => import('../pages/Authentication/pages/confirm-email/confirm-email').then(m => m.ConfirmEmailComponent) },
       { path: 'reset-password', loadComponent: () => import('../pages/Authentication/pages/reset-password/reset-password').then(m => m.ResetPasswordComponent) },
-      { path: 'register/visitor', loadComponent: () => import('../pages/Authentication/pages/register-visitor/register-visitor').then(m => m.RegisterVisitorComponent) }
+      { path: 'register/visitor', loadComponent: () => import('../pages/Authentication/pages/register-visitor/register-visitor').then(m => m.RegisterVisitorComponent) },
+      { path: 'register/business', loadComponent: () => import('../pages/Authentication/pages/register-business/register-business').then(m => m.RegisterBusinessComponent) }
     ]
   }
 ];

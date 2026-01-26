@@ -147,6 +147,10 @@ export class RegisterSelectionComponent {
       this.router.navigate(['/auth/register/visitor']);
       return;
     }
+    if (typeId === 'business') {
+      this.router.navigate(['/auth/register/business']);
+      return;
+    }
     this.selectedType = typeId;
     this.isOrganization = typeId === 'organization' || typeId === 'business';
     this.currentStep = 'form';
