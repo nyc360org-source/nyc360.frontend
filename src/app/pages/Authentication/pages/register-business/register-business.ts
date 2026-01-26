@@ -232,11 +232,22 @@ export class RegisterBusinessComponent implements OnInit {
         });
     }
 
-    selectLocation(loc: any) {
-        this.form.get('Address.LocationId')?.setValue(loc.id);
+    selectLocation(loc: any, inputElement?: HTMLInputElement) {
+        const addressGroup = this.form.get('Address');
+        addressGroup?.patchValue({
+            LocationId: loc.id,
+            ZipCode: loc.zipCode || ''
+        });
+
+        // Update the input field to show the selected location
+        if (inputElement) {
+            inputElement.value = `${loc.neighborhood} (${loc.borough})`;
+        }
+
         this.locations = []; // clear results
         this.toastService.success(`Neighborhood set to: ${loc.neighborhood}`);
     }
+
 
     toggleInterest(id: number) {
         const index = this.selectedInterestIds.indexOf(id);

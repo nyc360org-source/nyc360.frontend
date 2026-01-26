@@ -136,15 +136,12 @@
                         <h4 class="section-title">Headquarters Address</h4>
                         <div class="row-group">
                             <div class="form-group" style="flex: 2;">
-                                <label>Street</label>
-                                <div class="input-wrapper">
-                                    <i class="bi bi-geo-alt"></i>
-                                    <input type="text" formControlName="Street" placeholder="123 Broadway"
-                                        [class.is-invalid]="isAddressFieldInvalid('Street')">
-                                </div>
+                                <label>Street Name</label>
+                                <input type="text" formControlName="Street" placeholder="123 Broadway"
+                                    class="form-control" [class.is-invalid]="isAddressFieldInvalid('Street')">
                             </div>
-                            <div class="form-group">
-                                <label>No.</label>
+                            <div class="form-group" style="flex: 0 0 120px;">
+                                <label>Apt/No.</label>
                                 <input type="text" formControlName="BuildingNumber" placeholder="4B"
                                     class="form-control" [class.is-invalid]="isAddressFieldInvalid('BuildingNumber')">
                             </div>
@@ -159,7 +156,7 @@
                                         placeholder="Search Neighborhood (e.g. Astoria)" class="form-control">
                                     <div *ngIf="locations.length > 0" class="search-results">
                                         <div *ngFor="let loc of locations" class="search-item"
-                                            (click)="selectLocation(loc)">
+                                            (click)="selectLocation(loc, locInput)">
                                             {{ loc.neighborhood }} ({{ loc.borough }})
                                         </div>
                                     </div>

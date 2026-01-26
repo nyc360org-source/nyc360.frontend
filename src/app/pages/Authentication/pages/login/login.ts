@@ -78,17 +78,40 @@ export class LoginComponent implements OnInit, AfterViewInit {
         next: (res) => {
           this.isLoading = false;
           if (res.isSuccess) {
+            this.toastService.success('Google login successful!');
             this.modalTitle = 'Login Successful';
-            this.modalMessage = `Welcome back, ${response.credential.name || 'User'}!`;
+            this.modalMessage = `Welcome back!`;
             this.redirectUrl = '/public/home';
             this.showModal = true;
           } else {
-            this.toastService.error(res.error?.message || 'Google login failed.');
+            const errorMessage = res.error?.message || 'Google login failed';
+
+            if (errorMessage.toLowerCase().includes('not found')) {
+              this.toastService.error('No account found with this Google account. Please register first.');
+            } else if (errorMessage.toLowerCase().includes('disabled') ||
+              errorMessage.toLowerCase().includes('locked')) {
+              this.toastService.error('Your account has been disabled. Please contact support.');
+            } else {
+              this.toastService.error(errorMessage);
+            }
           }
         },
         error: (err) => {
           this.isLoading = false;
-          this.toastService.error('Network error.');
+
+          if (err.status === 0) {
+            this.toastService.error('Unable to connect to server. Please check your internet connection.');
+          } else if (err.status === 400) {
+            this.toastService.error('Invalid Google credentials. Please try again.');
+          } else if (err.status === 401) {
+            this.toastService.error('Google authentication failed. Please try again.');
+          } else if (err.status === 500) {
+            this.toastService.error('Server error during Google login. Please try again later.');
+          } else {
+            this.toastService.error(err.error?.message || 'Google login failed. Please try again.');
+          }
+
+          console.error('Google login error:', err);
         }
       });
     });
@@ -97,6 +120,25 @@ export class LoginComponent implements OnInit, AfterViewInit {
   onSubmit() {
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
+
+      // Show specific validation errors
+      if (this.loginForm.get('email')?.hasError('required')) {
+        this.toastService.error('Email is required');
+        return;
+      }
+      if (this.loginForm.get('email')?.hasError('email')) {
+        this.toastService.error('Please enter a valid email address');
+        return;
+      }
+      if (this.loginForm.get('password')?.hasError('required')) {
+        this.toastService.error('Password is required');
+        return;
+      }
+      if (this.loginForm.get('password')?.hasError('minlength')) {
+        this.toastService.error('Password must be at least 6 characters');
+        return;
+      }
+
       this.toastService.warning('Please fill in the form correctly.');
       return;
     }
@@ -110,20 +152,59 @@ export class LoginComponent implements OnInit, AfterViewInit {
         if (response.isSuccess) {
           // Check for 2FA
           if (response.data.twoFactorRequired) {
+            this.toastService.info('Please verify your account with the OTP sent to your email');
             this.router.navigate(['/auth/verify-otp'], { queryParams: { email: loginData.email } });
           } else {
+            this.toastService.success('Login successful! Welcome back.');
             this.modalTitle = 'Welcome Back!';
             this.modalMessage = 'You have successfully logged in.';
             this.redirectUrl = '/public/home';
             this.showModal = true;
           }
         } else {
-          this.toastService.error(response.error?.message || 'Login failed.');
+          // Handle specific error messages from API
+          const errorMessage = response.error?.message || 'Login failed';
+
+          if (errorMessage.toLowerCase().includes('invalid') ||
+            errorMessage.toLowerCase().includes('incorrect') ||
+            errorMessage.toLowerCase().includes('wrong')) {
+            this.toastService.error('Invalid email or password. Please try again.');
+          } else if (errorMessage.toLowerCase().includes('not found')) {
+            this.toastService.error('Account not found. Please check your email or register.');
+          } else if (errorMessage.toLowerCase().includes('locked') ||
+            errorMessage.toLowerCase().includes('suspended')) {
+            this.toastService.error('Your account has been locked. Please contact support.');
+          } else if (errorMessage.toLowerCase().includes('verify') ||
+            errorMessage.toLowerCase().includes('confirm')) {
+            this.toastService.error('Please verify your email before logging in.');
+          } else {
+            this.toastService.error(errorMessage);
+          }
         }
       },
       error: (err) => {
         this.isLoading = false;
-        this.toastService.error('Network error.');
+
+        // Handle different types of errors
+        if (err.status === 0) {
+          this.toastService.error('Unable to connect to server. Please check your internet connection.');
+        } else if (err.status === 400) {
+          this.toastService.error(err.error?.message || 'Invalid login credentials. Please try again.');
+        } else if (err.status === 401) {
+          this.toastService.error('Invalid email or password.');
+        } else if (err.status === 403) {
+          this.toastService.error('Access denied. Your account may be locked.');
+        } else if (err.status === 404) {
+          this.toastService.error('Login service not found. Please contact support.');
+        } else if (err.status === 500) {
+          this.toastService.error('Server error. Please try again later.');
+        } else if (err.status === 503) {
+          this.toastService.error('Service temporarily unavailable. Please try again later.');
+        } else {
+          this.toastService.error(err.error?.message || 'An unexpected error occurred. Please try again.');
+        }
+
+        console.error('Login error:', err);
       }
     });
   }

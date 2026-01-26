@@ -87,13 +87,10 @@
                         <div class="row-group">
                             <div class="form-group" style="flex: 2;">
                                 <label>Street Name</label>
-                                <div class="input-wrapper">
-                                    <i class="bi bi-signpost-2"></i>
-                                    <input type="text" formControlName="Street" placeholder="Broadway"
-                                        [class.is-invalid]="isAddressFieldInvalid('Street')">
-                                </div>
+                                <input type="text" formControlName="Street" placeholder="Broadway" class="form-control"
+                                    [class.is-invalid]="isAddressFieldInvalid('Street')">
                             </div>
-                            <div class="form-group">
+                            <div class="form-group" style="flex: 0 0 120px;">
                                 <label>Apt/No.</label>
                                 <input type="text" formControlName="BuildingNumber" placeholder="4B"
                                     class="form-control" [class.is-invalid]="isAddressFieldInvalid('BuildingNumber')">
@@ -109,7 +106,7 @@
                                         placeholder="E.g. Upper West Side" class="form-control">
                                     <div *ngIf="locations.length > 0" class="search-results">
                                         <div *ngFor="let loc of locations" class="search-item"
-                                            (click)="selectLocation(loc)">
+                                            (click)="selectLocation(loc, locInput)">
                                             {{ loc.neighborhood }} ({{ loc.borough }})
                                         </div>
                                     </div>

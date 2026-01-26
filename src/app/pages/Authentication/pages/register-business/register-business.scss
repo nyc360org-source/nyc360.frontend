@@ -101,78 +101,109 @@ $danger: #ef4444;
     }
 
     .brand-subtitle {
-        font-size: 1.25rem;
-        font-weight: 300;
+        font-size: 1.1rem;
+        color: #cbd5e1;
         line-height: 1.6;
-        opacity: 0.7;
+        font-weight: 400;
     }
 
     .glow-circle {
         position: absolute;
-        width: 450px;
-        height: 450px;
-        background: radial-gradient(circle, rgba($accent, 0.1) 0%, transparent 70%);
-        bottom: -150px;
-        right: -150px;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(circle, rgba($accent, 0.15), transparent 70%);
         border-radius: 50%;
+        top: -200px;
+        right: -250px;
+        pointer-events: none;
+        animation: pulse 8s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+
+        0%,
+        100% {
+            transform: scale(1);
+            opacity: 0.6;
+        }
+
+        50% {
+            transform: scale(1.1);
+            opacity: 0.8;
+        }
     }
 
     @media (max-width: 992px) {
-        flex: none;
-        padding: 60px;
+        flex: 0 0 auto;
+        min-height: 300px;
+        padding: 50px 30px;
 
         .brand-content {
-            position: relative;
-            top: 0;
+            position: static;
+            max-width: 100%;
+        }
+
+        .brand-title {
+            font-size: 2.5rem;
+        }
+
+        .glow-circle {
+            width: 400px;
+            height: 400px;
         }
     }
 }
 
-/* --- Choices/Form Panel --- */
+/* --- Form Panel --- */
 .choices-panel {
     flex: 1;
-    background-color: #ffffff;
+    background: #fafbfc;
     padding: 60px 40px;
     overflow-y: auto;
-    display: flex;
-    justify-content: center;
+    position: relative;
 
-    .content-wrapper {
-        width: 100%;
-        max-width: 700px;
+    @media (max-width: 992px) {
+        padding: 40px 20px;
     }
+}
+
+.form-container {
+    max-width: 720px;
+    margin: 0 auto;
 }
 
 .btn-back {
     background: none;
     border: none;
     color: $text-muted;
-    font-weight: 700;
-    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
     display: flex;
     align-items: center;
     gap: 8px;
     margin-bottom: 30px;
-    font-size: 0.95rem;
+    cursor: pointer;
+    transition: color 0.2s;
 
     &:hover {
         color: $accent;
     }
 }
 
-.header-section {
+.form-header {
     margin-bottom: 40px;
 
     .main-question {
-        font-size: 2.5rem;
-        font-weight: 900;
-        color: #1e293b;
-        letter-spacing: -1px;
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: $text-main;
+        margin-bottom: 10px;
     }
 
     .sub-text {
-        font-size: 1.1rem;
+        font-size: 1rem;
         color: $text-muted;
+        font-weight: 500;
     }
 }
 
@@ -194,6 +225,14 @@ $danger: #ef4444;
         border-bottom: 1px solid $border-soft;
         padding-bottom: 12px;
     }
+
+    .section-label {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: #334155;
+        margin-bottom: 20px;
+        display: block;
+    }
 }
 
 .row-group {
@@ -212,9 +251,9 @@ $danger: #ef4444;
 
     label {
         display: block;
-        font-size: 0.85rem;
+        font-size: 0.9rem;
         font-weight: 700;
-        margin-bottom: 8px;
+        margin-bottom: 10px;
         color: #475569;
     }
 
@@ -223,8 +262,8 @@ $danger: #ef4444;
 
         i {
             position: absolute;
-            top: 14px;
-            left: 16px;
+            top: 18px;
+            left: 18px;
             color: #94a3b8;
             font-size: 1.1rem;
             transition: color 0.3s;
@@ -234,14 +273,15 @@ $danger: #ef4444;
         select,
         textarea {
             width: 100%;
-            padding: 14px 16px 14px 48px;
+            padding: 16px 18px 16px 52px;
             background: $input-fill;
             border: 1.5px solid transparent;
             border: 1.5px solid $border-strong;
             border-radius: 12px;
-            font-size: 0.95rem;
+            font-size: 1rem;
             color: #1e293b;
             transition: all 0.2s;
+            min-height: 52px;
 
             &:focus {
                 background: white;
@@ -249,89 +289,66 @@ $danger: #ef4444;
                 outline: none;
                 box-shadow: 0 0 0 4px rgba($accent, 0.1);
 
-                &+i {
+                ~i {
                     color: $accent;
                 }
             }
+
+            &.is-invalid {
+                border-color: $danger;
+                background: rgba($danger, 0.03);
+            }
+
+            &::placeholder {
+                color: #94a3b8;
+            }
+        }
+
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 18px center;
+            padding-right: 45px;
         }
 
         textarea {
-            padding-left: 16px;
+            min-height: 120px;
+            resize: vertical;
+            padding: 16px 18px;
         }
     }
 }
 
-.chips-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-
-    .interest-chip {
-        padding: 10px 20px;
-        background: white;
-        border: 1.5px solid $border-strong;
-        border-radius: 50px;
-        font-size: 0.9rem;
-        font-weight: 700;
-        color: $text-muted;
-        cursor: pointer;
-        transition: all 0.2s;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-
-        i {
-            color: #94a3b8;
-        }
-
-        &:hover {
-            border-color: var(--chip-color, $accent);
-            color: var(--chip-color, $accent);
-
-            i {
-                color: var(--chip-color, $accent);
-            }
-        }
-
-        &.active {
-            background: var(--chip-color, $accent);
-            border-color: var(--chip-color, $accent);
-            color: white;
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
-
-            i {
-                color: white;
-            }
-        }
-    }
-}
-
-.btn-submit {
+/* Inputs without icon wrapper */
+.form-control {
     width: 100%;
-    padding: 18px;
-    background: $accent;
-    color: white;
-    border: none;
-    border-radius: 14px;
-    font-size: 1.1rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-top: 20px;
-    box-shadow: 0 10px 25px rgba($accent, 0.2);
-    transition: all 0.3s;
+    padding: 16px 18px;
+    background: $input-fill;
+    border: 1.5px solid $border-strong;
+    border-radius: 12px;
+    font-size: 1rem;
+    color: #1e293b;
+    transition: all 0.2s;
+    min-height: 52px;
 
-    &:hover:not(:disabled) {
-        background: color.adjust($accent, $lightness: -5%);
-        transform: translateY(-3px);
-        box-shadow: 0 15px 35px rgba($accent, 0.3);
+    &:focus {
+        background: white;
+        border-color: $accent;
+        outline: none;
+        box-shadow: 0 0 0 4px rgba($accent, 0.1);
     }
 
-    &:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
+    &.is-invalid {
+        border-color: $danger;
+        background: rgba($danger, 0.03);
+    }
+
+    &::placeholder {
+        color: #94a3b8;
     }
 }
+
 
 .search-results {
     position: absolute;
@@ -341,18 +358,293 @@ $danger: #ef4444;
     background: white;
     border: 1px solid $border-strong;
     border-radius: 12px;
-    z-index: 100;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    margin-top: 5px;
+    max-height: 200px;
+    overflow-y: auto;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    z-index: 10;
 
     .search-item {
-        padding: 12px 18px;
+        padding: 12px 16px;
         cursor: pointer;
+        transition: all 0.15s;
+        border-bottom: 1px solid $border-soft;
         font-size: 0.9rem;
+
+        &:last-child {
+            border-bottom: none;
+        }
 
         &:hover {
             background: #f8fafc;
             color: $accent;
             font-weight: 700;
         }
+    }
+}
+
+/* Submit Button */
+.submit-btn {
+    width: 100%;
+    padding: 18px;
+    background: $accent;
+    color: white;
+    border: none;
+    border-radius: 14px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 20px;
+
+    &:hover:not(:disabled) {
+        background: color.adjust($accent, $lightness: -8%);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba($accent, 0.3);
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+}
+
+/* ✨ Professional Interest Chips with Icons & Colors */
+.chips-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 14px;
+    margin-top: 20px;
+
+    @media (max-width: 768px) {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 12px;
+    }
+
+    .interest-chip {
+        position: relative;
+        padding: 16px 20px;
+        background: white;
+        border: 2px solid #E2E8F0;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        overflow: hidden;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #475569;
+        user-select: none;
+
+        // Ripple effect background
+        &::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: var(--chip-color, $accent);
+            opacity: 0;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s, opacity 0.4s;
+        }
+
+        i {
+            font-size: 1.3rem;
+            color: var(--chip-color, $accent);
+            transition: all 0.3s;
+            z-index: 1;
+        }
+
+        span {
+            position: relative;
+            z-index: 1;
+            transition: color 0.3s;
+        }
+
+        // Hover state
+        &:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            border-color: var(--chip-color, $accent);
+
+            i {
+                transform: scale(1.15) rotate(5deg);
+            }
+        }
+
+        // Active/Selected state
+        &.active {
+            background: var(--chip-color, $accent);
+            border-color: var(--chip-color, $accent);
+            color: white;
+            transform: scale(1.02);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+
+            &::before {
+                width: 300px;
+                height: 300px;
+                opacity: 0.15;
+            }
+
+            i {
+                color: white;
+                transform: scale(1.1);
+                filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+            }
+
+            span {
+                color: white;
+                font-weight: 700;
+            }
+
+            &:hover {
+                transform: scale(1.05) translateY(-2px);
+                box-shadow: 0 10px 24px rgba(0, 0, 0, 0.15);
+            }
+        }
+
+        // Click animation
+        &:active {
+            transform: scale(0.98);
+        }
+
+        // Stagger animation on load
+        @for $i from 1 through 12 {
+            &:nth-child(#{$i}) {
+                animation: chipFadeIn 0.5s ease-out #{$i * 0.05}s both;
+            }
+        }
+    }
+}
+
+/* Interest Pills (Fallback) */
+.interests-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+
+    .interest-pill {
+        padding: 12px 18px;
+        background: $input-fill;
+        border: 1.5px solid $border-strong;
+        border-radius: 50px;
+        text-align: center;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+
+        &:hover {
+            border-color: $accent;
+            background: rgba($accent, 0.05);
+        }
+
+        &.selected {
+            background: $accent;
+            color: white;
+            border-color: $accent;
+        }
+    }
+}
+
+/* Social Links */
+.social-link-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 15px;
+    align-items: flex-start;
+
+    .form-group {
+        margin-bottom: 0;
+    }
+
+    .btn-remove {
+        flex-shrink: 0;
+        padding: 16px 18px;
+        background: rgba($danger, 0.1);
+        color: $danger;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.2s;
+        margin-top: 38px;
+
+        &:hover {
+            background: $danger;
+            color: white;
+        }
+    }
+}
+
+.btn-add-social {
+    padding: 14px 20px;
+    background: rgba($accent, 0.1);
+    color: $accent;
+    border: 1.5px dashed $accent;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+
+    &:hover {
+        background: $accent;
+        color: white;
+        border-style: solid;
+    }
+}
+
+/* Checkboxes */
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+
+    input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+        accent-color: $accent;
+    }
+
+    label {
+        margin: 0;
+        cursor: pointer;
+        font-size: 0.95rem;
+        color: $text-main;
+    }
+}
+
+/* Error Messages */
+.text-danger {
+    color: $danger;
+    font-size: 0.85rem;
+    margin-top: 5px;
+}
+
+.req {
+    color: $danger;
+}
+
+/* ✨ Keyframe Animations */
+@keyframes chipFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
     }
 }

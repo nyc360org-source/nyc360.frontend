@@ -154,15 +154,12 @@
                         <h4 class="section-title"><i class="bi bi-geo-fill me-2"></i>Physical Headquarters</h4>
                         <div class="row-group">
                             <div class="form-group" style="flex: 2;">
-                                <label>Street</label>
-                                <div class="input-wrapper">
-                                    <i class="bi bi-signpost"></i>
-                                    <input type="text" formControlName="Street" placeholder="Civic Center Plaza"
-                                        [class.is-invalid]="isAddressFieldInvalid('Street')">
-                                </div>
+                                <label>Street Name</label>
+                                <input type="text" formControlName="Street" placeholder="Civic Center Plaza"
+                                    class="form-control" [class.is-invalid]="isAddressFieldInvalid('Street')">
                             </div>
-                            <div class="form-group">
-                                <label>No.</label>
+                            <div class="form-group" style="flex: 0 0 120px;">
+                                <label>Apt/No.</label>
                                 <input type="text" formControlName="BuildingNumber" placeholder="Suite 100"
                                     class="form-control" [class.is-invalid]="isAddressFieldInvalid('BuildingNumber')">
                             </div>
@@ -177,7 +174,7 @@
                                         placeholder="Search Neighborhood (e.g. Civic Center)" class="form-control">
                                     <div *ngIf="locations.length > 0" class="search-results">
                                         <div *ngFor="let loc of locations" class="search-item"
-                                            (click)="selectLocation(loc)">
+                                            (click)="selectLocation(loc, locInput)">
                                             {{ loc.neighborhood }} ({{ loc.borough }})
                                         </div>
                                     </div>
