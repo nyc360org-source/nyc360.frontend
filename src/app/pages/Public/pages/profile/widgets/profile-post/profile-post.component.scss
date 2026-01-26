@@ -97,6 +97,66 @@ $primary-purple: #6366F1;
                 display: block;
             }
         }
+
+        /* ✅ Job Discovery Styles */
+        .job-preview-container {
+            background: #F8FAFC;
+            border-radius: 16px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #6366F1;
+
+            .job-main-stats {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 12px;
+
+                .salary-range {
+                    color: #10B981;
+                    font-weight: 800;
+                    font-size: 1.1rem;
+                }
+
+                .company-name {
+                    color: #64748B;
+                    font-weight: 600;
+                    font-size: 0.9rem;
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                }
+            }
+
+            .job-tags-premium {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+
+                .job-tag {
+                    background: #fff;
+                    border: 1px solid #E2E8F0;
+                    padding: 6px 12px;
+                    border-radius: 8px;
+                    font-size: 0.8rem;
+                    font-weight: 700;
+                    color: #475569;
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+
+                    i {
+                        color: #6366F1;
+                    }
+
+                    &.tag-remote {
+                        background: #EEF2FF;
+                        border-color: #C7D2FE;
+                        color: #4338CA;
+                    }
+                }
+            }
+        }
     }
 
     .post-footer-actions {
@@ -157,6 +217,79 @@ $primary-purple: #6366F1;
                 background: #111;
                 color: $white;
             }
+        }
+    }
+
+    /* ✅ Housing Discovery Styles */
+    .housing-preview-container {
+        background: #F0FDFA;
+        border-radius: 16px;
+        padding: 20px;
+        margin: 15px 0;
+        border-left: 4px solid #10B981;
+
+        .housing-main-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+
+            .house-price {
+                color: #059669;
+                font-weight: 800;
+                font-size: 1.25rem;
+                letter-spacing: -0.01em;
+
+                small {
+                    font-size: 0.8rem;
+                    opacity: 0.7;
+                    font-weight: 600;
+                }
+            }
+
+            .house-location {
+                color: #64748B;
+                font-size: 0.85rem;
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+                gap: 5px;
+            }
+        }
+
+        .house-specs-premium {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 14px;
+
+            .spec-item {
+                background: white;
+                border: 1px solid #CCFBF1;
+                padding: 6px 12px;
+                border-radius: 8px;
+                font-size: 0.75rem;
+                font-weight: 700;
+                color: #0F766E;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+
+                i {
+                    color: #10B981;
+                }
+            }
+        }
+
+        .house-description {
+            font-size: 0.95rem;
+            color: #334155;
+            line-height: 1.5;
+            margin: 0;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
     }
 }

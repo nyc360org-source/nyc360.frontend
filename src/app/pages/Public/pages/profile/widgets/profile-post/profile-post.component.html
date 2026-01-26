@@ -11,7 +11,68 @@
 
     <div class="post-content-area" (click)="viewPostDetails(post.id, $event)">
         <a class="post-title-link" *ngIf="post.title">{{ post.title }}</a>
-        <p class="post-text">{{ post.content }}</p>
+
+        <!-- ✅ JOB DATA VIEW (If linkedResource exists) -->
+        <div class="job-preview-container" *ngIf="post.linkedResource">
+            <div class="job-main-stats">
+                <span class="salary-range" *ngIf="post.linkedResource.salaryMin">
+                    {{ formatPrice(post.linkedResource.salaryMin) }} - {{ formatPrice(post.linkedResource.salaryMax) }}
+                </span>
+                <span class="company-name" *ngIf="post.linkedResource.companyName">
+                    <i class="bi bi-building"></i> {{ post.linkedResource.companyName }}
+                </span>
+            </div>
+
+            <div class="job-tags-premium">
+                <div class="job-tag">
+                    <i class="bi bi-briefcase"></i>
+                    {{ getType(post.linkedResource.employmentType) }}
+                </div>
+                <div class="job-tag">
+                    <i class="bi bi-bar-chart"></i>
+                    {{ getLevel(post.linkedResource.employmentLevel) }}
+                </div>
+                <div class="job-tag" [ngClass]="{'tag-remote': post.linkedResource.workArrangement === 1}">
+                    <i class="bi"
+                        [ngClass]="post.linkedResource.workArrangement === 1 ? 'bi-cloud-check' : 'bi-geo-alt'"></i>
+                    {{ getArrangement(post.linkedResource.workArrangement) }}
+                </div>
+            </div>
+        </div>
+
+        <p class="post-text" *ngIf="post.content && post.category !== 4">{{ post.content }}</p>
+
+        <!-- ✅ HOUSING DATA VIEW (If category 4) -->
+        <div class="housing-preview-container" *ngIf="post.category === 4">
+            <div class="housing-main-row">
+                <span class="house-price" *ngIf="getHousingMetadata(post.content)?.Price">
+                    {{ formatPrice(getHousingMetadata(post.content).Price) }}
+                    <small *ngIf="getHousingMetadata(post.content).IsRenting">/mo</small>
+                </span>
+                <span class="house-location" *ngIf="post.location">
+                    <i class="bi bi-geo-alt-fill"></i> {{ post.location.neighborhood || post.location.borough }}
+                </span>
+            </div>
+
+            <div class="house-specs-premium">
+                <div class="spec-item">
+                    <i class="bi bi-house-door"></i>
+                    {{ getHousingMetadata(post.content)?.Type || 'Property' }}
+                </div>
+                <div class="spec-item">
+                    <i class="bi bi-aspect-ratio"></i>
+                    {{ getHousingMetadata(post.content)?.SizeSqFt || 0 }} sqft
+                </div>
+                <div class="spec-item">
+                    <i class="bi bi-door-open"></i>
+                    {{ getHousingMetadata(post.content)?.Rooms || 0 }} Rms
+                </div>
+            </div>
+
+            <p class="house-description" *ngIf="getCleanContent(post.content)">
+                {{ getCleanContent(post.content) }}
+            </p>
+        </div>
 
         <!-- Repost Box -->
         <div *ngIf="post.parentPost" class="repost-box" (click)="viewPostDetails(post.parentPost.id, $event)"

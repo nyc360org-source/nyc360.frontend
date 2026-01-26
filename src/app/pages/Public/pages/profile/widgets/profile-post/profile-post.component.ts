@@ -181,4 +181,37 @@ export class ProfilePostComponent {
         if (url.includes('http') || url.startsWith('data:')) return url;
         return `${environment.apiBaseUrl2}/avatars/${url}`;
     }
+
+    // ✅ Job Data Helpers
+    getArrangement(v: number) { return ['On-Site', 'Remote', 'Hybrid'][v] || 'On-Site'; }
+    getType(v: number) { return ['Full-time', 'Part-time', 'Contract', 'Internship', 'Freelance'][v] || 'Full-time'; }
+    getLevel(v: number) { return ['N/A', 'Junior', 'Mid', 'Senior', 'Executive'][v] || 'N/A'; }
+    formatPrice(price: number): string {
+        return new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            maximumFractionDigits: 0
+        }).format(price);
+    }
+
+    // ✅ Housing Metadata Helper
+    getHousingMetadata(content: string): any {
+        if (!content) return null;
+        try {
+            const parts = content.split('\n\n\n');
+            if (parts.length > 1) {
+                const jsonStr = parts[parts.length - 1].trim();
+                if (jsonStr.startsWith('{') && jsonStr.endsWith('}')) {
+                    return JSON.parse(jsonStr);
+                }
+            }
+        } catch (e) { }
+        return null;
+    }
+
+    getCleanContent(content: string): string {
+        if (!content) return '';
+        const parts = content.split('\n\n\n');
+        return parts[0].trim();
+    }
 }

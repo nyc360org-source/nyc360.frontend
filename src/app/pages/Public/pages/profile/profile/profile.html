@@ -42,6 +42,43 @@
                </div>
             </div>
 
+            <!-- Quick Stats Card -->
+            <div class="premium-card stats-card" *ngIf="user.stats">
+               <div class="sidebar-header">
+                  <h4>Quick Stats</h4>
+               </div>
+               <div class="stats-grid-compact">
+                  <div class="stat-box">
+                     <span class="val">{{ user.stats.postsCount || 0 }}</span>
+                     <span class="lbl">Posts</span>
+                  </div>
+                  <div class="stat-box">
+                     <span class="val">{{ user.stats.likesCount || 0 }}</span>
+                     <span class="lbl">Likes</span>
+                  </div>
+                  <div class="stat-box">
+                     <span class="val">{{ user.stats.followersCount || 0 }}</span>
+                     <span class="lbl">Followers</span>
+                  </div>
+                  <div class="stat-box">
+                     <span class="val">{{ user.stats.commentsCount || 0 }}</span>
+                     <span class="lbl">Comments</span>
+                  </div>
+               </div>
+            </div>
+
+            <!-- Intersts Card -->
+            <div class="premium-card" *ngIf="user.interests && user.interests.length">
+               <div class="sidebar-header">
+                  <h4>My Interests</h4>
+               </div>
+               <div class="interests-tags">
+                  <span class="interest-tag" *ngFor="let intId of user.interests">
+                     {{ getInterestName(intId) }}
+                  </span>
+               </div>
+            </div>
+
             <!-- Communities Card (Moved from Right) -->
             <div class="premium-card" *ngIf="user.topCommunities.length">
                <div class="sidebar-header">
