@@ -372,7 +372,8 @@ $error-color: #dc3545; // Standard Red for errors
         gap: 8px;
         padding: 8px 16px;
         background-color: #fff;
-        border: 1px solid $border-color;
+        border: 1px solid $border-color; // Fallback
+        border-color: rgba(0, 0, 0, 0.1);
         border-radius: 50px;
         font-size: 0.85rem;
         font-weight: 600;
@@ -381,21 +382,33 @@ $error-color: #dc3545; // Standard Red for errors
         transition: all 0.2s ease;
         user-select: none;
 
-        i {
-          font-size: 1rem;
+        // Apply dynamic color to label/border on hover even if not selected
+        &:hover {
+          background-color: #fff;
+          border-color: var(--chip-color);
+          color: var(--chip-color);
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+
+          i {
+            color: var(--chip-color);
+          }
         }
 
-        &:hover {
-          background-color: rgba($accent, 0.05);
-          border-color: rgba($accent, 0.5);
-          color: $accent;
+        i {
+          font-size: 1rem;
+          color: #adb5bd; // Default icon color
+          transition: 0.2s;
         }
 
         &.active {
-          background-color: $accent;
-          border-color: $accent;
+          background-color: var(--chip-color);
+          border-color: var(--chip-color);
           color: #fff;
-          box-shadow: 0 4px 10px rgba($accent, 0.3);
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); // Softer shadow
+
+          i {
+            color: #fff;
+          }
         }
       }
     }

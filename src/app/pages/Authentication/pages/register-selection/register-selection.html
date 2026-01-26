@@ -142,7 +142,7 @@
             </div>
 
 
-            
+
             <div class="form-group">
               <label>Industry</label>
               <div class="input-wrapper">
@@ -182,7 +182,7 @@
                 class="req">*</span></label>
             <div class="chips-grid">
               <div class="interest-chip" *ngFor="let interest of interestsList" [class.active]="isSelected(interest.id)"
-                (click)="toggleInterest(interest.id)">
+                (click)="toggleInterest(interest.id)" [style.--chip-color]="interest.color">
                 <i class="bi" [ngClass]="interest.icon"></i>
                 <span>{{ interest.name }}</span>
               </div>
