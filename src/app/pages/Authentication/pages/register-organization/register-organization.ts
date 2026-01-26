@@ -8,39 +8,15 @@ import { CATEGORY_LIST } from '../../../models/category-list';
 import { AuthSuccessModalComponent } from '../../../../shared/components/auth-success-modal/auth-success-modal.component';
 import { SocialPlatform } from '../../../Public/pages/profile/models/profile';
 import { JobSearchService } from '../../../Public/pages/jobs/service/job-search';
-import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
 
-// Enums as requested
-export enum BusinessSize {
-    Freelancer = 0,
-    SmallBusiness = 1,
-    MediumBusiness = 2,
-    Enterprise = 3
-}
-
-export enum Industry {
-    None = 0,
-    Technology = 1,
-    Finance = 2,
-    Healthcare = 3,
-    Education = 4,
-    Retail = 5,
-    Hospitality = 6,
-    Food = 7,
-    Media = 8,
-    RealEstate = 9,
-    Construction = 10,
-    Transportation = 11,
-    Manufacturing = 12,
-    Fashion = 13,
-    Legal = 14,
-    Marketing = 15,
-    Sports = 16,
-    Energy = 17,
-    Telecommunications = 18,
-    Automotive = 19,
-    Aerospace = 20,
-    Agriculture = 21,
+export enum OrganizationType {
+    Nonprofit = 0,
+    CommunityBased = 1,
+    CulturalInstitution = 2,
+    Educational = 3,
+    FaithBased = 4,
+    Advocacy = 5,
+    Public = 6,
     Other = 99
 }
 
@@ -68,21 +44,22 @@ export enum ServiceArea {
     Online = 3
 }
 
-export enum OwnershipType {
-    Minority = 0,
-    Woman = 1,
-    Veteran = 2,
-    Other = 3
+export enum FundType {
+    Public = 0,
+    Private = 1,
+    Grants = 2,
+    Donations = 3,
+    Mixed = 4
 }
 
 @Component({
-    selector: 'app-register-business',
+    selector: 'app-register-organization',
     standalone: true,
     imports: [CommonModule, ReactiveFormsModule, RouterLink, AuthSuccessModalComponent],
-    templateUrl: './register-business.html',
-    styleUrls: ['./register-business.scss']
+    templateUrl: './register-organization.html',
+    styleUrls: ['./register-organization.scss']
 })
-export class RegisterBusinessComponent implements OnInit {
+export class RegisterOrganizationComponent implements OnInit {
     private fb = inject(FormBuilder);
     private router = inject(Router);
     private registrationService = inject(RegistrationService);
@@ -95,28 +72,18 @@ export class RegisterBusinessComponent implements OnInit {
     // Data Lists
     interestsList = CATEGORY_LIST;
     selectedInterestIds: number[] = [];
+    selectedServiceIds: number[] = [];
 
     // Enum Options
-    businessSizes = [
-        { value: BusinessSize.Freelancer, label: 'Freelancer' },
-        { value: BusinessSize.SmallBusiness, label: 'Small Business' },
-        { value: BusinessSize.MediumBusiness, label: 'Medium Business' },
-        { value: BusinessSize.Enterprise, label: 'Enterprise' }
-    ];
-
-    industries = [
-        { value: Industry.Technology, label: 'Technology' },
-        { value: Industry.Finance, label: 'Finance' },
-        { value: Industry.Healthcare, label: 'Healthcare' },
-        { value: Industry.Education, label: 'Education' },
-        { value: Industry.Retail, label: 'Retail' },
-        { value: Industry.Hospitality, label: 'Hospitality' },
-        { value: Industry.Food, label: 'Food & Beverage' },
-        { value: Industry.Media, label: 'Media' },
-        { value: Industry.RealEstate, label: 'Real Estate' },
-        { value: Industry.Construction, label: 'Construction' },
-        { value: Industry.Transportation, label: 'Transportation' },
-        { value: Industry.Other, label: 'Other' }
+    orgTypes = [
+        { value: OrganizationType.Nonprofit, label: 'Non-profit' },
+        { value: OrganizationType.CommunityBased, label: 'Community Based' },
+        { value: OrganizationType.CulturalInstitution, label: 'Cultural Institution' },
+        { value: OrganizationType.Educational, label: 'Educational' },
+        { value: OrganizationType.FaithBased, label: 'Faith Based' },
+        { value: OrganizationType.Advocacy, label: 'Advocacy' },
+        { value: OrganizationType.Public, label: 'Public' },
+        { value: OrganizationType.Other, label: 'Other' }
     ];
 
     servicesOptions = [
@@ -124,8 +91,9 @@ export class RegisterBusinessComponent implements OnInit {
         { value: Services.SoftwareDevelopment, label: 'Software Development' },
         { value: Services.Marketing, label: 'Marketing' },
         { value: Services.Design, label: 'Design' },
-        { value: Services.Finance, label: 'Finance' },
-        { value: Services.EventServices, label: 'Event Services' }
+        { value: Services.Hr, label: 'HR' },
+        { value: Services.EventServices, label: 'Event Services' },
+        { value: Services.Training, label: 'Training' }
     ];
 
     serviceAreas = [
@@ -135,11 +103,12 @@ export class RegisterBusinessComponent implements OnInit {
         { value: ServiceArea.Online, label: 'Online' }
     ];
 
-    ownershipTypes = [
-        { value: OwnershipType.Minority, label: 'Minority-Owned' },
-        { value: OwnershipType.Woman, label: 'Woman-Owned' },
-        { value: OwnershipType.Veteran, label: 'Veteran-Owned' },
-        { value: OwnershipType.Other, label: 'Other' }
+    fundTypes = [
+        { value: FundType.Public, label: 'Public Funding' },
+        { value: FundType.Private, label: 'Private Funding' },
+        { value: FundType.Grants, label: 'Grants' },
+        { value: FundType.Donations, label: 'Donations' },
+        { value: FundType.Mixed, label: 'Mixed' }
     ];
 
     socialPlatforms = [
@@ -149,8 +118,8 @@ export class RegisterBusinessComponent implements OnInit {
         { value: SocialPlatform.LinkedIn, label: 'LinkedIn', icon: 'bi-linkedin', color: '#0A66C2' },
         { value: SocialPlatform.Youtube, label: 'YouTube', icon: 'bi-youtube', color: '#FF0000' },
         { value: SocialPlatform.Github, label: 'GitHub', icon: 'bi-github', color: '#181717' },
-        { value: SocialPlatform.Website, label: 'Website', icon: 'bi-globe', color: '#26A69A' },
-        { value: SocialPlatform.Other, label: 'Other', icon: 'bi-link-45deg', color: '#64748b' }
+        { value: SocialPlatform.Website, label: 'Website', icon: 'bi-globe', color: '#6366f1' },
+        { value: SocialPlatform.Other, label: 'Other', icon: 'bi-link-45deg', color: '#475569' }
     ];
 
     // Location Search
@@ -159,12 +128,11 @@ export class RegisterBusinessComponent implements OnInit {
 
     // Modal State
     showModal = false;
-    modalTitle = 'Welcome to NYC360 Business!';
+    modalTitle = 'Organization Registered!';
     modalMessage = '';
 
     ngOnInit() {
         this.initForm();
-        this.setupLocationSearch();
     }
 
     initForm() {
@@ -173,17 +141,15 @@ export class RegisterBusinessComponent implements OnInit {
             Username: ['', [Validators.required, Validators.minLength(4)]],
             Email: ['', [Validators.required, Validators.email]],
             Password: ['', [Validators.required, Validators.minLength(6), Validators.pattern(/^(?=.*[a-z])(?=.*\d).{6,}$/)]],
-            Industry: [null, Validators.required],
-            BusinessSize: [null, Validators.required],
+            OrganizationType: [null, Validators.required],
             ServiceArea: [null, Validators.required],
-            Services: [null, Validators.required],
             Website: [''],
             PhoneNumber: ['', [Validators.pattern(/^\+?[0-9\s-]{10,15}$/)]],
-            Description: ['', [Validators.maxLength(500)]],
-            MakeProfilePublic: [true],
-            IsLicensedInNyc: [false],
-            IsInsured: [false],
-            OwnershipType: [null, Validators.required],
+            PublicEmail: ['', [Validators.email]],
+            Description: ['', [Validators.maxLength(1000)]],
+            FundType: [null, Validators.required],
+            IsTaxExempt: [true],
+            IsNysRegistered: [true],
             Address: this.fb.group({
                 Street: ['', Validators.required],
                 BuildingNumber: ['', Validators.required],
@@ -209,12 +175,6 @@ export class RegisterBusinessComponent implements OnInit {
         this.socialLinks.removeAt(index);
     }
 
-    setupLocationSearch() {
-        const addressGroup = this.form.get('Address') as FormGroup;
-        // We can't easily debounce on a single input inside a group without a separate control or using valueChanges on the whole group
-        // But for registration, we might just use a simple lookup or search input
-    }
-
     searchLocations(query: string) {
         if (query.length < 2) {
             this.locations = [];
@@ -232,8 +192,7 @@ export class RegisterBusinessComponent implements OnInit {
 
     selectLocation(loc: any) {
         this.form.get('Address.LocationId')?.setValue(loc.id);
-        this.locations = []; // clear results
-        // You could also set a display property for the UI
+        this.locations = [];
     }
 
     toggleInterest(id: number) {
@@ -245,8 +204,21 @@ export class RegisterBusinessComponent implements OnInit {
         }
     }
 
+    toggleService(id: number) {
+        const index = this.selectedServiceIds.indexOf(id);
+        if (index >= 0) {
+            this.selectedServiceIds.splice(index, 1);
+        } else {
+            this.selectedServiceIds.push(id);
+        }
+    }
+
     isSelected(id: number): boolean {
         return this.selectedInterestIds.includes(id);
+    }
+
+    isServiceSelected(id: number): boolean {
+        return this.selectedServiceIds.includes(id);
     }
 
     isFieldInvalid(fieldName: string): boolean {
@@ -272,20 +244,26 @@ export class RegisterBusinessComponent implements OnInit {
             return;
         }
 
+        if (this.selectedServiceIds.length === 0) {
+            this.toastService.warning('Please select at least one service you provide.');
+            return;
+        }
+
         this.isLoading = true;
         const formValue = this.form.value;
 
         const payload = {
             ...formValue,
-            Interests: this.selectedInterestIds
+            Interests: this.selectedInterestIds,
+            Services: this.selectedServiceIds
         };
 
-        this.registrationService.registerBusiness(payload).subscribe({
+        this.registrationService.registerOrganization(payload).subscribe({
             next: (res) => {
                 this.isLoading = false;
                 if (res.isSuccess) {
-                    this.modalTitle = 'Account Created!';
-                    this.modalMessage = 'Your business registration was successful. Welcome to the NYC360 network!';
+                    this.modalTitle = 'Welcome, Partner!';
+                    this.modalMessage = 'Your organization has been registered successfully. We look forward to your civic contributions!';
                     this.showModal = true;
                 } else {
                     this.toastService.error(res.error?.message || 'Registration failed.');

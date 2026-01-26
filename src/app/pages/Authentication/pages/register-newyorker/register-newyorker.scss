@@ -1,6 +1,6 @@
 @use "sass:color";
 
-// --- Theme Variables (Matching Design precisely) ---
+// --- Theme Variables (Matching Selection Page) ---
 $bg-dark: #081223;
 $accent: #BC5E3D; // Copper/Terracotta
 $text-main: #0f172a;
@@ -75,7 +75,6 @@ $danger: #ef4444;
         position: sticky;
         top: 80px;
         z-index: 5;
-        max-width: 400px;
         transition: transform 0.3s ease;
     }
 
@@ -176,6 +175,7 @@ $danger: #ef4444;
     }
 }
 
+/* --- Form Sections --- */
 .form-section {
     background: white;
     border: 1px solid $border-strong;
@@ -253,6 +253,10 @@ $danger: #ef4444;
                     color: $accent;
                 }
             }
+
+            &.is-invalid {
+                border-color: $danger;
+            }
         }
 
         textarea {
@@ -261,6 +265,7 @@ $danger: #ef4444;
     }
 }
 
+/* --- Chips --- */
 .chips-grid {
     display: flex;
     flex-wrap: wrap;
@@ -306,6 +311,77 @@ $danger: #ef4444;
     }
 }
 
+/* --- Preferences Toggles --- */
+.pref-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 0;
+    border-bottom: 1px solid $border-soft;
+
+    &:last-of-type {
+        border-bottom: none;
+    }
+
+    .pref-text {
+        .pref-title {
+            display: block;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #334155;
+        }
+
+        .pref-desc {
+            font-size: 0.85rem;
+            color: $text-muted;
+        }
+    }
+}
+
+.switch {
+    position: relative;
+    width: 44px;
+    height: 24px;
+
+    input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: #e2e8f0;
+        border-radius: 34px;
+        transition: 0.3s;
+
+        &:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background: white;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+    }
+
+    input:checked+.slider {
+        background: $accent;
+    }
+
+    input:checked+.slider:before {
+        transform: translateX(20px);
+    }
+}
+
 .btn-submit {
     width: 100%;
     padding: 18px;
@@ -333,6 +409,7 @@ $danger: #ef4444;
     }
 }
 
+/* --- Generic/Search --- */
 .search-results {
     position: absolute;
     top: 100%;

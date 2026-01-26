@@ -1,0 +1,230 @@
+<div class="selection-container theme-newyorker">
+    <a routerLink="/" class="landing-btn">
+        <i class="bi bi-house-door"></i> Back to Home
+    </a>
+
+    <div class="brand-panel">
+        <div class="brand-content">
+            <div class="logo-box">
+                <span class="logo-text">NYC<span class="highlight">360</span></span>
+            </div>
+            <h1 class="brand-title">Native<br>Vibe.</h1>
+            <p class="brand-subtitle">The ultimate platform for residents to stay connected, informed, and active in
+                their neighborhoods.
+            </p>
+        </div>
+        <div class="glow-circle"></div>
+    </div>
+
+    <div class="choices-panel">
+        <div class="content-wrapper form-container">
+            <button class="btn-back" routerLink="/auth/register">
+                <i class="bi bi-arrow-left"></i> Back to Selection
+            </button>
+
+            <div class="header-section form-header">
+                <h2 class="main-question">New Yorker Registration</h2>
+                <p class="sub-text">Claim your spot in the city's digital neighborhood ecosystem.</p>
+            </div>
+
+            <form [formGroup]="form" (ngSubmit)="onSubmit()">
+                <div class="form-fields">
+
+                    <!-- Basic Info -->
+                    <div class="form-section">
+                        <h4 class="section-title"><i class="bi bi-person-badge me-2"></i>Personal Details</h4>
+                        <div class="row-group">
+                            <div class="form-group">
+                                <label>First Name</label>
+                                <div class="input-wrapper">
+                                    <i class="bi bi-person"></i>
+                                    <input type="text" formControlName="FirstName" placeholder="Jane"
+                                        [class.is-invalid]="isFieldInvalid('FirstName')">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Last Name</label>
+                                <div class="input-wrapper">
+                                    <i class="bi bi-person"></i>
+                                    <input type="text" formControlName="LastName" placeholder="Doe"
+                                        [class.is-invalid]="isFieldInvalid('LastName')">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row-group">
+                            <div class="form-group">
+                                <label>Username</label>
+                                <div class="input-wrapper">
+                                    <i class="bi bi-at"></i>
+                                    <input type="text" formControlName="Username" placeholder="jane_nyc"
+                                        [class.is-invalid]="isFieldInvalid('Username')">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Email Address</label>
+                                <div class="input-wrapper">
+                                    <i class="bi bi-envelope"></i>
+                                    <input type="email" formControlName="Email" placeholder="jane@example.com"
+                                        [class.is-invalid]="isFieldInvalid('Email')">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Password</label>
+                            <div class="input-wrapper">
+                                <i class="bi bi-lock"></i>
+                                <input type="password" formControlName="Password" placeholder="••••••••"
+                                    [class.is-invalid]="isFieldInvalid('Password')">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Address -->
+                    <div class="form-section" formGroupName="Address">
+                        <h4 class="section-title"><i class="bi bi-geo-alt-fill me-2"></i>Primary Residence</h4>
+                        <div class="row-group">
+                            <div class="form-group" style="flex: 2;">
+                                <label>Street Name</label>
+                                <div class="input-wrapper">
+                                    <i class="bi bi-signpost-2"></i>
+                                    <input type="text" formControlName="Street" placeholder="Broadway"
+                                        [class.is-invalid]="isAddressFieldInvalid('Street')">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Apt/No.</label>
+                                <input type="text" formControlName="BuildingNumber" placeholder="4B"
+                                    class="form-control" [class.is-invalid]="isAddressFieldInvalid('BuildingNumber')">
+                            </div>
+                        </div>
+
+                        <div class="row-group">
+                            <div class="form-group">
+                                <label>Neighborhood Search</label>
+                                <div class="input-wrapper">
+                                    <i class="bi bi-search"></i>
+                                    <input type="text" #locInput (input)="searchLocations(locInput.value)"
+                                        placeholder="E.g. Upper West Side" class="form-control">
+                                    <div *ngIf="locations.length > 0" class="search-results">
+                                        <div *ngFor="let loc of locations" class="search-item"
+                                            (click)="selectLocation(loc)">
+                                            {{ loc.neighborhood }} ({{ loc.borough }})
+                                        </div>
+                                    </div>
+                                </div>
+                                <div *ngIf="isAddressFieldInvalid('LocationId')" class="text-danger small mt-1">Select
+                                    your neighborhood.
+                                </div>
+                            </div>
+                            <div class="form-group" style="flex: 0 0 120px;">
+                                <label>Zip Code</label>
+                                <input type="text" formControlName="ZipCode" placeholder="10024" class="form-control"
+                                    [class.is-invalid]="isAddressFieldInvalid('ZipCode')">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Community Interests -->
+                    <div class="form-section">
+                        <label class="section-label">Your Neighborhood Interests <span class="req">*</span></label>
+                        <p class="small text-muted mb-3">Help us personalize your city feed and local alerts.</p>
+                        <div class="chips-grid">
+                            <div class="interest-chip" *ngFor="let interest of interestsList"
+                                [class.active]="isSelected(interest.id)" (click)="toggleInterest(interest.id)"
+                                [style.--chip-color]="interest.color">
+                                <i class="bi" [ngClass]="interest.icon"></i>
+                                <span>{{ interest.name }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Preferences -->
+                    <div class="form-section">
+                        <h4 class="section-title"><i class="bi bi-gear-fill me-2"></i>Civic & Community Preferences</h4>
+
+                        <div class="pref-item">
+                            <div class="pref-text">
+                                <span class="pref-title">Interested in Volunteering?</span>
+                                <span class="pref-desc">Get notified about local civic opportunities.</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" formControlName="IsInterestedInVolunteering">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+
+                        <div class="pref-item">
+                            <div class="pref-text">
+                                <span class="pref-title">Local Events Participation</span>
+                                <span class="pref-desc">I want to discover and attend neighborhood block parties and
+                                    events.</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" formControlName="IsOpenToAttendingLocalEvents">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+
+                        <div class="pref-item">
+                            <div class="pref-text">
+                                <span class="pref-title">Neighborhood Updates</span>
+                                <span class="pref-desc">Follow real-time news and alerts from your area.</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" formControlName="FollowNeighborhoodUpdates">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+
+                        <div class="pref-item">
+                            <div class="pref-text">
+                                <span class="pref-title">Public Community Profile</span>
+                                <span class="pref-desc">Allow others in your neighborhood to find your profile.</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" formControlName="MakeProfilePublic">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+
+                        <div class="pref-item">
+                            <div class="pref-text">
+                                <span class="pref-title">Display Neighborhood Tag</span>
+                                <span class="pref-desc">Show your neighborhood badge next to your posts.</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" formControlName="DisplayNeighborhood">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+
+                        <div class="pref-item">
+                            <div class="pref-text">
+                                <span class="pref-title">Verified Org Messaging</span>
+                                <span class="pref-desc">Receive direct updates from verified NYC organizations.</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" formControlName="AllowMessagesFromVerifiedOrganizations">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                </div>
+
+                <button type="submit" class="btn-submit" [disabled]="isLoading">
+                    <span *ngIf="!isLoading">Become a Verified New Yorker</span>
+                    <span *ngIf="isLoading"><i class="spinner-border spinner-border-sm"></i> Authenticating
+                        Local...</span>
+                </button>
+
+            </form>
+        </div>
+    </div>
+
+    <app-auth-success-modal [visible]="showModal" [title]="modalTitle" [message]="modalMessage"
+        buttonText="Start Exploring" (closed)="onModalClose()">
+    </app-auth-success-modal>
+</div>
