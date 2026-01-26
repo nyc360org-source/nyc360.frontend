@@ -86,10 +86,13 @@ export class RegisterVisitorComponent {
 
     toggleInterest(id: number) {
         const index = this.selectedInterestIds.indexOf(id);
+        const category = this.interestsList.find(c => c.id === id);
         if (index >= 0) {
             this.selectedInterestIds.splice(index, 1);
+            this.toastService.info(`Removed ${category?.name} from interests.`);
         } else {
             this.selectedInterestIds.push(id);
+            this.toastService.success(`Added ${category?.name} to interests.`);
         }
     }
 

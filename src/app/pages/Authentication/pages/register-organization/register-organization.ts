@@ -169,10 +169,12 @@ export class RegisterOrganizationComponent implements OnInit {
             Platform: [null, Validators.required],
             Url: ['', [Validators.required, Validators.pattern(/https?:\/\/.+/)]]
         }));
+        this.toastService.info('Social link field added.');
     }
 
     removeSocialLink(index: number) {
         this.socialLinks.removeAt(index);
+        this.toastService.info('Social link removed.');
     }
 
     searchLocations(query: string) {
@@ -193,23 +195,30 @@ export class RegisterOrganizationComponent implements OnInit {
     selectLocation(loc: any) {
         this.form.get('Address.LocationId')?.setValue(loc.id);
         this.locations = [];
+        this.toastService.success(`Location set: ${loc.neighborhood}`);
     }
 
     toggleInterest(id: number) {
         const index = this.selectedInterestIds.indexOf(id);
+        const category = this.interestsList.find(c => c.id === id);
         if (index >= 0) {
             this.selectedInterestIds.splice(index, 1);
+            this.toastService.info(`Removed interest: ${category?.name}`);
         } else {
             this.selectedInterestIds.push(id);
+            this.toastService.success(`Added interest: ${category?.name}`);
         }
     }
 
     toggleService(id: number) {
         const index = this.selectedServiceIds.indexOf(id);
+        const service = this.servicesOptions.find(s => s.value === id);
         if (index >= 0) {
             this.selectedServiceIds.splice(index, 1);
+            this.toastService.info(`Service removed: ${service?.label}`);
         } else {
             this.selectedServiceIds.push(id);
+            this.toastService.success(`Service added: ${service?.label}`);
         }
     }
 

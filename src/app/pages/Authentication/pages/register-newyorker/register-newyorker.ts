@@ -82,14 +82,18 @@ export class RegisterNewYorkerComponent implements OnInit {
     selectLocation(loc: any) {
         this.form.get('Address.LocationId')?.setValue(loc.id);
         this.locations = [];
+        this.toastService.success(`Neighborhood set to: ${loc.neighborhood}`);
     }
 
     toggleInterest(id: number) {
         const index = this.selectedInterestIds.indexOf(id);
+        const category = this.interestsList.find(c => c.id === id);
         if (index >= 0) {
             this.selectedInterestIds.splice(index, 1);
+            this.toastService.info(`Removed interest: ${category?.name}`);
         } else {
             this.selectedInterestIds.push(id);
+            this.toastService.success(`Added interest: ${category?.name}`);
         }
     }
 
