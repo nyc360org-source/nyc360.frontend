@@ -4,7 +4,7 @@ import { Router, RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RegistrationService } from '../../Service/registration-service';
 import { ToastService } from '../../../../shared/services/toast.service';
-import { CATEGORY_LIST } from '../../../models/category-list';
+import { CATEGORY_THEMES } from '../../../Public/Widgets/feeds/models/categories';
 import { AuthSuccessModalComponent } from '../../../../shared/components/auth-success-modal/auth-success-modal.component';
 import { JobSearchService } from '../../../Public/pages/jobs/service/job-search';
 
@@ -26,7 +26,17 @@ export class RegisterNewYorkerComponent implements OnInit {
     isLoading = false;
 
     // Data Lists
-    interestsList = CATEGORY_LIST;
+    interestsList = Object.keys(CATEGORY_THEMES).map(key => {
+        const id = Number(key);
+        const theme = CATEGORY_THEMES[id];
+        return {
+            id: id,
+            name: theme.label,
+            icon: theme.biIcon,
+            color: theme.color
+        };
+    });
+
     selectedInterestIds: number[] = [];
 
     // Location Search
@@ -163,6 +173,10 @@ export class RegisterNewYorkerComponent implements OnInit {
     onModalClose() {
         this.showModal = false;
         this.router.navigate(['/auth/login']);
+    }
+
+    goBack() {
+        this.router.navigate(['/auth/register']);
     }
 
     private scrollToFirstInvalidControl() {

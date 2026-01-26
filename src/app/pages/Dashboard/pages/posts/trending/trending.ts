@@ -1,28 +1,28 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { TrendingService } from '../services/trending';
 import { environment } from '../../../../../environments/environment';
 import { CategoryMap, PostAuthor, TrendingPost, PostStats } from '../models/trending';
-import { PostsService } from '../services/posts'; 
-import { InteractionType } from '../../posts/models/posts'; 
+import { PostsService } from '../services/posts';
+import { InteractionType } from '../../posts/models/posts';
 import { AuthService } from '../../../../Authentication/Service/auth';
 
 @Component({
   selector: 'app-trending',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule],
   templateUrl: './trending.html',
   styleUrls: ['./trending.scss']
 })
 export class TrendingComponent implements OnInit {
-  
+
   private trendingService = inject(TrendingService);
-  private postsService = inject(PostsService); 
+  private postsService = inject(PostsService);
   private authService = inject(AuthService);
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
-  
+
   protected readonly environment = environment;
   protected readonly InteractionType = InteractionType; // For Template access
 
@@ -32,7 +32,7 @@ export class TrendingComponent implements OnInit {
   hasMore = true;
   currentPage = 1;
   readonly pageSize = 10;
-  
+
   currentUserId: string | null = null;
 
   ngOnInit() {
@@ -52,13 +52,13 @@ export class TrendingComponent implements OnInit {
             ...p,
             stats: p.stats || { likes: 0, comments: 0, views: 0, dislikes: 0, shares: 0 } as PostStats
           }));
-          
+
           this.posts = [...this.posts, ...newPosts];
           this.posts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-          
+
           if (this.currentPage >= res.totalPages) this.hasMore = false;
         }
-        
+
         this.isLoading = false;
         this.cdr.detectChanges();
       },
@@ -87,10 +87,10 @@ export class TrendingComponent implements OnInit {
 
     // Optimistic Update
     if (isLiked) {
-      post.currentUserInteraction = 0; 
+      post.currentUserInteraction = 0;
       post.stats.likes--;
     } else {
-      post.currentUserInteraction = InteractionType.Like; 
+      post.currentUserInteraction = InteractionType.Like;
       post.stats.likes++;
       if (oldState === InteractionType.Dislike) post.stats.dislikes--;
     }
@@ -117,7 +117,7 @@ export class TrendingComponent implements OnInit {
       if (url.includes('@local://')) return `${this.environment.apiBaseUrl3}/${url.replace('@local://', '')}`;
       return url;
     }
-    return 'assets/images/news-placeholder.jpg'; 
+    return 'assets/images/news-placeholder.jpg';
   }
 
   getAuthorName(author: PostAuthor): string {

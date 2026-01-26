@@ -3,7 +3,7 @@
     <!-- Hero Header -->
     <header class="hero-header">
         <div class="overlay"></div>
-        <img [src]="event.attachments?.[0] || 'assets/images/placeholder-event.jpg'" class="hero-bg" alt="Event Banner">
+        <img [src]="event.attachments[0] || 'assets/images/placeholder-event.jpg'" class="hero-bg" alt="Event Banner">
 
         <div class="container hero-content">
             <button class="back-btn" routerLink="/public/events/list">

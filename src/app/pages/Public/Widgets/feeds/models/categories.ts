@@ -1,4 +1,3 @@
-// 1. نفس الـ Enum اللي في الـ Backend بالظبط
 export enum CategoryEnum {
   Community = 0,
   Culture = 1,
@@ -11,14 +10,12 @@ export enum CategoryEnum {
   Professions = 8,
   Social = 9,
   Transportation = 10,
-  Tv = 11,
-  Events = 12
+  Tv = 11
 }
 
-// 2. خريطة الألوان والأيقونات والروابط لكل قسم (المصدر الموحد للموقع)
 export const CATEGORY_THEMES: { [key: number]: any } = {
   [CategoryEnum.Community]: {
-    color: '#BC5E3D', label: 'Community', path: 'community', icon: '/icon-category/commumity.png',
+    color: '#BC5E3D', label: 'Community', path: 'community', icon: '/icon-category/commumity.png', biIcon: 'bi-people-fill',
     route: '/public/community',
     topLinks: [
       { label: 'Explore', route: '/public/discover' },
@@ -26,7 +23,7 @@ export const CATEGORY_THEMES: { [key: number]: any } = {
     ]
   },
   [CategoryEnum.Culture]: {
-    color: '#dc3545', label: 'Culture', path: 'culture', icon: '/icon-category/culture.png',
+    color: '#dc3545', label: 'Culture', path: 'culture', icon: '/icon-category/culture.png', biIcon: 'bi-palette-fill',
     route: '/public/category/culture',
     topLinks: [
       { label: 'Feed', route: '/public/feed/culture' },
@@ -34,7 +31,7 @@ export const CATEGORY_THEMES: { [key: number]: any } = {
     ]
   },
   [CategoryEnum.Education]: {
-    color: '#0056b3', label: 'Education', path: 'education', icon: '/icon-category/education.png',
+    color: '#0056b3', label: 'Education', path: 'education', icon: '/icon-category/education.png', biIcon: 'bi-mortarboard-fill',
     route: '/public/category/education',
     topLinks: [
       { label: 'Feed', route: '/public/feed/education' },
@@ -42,7 +39,7 @@ export const CATEGORY_THEMES: { [key: number]: any } = {
     ]
   },
   [CategoryEnum.Health]: {
-    color: '#00c3ff', label: 'Health', path: 'health', icon: '/icon-category/health.png',
+    color: '#00c3ff', label: 'Health', path: 'health', icon: '/icon-category/health.png', biIcon: 'bi-heart-pulse-fill',
     route: '/public/category/health',
     topLinks: [
       { label: 'Feed', route: '/public/feed/health' },
@@ -50,68 +47,63 @@ export const CATEGORY_THEMES: { [key: number]: any } = {
     ]
   },
   [CategoryEnum.Housing]: {
-    color: '#B59B62', label: 'Housing', path: 'housing', icon: '/icon-category/housing.png',
-    route: '/public/housing/home',
+    color: '#a52a2a', label: 'Housing', path: 'housing', icon: '/icon-category/icon-housing-64.png', biIcon: 'bi-house-heart-fill',
+    route: '/public/housing',
     topLinks: [
       { label: 'Feed', route: '/public/feed/housing' },
-      { label: 'initiatives', route: '/public/initiatives/housing' },
-      { label: 'Post Listing', route: '/public/housing/create' },
-      { label: 'Create Post', route: '/public/posts/create' }
+      { label: 'Market', route: '/public/housing' }
     ]
   },
   [CategoryEnum.Lifestyle]: {
-    color: '#8bc34a', label: 'Lifestyle', path: 'lifestyle', icon: '/icon-category/lifestyle.png',
+    color: '#28a745', label: 'Lifestyle', path: 'lifestyle', icon: '/icon-category/lifestyle.png', biIcon: 'bi-cup-hot-fill',
     route: '/public/category/lifestyle',
     topLinks: [
       { label: 'Feed', route: '/public/feed/lifestyle' },
-      { label: 'Trends', route: '/public/lifestyle/trends' },
-      { label: 'initiatives', route: '/public/initiatives/lifestyle' }
+      { label: 'Initiatives', route: '/public/initiatives/lifestyle' }
     ]
   },
   [CategoryEnum.Legal]: {
-    color: '#102a43', label: 'Legal', path: 'legal', icon: '/icon-category/legal.png',
+    color: '#6610f2', label: 'Legal', path: 'legal', icon: '/icon-category/legal.png', biIcon: 'bi-hammer',
     route: '/public/category/legal',
     topLinks: [
       { label: 'Feed', route: '/public/feed/legal' },
-      { label: 'initiatives', route: '/public/initiatives/legal' }
+      { label: 'Initiatives', route: '/public/initiatives/legal' }
     ]
   },
   [CategoryEnum.News]: {
-    color: '#333333', label: 'News', path: 'news', icon: '/icon-category/newspaper.png',
+    color: '#6c757d', label: 'News', path: 'news', icon: '/icon-category/news.png', biIcon: 'bi-newspaper',
     route: '/public/category/news',
     topLinks: [
       { label: 'Feed', route: '/public/feed/news' },
-      { label: 'initiatives', route: '/public/initiatives/news' }
+      { label: 'Initiatives', route: '/public/initiatives/news' }
     ]
   },
   [CategoryEnum.Professions]: {
-    color: '#2ecc71', label: 'Professions', path: 'professions', icon: '/icon-category/professions.png',
-    route: '/public/profession/feed',
+    color: '#fd7e14', label: 'Professions', path: 'professions', icon: '/icon-category/professions.png', biIcon: 'bi-briefcase-fill',
+    route: '/public/jobs',
     topLinks: [
-      { label: 'Feed', route: '/public/profession/feed' },
-      { label: 'Jobs', route: '/public/profession/jobs' },
-      { label: 'My Application', route: '/public/profession/my-applications' },
-      { label: 'Posted Jobs', route: '/public/profession/my-offers' }
+      { label: 'Jobs', route: '/public/jobs' },
+      { label: 'Network', route: '/public/professional-network' }
     ]
   },
   [CategoryEnum.Social]: {
-    color: '#17a2b8', label: 'Social', path: 'social', icon: '/icon-category/social.png',
+    color: '#e83e8c', label: 'Social', path: 'social', icon: '/icon-category/social.png', biIcon: 'bi-chat-heart-fill',
     route: '/public/category/social',
     topLinks: [
       { label: 'Feed', route: '/public/feed/social' },
-      { label: 'initiatives', route: '/public/initiatives/social' }
+      { label: 'Initiatives', route: '/public/initiatives/social' }
     ]
   },
   [CategoryEnum.Transportation]: {
-    color: '#f1c40f', label: 'Transportation', path: 'transportation', icon: '/icon-category/transportation.png',
+    color: '#17a2b8', label: 'Transportation', path: 'transportation', icon: '/icon-category/transpotation.png', biIcon: 'bi-bus-front-fill',
     route: '/public/category/transportation',
     topLinks: [
       { label: 'Feed', route: '/public/feed/transportation' },
-      { label: 'initiatives', route: '/public/initiatives/transportation' }
+      { label: 'Alerts', route: '/public/transport-alerts' }
     ]
   },
   [CategoryEnum.Tv]: {
-    color: '#0d47a1', label: 'TV', path: 'tv', icon: '/icon-category/tv.png',
+    color: '#343a40', label: 'TV', path: 'tv', icon: '/icon-category/tv.png', biIcon: 'bi-tv-fill',
     route: '/public/category/tv',
     topLinks: [
       { label: 'Feed', route: '/public/feed/tv' },

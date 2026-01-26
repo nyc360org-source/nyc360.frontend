@@ -4,12 +4,12 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { trigger, style, animate, transition, query, stagger } from '@angular/animations';
-import { AuthSuccessModalComponent } from '../../../../shared/components/auth-success-modal/auth-success-modal.component';
+
 
 @Component({
   selector: 'app-register-selection',
   standalone: true,
-  imports: [CommonModule, RouterLink, AuthSuccessModalComponent],
+  imports: [CommonModule, RouterLink],
   templateUrl: './register-selection.html',
   styleUrls: ['./register-selection.scss'],
   animations: [

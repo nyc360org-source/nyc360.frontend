@@ -4,6 +4,7 @@ export interface CategoryModel {
   id: any;
   name: string;
   icon: string;
+  biIcon?: string;
   path?: string;
   color?: string;
   route?: string;
@@ -11,12 +12,12 @@ export interface CategoryModel {
 }
 
 // Generate the list dynamically from the Source of Truth (CategoryEnum + CATEGORY_THEMES)
-// Generate the list dynamically directly from CATEGORY_THEMES
 export const CATEGORY_LIST: CategoryModel[] = Object.entries(CATEGORY_THEMES).map(([key, theme]: [string, any]) => {
   return {
     id: Number(key),
     name: theme.label,
     icon: theme.icon,
+    biIcon: theme.biIcon,
     path: theme.path,
     color: theme.color,
     route: theme.route,
@@ -27,7 +28,7 @@ export const CATEGORY_LIST: CategoryModel[] = Object.entries(CATEGORY_THEMES).ma
 // Helper function to get list with 'All'
 export function getCategoriesWithAll(): CategoryModel[] {
   return [
-    { id: -1, name: 'All', icon: 'bi-grid-fill' },
+    { id: -1, name: 'All', icon: 'bi-grid-fill', biIcon: 'bi-grid-fill' },
     ...CATEGORY_LIST
   ];
 }
