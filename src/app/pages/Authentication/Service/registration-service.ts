@@ -3,11 +3,11 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { 
-  AuthResponse, 
-  RegisterNormalUserRequest, 
-  RegisterOrganizationRequest, 
-  RegisterRequest 
+import {
+  AuthResponse,
+  RegisterNormalUserRequest,
+  RegisterOrganizationRequest,
+  RegisterRequest
 } from '../models/auth';
 import { environment } from '../../../environments/environment';
 
@@ -32,5 +32,10 @@ export class RegistrationService {
   // --- 3. Generic Register (Legacy or Fallback) ---
   register(data: RegisterRequest): Observable<AuthResponse<any>> {
     return this.http.post<AuthResponse<any>>(`${this.apiUrl}/register`, data);
+  }
+
+  // --- 4. Visitor Registration ---
+  registerVisitor(data: any): Observable<AuthResponse<any>> {
+    return this.http.post<AuthResponse<any>>(`${this.apiUrl}/register/visitor`, data);
   }
 }

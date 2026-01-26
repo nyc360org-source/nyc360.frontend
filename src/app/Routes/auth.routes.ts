@@ -11,7 +11,8 @@ export const AUTH_ROUTES: Routes = [
       { path: 'verify-otp', loadComponent: () => import('../pages/Authentication/pages/verify-otp/verify-otp').then(m => m.VerifyOtpComponent) },
       { path: 'forgot-password', loadComponent: () => import('../pages/Authentication/pages/forgot-password/forgot-password').then(m => m.ForgotPasswordComponent) },
       { path: 'confirm-email', loadComponent: () => import('../pages/Authentication/pages/confirm-email/confirm-email').then(m => m.ConfirmEmailComponent) },
-      { path: 'reset-password', loadComponent: () => import('../pages/Authentication/pages/reset-password/reset-password').then(m => m.ResetPasswordComponent) }
+      { path: 'reset-password', loadComponent: () => import('../pages/Authentication/pages/reset-password/reset-password').then(m => m.ResetPasswordComponent) },
+      { path: 'register/visitor', loadComponent: () => import('../pages/Authentication/pages/register-visitor/register-visitor').then(m => m.RegisterVisitorComponent) }
     ]
   }
 ];

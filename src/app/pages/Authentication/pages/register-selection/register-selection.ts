@@ -143,6 +143,10 @@ export class RegisterSelectionComponent {
   selectedInterestIds: number[] = [];
 
   onSelect(typeId: string) {
+    if (typeId === 'visitor') {
+      this.router.navigate(['/auth/register/visitor']);
+      return;
+    }
     this.selectedType = typeId;
     this.isOrganization = typeId === 'organization' || typeId === 'business';
     this.currentStep = 'form';

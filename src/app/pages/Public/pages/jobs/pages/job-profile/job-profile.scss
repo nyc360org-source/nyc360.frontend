@@ -708,6 +708,26 @@ $text-gray: #666;
         }
       }
     }
+
+    .resume-link-box {
+      .btn-outline-primary {
+        border-color: #26A69A; // Use $accent-teal value directly if needed, but here it's accessible
+        color: #26A69A;
+        font-weight: 600;
+        border-radius: 8px;
+        transition: 0.3s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+
+        &:hover {
+          background-color: #26A69A;
+          color: white;
+        }
+      }
+    }
   }
 }
 

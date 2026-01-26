@@ -128,6 +128,12 @@
                   </select>
                 </div>
 
+                <div class="resume-link-box mt-2" *ngIf="app.resumeUrl">
+                  <a [href]="getResumeUrl(app.resumeUrl)" target="_blank" class="btn btn-sm btn-outline-primary w-100">
+                    <i class="bi bi-file-earmark-pdf"></i> View Resume
+                  </a>
+                </div>
+
 
               </div>
 

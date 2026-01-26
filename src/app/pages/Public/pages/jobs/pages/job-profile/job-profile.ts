@@ -173,6 +173,11 @@ export class JobProfileComponent implements OnInit {
     return `${this.imgBase}/avatars/${imageName}`;
   }
 
+  getResumeUrl(fileName: string | null): string | null {
+    if (!fileName) return null;
+    return `${this.imgBase}/resumes/${fileName}`;
+  }
+
   onFileSelected(event: any): void {
     const file = event.target.files[0];
     if (file) {

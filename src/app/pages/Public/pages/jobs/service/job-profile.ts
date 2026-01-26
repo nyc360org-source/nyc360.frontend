@@ -18,7 +18,7 @@ export class JobProfileService {
     const formData = new FormData();
     formData.append('CoverLetter', coverLetter);
     if (file) {
-      formData.append('CV', file);
+      formData.append('Attachment', file);
     }
     return this.http.post<ApiResponse<number>>(`${this.apiUrl}/${jobId}/apply`, formData);
   }
