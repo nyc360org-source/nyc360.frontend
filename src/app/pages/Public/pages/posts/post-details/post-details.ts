@@ -142,6 +142,14 @@ export class PostDetailsComponent implements OnInit {
   }
 
   handlePostData(apiData: any) {
+    const rawPost = apiData.post || apiData;
+
+    // ✅ Redirection Logic: If this is a Job Post (Category 8/Professions), go to Job Profile
+    if (rawPost.category === 8 && rawPost.linkedResource) {
+      this.router.navigate(['/public/job-profile', rawPost.linkedResource.id]);
+      return;
+    }
+
     if (apiData.post) {
       this.post = this.normalizePostData(apiData.post);
     } else {
