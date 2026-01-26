@@ -2,7 +2,7 @@
 
 // --- Theme Variables (Matching Design precisely) ---
 $bg-dark: #081223;
-$accent: #B59B62; // Copper/Terracotta
+$accent: #BC5E3D; // Copper/Terracotta
 $text-main: #0f172a;
 $text-muted: #64748b;
 $border-soft: #f1f5f9;
@@ -285,19 +285,19 @@ $danger: #ef4444;
         }
 
         &:hover {
-            border-color: $accent;
-            color: $accent;
+            border-color: var(--chip-color, $accent);
+            color: var(--chip-color, $accent);
 
             i {
-                color: $accent;
+                color: var(--chip-color, $accent);
             }
         }
 
         &.active {
-            background: $accent;
-            border-color: $accent;
+            background: var(--chip-color, $accent);
+            border-color: var(--chip-color, $accent);
             color: white;
-            box-shadow: 0 8px 15px rgba($accent, 0.2);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
 
             i {
                 color: white;

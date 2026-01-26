@@ -23,7 +23,7 @@
 
       <div class="cards-grid" [@listAnimation]="selectionOptions.length">
         <div class="selection-card" *ngFor="let option of selectionOptions" (click)="onSelect(option.id)">
-          <div class="card-icon">
+          <div class="card-icon" [style.background-color]="option.color + '15'" [style.color]="option.color">
             <i class="bi" [ngClass]="option.icon"></i>
           </div>
           <div class="card-text">

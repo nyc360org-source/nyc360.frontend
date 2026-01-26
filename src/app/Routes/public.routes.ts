@@ -47,14 +47,14 @@ export const PUBLIC_ROUTES: Routes = [
         ]
       },
 
+      // housing
+      { path: 'housing/home', loadComponent: () => import('../pages/Public/pages/housing/pages/housing-home/housing-home').then(m => m.HousingHomeComponent) },
+      { path: 'housing/create', loadComponent: () => import('../pages/Public/pages/housing/pages/create-housing/create-housing').then(m => m.CreateHousingComponent) },
+
       // category home
       {
         path: 'category/:categoryPath',
         loadComponent: () => import('../pages/Public/Widgets/category-home/category-home.component/category-home.component').then(m => m.CategoryHomeComponent)
-      },
-      {
-        path: 'category/housing/create',
-        loadComponent: () => import('../pages/Public/pages/housing/pages/create-housing/create-housing').then(m => m.CreateHousingComponent)
       },
 
       //feed layout route

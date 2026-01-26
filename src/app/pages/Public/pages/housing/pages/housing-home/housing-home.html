@@ -1,0 +1,158 @@
+<div class="housing-home-container" [class.loading]="isLoading">
+    <!-- Header Title -->
+    <header class="page-header">
+        <div class="container text-center">
+            <small>Welcome at NYC360</small>
+            <h1 class="main-title">Housing</h1>
+            <p class="subtitle">Where New Yorkers can share ideas, discussions, and local conversations</p>
+        </div>
+    </header>
+
+    <div class="container main-content">
+        <!-- 1. Hero Section -->
+        <section class="hero-section" *ngIf="heroPost">
+            <div class="hero-card" [routerLink]="['/public/posts/details', heroPost.id]">
+                <div class="hero-img">
+                    <img [src]="imageService.resolveImageUrl(heroPost.attachments[0]?.url, 'post')"
+                        [appImgFallback]="'post'" alt="Hero Image">
+                </div>
+                <div class="hero-content">
+                    <div class="meta">
+                        <span class="badge-new">New Listing</span>
+                        <span class="time">{{ heroPost.createdAt | date:'shortTime' }} ago</span>
+                    </div>
+                    <h2>{{ heroPost.title }}</h2>
+                    <p>{{ (heroPost.content | slice:0:150) + '...' }}</p>
+                    <button class="btn btn-details">View details</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Action Bar -->
+        <div class="action-bar">
+            <div class="left-actions">
+                <button class="btn btn-action active"><i class="bi bi-compass"></i> Explore Homes</button>
+                <button class="btn btn-action"><i class="bi bi-chat-dots"></i> My Inquiries</button>
+            </div>
+            <div class="right-actions">
+                <button class="btn btn-post" [routerLink]="['/public/housing/create']">+ Post Listing</button>
+                <button class="btn btn-create">+ Create Post</button>
+            </div>
+        </div>
+
+        <!-- 3. Filters Row -->
+        <div class="filters-row">
+            <div class="filter-dropdown">Location <i class="bi bi-chevron-down"></i></div>
+            <div class="filter-dropdown">Privacy Type <i class="bi bi-chevron-down"></i></div>
+            <div class="filter-dropdown">Property Type <i class="bi bi-chevron-down"></i></div>
+            <div class="filter-dropdown">Rooms/Baths <i class="bi bi-chevron-down"></i></div>
+            <div class="filter-dropdown">Price <i class="bi bi-chevron-down"></i></div>
+            <button class="btn btn-open-now">open now</button>
+        </div>
+
+        <!-- 4. Homes For Sale -->
+        <section class="listings-section" *ngIf="homesForSale.length > 0">
+            <div class="section-head">
+                <h3>Homes For Sale</h3>
+                <a routerLink="/public/discover" [queryParams]="{cat: 4, type: 'sale'}" class="view-all">View All</a>
+            </div>
+            <div class="listings-grid">
+                <div class="listing-card" *ngFor="let item of homesForSale"
+                    [routerLink]="['/public/posts/details', item.id]">
+                    <div class="card-img">
+                        <img [src]="imageService.resolveImageUrl(item.attachments[0]?.url, 'post')"
+                            [appImgFallback]="'post'" alt="Listing Image">
+                    </div>
+                    <div class="card-body">
+                        <h4 class="title">{{ item.title }}</h4>
+                        <div class="specs">
+                            <span><i class="bi bi-house"></i> {{ getPostMetadata(item.content)?.SizeSqFt || '0' }}
+                                sqft</span>
+                            <span><i class="bi bi-door-open"></i> {{ getPostMetadata(item.content)?.Rooms || '0' }}
+                                rooms</span>
+                            <span><i class="bi bi-droplet"></i> {{ getPostMetadata(item.content)?.Bathrooms || '0' }}
+                                baths</span>
+                        </div>
+                        <div class="price">{{ formatPrice(getPostMetadata(item.content)?.Price || 0) }}</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Homes For Rent -->
+        <section class="listings-section" *ngIf="homesForRent.length > 0">
+            <div class="section-head">
+                <h3>Homes For Rent</h3>
+                <a routerLink="/public/discover" [queryParams]="{cat: 4, type: 'rent'}" class="view-all">View All</a>
+            </div>
+            <div class="listings-grid rent-grid">
+                <div class="listing-card-rent" *ngFor="let item of homesForRent"
+                    [routerLink]="['/public/posts/details', item.id]">
+                    <div class="card-img">
+                        <img [src]="imageService.resolveImageUrl(item.attachments[0]?.url, 'post')"
+                            [appImgFallback]="'post'" alt="Listing Image">
+                    </div>
+                    <div class="card-body">
+                        <small class="location">{{ item.location?.borough || 'New York' }}</small>
+                        <div class="price-row">
+                            <span class="price">{{ formatPrice(getPostMetadata(item.content)?.Price || 0) }}/mo</span>
+                            <span class="badge-urgent">Urgent Listing</span>
+                        </div>
+                        <p class="building">Boutique Building 1BR</p>
+                        <div class="specs-mini">
+                            <span><i class="bi bi-door-open"></i> 2 Bed</span>
+                            <span><i class="bi bi-droplet"></i> 1 Bath</span>
+                            <span class="details-link">Details</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. Official Posts -->
+        <section class="listings-section official-section">
+            <div class="section-head">
+                <h3>NYC Housing Programs Official Posts</h3>
+                <a routerLink="/public/discover" [queryParams]="{cat: 4}" class="view-all">View All</a>
+            </div>
+            <div class="listings-grid">
+                <div class="listing-card" *ngFor="let item of [1,2,3]"> <!-- Mocking for design if empty -->
+                    <div class="card-img">
+                        <img src="/assets/img/mock-housing-3.jpg" alt="Official Post">
+                    </div>
+                    <div class="card-body">
+                        <h4 class="title">47 Jane Street, Apt 2C</h4>
+                        <div class="specs">
+                            <span><i class="bi bi-house"></i> 300 sqft</span>
+                            <span><i class="bi bi-door-open"></i> 7 rooms</span>
+                            <span><i class="bi bi-droplet"></i> 3 baths</span>
+                        </div>
+                        <div class="price">$1,970,000</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. Discussion Post (Large Card at bottom) -->
+        <section class="bottom-discussion">
+            <div class="discussion-card">
+                <div class="author-meta">
+                    <span class="name">Sarah Jentil</span>
+                    <span class="cat-pill">Housing</span>
+                    <span class="read-info">4 min read</span>
+                </div>
+                <h3 class="disc-title">Is it possible to find a 2BR in Queens for under $2,800?</h3>
+                <p class="disc-excerpt">"Thinking of moving from UES to Astoria or Sunnyside. How is the market looking
+                    for families right now? we need at least 800 sqft..."</p>
+                <div class="disc-footer">
+                    <span><i class="bi bi-chat"></i> 24 reply</span>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" *ngIf="isLoading">
+    <div class="spinner"></div>
+</div>

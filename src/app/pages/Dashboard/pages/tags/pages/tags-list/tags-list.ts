@@ -128,7 +128,7 @@ export class TagsListComponent implements OnInit {
   }
 
   getAvatarColor(name: string): string {
-    const colors = ['#B59B62', '#2E86C1', '#28B463', '#884EA0', '#D35400', '#91784A'];
+    const colors = ['#FF7F50', '#2E86C1', '#28B463', '#884EA0', '#D35400', '#D4AF37'];
     const index = name.length % colors.length;
     return colors[index];
   }

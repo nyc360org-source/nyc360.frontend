@@ -40,28 +40,32 @@ export class RegisterSelectionComponent {
       title: 'New Yorker',
       icon: 'bi-houses-fill',
       desc: 'Residents & locals looking to connect with their neighborhood.',
-      theme: 'newyorker'
+      theme: 'newyorker',
+      color: '#BC5E3D'
     },
     {
       id: 'business',
       title: 'Business',
       icon: 'bi-shop-window',
       desc: 'Empower your local business with direct community engagement.',
-      theme: 'business'
+      theme: 'business',
+      color: '#6366F1'
     },
     {
       id: 'organization',
       title: 'Organization',
       icon: 'bi-building-fill-check',
       desc: 'Civic partners, non-profits, and official city institutions.',
-      theme: 'organization'
+      theme: 'organization',
+      color: '#10B981'
     },
     {
       id: 'visitor',
       title: 'Visitor',
       icon: 'bi-airplane-fill',
       desc: 'Exploring NYC? Get personalized guides and city essentials.',
-      theme: 'visitor'
+      theme: 'visitor',
+      color: '#F59E0B'
     }
   ];
 
