@@ -1,4 +1,4 @@
-<div class="page-container" style="min-height: 100vh;">
+<div class="page-container" [class.housing-theme]="isHousingCategory" style="min-height: 100vh;">
 
   <div *ngIf="isLoading" class="container mt-5">
     <!-- Header Skeleton -->
@@ -48,16 +48,35 @@
 
     <div class="container main-content">
 
-      <section class="top-section mb-5">
+      <section class="hero-section mb-5 fade-in-up" *ngIf="heroPost">
         <div class="row g-4">
-          <div class="col-lg-8" *ngIf="heroPost">
-            <div class="hero-card">
-              <img [src]="getImg(heroPost)" alt="Hero" [routerLink]="['/public/posts/details', heroPost.id]"
-                appImgFallback="post">
-              <div class="hero-overlay">
-                <span class="hero-cat-label">{{ activeTheme?.label }}</span>
+          <div class="col-lg-8">
+            <div class="main-hero-card" [routerLink]="['/public/posts/details', heroPost.id]">
+              <div class="hero-img-wrapper" [class.premium-hero]="heroPost.housingMetadata">
+                <img [src]="getImg(heroPost)" alt="Hero Image" loading="eager" appImgFallback="post">
+                <div class="category-pill" [style.background]="activeTheme?.color">
+                  {{ activeTheme?.label }}
+                </div>
+
+                <!-- Hero Metadata Overlay for Structured Posts -->
+                <div class="hero-metadata-overlay animate__animated animate__fadeInUp" *ngIf="heroPost.housingMetadata">
+                  <div class="price-tag">{{ heroPost.housingMetadata.Price | currency:'USD':'symbol':'1.0-0' }}</div>
+                  <div class="hero-specs">
+                    <span *ngIf="heroPost.housingMetadata.Rooms"><i class="bi bi-door-open"></i> {{
+                      heroPost.housingMetadata.Rooms }} Bed</span>
+                    <span *ngIf="heroPost.housingMetadata.SizeSqFt"><i class="bi bi-arrows-fullscreen"></i> {{
+                      heroPost.housingMetadata.SizeSqFt }} sqft</span>
+                  </div>
+                </div>
+              </div>
+              <div class="hero-content">
+                <div class="meta">
+                  {{ heroPost.createdAt | date:'longDate' }}
+                  <span class="dot" *ngIf="heroPost.location">•</span>
+                  <span class="location" *ngIf="heroPost.location">{{ heroPost.location.neighborhood }}</span>
+                </div>
                 <h2>{{ heroPost.title }}</h2>
-                <p class="d-none d-md-block">{{ heroPost.content | slice:0:150 }}...</p>
+                <p class="excerpt">{{ heroPost.cleanDescription || (heroPost.content | slice:0:180) }}...</p>
               </div>
             </div>
           </div>
@@ -100,14 +119,10 @@
             <button class="btn-pill accent" (click)="navigateToFeed({ tab: 'explore' })">
               <i class="bi bi-compass me-1"></i> Explore Homes
             </button>
-            <button class="btn-pill secondary" (click)="navigateToFeed({ tab: 'inquiries' })">
-              <i class="bi bi-chat-left-text me-1"></i> My Inquiries
-            </button>
+
 
             <div class="ms-auto d-flex gap-2">
-              <button class="btn-pill outline" [routerLink]="['/public/posts/create']">
-                <i class="bi bi-plus-lg me-1"></i> Post Listing
-              </button>
+
               <button class="btn-pill" [routerLink]="['/public/posts/create']">
                 <i class="bi bi-pencil-square me-1"></i> Create Post
               </button>
@@ -207,9 +222,9 @@
                   <img [src]="getImg(post)" alt="rental" appImgFallback="post">
                 </div>
                 <div class="card-body">
-                  <div class="location-tag">{{ post.location.borough | uppercase }}</div>
-                  <h4 class="price">{{ post.housingMetadata.Price | currency:'USD':'symbol':'1.0-0' }}<span
-                      class="period">/mo</span></h4>
+                  <div class="location-tag" *ngIf="post.location">{{ post.location.borough | uppercase }}</div>
+                  <h4 class="price" *ngIf="post.housingMetadata">{{ post.housingMetadata.Price |
+                    currency:'USD':'symbol':'1.0-0' }}<span class="period">/mo</span></h4>
                   <p class="building-name">{{ post.title }}</p>
                   <div class="specs-grid" *ngIf="post.housingMetadata">
                     <span class="spec-pill"><i class="bi bi-door-open"></i> {{ post.housingMetadata.Rooms }} Bed</span>
@@ -283,6 +298,51 @@
           </div>
         </div>
       </div>
+
+      <section class="structured-gallery mb-5 fade-in-up" *ngIf="structuredPosts.length > 0 && !isHousingCategory">
+        <div class="section-header-premium mb-4">
+          <div class="line"></div>
+          <h3>NYC360 Marketplace</h3>
+          <p>Explore exclusive opportunities and listings across the city</p>
+        </div>
+        <div class="row g-4">
+          <div class="col-md-6 col-lg-4" *ngFor="let post of structuredPosts">
+            <div class="grid-card luxury-feature h-100">
+              <div class="img-wrapper">
+                <img [src]="getImg(post)" alt="Listing" [routerLink]="['/public/posts/details', post.id]" loading="lazy"
+                  appImgFallback="post">
+                <span class="price-badge" *ngIf="post.housingMetadata">{{ post.housingMetadata.Price |
+                  currency:'USD':'symbol':'1.0-0' }}</span>
+                <div class="overlay-specs" *ngIf="post.housingMetadata">
+                  <span *ngIf="post.housingMetadata.Rooms"><i class="bi bi-door-open-fill"></i> {{
+                    post.housingMetadata.Rooms }}</span>
+                  <span *ngIf="post.housingMetadata.Bathrooms"><i class="bi bi-droplet-fill"></i> {{
+                    post.housingMetadata.Bathrooms }}</span>
+                  <span *ngIf="post.housingMetadata.SizeSqFt"><i class="bi bi-arrows-fullscreen"></i> {{
+                    post.housingMetadata.SizeSqFt }}</span>
+                </div>
+              </div>
+              <div class="card-content d-flex flex-column h-100">
+                <div class="top-row">
+                  <span class="type-label" *ngIf="post.housingMetadata">{{ post.housingMetadata.Type || 'Offer'
+                    }}</span>
+                  <span class="date">{{ post.createdAt | date:'MMM d' }}</span>
+                </div>
+                <h4 [routerLink]="['/public/posts/details', post.id]">{{ post.title }}</h4>
+                <p class="desc">{{ post.cleanDescription || (post.content | slice:0:100) }}...</p>
+                <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center">
+                  <span class="location-mini" *ngIf="post.location">
+                    <i class="bi bi-geo-alt"></i> {{ post.location.neighborhood }}
+                  </span>
+                  <a [routerLink]="['/public/posts/details', post.id]" class="view-btn-premium">
+                    Details <i class="bi bi-arrow-right"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <section class="text-only-section pt-5 border-top fade-in-up" *ngIf="textOnlyPosts.length > 0">
         <div class="section-header mb-4 text-center">

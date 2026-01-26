@@ -3,13 +3,13 @@
 @import "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css";
 
 :root {
-  --luxury-gold: #d4af37;
-  --luxury-gold-dark: #b8860b;
-  --luxury-navy: #0f172a;
-  --luxury-blue: #3498db;
+  --luxury-gold: #B59B62; // The New Primary Housing Gold
+  --luxury-gold-dark: #91784A;
+  --luxury-navy: #101828;
+  --luxury-blue: #3E5B8E;
   --luxury-green: #2ecc71;
   --luxury-slate: #64748b;
-  --luxury-bg: #f8fafc;
+  --luxury-bg: #FCF9F1; // Slightly creamy background
   --luxury-white: #ffffff;
   --glass-bg: rgba(255, 255, 255, 0.85);
   --glass-border: rgba(255, 255, 255, 0.3);
@@ -72,7 +72,7 @@ body {
 
 .gold-title {
   font-family: 'Merriweather', serif;
-  background: linear-gradient(135deg, #d4af37 0%, #f1c40f 50%, #d4af37 100%);
+  background: linear-gradient(135deg, #B59B62 0%, #91784A 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -81,7 +81,7 @@ body {
 }
 
 .btn-luxury-gold {
-  background: linear-gradient(135deg, #d4af37 0%, #b8860b 100%);
+  background: linear-gradient(135deg, #B59B62 0%, #91784A 100%);
   color: white !important;
   border: none;
   padding: 0.7rem 1.5rem;
@@ -89,12 +89,12 @@ body {
   font-weight: 600;
   letter-spacing: 0.5px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+  box-shadow: 0 4px 15px rgba(181, 155, 98, 0.3);
 
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
-    background: linear-gradient(135deg, #e5c04a 0%, #d4af37 100%);
+    background: linear-gradient(135deg, #e5c04a 0%, #B59B62 100%);
   }
 
   &:active {

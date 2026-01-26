@@ -50,7 +50,7 @@
       [class.text-card]="!post.ui.displayImage">
 
       <div class="card-media" *ngIf="post.ui.displayImage">
-        <img [src]="post.ui.displayImage" loading="lazy" alt="Post Cover">
+        <img [src]="post.ui.displayImage" loading="lazy" alt="Post Cover" appImgFallback="post">
         <span class="category-badge" [style.background]="post.ui.categoryColor">
           <img *ngIf="post.ui.categoryIcon" [src]="post.ui.categoryIcon" alt="icon">
           {{ post.ui.categoryName }}

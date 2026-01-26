@@ -36,7 +36,8 @@ export class CategoryHomeComponent implements OnInit {
   isLoading = true;
   isHousingCategory = false;
 
-  // Housing specific buckets
+  // Data Buckets
+  structuredPosts: CategoryPost[] = []; // JSON metadata posts
   homesForSale: CategoryPost[] = [];
   homesForRent: CategoryPost[] = [];
   officialPosts: CategoryPost[] = [];
@@ -74,20 +75,25 @@ export class CategoryHomeComponent implements OnInit {
 
           // 1. فصل البوستات: "بصور" vs "بدون صور"
           let allPosts = allIncoming.map(p => this.parsePostData(p));
-          const withImages = allPosts.filter(p => this.hasImage(p));
-          const noImages = allPosts.filter(p => !this.hasImage(p));
+
+          // Separate structured posts (those with JSON metadata)
+          this.structuredPosts = allPosts.filter(p => p.housingMetadata);
+          const remainingPosts = allPosts.filter(p => !p.housingMetadata);
+
+          const withImages = remainingPosts.filter(p => this.hasImage(p));
+          const noImages = remainingPosts.filter(p => !this.hasImage(p));
 
           if (this.isHousingCategory) {
-            this.heroPost = withImages[0] || null;
-            this.homesForSale = withImages.filter(p => p.housingMetadata && !p.housingMetadata.IsRenting);
-            this.homesForRent = withImages.filter(p => p.housingMetadata && p.housingMetadata.IsRenting);
+            this.heroPost = withImages[0] || this.structuredPosts[0] || null;
+            this.homesForSale = this.structuredPosts.filter(p => p.housingMetadata && !p.housingMetadata.IsRenting);
+            this.homesForRent = this.structuredPosts.filter(p => p.housingMetadata && p.housingMetadata.IsRenting);
             this.officialPosts = allPosts.filter(p => p.author?.type === 2); // Official posts
           } else {
             // Standard layout
             this.heroPost = withImages[0] || null;
-            this.topSidePosts = withImages.slice(1, 5); // 4 بوستات جانبية
-            this.gridPosts = withImages.slice(5, 8);    // 3 بوستات في الشبكة
-            this.moreNewsPosts = withImages.slice(8, 12); // 4 بوستات في القائمة السفلية
+            this.topSidePosts = withImages.slice(1, 5);
+            this.gridPosts = withImages.slice(5, 8);
+            this.moreNewsPosts = withImages.slice(8, 12);
           }
 
           // 3. وضع البوستات النصية في القسم الجديد بالأسفل

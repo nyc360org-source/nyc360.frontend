@@ -18,7 +18,7 @@ export enum CategoryEnum {
 // 2. خريطة الألوان والأيقونات والروابط لكل قسم (المصدر الموحد للموقع)
 export const CATEGORY_THEMES: { [key: number]: any } = {
   [CategoryEnum.Community]: {
-    color: '#ff7f50', label: 'Community', path: 'community', icon: '/icon-category/commumity.png',
+    color: '#B59B62', label: 'Community', path: 'community', icon: '/icon-category/commumity.png',
     route: '/public/community',
     topLinks: [
       { label: 'Explore', route: '/public/discover' },
@@ -50,11 +50,13 @@ export const CATEGORY_THEMES: { [key: number]: any } = {
     ]
   },
   [CategoryEnum.Housing]: {
-    color: '#8E24AA', label: 'Housing', path: 'housing', icon: '/icon-category/housing.png',
+    color: '#B59B62', label: 'Housing', path: 'housing', icon: '/icon-category/housing.png',
     route: '/public/category/housing',
     topLinks: [
-      { label: 'Feed', route: '/public/feed/housing' },
-      { label: 'initiatives', route: '/public/initiatives/housing' }
+      { label: 'feed', route: '/public/feed/housing' },
+      { label: 'initiatives', route: '/public/initiatives/housing' },
+      { label: 'Post Listing', route: '/public/category/housing/create' },
+      { label: 'Create Post', route: '/public/posts/create' }
     ]
   },
   [CategoryEnum.Lifestyle]: {

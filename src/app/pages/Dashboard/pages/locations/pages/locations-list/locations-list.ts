@@ -107,11 +107,11 @@ export class LocationsListComponent implements OnInit {
 
     getBoroughColor(borough: string): string {
         const b = borough.toLowerCase();
-        if (b.includes('manhattan')) return '#FF7F50';
+        if (b.includes('manhattan')) return '#B59B62';
         if (b.includes('brooklyn')) return '#2E86C1';
         if (b.includes('queens')) return '#28B463';
         if (b.includes('bronx')) return '#884EA0';
         if (b.includes('staten')) return '#D35400';
-        return '#D4AF37';
+        return '#91784A';
     }
 }

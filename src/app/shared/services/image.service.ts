@@ -38,6 +38,17 @@ export class ImageService {
     }
 
     /**
+     * Checks if a post has any image (direct or inherited)
+     */
+    hasImage(post: any): boolean {
+        if (!post) return false;
+        const direct = !!(post.attachments?.[0]?.url || post.imageUrl);
+        if (direct) return true;
+        if (post.parentPost) return this.hasImage(post.parentPost);
+        return false;
+    }
+
+    /**
      * Resolves an author/avatar image URL with fallback
      */
     resolveAvatar(author: any): string {
@@ -65,15 +76,23 @@ export class ImageService {
 
         let cleanUrl = url.replace('@local://', '');
 
+        // 1. If absolute or data URL, return as is
         if (cleanUrl.startsWith('http') || cleanUrl.startsWith('https') || cleanUrl.startsWith('data:')) {
             return cleanUrl;
         }
 
-        if (cleanUrl.startsWith('posts/')) {
+        // 2. If it already starts with 'posts/', resolve to secondary base (root)
+        if (cleanUrl.toLowerCase().startsWith('posts/')) {
             return `${this.apiBaseUrl2}/${cleanUrl}`;
         }
 
-        return `${this.apiBaseUrl3}/${cleanUrl}`;
+        // 3. Otherwise, treat as a filename in the 'posts' folder
+        // Use apiBaseUrl3 if it points to /posts, or prepend posts/ to apiBaseUrl2
+        if (this.apiBaseUrl3.endsWith('/posts')) {
+            return `${this.apiBaseUrl3}/${cleanUrl}`;
+        }
+
+        return `${this.apiBaseUrl2}/posts/${cleanUrl}`;
     }
 
     private cleanAndResolveAvatar(url: string, fallback: string): string {

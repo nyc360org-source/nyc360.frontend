@@ -1,5 +1,5 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -10,24 +10,28 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./coming-soon.scss']
 })
 export class ComingSoonComponent implements OnInit, OnDestroy {
-  
+
   // Target Launch Date (e.g., 14 days from now)
   launchDate: Date = new Date(new Date().getTime() + (30 * 24 * 60 * 60 * 1000));
-  
+
   days: number = 0;
   hours: number = 0;
   minutes: number = 0;
   seconds: number = 0;
-  
+
   private intervalId: any;
   email: string = '';
   isSubscribed: boolean = false;
 
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) { }
+
   ngOnInit() {
     this.calculateTime();
-    this.intervalId = setInterval(() => {
-      this.calculateTime();
-    }, 1000);
+    if (isPlatformBrowser(this.platformId)) {
+      this.intervalId = setInterval(() => {
+        this.calculateTime();
+      }, 1000);
+    }
   }
 
   ngOnDestroy() {
