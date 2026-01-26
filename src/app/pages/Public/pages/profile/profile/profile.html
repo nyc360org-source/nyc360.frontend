@@ -92,7 +92,6 @@
                <div class="premium-card">
                   <div class="sidebar-header">
                      <h4>Work Experience</h4>
-                     <span class="edit-pill" *ngIf="isOwner" (click)="switchTab('manage')">Add</span>
                   </div>
                   <div class="timeline-premium">
                      <div *ngFor="let pos of user.positions" class="timeline-item">
@@ -110,7 +109,6 @@
                <div class="premium-card">
                   <div class="sidebar-header">
                      <h4>Education</h4>
-                     <span class="edit-pill" *ngIf="isOwner" (click)="switchTab('manage')">Add</span>
                   </div>
                   <div class="timeline-premium">
                      <div *ngFor="let edu of user.education" class="timeline-item">
