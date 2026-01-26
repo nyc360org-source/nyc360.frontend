@@ -10,11 +10,11 @@
             </p>
         </div>
 
-        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="housing-form card shadow-sm p-4 p-md-5 border-0">
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="housing-form card shadow-lg p-4 p-md-5 border-0">
 
             <!-- Section: Basic Info -->
-            <div class="form-section mb-5">
-                <h4 class="section-title mb-4"><i class="bi bi-info-circle me-2"></i> Basic Information</h4>
+            <div class="form-section">
+                <h4 class="section-title"><i class="bi bi-info-circle me-2"></i> Basic Information</h4>
 
                 <div class="form-floating mb-4">
                     <input type="text" class="form-control" id="title" placeholder="Title" formControlName="Title"
@@ -23,9 +23,9 @@
                     <div class="invalid-feedback">Title is required (min 5 characters)</div>
                 </div>
 
-                <div class="form-floating mb-4">
+                <div class="form-floating">
                     <textarea class="form-control" placeholder="Describe your property" id="content"
-                        formControlName="Content" style="height: 150px"
+                        formControlName="Content" style="height: 180px"
                         [class.is-invalid]="form.get('Content')?.touched && form.get('Content')?.invalid"></textarea>
                     <label for="content">Detailed Description *</label>
                     <div class="invalid-feedback">Description is required (min 20 characters)</div>
@@ -33,36 +33,42 @@
             </div>
 
             <!-- Section: Property Specs -->
-            <div class="form-section mb-5">
-                <h4 class="section-title mb-4"><i class="bi bi-sliders me-2"></i> Property Specifications</h4>
+            <div class="form-section">
+                <h4 class="section-title"><i class="bi bi-sliders me-2"></i> Property Specifications</h4>
 
-                <div class="row g-4">
+                <div class="row g-5">
                     <div class="col-md-6">
                         <label class="form-label fw-bold">Transaction Type *</label>
                         <div class="d-flex gap-3">
                             <div class="type-pill" [class.active]="form.get('IsRenting')?.value === true"
                                 (click)="form.patchValue({IsRenting: true})">
-                                <i class="bi bi-calendar-check mt-1"></i> Rent
+                                <i class="bi bi-calendar-check"></i> Rent
                             </div>
                             <div class="type-pill" [class.active]="form.get('IsRenting')?.value === false"
                                 (click)="form.patchValue({IsRenting: false})">
-                                <i class="bi bi-cash-stack mt-1"></i> Sale
+                                <i class="bi bi-cash-stack"></i> Sale
                             </div>
                         </div>
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label fw-bold">Property Type *</label>
-                        <select class="form-select custom-select" formControlName="Type">
+                        <select class="form-select" formControlName="Type"
+                            [class.is-invalid]="form.get('Type')?.touched && form.get('Type')?.invalid">
                             <option *ngFor="let t of housingTypes" [value]="t.id">{{t.name}}</option>
                         </select>
+                        <div class="invalid-feedback">Property type is required</div>
                     </div>
 
                     <div class="col-md-4">
                         <label class="form-label fw-bold">Rooms *</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-door-open"></i></span>
-                            <input type="number" class="form-control" formControlName="NumberOfRooms">
+                            <input type="number" class="form-control" formControlName="NumberOfRooms" placeholder="0"
+                                [class.is-invalid]="form.get('NumberOfRooms')?.touched && form.get('NumberOfRooms')?.invalid">
+                        </div>
+                        <div class="invalid-feedback d-block"
+                            *ngIf="form.get('NumberOfRooms')?.touched && form.get('NumberOfRooms')?.invalid">Required
                         </div>
                     </div>
 
@@ -70,23 +76,32 @@
                         <label class="form-label fw-bold">Bathrooms *</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-droplet"></i></span>
-                            <input type="number" class="form-control" formControlName="NumberOfBathrooms">
+                            <input type="number" class="form-control" formControlName="NumberOfBathrooms"
+                                placeholder="0"
+                                [class.is-invalid]="form.get('NumberOfBathrooms')?.touched && form.get('NumberOfBathrooms')?.invalid">
                         </div>
+                        <div class="invalid-feedback d-block"
+                            *ngIf="form.get('NumberOfBathrooms')?.touched && form.get('NumberOfBathrooms')?.invalid">
+                            Required</div>
                     </div>
 
                     <div class="col-md-4">
                         <label class="form-label fw-bold">Area (sqft) *</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-arrows-fullscreen"></i></span>
-                            <input type="number" class="form-control" formControlName="Size">
+                            <input type="number" class="form-control" formControlName="Size" placeholder="0"
+                                [class.is-invalid]="form.get('Size')?.touched && form.get('Size')?.invalid">
                         </div>
+                        <div class="invalid-feedback d-block"
+                            *ngIf="form.get('Size')?.touched && form.get('Size')?.invalid">Min 1 sqft</div>
                     </div>
 
                     <div class="col-md-12">
                         <label class="form-label fw-bold">Starting Price ($) *</label>
                         <div class="input-group input-group-lg">
-                            <span class="input-group-text">$</span>
-                            <input type="number" class="form-control" formControlName="StartingPrice" placeholder="0.00"
+                            <span class="input-group-text bg-white px-4"><b>$</b></span>
+                            <input type="number" class="form-control" formControlName="StartingPrice"
+                                placeholder="Ex: 2500"
                                 [class.is-invalid]="form.get('StartingPrice')?.touched && form.get('StartingPrice')?.invalid">
                         </div>
                         <div class="invalid-feedback d-block"
@@ -97,64 +112,81 @@
             </div>
 
             <!-- Section: Location & Tags -->
-            <div class="form-section mb-5">
-                <h4 class="section-title mb-4"><i class="bi bi-geo-alt me-2"></i> Location & Discovery</h4>
+            <div class="form-section">
+                <h4 class="section-title"><i class="bi bi-geo-alt me-2"></i> Location & Discovery</h4>
 
-                <div class="mb-4 position-relative">
+                <div class="mb-5 position-relative">
                     <label class="form-label fw-bold">NYC Neighborhood *</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-search"></i></span>
-                        <input type="text" class="form-control" placeholder="Search neighborhood..."
-                            (input)="onLocationType($event)" formControlName="locationInput"
+                        <input type="text" class="form-control"
+                            placeholder="Search neighborhood (e.g. Upper East Side)..." (input)="onLocationType($event)"
+                            formControlName="locationInput"
                             [class.is-invalid]="form.get('locationInput')?.touched && form.get('locationInput')?.invalid">
                     </div>
-                    <div class="dropdown-menu show w-100 shadow-sm border-0" *ngIf="showLocationDropdown">
-                        <button type="button" class="dropdown-item py-2" *ngFor="let loc of locationResults"
-                            (click)="selectLocation(loc)">
-                            <i class="bi bi-geo-alt me-2 text-primary"></i> {{loc.neighborhood}} <small
-                                class="text-muted">({{loc.borough}})</small>
+                    <div class="dropdown-menu show w-100 shadow-lg border-0 mt-2" *ngIf="showLocationDropdown"
+                        style="max-height: 250px; overflow-y: auto; border-radius: 15px;">
+                        <button type="button" class="dropdown-item py-3 border-bottom"
+                            *ngFor="let loc of locationResults" (click)="selectLocation(loc)">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-circle bg-light me-3"
+                                    style="width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                    <i class="bi bi-geo-alt text-primary"></i>
+                                </div>
+                                <div>
+                                    <strong class="d-block">{{loc.neighborhood}}</strong>
+                                    <small class="text-muted">{{loc.borough}}</small>
+                                </div>
+                            </div>
                         </button>
                     </div>
                     <div class="invalid-feedback d-block"
                         *ngIf="form.get('locationInput')?.touched && !selectedLocation">Please select a neighborhood
-                        from the search</div>
+                        from the search results</div>
                 </div>
 
-                <div class="mb-4 position-relative">
+                <div class="position-relative">
                     <label class="form-label fw-bold">Tags (Optional)</label>
-                    <input type="text" class="form-control" placeholder="Search and add tags..."
-                        (input)="onTagType($event)" formControlName="tagInput">
-                    <div class="dropdown-menu show w-100 shadow-sm border-0" *ngIf="showTagDropdown">
-                        <button type="button" class="dropdown-item py-2" *ngFor="let tag of tagResults"
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-hash"></i></span>
+                        <input type="text" class="form-control"
+                            placeholder="Add features like #luxury, #garden, #petfriendly..."
+                            (input)="onTagType($event)" formControlName="tagInput">
+                    </div>
+                    <div class="dropdown-menu show w-100 shadow-lg border-0 mt-2" *ngIf="showTagDropdown"
+                        style="border-radius: 15px;">
+                        <button type="button" class="dropdown-item py-3" *ngFor="let tag of tagResults"
                             (click)="selectTag(tag)">
-                            <i class="bi bi-hash me-2 text-muted"></i> {{tag.name}}
+                            <i class="bi bi-plus-circle me-2 text-primary"></i> {{tag.name}}
                         </button>
                     </div>
-                    <div class="d-flex flex-wrap gap-2 mt-3">
-                        <span class="tag-badge" *ngFor="let t of selectedTags; let i = index">
-                            #{{t.name}} <i class="bi bi-x-circle ms-2 cursor-pointer" (click)='removeTag(i)'></i>
+                    <div class="d-flex flex-wrap gap-2 mt-4">
+                        <span class="tag-badge animate__animated animate__bounceIn"
+                            *ngFor="let t of selectedTags; let i = index">
+                            #{{t.name}} <i class="bi bi-x-circle ms-1 cursor-pointer" (click)='removeTag(i)'></i>
                         </span>
                     </div>
                 </div>
             </div>
 
             <!-- Section: Media -->
-            <div class="form-section mb-5">
-                <h4 class="section-title mb-4"><i class="bi bi-images me-2"></i> Property Media</h4>
+            <div class="form-section">
+                <h4 class="section-title"><i class="bi bi-images me-2"></i> Property Media</h4>
 
                 <div class="upload-area" (click)="fileInput.click()">
-                    <i class="bi bi-cloud-arrow-up display-4"></i>
-                    <p class="mt-2 mb-0 fw-bold">Click or drag images here to upload</p>
-                    <p class="small text-muted">High-quality photos increase engagement by 70%</p>
+                    <i class="bi bi-cloud-arrow-up"></i>
+                    <h5 class="fw-bold">Upload Property Photos</h5>
+                    <p class="text-muted mb-0">Drag and drop or click to browse</p>
+                    <p class="small text-muted mt-2">Maximum file size: 5MB per image</p>
                     <input type="file" #fileInput (change)="onFileSelect($event)" multiple hidden accept="image/*">
                 </div>
 
-                <div class="image-previews d-flex flex-wrap gap-3 mt-4" *ngIf="imagePreviews.length > 0">
+                <div class="image-previews d-flex flex-wrap gap-4 mt-5" *ngIf="imagePreviews.length > 0">
                     <div class="preview-item position-relative" *ngFor="let img of imagePreviews; let i = index">
-                        <img [src]="img" class="rounded shadow-sm">
+                        <img [src]="img" class="animate__animated animate__zoomIn">
                         <button type="button"
-                            class="btn btn-danger btn-sm rounded-circle position-absolute top-0 start-100 translate-middle shadow"
-                            (click)="removeFile(i)">
+                            class="btn btn-dark btn-sm rounded-circle position-absolute top-0 start-100 translate-middle shadow-lg"
+                            (click)="removeFile(i)" style="width: 28px; height: 28px; padding: 0;">
                             <i class="bi bi-x"></i>
                         </button>
                     </div>
@@ -162,14 +194,13 @@
             </div>
 
             <!-- Actions -->
-            <div class="form-actions d-flex gap-3 border-top pt-5">
-                <button type="button" class="btn btn-light px-5 py-3 fw-bold rounded-pill"
-                    routerLink="/public/category/housing">Cancel</button>
-                <button type="submit" class="btn btn-primary px-5 py-3 fw-bold rounded-pill flex-grow-1"
-                    [disabled]="isSubmitting">
-                    <span *ngIf="!isSubmitting">Publish Ad</span>
+            <div class="form-actions d-flex gap-3 pt-4">
+                <button type="button" class="btn btn-light px-5 fw-bold"
+                    routerLink="/public/category/housing">Discard</button>
+                <button type="submit" class="btn btn-primary px-5 fw-bold flex-grow-1" [disabled]="isSubmitting">
+                    <span *ngIf="!isSubmitting">Publish Listing Now</span>
                     <span *ngIf="isSubmitting"><span class="spinner-border spinner-border-sm me-2"></span>
-                        Publishing...</span>
+                        Publishing Your Property...</span>
                 </button>
             </div>
 

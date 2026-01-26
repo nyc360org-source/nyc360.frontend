@@ -59,11 +59,15 @@ export class FeedLayoutComponent implements OnInit, OnDestroy {
     );
   }
 
+  isHousingCategory = false;
+
   ngOnInit(): void {
     this.subscriptions.push(
       this.route.data.subscribe(data => {
         this.currentCategory = data['categoryEnum'];
         this.pageTitle = data['title'];
+        this.isHousingCategory = this.currentCategory === CategoryEnum.Housing;
+
         const theme = CATEGORY_THEMES[this.currentCategory] || { color: '#333' };
         this.applyTheme(theme.color);
         this.resetFilters();

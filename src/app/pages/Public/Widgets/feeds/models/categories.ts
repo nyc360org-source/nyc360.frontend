@@ -53,7 +53,7 @@ export const CATEGORY_THEMES: { [key: number]: any } = {
     color: '#B59B62', label: 'Housing', path: 'housing', icon: '/icon-category/housing.png',
     route: '/public/housing/home',
     topLinks: [
-      { label: 'Feed', route: '/public/category/housing' },
+      { label: 'Feed', route: '/public/feed/housing' },
       { label: 'initiatives', route: '/public/initiatives/housing' },
       { label: 'Post Listing', route: '/public/housing/create' },
       { label: 'Create Post', route: '/public/posts/create' }

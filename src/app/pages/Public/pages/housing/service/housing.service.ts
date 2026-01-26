@@ -8,7 +8,7 @@ import { environment } from '../../../../../environments/environment';
 })
 export class HousingService {
     private http = inject(HttpClient);
-    private apiUrl = `${environment.apiBaseUrl}/posts/create/housing`;
+    private apiUrl = `${environment.apiBaseUrl}/housing/create`;
 
     createHousingPost(data: any): Observable<any> {
         const formData = new FormData();

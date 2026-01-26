@@ -40,57 +40,87 @@ $radius: 16px;
   padding: 40px 20px;
 }
 
-// 4. Header & Floating Search
-.header-section {
-  position: relative;
-  margin-bottom: 60px;
-  text-align: center;
+// 4. Premium Category Header (Match CategoryHome)
+.category-header {
+  background-color: #f7f7f7; // Fallback
+  padding: 80px 0;
+  margin-bottom: 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 
-  .page-title {
+  .main-title {
     font-family: $font-header;
-    font-size: 3rem;
+    font-size: 3.5rem;
     font-weight: 900;
-    color: $dark;
-    margin-bottom: 30px;
-    letter-spacing: -1px;
+    margin-bottom: 15px;
+    color: var(--primary-color);
+    letter-spacing: -2px;
+    text-align: center;
+
+    @media (min-width: 768px) {
+      font-size: 5rem;
+    }
   }
 
-  .search-floater {
-    position: sticky; // Sticky Magic
-    top: 20px;
-    z-index: 100;
-
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(12px); // Glassmorphism
-    -webkit-backdrop-filter: blur(12px);
-
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1);
-
-    border-radius: 50px;
-    padding: 8px;
+  .sub-meta {
+    font-size: 1.1rem;
+    color: #64748b;
     max-width: 700px;
+    margin: 0 auto;
+    font-weight: 500;
+    text-align: center;
+  }
+
+  .top-meta {
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    color: #94a3b8;
+    text-transform: none;
+    margin-bottom: 10px;
+    font-weight: 600;
+    text-align: center;
+  }
+}
+
+// Special Housing Header Theme
+:host-context(.housing-theme) {
+  .category-header {
+    background-color: #FDF8EB;
+    border-bottom: none;
+
+    .main-title {
+      color: #B59B62;
+    }
+  }
+}
+
+.search-container {
+  margin-top: -35px; // Overlap with header
+  position: relative;
+  z-index: 100;
+  margin-bottom: 60px;
+
+  .search-floater {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1);
+    border-radius: 50px;
+    padding: 10px;
+    max-width: 800px;
     margin: 0 auto;
     display: flex;
     align-items: center;
-    transition: transform 0.3s ease;
-
-    &:focus-within {
-      transform: translateY(-2px);
-      box-shadow: 0 25px 50px -10px rgba(var(--primary-color), 0.15);
-      border-color: rgba($primary, 0.3);
-    }
 
     .search-box,
     .location-box {
       flex: 1;
       display: flex;
       align-items: center;
-      padding: 0 20px;
+      padding: 0 25px;
       position: relative;
 
       i {
-        font-size: 1.1rem;
+        font-size: 1.2rem;
         margin-right: 12px;
       }
 
@@ -100,36 +130,30 @@ $radius: 16px;
         background: transparent;
         outline: none;
         font-size: 1rem;
-        color: $dark;
         font-weight: 500;
-
-        &::placeholder {
-          color: #9ca3af;
-          font-weight: 400;
-        }
       }
     }
 
     .divider {
       width: 1px;
-      height: 30px;
-      background: #e5e7eb;
+      height: 35px;
+      background: #e2e8f0;
     }
 
     .btn-go {
-      background: $dark;
+      background: var(--primary-color);
       color: white;
       border: none;
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      font-weight: 700;
+      padding: 0 30px;
+      height: 50px;
+      border-radius: 30px;
+      font-weight: 800;
       cursor: pointer;
-      transition: 0.2s;
+      transition: all 0.3s;
 
       &:hover {
-        background: $primary;
-        transform: scale(1.05);
+        transform: scale(1.03);
+        filter: brightness(1.1);
       }
     }
 
@@ -143,6 +167,7 @@ $radius: 16px;
       border-radius: 12px;
       padding: 10px;
       border: 1px solid #eee;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 
       .loc-item {
         padding: 10px 15px;
@@ -152,10 +177,26 @@ $radius: 16px;
 
         &:hover {
           background: #f3f4f6;
-          color: $primary;
+          color: var(--primary-color);
         }
       }
     }
+  }
+}
+
+// Special Housing Theme for Container
+.feed-layout-container.housing-theme {
+  .category-header {
+    background-color: #FDF8EB;
+    border-bottom: none;
+
+    .main-title {
+      color: #B59B62;
+    }
+  }
+
+  .search-floater {
+    border-color: rgba(181, 155, 98, 0.2);
   }
 }
 
