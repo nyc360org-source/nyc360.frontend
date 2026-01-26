@@ -149,6 +149,18 @@ $font-body: 'Inter', sans-serif;
       &:hover {
         background: color.adjust($primary-green, $lightness: -5%);
       }
+
+      &.applied {
+        background: #e8f5e9;
+        color: #2e7d32;
+        border: 1px solid #c8e6c9;
+        cursor: default;
+        pointer-events: none; // Ensure no clicks
+
+        &:hover {
+          background: #e8f5e9;
+        }
+      }
     }
 
     .secondary-actions {

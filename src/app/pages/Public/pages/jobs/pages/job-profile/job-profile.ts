@@ -192,6 +192,7 @@ export class JobProfileComponent implements OnInit {
           this.showSuccessModal = true; // Show Success Modal
           this.coverLetterText = '';
           this.selectedFile = undefined;
+          if (this.job) this.job.isApplied = true;
         }
         this.cdr.detectChanges();
       },

@@ -47,6 +47,7 @@ export interface JobProfile {
   address?: Address | null;
   author: Author;
   createdAt: string;
+  isApplied: boolean;
 }
 
 export interface RelatedJob {
