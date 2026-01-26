@@ -6,6 +6,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PostsService } from '../services/posts';
 import { environment } from '../../../../../environments/environment';
+import { ImageService } from '../../../../../shared/services/image.service';
+import { ImgFallbackDirective } from '../../../../../shared/directives/img-fallback.directive';
 
 import { CategoryEnum, CATEGORY_THEMES } from '../models/categories';
 
@@ -14,7 +16,7 @@ import { CategoryEnum, CATEGORY_THEMES } from '../models/categories';
   templateUrl: './feed-layout.html',
   styleUrls: ['./feed-layout.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, ImgFallbackDirective],
   // ⚡ PERFORMANCE BOOST: استراتيجية التحديث اليدوي
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -43,7 +45,8 @@ export class FeedLayoutComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private postsService: PostsService,
     private el: ElementRef,
-    private cdr: ChangeDetectorRef // لتحديث الواجهة يدوياً
+    private cdr: ChangeDetectorRef, // لتحديث الواجهة يدوياً
+    private imageService: ImageService
   ) {
     // إعداد البحث المباشر
     this.subscriptions.push(
@@ -125,7 +128,7 @@ export class FeedLayoutComponent implements OnInit, OnDestroy {
         ui: {
           isShared,
           displayImage: this.resolvePostImage(post),
-          authorImg: this.resolveAuthorImage(post.author),
+          authorImg: this.imageService.resolveAvatar(post.author),
           authorName: post.author?.fullName || post.author?.username || 'Member',
           title: post.title || post.parentPost?.title,
           content: post.content,
@@ -183,17 +186,8 @@ export class FeedLayoutComponent implements OnInit, OnDestroy {
 
   // --- Image Resolvers ---
   resolvePostImage(post: any): string | null {
-    const attachment = post.attachments?.[0];
-    let url = attachment?.url || post.imageUrl;
-
-    if (!url || url.trim() === '') {
-      if (post.parentPost) return this.resolvePostImage(post.parentPost);
-      return null; // ✅ Return null to identify as Text-Only
-    }
-
-    url = url.replace('@local://', '');
-    if (url.startsWith('http')) return url;
-    return `${this.environment.apiBaseUrl3}/${url}`;
+    if (!this.imageService.hasImage(post)) return null;
+    return this.imageService.resolvePostImage(post);
   }
 
   resolveAuthorImage(author: any): string {
