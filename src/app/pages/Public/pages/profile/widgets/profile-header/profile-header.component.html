@@ -70,6 +70,12 @@
                     About
                     <span class="tab-indicator"></span>
                 </button>
+                <button class="tab-item tab-with-badge" [class.active]="activeTab === 'applications'"
+                    (click)="switchTab('applications')" *ngIf="isOwner">
+                    Applications
+                    <span class="badge-count" *ngIf="applicationsCount > 0">{{ applicationsCount }}</span>
+                    <span class="tab-indicator"></span>
+                </button>
                 <button class="tab-item" [class.active]="activeTab === 'saved'" (click)="switchTab('saved')"
                     *ngIf="isOwner">
                     Saved

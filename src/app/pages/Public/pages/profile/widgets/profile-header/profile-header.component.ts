@@ -4,6 +4,7 @@ import { UserProfileData } from '../../models/profile';
 import { environment } from '../../../../../../environments/environment';
 import { ProfileService } from '../../service/profile';
 import { ToastService } from '../../../../../../shared/services/toast.service';
+import { AuthService } from '../../../../../Authentication/Service/auth';
 
 @Component({
     selector: 'app-profile-header',
@@ -21,6 +22,7 @@ export class ProfileHeaderComponent {
 
     private profileService = inject(ProfileService);
     private toastService = inject(ToastService);
+    private authService = inject(AuthService);
     protected readonly environment = environment;
 
     switchTab(tab: string) {
@@ -97,5 +99,15 @@ export class ProfileHeaderComponent {
             return `${neighborhood}, ${borough}`;
         }
         return borough || neighborhood || '';
+    }
+
+    get applicationsCount(): number {
+        // Try to get from user stats first
+        if (this.user?.stats?.applicationsCount !== undefined) {
+            return this.user.stats.applicationsCount;
+        }
+        // Fallback to auth service
+        const userInfo = this.authService.getFullUserInfo();
+        return userInfo?.applicationsCount ?? 0;
     }
 }

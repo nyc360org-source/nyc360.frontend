@@ -59,6 +59,7 @@ export interface UserStats {
   likesCount: number;
   commentsCount: number;
   sharesCount: number;
+  applicationsCount?: number;
   isVerified: boolean | null;
 }
 

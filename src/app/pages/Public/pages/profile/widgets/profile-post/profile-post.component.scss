@@ -292,6 +292,33 @@ $primary-purple: #6366F1;
             overflow: hidden;
         }
     }
+
+    /* ✅ Job Author Link */
+    .job-author-link {
+        margin-top: 12px;
+        padding: 8px 12px;
+        background: #F8F9FA;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #64748B;
+        cursor: pointer;
+        transition: 0.2s;
+
+        i {
+            font-size: 1rem;
+            color: #6366F1;
+        }
+
+        &:hover {
+            background: #EEF2FF;
+            color: #6366F1;
+            transform: translateX(2px);
+        }
+    }
 }
 
 .repost-box {

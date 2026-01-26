@@ -214,4 +214,12 @@ export class ProfilePostComponent {
         const parts = content.split('\n\n\n');
         return parts[0].trim();
     }
+
+    navigateToProfile(username: string, event?: Event) {
+        if (event) {
+            event.stopPropagation();
+            event.preventDefault();
+        }
+        this.router.navigate(['/public/profile', username]);
+    }
 }

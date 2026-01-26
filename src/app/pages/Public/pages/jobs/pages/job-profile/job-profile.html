@@ -61,8 +61,9 @@
             (click)="onTabChange('requirements')">Requirements</button>
 
           <button *ngIf="isAuthor" [class.active]="activeTab === 'applicants'" (click)="onTabChange('applicants')"
-            style="color: #e67e22; border-color: #e67e22;">
+            style="color: #e67e22; border-color: #e67e22; position: relative;">
             <i class="bi bi-people-fill"></i> Applicants
+            <span class="applicants-badge" *ngIf="applicants.length > 0">{{ applicants.length }}</span>
           </button>
         </nav>
 

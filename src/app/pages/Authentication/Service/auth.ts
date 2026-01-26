@@ -166,6 +166,7 @@ export class AuthService {
       twoFactorEnabled: data.TwoFactorEnabled ?? data.twoFactorEnabled,
       isVerified: data.IsVerified ?? data.isVerified,
       isPending: data.IsPending ?? data.isPending ?? false,
+      applicationsCount: data.ApplicationsCount ?? data.applicationsCount ?? 0,
 
       location: data.Location ? {
         id: data.Location.Id ?? data.Location.id,

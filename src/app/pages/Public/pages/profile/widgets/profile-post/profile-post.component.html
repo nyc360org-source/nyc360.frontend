@@ -38,6 +38,13 @@
                     {{ getArrangement(post.linkedResource.workArrangement) }}
                 </div>
             </div>
+
+            <!-- ✅ Job Author Link -->
+            <div class="job-author-link" *ngIf="post.linkedResource.authorUsername"
+                (click)="navigateToProfile(post.linkedResource.authorUsername, $event)">
+                <i class="bi bi-person-circle"></i>
+                <span>Posted by @{{ post.linkedResource.authorUsername }}</span>
+            </div>
         </div>
 
         <p class="post-text" *ngIf="post.content && post.category !== 4">{{ post.content }}</p>

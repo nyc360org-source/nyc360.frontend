@@ -18,6 +18,7 @@ export interface UserInfo {
   education: Education[];
   tags: Tag[];
   businessInfo: BusinessInfo | null;
+  applicationsCount?: number;
 }
 
 export interface UserLocation {

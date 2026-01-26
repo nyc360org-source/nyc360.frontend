@@ -318,6 +318,29 @@ $white: #ffffff;
             transition: 0.3s;
             outline: none;
 
+            &.tab-with-badge {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .badge-count {
+                background: $primary-purple;
+                color: $white;
+                font-size: 0.7rem;
+                font-weight: 800;
+                padding: 2px 8px;
+                border-radius: 10px;
+                min-width: 20px;
+                text-align: center;
+                box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+                transition: 0.2s;
+            }
+
+            &:hover .badge-count {
+                transform: scale(1.1);
+            }
+
             &.active {
                 color: $text-dark;
 
