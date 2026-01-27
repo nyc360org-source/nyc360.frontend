@@ -86,14 +86,15 @@
                     </div>
 
                     <div class="col-md-4">
-                        <label class="form-label fw-bold">Area (sqft) *</label>
+                        <label class="form-label fw-bold">Area (sqft)</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-arrows-fullscreen"></i></span>
                             <input type="number" class="form-control" formControlName="Size" placeholder="0"
                                 [class.is-invalid]="form.get('Size')?.touched && form.get('Size')?.invalid">
                         </div>
                         <div class="invalid-feedback d-block"
-                            *ngIf="form.get('Size')?.touched && form.get('Size')?.invalid">Min 1 sqft</div>
+                            *ngIf="form.get('Size')?.touched && form.get('Size')?.invalid">Area must be 0 or greater
+                        </div>
                     </div>
 
                     <div class="col-md-12">
@@ -133,8 +134,8 @@
                                     style="width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
                                     <i class="bi bi-geo-alt text-primary"></i>
                                 </div>
-                                <div>
-                                    <strong class="d-block">{{loc.neighborhood}}</strong>
+                                <div class="flex-grow-1">
+                                    <strong class="d-block">{{loc.neighborhood}} ({{loc.zipCode}})</strong>
                                     <small class="text-muted">{{loc.borough}}</small>
                                 </div>
                             </div>

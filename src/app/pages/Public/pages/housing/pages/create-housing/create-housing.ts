@@ -57,7 +57,7 @@ export class CreateHousingComponent implements OnInit {
             IsRenting: [true, Validators.required],
             NumberOfRooms: [1, [Validators.required, Validators.min(0)]],
             NumberOfBathrooms: [1, [Validators.required, Validators.min(0)]],
-            Size: [0, [Validators.required, Validators.min(1)]],
+            Size: [0, Validators.min(0)],
             StartingPrice: [0, [Validators.required, Validators.min(1)]],
             Type: [0, Validators.required],
             locationInput: ['', Validators.required],
