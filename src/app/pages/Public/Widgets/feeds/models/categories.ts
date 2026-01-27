@@ -47,11 +47,13 @@ export const CATEGORY_THEMES: { [key: number]: any } = {
     ]
   },
   [CategoryEnum.Housing]: {
-    color: '#a52a2a', label: 'Housing', path: 'housing', icon: '/icon-category/icon-housing-64.png', biIcon: 'bi-house-heart-fill',
-    route: '/public/housing',
+    color: '#a52a2a', label: 'Housing', path: 'housing', icon: '/icon-category/housing.png', biIcon: 'bi-house-heart-fill',
+    route: '/public/housing/home',
     topLinks: [
       { label: 'Feed', route: '/public/feed/housing' },
-      { label: 'Market', route: '/public/housing' }
+      { label: 'Initiatives', route: '/public/initiatives/housing' },
+      { label: 'post listing', route: '/public/housing/create' },
+      { label: 'create post', route: '/public/posts/create' }
     ]
   },
   [CategoryEnum.Lifestyle]: {
@@ -71,7 +73,7 @@ export const CATEGORY_THEMES: { [key: number]: any } = {
     ]
   },
   [CategoryEnum.News]: {
-    color: '#6c757d', label: 'News', path: 'news', icon: '/icon-category/news.png', biIcon: 'bi-newspaper',
+    color: '#6c757d', label: 'News', path: 'news', icon: '/icon-category/newspaper.png', biIcon: 'bi-newspaper',
     route: '/public/category/news',
     topLinks: [
       { label: 'Feed', route: '/public/feed/news' },
@@ -80,10 +82,12 @@ export const CATEGORY_THEMES: { [key: number]: any } = {
   },
   [CategoryEnum.Professions]: {
     color: '#fd7e14', label: 'Professions', path: 'professions', icon: '/icon-category/professions.png', biIcon: 'bi-briefcase-fill',
-    route: '/public/jobs',
+    route: '/public/profession/feed',
     topLinks: [
-      { label: 'Jobs', route: '/public/jobs' },
-      { label: 'Network', route: '/public/professional-network' }
+      { label: 'Jobs', route: '/public/profession/jobs' },
+      { label: 'my offers', route: '/public/profession/my-offers' },
+      { label: 'my applications', route: '/public/profession/my-applications' },
+
     ]
   },
   [CategoryEnum.Social]: {
@@ -95,7 +99,7 @@ export const CATEGORY_THEMES: { [key: number]: any } = {
     ]
   },
   [CategoryEnum.Transportation]: {
-    color: '#17a2b8', label: 'Transportation', path: 'transportation', icon: '/icon-category/transpotation.png', biIcon: 'bi-bus-front-fill',
+    color: '#17a2b8', label: 'Transportation', path: 'transportation', icon: '/icon-category/transportation.png', biIcon: 'bi-bus-front-fill',
     route: '/public/category/transportation',
     topLinks: [
       { label: 'Feed', route: '/public/feed/transportation' },
