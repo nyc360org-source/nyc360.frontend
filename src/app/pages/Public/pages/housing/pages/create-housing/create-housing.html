@@ -1,208 +1,599 @@
-<div class="create-housing-wrapper" style="--theme-color: #B59B62;">
-    <div class="container py-5">
+<div class="create-housing-container">
+    <div class="container">
+        <header class="page-header">
+            <h2>What are you listing?</h2>
+            <p>Choose how you want to offer your property in NYC360</p>
+        </header>
 
-        <div class="header-section mb-5 animate__animated animate__fadeInDown">
-            <div class="d-flex align-items-center gap-3 mb-2">
-                <a routerLink="/public/category/housing" class="back-btn"><i class="bi bi-arrow-left"></i></a>
-                <h1 class="m-0">Create Property Listing</h1>
-            </div>
-            <p class="text-muted">Fill in the details below to reach thousands of potential buyers and renters in NYC.
-            </p>
-        </div>
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="housing-form">
 
-        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="housing-form card shadow-lg p-4 p-md-5 border-0">
-
-            <!-- Section: Basic Info -->
-            <div class="form-section">
-                <h4 class="section-title"><i class="bi bi-info-circle me-2"></i> Basic Information</h4>
-
-                <div class="form-floating mb-4">
-                    <input type="text" class="form-control" id="title" placeholder="Title" formControlName="Title"
-                        [class.is-invalid]="form.get('Title')?.touched && form.get('Title')?.invalid">
-                    <label for="title">Listing Title *</label>
-                    <div class="invalid-feedback">Title is required (min 5 characters)</div>
+            <!-- 1. Listing Type (For Rent / For Sale Cards) -->
+            <section class="form-section no-bg px-0 mb-4">
+                <div class="listing-type-group">
+                    <div class="type-card-lg" [class.active]="isRenting" (click)="onListingTypeChange(true)">
+                        <img src="assets/images/housing-rent-bg.jpg" alt="Rent" class="bg-img"
+                            onerror="this.src='https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80'">
+                        <div class="content">
+                            <h3>For Rent</h3>
+                            <p>Long-Term or Short-Term leases</p>
+                        </div>
+                        <div class="check-mark" *ngIf="isRenting"><i class="bi bi-check-lg"></i></div>
+                    </div>
+                    <div class="type-card-lg" [class.active]="!isRenting" (click)="onListingTypeChange(false)">
+                        <img src="assets/images/housing-sale-bg.jpg" alt="Sale" class="bg-img"
+                            onerror="this.src='https://images.unsplash.com/photo-1568605114967-8130f3a36994?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80'">
+                        <div class="content">
+                            <h3>For Sale</h3>
+                            <p>Real Estate listing</p>
+                        </div>
+                        <div class="check-mark" *ngIf="!isRenting"><i class="bi bi-check-lg"></i></div>
+                    </div>
                 </div>
+            </section>
 
-                <div class="form-floating">
-                    <textarea class="form-control" placeholder="Describe your property" id="content"
-                        formControlName="Content" style="height: 180px"
-                        [class.is-invalid]="form.get('Content')?.touched && form.get('Content')?.invalid"></textarea>
-                    <label for="content">Detailed Description *</label>
-                    <div class="invalid-feedback">Description is required (min 20 characters)</div>
+            <!-- 2. Property Icons Row -->
+            <section class="form-section no-bg px-0 mb-5">
+                <div class="property-icons-row">
+                    <div class="prop-icon-card" *ngFor="let type of propertyTypes"
+                        [class.selected]="f['Type'].value === type.id" (click)="f['Type'].setValue(type.id)">
+                        <i class="bi" [ngClass]="type.icon"></i>
+                        <span>{{ type.name }}</span>
+                    </div>
                 </div>
-            </div>
+            </section>
 
-            <!-- Section: Property Specs -->
-            <div class="form-section">
-                <h4 class="section-title"><i class="bi bi-sliders me-2"></i> Property Specifications</h4>
-
-                <div class="row g-5">
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold">Transaction Type *</label>
-                        <div class="d-flex gap-3">
-                            <div class="type-pill" [class.active]="form.get('IsRenting')?.value === true"
-                                (click)="form.patchValue({IsRenting: true})">
-                                <i class="bi bi-calendar-check"></i> Rent
-                            </div>
-                            <div class="type-pill" [class.active]="form.get('IsRenting')?.value === false"
-                                (click)="form.patchValue({IsRenting: false})">
-                                <i class="bi bi-cash-stack"></i> Sale
-                            </div>
+            <!-- 3. Availability -->
+            <section class="form-section">
+                <h3 class="section-title">Availability</h3>
+                <div class="row">
+                    <div class="col-md-3 form-group">
+                        <label>Select Move-in Date *</label>
+                        <div class="input-icon-wrap">
+                            <input type="date" class="form-control" formControlName="MoveInDate"
+                                [class.is-invalid]="f['MoveInDate'].invalid && f['MoveInDate'].touched">
+                            <div class="invalid-feedback">Move-in Date is required</div>
                         </div>
                     </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold">Property Type *</label>
-                        <select class="form-select" formControlName="Type"
-                            [class.is-invalid]="form.get('Type')?.touched && form.get('Type')?.invalid">
-                            <option *ngFor="let t of housingTypes" [value]="t.id">{{t.name}}</option>
+                    <div class="col-md-3 form-group">
+                        <label>Select Move-out Date</label>
+                        <div class="input-icon-wrap">
+                            <input type="date" class="form-control" formControlName="MoveOutDate">
+                        </div>
+                    </div>
+                    <div class="col-md-3 form-group">
+                        <label>Household Type</label>
+                        <select class="form-select" formControlName="HouseholdType">
+                            <option [ngValue]="null">Select Household</option>
+                            <option *ngFor="let h of householdTypes" [ngValue]="h.id">{{ h.name }}</option>
                         </select>
-                        <div class="invalid-feedback">Property type is required</div>
                     </div>
-
-                    <div class="col-md-4">
-                        <label class="form-label fw-bold">Rooms *</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-door-open"></i></span>
-                            <input type="number" class="form-control" formControlName="NumberOfRooms" placeholder="0"
-                                [class.is-invalid]="form.get('NumberOfRooms')?.touched && form.get('NumberOfRooms')?.invalid">
-                        </div>
-                        <div class="invalid-feedback d-block"
-                            *ngIf="form.get('NumberOfRooms')?.touched && form.get('NumberOfRooms')?.invalid">Required
-                        </div>
-                    </div>
-
-                    <div class="col-md-4">
-                        <label class="form-label fw-bold">Bathrooms *</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-droplet"></i></span>
-                            <input type="number" class="form-control" formControlName="NumberOfBathrooms"
-                                placeholder="0"
-                                [class.is-invalid]="form.get('NumberOfBathrooms')?.touched && form.get('NumberOfBathrooms')?.invalid">
-                        </div>
-                        <div class="invalid-feedback d-block"
-                            *ngIf="form.get('NumberOfBathrooms')?.touched && form.get('NumberOfBathrooms')?.invalid">
-                            Required</div>
-                    </div>
-
-                    <div class="col-md-4">
-                        <label class="form-label fw-bold">Area (sqft)</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-arrows-fullscreen"></i></span>
-                            <input type="number" class="form-control" formControlName="Size" placeholder="0"
-                                [class.is-invalid]="form.get('Size')?.touched && form.get('Size')?.invalid">
-                        </div>
-                        <div class="invalid-feedback d-block"
-                            *ngIf="form.get('Size')?.touched && form.get('Size')?.invalid">Area must be 0 or greater
-                        </div>
-                    </div>
-
-                    <div class="col-md-12">
-                        <label class="form-label fw-bold">Starting Price ($) *</label>
-                        <div class="input-group input-group-lg">
-                            <span class="input-group-text bg-white px-4"><b>$</b></span>
-                            <input type="number" class="form-control" formControlName="StartingPrice"
-                                placeholder="Ex: 2500"
-                                [class.is-invalid]="form.get('StartingPrice')?.touched && form.get('StartingPrice')?.invalid">
-                        </div>
-                        <div class="invalid-feedback d-block"
-                            *ngIf="form.get('StartingPrice')?.touched && form.get('StartingPrice')?.invalid">Price is
-                            required</div>
+                    <div class="col-md-3 form-group">
+                        <label>Property Type *</label>
+                        <select class="form-select" formControlName="Type"
+                            [class.is-invalid]="f['Type'].invalid && f['Type'].touched">
+                            <option [ngValue]="null">Select Property Type</option>
+                            <option *ngFor="let t of propertyTypes" [ngValue]="t.id">{{ t.name }}</option>
+                        </select>
+                        <div class="invalid-feedback">Property Type is required</div>
                     </div>
                 </div>
-            </div>
+            </section>
 
-            <!-- Section: Location & Tags -->
-            <div class="form-section">
-                <h4 class="section-title"><i class="bi bi-geo-alt me-2"></i> Location & Discovery</h4>
-
-                <div class="mb-5 position-relative">
-                    <label class="form-label fw-bold">NYC Neighborhood *</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-search"></i></span>
-                        <input type="text" class="form-control"
-                            placeholder="Search neighborhood (e.g. Upper East Side)..." (input)="onLocationType($event)"
-                            formControlName="locationInput"
-                            [class.is-invalid]="form.get('locationInput')?.touched && form.get('locationInput')?.invalid">
+            <!-- 4. Location -->
+            <section class="form-section">
+                <h3 class="section-title">Location</h3>
+                <div class="row">
+                    <div class="col-md-4 form-group">
+                        <label>Borough *</label>
+                        <select class="form-select"> <!-- Assuming derived from zip/neighborhood or separate field -->
+                            <option value="">Select Borough</option>
+                            <option value="Manhattan">Manhattan</option>
+                            <option value="Brooklyn">Brooklyn</option>
+                            <option value="Queens">Queens</option>
+                            <option value="Bronx">Bronx</option>
+                            <option value="Staten Island">Staten Island</option>
+                        </select>
                     </div>
-                    <div class="dropdown-menu show w-100 shadow-lg border-0 mt-2" *ngIf="showLocationDropdown"
-                        style="max-height: 250px; overflow-y: auto; border-radius: 15px;">
-                        <button type="button" class="dropdown-item py-3 border-bottom"
-                            *ngFor="let loc of locationResults" (click)="selectLocation(loc)">
-                            <div class="d-flex align-items-center">
-                                <div class="icon-circle bg-light me-3"
-                                    style="width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                    <i class="bi bi-geo-alt text-primary"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <strong class="d-block">{{loc.neighborhood}} ({{loc.zipCode}})</strong>
-                                    <small class="text-muted">{{loc.borough}}</small>
+                    <div class="col-md-4 form-group" formGroupName="Address">
+                        <label>ZIP Code *</label>
+                        <input type="text" class="form-control" formControlName="ZipCode" placeholder="Enter ZIP Code">
+                    </div>
+                    <div class="col-md-4 form-group">
+                        <label>Max Occupants</label>
+                        <input type="number" class="form-control" formControlName="MaxOccupants"
+                            placeholder="Add Max Occupants #">
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5. Address Section -->
+            <section class="form-section">
+                <h3 class="section-title">Address</h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group search-group left-align">
+                            <label>Neighborhood *</label>
+                            <div class="search-wrapper">
+                                <input type="text" class="form-control" placeholder="Select Neighborhood"
+                                    (input)="onLocationInput($event)" formControlName="locationInput"
+                                    [class.is-invalid]="f['locationInput'].invalid && f['locationInput'].touched">
+                                <div class="invalid-feedback">Neighborhood is required</div>
+                                <div class="dropdown-results" *ngIf="showLocationDropdown">
+                                    <div class="result-item" *ngFor="let loc of locationResults"
+                                        (click)="selectLocation(loc)">
+                                        {{ loc.neighborhood }}, {{ loc.borough }} - {{ loc.zipCode }}
+                                    </div>
                                 </div>
                             </div>
+                        </div>
+
+                        <div class="form-group" formGroupName="Address">
+                            <label>Full Address (optional)</label>
+                            <input type="text" class="form-control" formControlName="Street"
+                                placeholder="Enter Full Address">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Unit Number (optional)</label>
+                            <input type="text" class="form-control" formControlName="UnitNumber"
+                                placeholder="Enter Unit Number">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Google Map (optional)</label>
+                            <input type="text" class="form-control" formControlName="GoogleMapLink"
+                                placeholder="Add Google Map Share Link">
+                        </div>
+
+                        <!-- Transportation Dropdown (Simulated based on screenshot requirement) -->
+                        <div class="form-group">
+                            <label>Nearby Transportation</label>
+                            <!-- Dropdown removed, using interactive pills below -->
+                            <!-- We keep our detailed pill list below or above as well for better UX, or hide it if strictly following screenshot -->
+                            <!-- Keeping the categorized list as it is much better UX than a single select dropdown for multi-select data -->
+                            <div class="transportation-groups mt-3">
+                                <div class="trans-group" *ngFor="let group of transportationGroups">
+                                    <div class="group-header">
+                                        <i class="bi" [ngClass]="group.icon"></i>
+                                        <span>{{ group.category }}</span>
+                                    </div>
+                                    <div class="group-options">
+                                        <span class="trans-pill" *ngFor="let opt of group.options"
+                                            [class.active]="f['NearbySubwayLines'].value?.includes(opt)"
+                                            (click)="toggleSubway(opt)">
+                                            {{ opt }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Map Preview Placeholder -->
+                    <div class="col-md-6">
+                        <div class="map-preview-card">
+                            <div class="map-placeholder">
+                                <img src="assets/images/map_placeholder.png"
+                                    onerror="this.src='https://via.placeholder.com/600x400?text=Map+Preview'">
+                                <button type="button" class="btn-pin-map"><i class="bi bi-map-fill"></i> Pin Location on
+                                    Map</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- 6. Bedrooms / Bathrooms -->
+            <section class="form-section">
+                <div class="form-group mb-4">
+                    <label class="mb-3 d-block">Bedrooms *</label>
+                    <div class="pill-selector">
+                        <button type="button" *ngFor="let n of [1,2,3,4,5]"
+                            [class.active]="f['NumberOfRooms'].value === n"
+                            (click)="f['NumberOfRooms'].setValue(n)">{{n}}</button>
+                        <button type="button" [class.active]="f['NumberOfRooms'].value >= 6"
+                            (click)="f['NumberOfRooms'].setValue(6)">6+</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="mb-3 d-block">Bathrooms *</label>
+                    <div class="pill-selector">
+                        <button type="button" *ngFor="let n of [1,2,3,4,5]"
+                            [class.active]="f['NumberOfBathrooms'].value === n"
+                            (click)="f['NumberOfBathrooms'].setValue(n)">{{n}}</button>
+                        <button type="button" [class.active]="f['NumberOfBathrooms'].value >= 6"
+                            (click)="f['NumberOfBathrooms'].setValue(6)">6+</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 7. Financials -->
+            <section class="form-section">
+                <div class="row">
+                    <div class="col-md-3 form-group">
+                        <label>{{ isRenting ? 'Monthly Rent($) *' : 'Asking Price($) *' }}</label>
+                        <input type="number" class="form-control" formControlName="StartingPrice" placeholder="7,200"
+                            [class.is-invalid]="f['StartingPrice'].invalid && f['StartingPrice'].touched">
+                        <div class="invalid-feedback">Price is required</div>
+                    </div>
+                    <div class="col-md-3 form-group">
+                        <label>Security Deposit($)</label>
+                        <input type="number" class="form-control" formControlName="SecurityDeposit" placeholder="7,200">
+                    </div>
+                    <div class="col-md-3 form-group">
+                        <label>Broker Fee</label>
+                        <input type="number" class="form-control" formControlName="BrokerFee" placeholder="7,200">
+                    </div>
+                    <div class="col-md-3 form-group">
+                        <label>Monthly Cost Range</label>
+                        <input type="number" class="form-control" formControlName="MonthlyCostRange" placeholder="300">
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- 8. Details (Heating, Cooling, etc) -->
+            <section class="form-section">
+                <div class="row">
+                    <div class="col-md-4 form-group">
+                        <label>Heating *</label>
+                        <select class="form-select" formControlName="HeatingSystem">
+                            <option [ngValue]="null">Select Heating System</option>
+                            <option *ngFor="let t of heatingSystems" [ngValue]="t.id">{{ t.name }}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 form-group">
+                        <label>Cooling</label>
+                        <select class="form-select" formControlName="CoolingSystem">
+                            <option [ngValue]="null">Select Cooling System</option>
+                            <option *ngFor="let t of coolingSystems" [ngValue]="t.id">{{ t.name }}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 form-group">
+                        <label>Temperature Control</label>
+                        <select class="form-select" formControlName="TemperatureControl">
+                            <option [ngValue]="null">Select Control Type</option>
+                            <option *ngFor="let t of tempControls" [ngValue]="t.id">{{ t.name }}</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Laundry -->
+                <div class="form-group mt-4">
+                    <label>Laundry (Single-select or multi-select)</label>
+                    <div class="radio-group-row">
+                        <label class="radio-custom" *ngFor="let l of laundryTypes">
+                            <input type="radio" formControlName="LaundryType" [value]="l.id">
+                            <span class="radio-mark"></span>
+                            <span class="radio-label">{{l.name}}</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Amenities -->
+                <div class="form-group mt-4">
+                    <label>Amenities (Single-select or multi-select)</label>
+                    <div class="amenities-grid">
+                        <button type="button" class="btn-amenity" *ngFor="let u of utilityOptions"
+                            [class.active]="f['UtilitiesIncluded'].value?.includes(u)" (click)="toggleUtility(u)">
+                            <i class="bi bi-check-circle-fill me-2"
+                                *ngIf="f['UtilitiesIncluded'].value?.includes(u)"></i>
+                            <i class="bi bi-circle me-2" *ngIf="!f['UtilitiesIncluded'].value?.includes(u)"></i>
+                            {{ u }}
                         </button>
                     </div>
-                    <div class="invalid-feedback d-block"
-                        *ngIf="form.get('locationInput')?.touched && !selectedLocation">Please select a neighborhood
-                        from the search results</div>
                 </div>
 
-                <div class="position-relative">
-                    <label class="form-label fw-bold">Tags (Optional)</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-hash"></i></span>
-                        <input type="text" class="form-control"
-                            placeholder="Add features like #luxury, #garden, #petfriendly..."
-                            (input)="onTagType($event)" formControlName="tagInput">
+                <!-- Toggles Grid (Matching Screenshot Layout) -->
+                <div class="toggles-list-grid">
+                    <!-- Col 1 -->
+                    <div class="toggle-col">
+                        <div class="toggle-row">
+                            <div class="text">
+                                <h6>Short-Term Stays Allowed *</h6>
+                                <p>Is this listing a Short-Term Stays Allowed?</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" formControlName="IsShortTermStayAllowed">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <div class="text">
+                                <h6>Furnished *</h6>
+                                <p>Is the furniture included in the price?</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" formControlName="IsFurnished">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <div class="text">
+                                <h6>Family & Kids Friendly *</h6>
+                                <p>Is this listing is Family & Kids Friendly?</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" formControlName="IsFamilyAndKidsFriendly">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <div class="text">
+                                <h6>Accessibility Friendly *</h6>
+                                <p>Is this listing is a Accessibility friendly?</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" formControlName="IsAccessibilityFriendly">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
                     </div>
-                    <div class="dropdown-menu show w-100 shadow-lg border-0 mt-2" *ngIf="showTagDropdown"
-                        style="border-radius: 15px;">
-                        <button type="button" class="dropdown-item py-3" *ngFor="let tag of tagResults"
-                            (click)="selectTag(tag)">
-                            <i class="bi bi-plus-circle me-2 text-primary"></i> {{tag.name}}
-                        </button>
-                    </div>
-                    <div class="d-flex flex-wrap gap-2 mt-4">
-                        <span class="tag-badge animate__animated animate__bounceIn"
-                            *ngFor="let t of selectedTags; let i = index">
-                            #{{t.name}} <i class="bi bi-x-circle ms-1 cursor-pointer" (click)='removeTag(i)'></i>
-                        </span>
+
+                    <!-- Col 2 -->
+                    <div class="toggle-col">
+                        <div class="toggle-row">
+                            <div class="text">
+                                <h6>Short Stay Eligibility *</h6>
+                                <p>Is this listing eligible for Short-Term Stays?</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" formControlName="IsShortStayEligible">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <div class="text">
+                                <h6>Accepts Housing Vouchers *</h6>
+                                <p>Is this listing Accepts Housing Vouchers?</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" formControlName="IsAcceptsHousingVouchers">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <div class="text">
+                                <h6>Pets Friendly *</h6>
+                                <p>Is this listing is Pets Friendly?</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" formControlName="IsPetsFriendly">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <div class="text">
+                                <h6>Smoking Allowed</h6>
+                                <p>Is this listing Smoking Allowed?</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" formControlName="IsSmokingAllowed">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Section: Media -->
-            <div class="form-section">
-                <h4 class="section-title"><i class="bi bi-images me-2"></i> Property Media</h4>
-
-                <div class="upload-area" (click)="fileInput.click()">
-                    <i class="bi bi-cloud-arrow-up"></i>
-                    <h5 class="fw-bold">Upload Property Photos</h5>
-                    <p class="text-muted mb-0">Drag and drop or click to browse</p>
-                    <p class="small text-muted mt-2">Maximum file size: 5MB per image</p>
-                    <input type="file" #fileInput (change)="onFileSelect($event)" multiple hidden accept="image/*">
-                </div>
-
-                <div class="image-previews d-flex flex-wrap gap-4 mt-5" *ngIf="imagePreviews.length > 0">
-                    <div class="preview-item position-relative" *ngFor="let img of imagePreviews; let i = index">
-                        <img [src]="img" class="animate__animated animate__zoomIn">
-                        <button type="button"
-                            class="btn btn-dark btn-sm rounded-circle position-absolute top-0 start-100 translate-middle shadow-lg"
-                            (click)="removeFile(i)" style="width: 28px; height: 28px; padding: 0;">
-                            <i class="bi bi-x"></i>
-                        </button>
+                <!-- Programs Dropdown -->
+                <div class="form-group mt-4">
+                    <label>Accepted Housing Programs</label>
+                    <!-- Static dropdown removed, using checkboxes below -->
+                    <!-- Use our pills for functional selection below -->
+                    <div class="checkbox-group mt-2">
+                        <ng-container *ngIf="isRenting">
+                            <label class="checkbox-pill" *ngFor="let prog of housingPrograms">
+                                <input type="checkbox" [checked]="f['AcceptedHousingPrograms'].value?.includes(prog.id)"
+                                    (change)="toggleProgram(prog.id)">
+                                <span>{{ prog.name }}</span>
+                            </label>
+                        </ng-container>
+                        <ng-container *ngIf="!isRenting">
+                            <label class="checkbox-pill" *ngFor="let prog of buyerPrograms">
+                                <input type="checkbox" [checked]="f['AcceptedBuyerPrograms'].value?.includes(prog.id)"
+                                    (change)="toggleBuyerProgram(prog.id)">
+                                <span>{{ prog.name }}</span>
+                            </label>
+                        </ng-container>
                     </div>
                 </div>
-            </div>
+            </section>
+
+            <!-- 9. Title & Description -->
+            <section class="form-section">
+                <h3 class="section-title">Title & Description</h3>
+
+                <div class="form-group mb-4">
+                    <label>Listing Title *</label>
+                    <input type="text" class="form-control" formControlName="Title"
+                        placeholder="e.g. Spacious 2BR in Downtown"
+                        [class.is-invalid]="f['Title'].invalid && f['Title'].touched">
+                    <div class="invalid-feedback">Title is required (min 5 chars)</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Description *</label>
+                    <textarea class="form-control" rows="6" formControlName="Description"
+                        placeholder="Add Overview or Other Details"
+                        [class.is-invalid]="f['Description'].invalid && f['Description'].touched"></textarea>
+                    <div class="invalid-feedback">Description is required (min 20 chars)</div>
+                </div>
+            </section>
+
+
+            <!-- 10. Renting Details (Lease Type, Privacy) -->
+            <section class="form-section gold-bg-section" *ngIf="isRenting">
+                <h3 class="section-title">Renting Details</h3>
+
+                <div class="form-group">
+                    <label>Lease Type *</label>
+                    <div class="radio-group-row">
+                        <label class="radio-custom" *ngFor="let l of leaseTypes">
+                            <input type="radio" formControlName="RentingLeaseType" [value]="l.id">
+                            <span class="radio-mark"></span>
+                            <span class="radio-label">{{l.name}}</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group mt-3">
+                    <label>Privacy Type *</label>
+                    <div class="radio-group-row">
+                        <label class="radio-custom" *ngFor="let p of privacyTypes">
+                            <input type="radio" formControlName="PrivacyType" [value]="p.value"
+                                (change)="f['RentingIsShared'].setValue(p.value === 'Shared Unit')">
+                            <span class="radio-mark"></span>
+                            <span class="radio-label">{{p.label}}</span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 10.b Shared Unit Details (Conditional Section) -->
+            <section class="form-section gold-bg-section" *ngIf="isRenting && f['RentingIsShared'].value">
+                <h3 class="section-title">Shared Unit Details</h3>
+
+                <div class="form-group">
+                    <label>Bathroom</label>
+                    <div class="radio-group-row">
+                        <label class="radio-custom">
+                            <input type="radio" formControlName="RentingIsSharedBathroom" [value]="false">
+                            <span class="radio-mark"></span>
+                            <span class="radio-label">Private Bathroom</span>
+                        </label>
+                        <label class="radio-custom">
+                            <input type="radio" formControlName="RentingIsSharedBathroom" [value]="true">
+                            <span class="radio-mark"></span>
+                            <span class="radio-label">Shared Bathroom</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group mt-3">
+                    <label>Kitchen *</label>
+                    <div class="radio-group-row">
+                        <label class="radio-custom">
+                            <input type="radio" formControlName="RentingIsSharedKitchen" [value]="false">
+                            <span class="radio-mark"></span>
+                            <span class="radio-label">Private Kitchen</span>
+                        </label>
+                        <label class="radio-custom">
+                            <input type="radio" formControlName="RentingIsSharedKitchen" [value]="true">
+                            <span class="radio-mark"></span>
+                            <span class="radio-label">Shared Kitchen</span>
+                        </label>
+                        <label class="radio-custom">
+                            <input type="radio" formControlName="RentingIsSharedKitchen" [value]="null">
+                            <!-- Assuming logic for 'No Kitchen' if needed -->
+                            <span class="radio-mark"></span>
+                            <span class="radio-label">No Kitchen</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group mt-3">
+                    <label>About Current Resident(s)</label>
+                    <input type="text" class="form-control" formControlName="RentingAboutCurrentResident"
+                        placeholder="Add Short Brief About Current Resident(s)">
+                </div>
+                <div class="form-group mt-3">
+                    <label>Unit Rules & Policies</label>
+                    <input type="text" class="form-control" formControlName="RentingRulesAndPolicies"
+                        placeholder="List The Unit Rules & Policies">
+                </div>
+                <div class="form-group mt-3">
+                    <label>Roommate/s Group Chat</label>
+                    <input type="text" class="form-control" formControlName="RentingRoommateGroupChat"
+                        placeholder="Add Roommate Email/s address, to join the unite group chat.">
+                </div>
+            </section>
+
+            <!-- 11. Direct Apply Link -->
+            <section class="form-section">
+                <div class="form-group d-flex align-items-center justify-content-between">
+                    <label>Direct Apply Link</label>
+                </div>
+                <div class="link-input-row">
+                    <input type="text" class="form-control" formControlName="DirectApplyLink"
+                        placeholder="Add Direct Apply Link">
+                    <label class="switch">
+                        <!-- Dummy toggle for now, usually enables/disables request -->
+                        <input type="checkbox" checked>
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+            </section>
+
+            <!-- 12. Photos -->
+            <section class="form-section">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="section-title mb-0">Photos</h3>
+                    <span class="badge-gold-soft">Min 5 photos recommended & at least 1 video</span>
+                </div>
+                <p class="text-muted small">Always we love natural light show off the view</p>
+
+                <div class="photo-upload-area dashed-border">
+                    <div class="upload-trigger">
+                        <div class="icon-circle-gold"><i class="bi bi-camera-video-fill"></i></div>
+                        <!-- Icon combining camera/plus -->
+                        <h4>Drag and drop images or Video here</h4>
+                        <p class="text-muted small">Supports JPG, PNG, Max file size 10MB per photo</p>
+                        <input type="file" multiple (change)="onFileSelect($event)" accept="image/*,video/*">
+                        <button type="button" class="btn-gold-soft mt-3">Select Files</button>
+                    </div>
+                </div>
+                <!-- Previews -->
+                <div class="photo-previews mt-3" *ngIf="imagePreviews.length > 0">
+                    <div class="preview-item" *ngFor="let img of imagePreviews; let i = index">
+                        <img [src]="img" alt="Preview">
+                        <button type="button" class="btn-remove" (click)="removeFile(i)">&times;</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 13. Co-Listing -->
+            <section class="form-section">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label>Invite Co-Listing</label>
+                        <div class="link-input-row">
+                            <input type="text" class="form-control" formControlName="InviteCoListerEmail"
+                                placeholder="Add Co-Lister Email address...">
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label>Allow Co-Listing editing Listing</label>
+                        <div class="link-input-row">
+                            <span class="text-muted flex-grow-1">Allow Co-Lister editing Listing</span>
+                            <label class="switch">
+                                <input type="checkbox" formControlName="AllowCoListerEditing">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group mt-3">
+                    <label>Co-Listing edited details</label>
+                    <input type="text" class="form-control" formControlName="CoListerDetails"
+                        placeholder="Add Co-Listing edited details by Co-Listing">
+                </div>
+            </section>
 
             <!-- Actions -->
-            <div class="form-actions d-flex gap-3 pt-4">
-                <button type="button" class="btn btn-light px-5 fw-bold"
-                    routerLink="/public/category/housing">Discard</button>
-                <button type="submit" class="btn btn-primary px-5 fw-bold flex-grow-1" [disabled]="isSubmitting">
-                    <span *ngIf="!isSubmitting">Publish Listing Now</span>
-                    <span *ngIf="isSubmitting"><span class="spinner-border spinner-border-sm me-2"></span>
-                        Publishing Your Property...</span>
-                </button>
+            <div class="form-actions-footer text-center mt-5 mb-5">
+                <div class="d-flex justify-content-center gap-3">
+                    <button type="button" class="btn-save-draft">Save a Draft</button>
+                    <button type="submit" class="btn-post-listing" [disabled]="isSubmitting">
+                        <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2"></span>
+                        Post Listing
+                    </button>
+                </div>
             </div>
 
         </form>
