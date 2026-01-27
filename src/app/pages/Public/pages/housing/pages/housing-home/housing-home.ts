@@ -24,7 +24,9 @@ export class HousingHomeComponent implements OnInit {
     heroPost: any = null;
     homesForSale: any[] = [];
     homesForRent: any[] = [];
-    officialPosts: any[] = [];
+    rssPosts: any[] = [];
+    discussionPosts: any[] = [];
+    allPosts: any[] = [];
     isLoading = true;
 
     ngOnInit(): void {
@@ -39,10 +41,9 @@ export class HousingHomeComponent implements OnInit {
                     this.heroPost = res.data.hero;
                     this.homesForSale = res.data.forSale || [];
                     this.homesForRent = res.data.forRenting || [];
-                    // If we had official posts in API, we'd map them here. 
-                    // For now, let's use some logic or placeholders if needed, 
-                    // or assume they might come in a later API update.
-                    // Let's assume some are in Sale/Rent that are official.
+                    this.rssPosts = res.data.rss || [];
+                    this.discussionPosts = res.data.discussions || [];
+                    this.allPosts = res.data.allPosts || [];
                 }
                 this.isLoading = false;
                 this.cdr.markForCheck();
