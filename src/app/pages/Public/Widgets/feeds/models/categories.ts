@@ -52,6 +52,7 @@ export const CATEGORY_THEMES: { [key: number]: any } = {
     topLinks: [
       { label: 'Feed', route: '/public/feed/housing' },
       { label: 'Initiatives', route: '/public/initiatives/housing' },
+      { label: 'Housing Requests', route: '/public/housing/requests' },
       { label: 'post listing', route: '/public/housing/create' },
       { label: 'create post', route: '/public/posts/create' }
     ]

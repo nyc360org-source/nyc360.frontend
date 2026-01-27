@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, ChangeDetectorRef, PLATFORM_ID, makeStateKey, TransferState, HostListener } from '@angular/core';
 import { CommonModule, isPlatformServer } from '@angular/common';
 import { ActivatedRoute, RouterLink, Router } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { environment } from '../../../../../environments/environment';
 import { InteractionType, Post, PostAuthor, PostComment, FlagReasonType } from '../models/posts';
 import { PostsService } from '../services/posts';
@@ -23,7 +23,7 @@ interface RelatedPost {
 @Component({
   selector: 'app-post-details',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, ImgFallbackDirective],
+  imports: [CommonModule, RouterLink, FormsModule, ReactiveFormsModule, ImgFallbackDirective],
   templateUrl: './post-details.html',
   styleUrls: ['./post-details.scss']
 })
@@ -40,6 +40,7 @@ export class PostDetailsComponent implements OnInit {
   private confirmationService = inject(ConfirmationService);
   private cdr = inject(ChangeDetectorRef);
   protected imageService = inject(ImageService);
+  private fb = inject(FormBuilder);
 
   // ✅ SSR Optimization Injections
   private transferState = inject(TransferState);
@@ -84,6 +85,9 @@ export class PostDetailsComponent implements OnInit {
   showShareModal = false;
   shareCommentary = '';
   isSharing = false;
+
+  // ✅ Housing Application Modal
+  showHousingApplicationModal = false;
 
   ngOnInit() {
     this.authService.currentUser$.subscribe(user => {
@@ -197,6 +201,10 @@ export class PostDetailsComponent implements OnInit {
       this.sanitizedContent = parts.filter((_, idx) => idx !== jsonIndex).join('\n\n');
     } else {
       this.structuredExtension = null;
+      this.sanitizedContent = '';
+      // Wait, original logic: 
+      // this.structuredExtension = null;
+      // this.sanitizedContent = content; 
       this.sanitizedContent = content;
     }
   }
@@ -445,5 +453,22 @@ export class PostDetailsComponent implements OnInit {
         }
       });
     }
+  }
+
+  // ✅ Housing Application Methods
+  get isHousingPost(): boolean {
+    return this.post?.category === 2; // Category 2 is Housing
+  }
+
+  openHousingApplicationModal() {
+    if (!this.currentUserId) {
+      this.toastService.warning('Please login to apply for housing.');
+      return;
+    }
+    this.showHousingApplicationModal = true;
+  }
+
+  closeHousingApplicationModal() {
+    this.showHousingApplicationModal = false;
   }
 }

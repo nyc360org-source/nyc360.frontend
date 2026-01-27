@@ -143,4 +143,15 @@ export class PostsService {
       .set('PageSize', pageSize.toString());
     return this.http.get<ApiResponse<any[]>>(`${environment.apiBaseUrl}/tags/list`, { params });
   }
+
+  // ✅ Housing Methods
+  getHousingAgentRequests(page: number = 1, pageSize: number = 20): Observable<ApiResponse<any>> {
+    const params = new HttpParams().set('Page', page).set('PageSize', pageSize);
+    return this.http.get<ApiResponse<any>>(`${environment.apiBaseUrl}/housing/agent/requests`, { params });
+  }
+
+  // ✅ Housing Application Submission
+  submitHousingApplication(data: any): Observable<ApiResponse<any>> {
+    return this.http.post<ApiResponse<any>>(`${environment.apiBaseUrl}/housing/agent/request`, data);
+  }
 }

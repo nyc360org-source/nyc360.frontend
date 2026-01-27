@@ -7,6 +7,9 @@
   <div *ngIf="errorMessage" class="state-container text-danger animate__animated animate__fadeIn">
     <i class="bi bi-exclamation-circle me-3 fs-3"></i>
     <span class="fw-bold">{{ errorMessage }}</span>
+
+
+
   </div>
 
   <div *ngIf="post" class="content-grid">
@@ -22,6 +25,39 @@
           alt="Post Image" class="main-feat-img" [appImgFallback]="'post'">
         <img *ngIf="(!post.attachments || post.attachments.length === 0) && post.imageUrl"
           [src]="resolveImageUrl(post.imageUrl)" alt="Post Image" class="main-feat-img" [appImgFallback]="'post'">
+
+
+        <!-- Clean floating actions bar -->
+        <div class="media-overlay-actions">
+          <!-- 3rd Button: Housing Request (Specific for Housing posts) -->
+          <button class="action-btn-mini housing-btn-icon" *ngIf="isHousingPost" (click)="openHousingApplicationModal()"
+            title="Apply for Housing">
+            <i class="bi bi-house-heart-fill"></i>
+          </button>
+
+          <button class="action-btn-mini" (click)="toggleSave()" [class.active]="post.isSaved" title="Save Post">
+            <i class="bi" [ngClass]="post.isSaved ? 'bi-bookmark-fill' : 'bi-bookmark'"></i>
+          </button>
+
+          <div class="dropdown-wrapper">
+            <button class="action-btn-mini" (click)="toggleMenu()">
+              <i class="bi bi-three-dots"></i>
+            </button>
+          </div>
+        </div>
+
+
+
+
+      </div>
+
+      <!-- ✅ Housing Apply Button - Prominent Position Below Image -->
+      <div *ngIf="isHousingPost && !canEdit" class="apply-button-container animate__animated animate__fadeInUp">
+        <button class="apply-housing-btn-prominent" (click)="openHousingApplicationModal()">
+          <i class="bi bi-house-check-fill"></i>
+          <span>Apply for Housing</span>
+          <i class="bi bi-arrow-right-circle-fill"></i>
+        </button>
       </div>
 
       <div class="article-header animate__animated animate__fadeInUp">
@@ -35,6 +71,9 @@
             #{{ tag }}
           </a>
         </div>
+
+
+
 
         <div class="location-ribbon" *ngIf="post.location">
           <i class="bi bi-geo-alt-fill"></i>
@@ -53,32 +92,25 @@
           </div>
 
           <div class="more-options-wrapper">
-            <button class="action-btn-circle" (click)="toggleSave()" [class.active]="post.isSaved">
-              <i class="bi" [ngClass]="post.isSaved ? 'bi-bookmark-fill' : 'bi-bookmark'"></i>
-            </button>
-            <div class="dropdown-wrapper">
-              <button class="action-btn-circle" (click)="toggleMenu()">
-                <i class="bi bi-three-dots"></i>
+
+
+            <div class="dropdown-menu-custom animate__animated animate__fadeIn" *ngIf="showMenu">
+              <button class="menu-item-btn" *ngIf="canEdit" (click)="goToEdit()">
+                <div class="icon-box"><i class="bi bi-pencil-square"></i></div>
+                <span>Edit Post</span>
               </button>
 
-              <div class="dropdown-menu-custom animate__animated animate__fadeIn" *ngIf="showMenu">
-                <button class="menu-item-btn" *ngIf="canEdit" (click)="goToEdit()">
-                  <div class="icon-box"><i class="bi bi-pencil-square"></i></div>
-                  <span>Edit Post</span>
-                </button>
+              <button class="menu-item-btn danger" *ngIf="canEdit" (click)="onDelete()">
+                <div class="icon-box"><i class="bi bi-trash3"></i></div>
+                <span>Delete Post</span>
+              </button>
 
-                <button class="menu-item-btn danger" *ngIf="canEdit" (click)="onDelete()">
-                  <div class="icon-box"><i class="bi bi-trash3"></i></div>
-                  <span>Delete Post</span>
-                </button>
+              <div class="menu-divider"></div>
 
-                <div class="menu-divider"></div>
-
-                <button class="menu-item-btn" (click)="openReportModal()">
-                  <div class="icon-box"><i class="bi bi-flag"></i></div>
-                  <span>Report / Feedback</span>
-                </button>
-              </div>
+              <button class="menu-item-btn" (click)="openReportModal()">
+                <div class="icon-box"><i class="bi bi-flag"></i></div>
+                <span>Report / Feedback</span>
+              </button>
             </div>
           </div>
         </div>
@@ -209,6 +241,13 @@
           <span>Report</span>
         </button>
 
+        <button *ngIf="isHousingPost && !canEdit" class="share-btn-accent me-2"
+          style="background: linear-gradient(135deg, #667eea, #764ba2); border: none;"
+          (click)="openHousingApplicationModal()">
+          <i class="bi bi-house-check-fill"></i>
+          <span>APPLY NOW</span>
+        </button>
+
         <button class="share-btn-accent" (click)="openShareModal()">
           <i class="bi bi-send-fill"></i>
           <span>SHARE POST</span>
@@ -307,6 +346,10 @@
 
   </div>
 </div>
+
+<!-- Housing Application Modal -->
+
+
 
 <!-- All your Modals (Share, Report) stay the same as they were already polished -->
 
