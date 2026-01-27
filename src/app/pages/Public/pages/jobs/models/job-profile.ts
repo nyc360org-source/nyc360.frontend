@@ -61,12 +61,22 @@ export interface RelatedJob {
   companyName: string;
 }
 
-export interface Candidate {
-  id: number;
-  username: string;
-  fullName: string;
-  imageUrl: string;
-  type: number;
+export interface ApplicantExperience {
+  title: string;
+  company: string;
+  startDate: string;
+  endDate: string | null;
+  isCurrent: boolean;
+  description?: string;
+}
+
+export interface ApplicantEducation {
+  school: string;
+  degree: string;
+  fieldOfStudy?: string;
+  startDate: string;
+  endDate: string | null;
+  isCurrent?: boolean;
 }
 
 export interface Applicant {
@@ -75,7 +85,13 @@ export interface Applicant {
   appliedAt: string;
   coverLetter: string;
   resumeUrl: string | null;
-  candidate: Candidate;
+  applicantId: number;
+  applicantUsername: string;
+  applicantFullName: string;
+  applicantAvatarUrl: string;
+  applicantBio: string;
+  applicantEducations: ApplicantEducation[];
+  applicantExperiences: ApplicantExperience[];
 }
 
 export interface JobProfileResponse {

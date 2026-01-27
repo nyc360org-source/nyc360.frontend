@@ -111,30 +111,74 @@
             <div class="applicants-grid" *ngIf="!isLoadingApplicants">
               <div class="applicant-card" *ngFor="let app of applicants">
                 <div class="app-header">
-                  <img [src]="getAvatarUrl(app.candidate.imageUrl)" class="app-img" alt="Candidate">
+                  <img [src]="getAvatarUrl(app.applicantAvatarUrl)" class="app-img" alt="Candidate">
                   <div class="app-info">
-                    <h5>{{ app.candidate.username }}</h5>
-                    <small>{{ app.appliedAt | date:'mediumDate' }}</small>
+                    <h5>{{ app.applicantFullName }} <small class="text-muted">({{ app.applicantUsername }})</small></h5>
+                    <p class="text-muted small mb-1" *ngIf="app.applicantBio">{{ app.applicantBio }}</p>
+                    <small class="text-muted">{{ app.appliedAt | date:'mediumDate' }}</small>
                   </div>
                 </div>
-                <div class="cover-preview">
-                  "{{ app.coverLetter || 'No cover letter provided.' }}"
+
+                <div class="cover-preview mt-3">
+                  <strong>Cover Letter:</strong>
+                  <p class="text-muted fst-italic">"{{ app.coverLetter || 'No cover letter provided.' }}"</p>
                 </div>
 
-                <div class="status-action-row">
-                  <label class="small-label">Status:</label>
-                  <select [ngModel]="app.status" (ngModelChange)="onStatusChange(app, $event)" class="status-select"
+                <!-- More Details Section -->
+                <div class="applicant-details mt-3 pt-3 border-top" *ngIf="isApplicantExpanded(app.applicationId)">
+                  <h6 class="fw-bold mb-2 text-primary">Experience</h6>
+                  <div *ngIf="app.applicantExperiences?.length; else noExp">
+                    <div class="mb-2" *ngFor="let exp of app.applicantExperiences">
+                      <div class="fw-bold">{{ exp.title }} at {{ exp.company }}</div>
+                      <div class="small text-muted">
+                        {{ exp.startDate | date:'MMM yyyy' }} -
+                        <span *ngIf="exp.isCurrent">Present</span>
+                        <span *ngIf="!exp.isCurrent">{{ exp.endDate | date:'MMM yyyy' }}</span>
+                      </div>
+                      <p class="small mb-0" *ngIf="exp.description">{{ exp.description }}</p>
+                    </div>
+                  </div>
+                  <ng-template #noExp>
+                    <p class="small text-muted">No experience listed.</p>
+                  </ng-template>
+
+                  <h6 class="fw-bold mt-3 mb-2 text-primary">Education</h6>
+                  <div *ngIf="app.applicantEducations?.length; else noEdu">
+                    <div class="mb-2" *ngFor="let edu of app.applicantEducations">
+                      <div class="fw-bold">{{ edu.school }}</div>
+                      <div class="small">{{ edu.degree }} <span *ngIf="edu.fieldOfStudy">- {{ edu.fieldOfStudy }}</span>
+                      </div>
+                      <div class="small text-muted">
+                        {{ edu.startDate | date:'yyyy' }} - {{ edu.endDate ? (edu.endDate | date:'yyyy') : 'Present' }}
+                      </div>
+                    </div>
+                  </div>
+                  <ng-template #noEdu>
+                    <p class="small text-muted">No education listed.</p>
+                  </ng-template>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                  <button class="btn btn-sm btn-link text-decoration-none p-0"
+                    (click)="toggleApplicant(app.applicationId)">
+                    {{ isApplicantExpanded(app.applicationId) ? 'Hide Details' : 'View Full Profile' }}
+                  </button>
+
+                  <div class="resume-link-box" *ngIf="app.resumeUrl">
+                    <a [href]="getResumeUrl(app.resumeUrl)" target="_blank" class="btn btn-sm btn-outline-primary">
+                      <i class="bi bi-file-earmark-pdf"></i> Resume
+                    </a>
+                  </div>
+                </div>
+
+                <div class="status-action-row mt-3 pt-2 border-top">
+                  <label class="small-label align-self-center mb-0 me-2">Status:</label>
+                  <select [ngModel]="app.status" (ngModelChange)="onStatusChange(app, $event)"
+                    class="status-select flex-grow-1"
                     [ngClass]="{'status-hired': app.status == 4, 'status-rejected': app.status == 3}">
                     <option *ngFor="let opt of statusOptions" [value]="opt.value">{{ opt.label }}</option>
                   </select>
                 </div>
-
-                <div class="resume-link-box mt-2" *ngIf="app.resumeUrl">
-                  <a [href]="getResumeUrl(app.resumeUrl)" target="_blank" class="btn btn-sm btn-outline-primary w-100">
-                    <i class="bi bi-file-earmark-pdf"></i> View Resume
-                  </a>
-                </div>
-
 
               </div>
 

@@ -167,6 +167,21 @@ export class JobProfileComponent implements OnInit {
     alert('Link copied to clipboard!');
   }
 
+  // ✅ Applicant Expansion Logic
+  expandedApplicantIds: Set<number> = new Set<number>();
+
+  toggleApplicant(appId: number): void {
+    if (this.expandedApplicantIds.has(appId)) {
+      this.expandedApplicantIds.delete(appId);
+    } else {
+      this.expandedApplicantIds.add(appId);
+    }
+  }
+
+  isApplicantExpanded(appId: number): boolean {
+    return this.expandedApplicantIds.has(appId);
+  }
+
   getAvatarUrl(imageName: string | undefined): string {
     if (!imageName) return '/covers.jpg';
     if (imageName.startsWith('http')) return imageName;
