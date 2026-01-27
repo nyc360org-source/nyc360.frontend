@@ -20,6 +20,12 @@
         <p>Enter your credentials to continue.</p>
       </div>
 
+      <!-- Error Alert -->
+      <div class="alert-box" *ngIf="loginError" @fadeIn>
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <span>{{ loginError }}</span>
+      </div>
+
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
 
         <div class="form-group">
@@ -74,8 +80,8 @@
 
 
   <!-- Success Modal -->
-  <app-auth-success-modal [visible]="showModal" [title]="modalTitle" [message]="modalMessage"
-    buttonText="Go to NYC360" (closed)="onModalClose()">
+  <app-auth-success-modal [visible]="showModal" [title]="modalTitle" [message]="modalMessage" buttonText="Go to NYC360"
+    (closed)="onModalClose()">
   </app-auth-success-modal>
 
 </div>

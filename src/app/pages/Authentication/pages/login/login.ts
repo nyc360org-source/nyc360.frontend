@@ -117,7 +117,10 @@ export class LoginComponent implements OnInit, AfterViewInit {
     });
   }
 
+  loginError: string = '';
+
   onSubmit() {
+    this.loginError = '';
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
 
@@ -168,16 +171,21 @@ export class LoginComponent implements OnInit, AfterViewInit {
           if (errorMessage.toLowerCase().includes('invalid') ||
             errorMessage.toLowerCase().includes('incorrect') ||
             errorMessage.toLowerCase().includes('wrong')) {
+            this.loginError = 'Invalid email or password. Please check your credentials.';
             this.toastService.error('Invalid email or password. Please try again.');
           } else if (errorMessage.toLowerCase().includes('not found')) {
+            this.loginError = 'Account not found. Please register or check your email.';
             this.toastService.error('Account not found. Please check your email or register.');
           } else if (errorMessage.toLowerCase().includes('locked') ||
             errorMessage.toLowerCase().includes('suspended')) {
+            this.loginError = 'Your account has been locked. Please contact support.';
             this.toastService.error('Your account has been locked. Please contact support.');
           } else if (errorMessage.toLowerCase().includes('verify') ||
             errorMessage.toLowerCase().includes('confirm')) {
+            this.loginError = 'Please verify your email before logging in.';
             this.toastService.error('Please verify your email before logging in.');
           } else {
+            this.loginError = errorMessage;
             this.toastService.error(errorMessage);
           }
         }
@@ -187,21 +195,29 @@ export class LoginComponent implements OnInit, AfterViewInit {
 
         // Handle different types of errors
         if (err.status === 0) {
+          this.loginError = 'Unable to connect to server. Please check your internet connection.';
           this.toastService.error('Unable to connect to server. Please check your internet connection.');
         } else if (err.status === 400) {
-          this.toastService.error(err.error?.message || 'Invalid login credentials. Please try again.');
+          this.loginError = err.error?.message || 'Invalid login credentials. Please try again.';
+          this.toastService.error(this.loginError);
         } else if (err.status === 401) {
+          this.loginError = 'Invalid email or password.';
           this.toastService.error('Invalid email or password.');
         } else if (err.status === 403) {
+          this.loginError = 'Access denied. Your account may be locked.';
           this.toastService.error('Access denied. Your account may be locked.');
         } else if (err.status === 404) {
+          this.loginError = 'Login service not found. Please contact support.';
           this.toastService.error('Login service not found. Please contact support.');
         } else if (err.status === 500) {
+          this.loginError = 'Server error. Please try again later.';
           this.toastService.error('Server error. Please try again later.');
         } else if (err.status === 503) {
+          this.loginError = 'Service temporarily unavailable. Please try again later.';
           this.toastService.error('Service temporarily unavailable. Please try again later.');
         } else {
-          this.toastService.error(err.error?.message || 'An unexpected error occurred. Please try again.');
+          this.loginError = err.error?.message || 'An unexpected error occurred. Please try again.';
+          this.toastService.error(this.loginError);
         }
 
         console.error('Login error:', err);
