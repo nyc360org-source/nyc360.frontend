@@ -48,6 +48,7 @@ export interface JobProfile {
   author: Author;
   createdAt: string;
   isApplied: boolean;
+  applicationsCount: number;
 }
 
 export interface RelatedJob {
