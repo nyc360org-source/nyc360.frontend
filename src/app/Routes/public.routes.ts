@@ -51,6 +51,7 @@ export const PUBLIC_ROUTES: Routes = [
       { path: 'housing/home', loadComponent: () => import('../pages/Public/pages/housing/pages/housing-home/housing-home').then(m => m.HousingHomeComponent) },
       { path: 'housing/create', loadComponent: () => import('../pages/Public/pages/housing/pages/create-housing/create-housing').then(m => m.CreateHousingComponent) },
       { path: 'housing/requests', loadComponent: () => import('../pages/Public/pages/housing/pages/housing-requests/housing-requests.component').then(m => m.HousingRequestsComponent) },
+      { path: 'housing/agent-request', loadComponent: () => import('../pages/Public/pages/housing/pages/agent-request/agent-request.component').then(m => m.AgentRequestComponent) },
       { path: 'housing', redirectTo: 'housing/home', pathMatch: 'full' },
 
       // category home

@@ -87,7 +87,7 @@ export class PostDetailsComponent implements OnInit {
   isSharing = false;
 
   // ✅ Housing Application Modal
-  showHousingApplicationModal = false;
+
 
   ngOnInit() {
     this.authService.currentUser$.subscribe(user => {
@@ -413,6 +413,14 @@ export class PostDetailsComponent implements OnInit {
     return String(authorId) === String(this.currentUserId) || this.isAdmin;
   }
 
+  get isOwnPost(): boolean {
+    if (!this.post?.author || !this.currentUserId) return false;
+    let authorId: any;
+    if (typeof this.post.author === 'object') authorId = this.post.author.id;
+    else authorId = this.post.author;
+    return String(authorId) === String(this.currentUserId);
+  }
+
   @HostListener('window:scroll', [])
   onWindowScroll() {
     if (isPlatformServer(this.platformId)) return;
@@ -457,18 +465,17 @@ export class PostDetailsComponent implements OnInit {
 
   // ✅ Housing Application Methods
   get isHousingPost(): boolean {
-    return this.post?.category === 2; // Category 2 is Housing
+    // Check against PostType 7 (Housing)
+    return this.post?.postType === 7;
   }
 
-  openHousingApplicationModal() {
+  navigateToHousingRequest() {
     if (!this.currentUserId) {
       this.toastService.warning('Please login to apply for housing.');
       return;
     }
-    this.showHousingApplicationModal = true;
-  }
-
-  closeHousingApplicationModal() {
-    this.showHousingApplicationModal = false;
+    this.router.navigate(['/public/housing/agent-request'], {
+      queryParams: { postId: this.post?.id }
+    });
   }
 }

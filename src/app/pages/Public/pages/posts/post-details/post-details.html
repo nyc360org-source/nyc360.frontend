@@ -30,8 +30,8 @@
         <!-- Clean floating actions bar -->
         <div class="media-overlay-actions">
           <!-- 3rd Button: Housing Request (Specific for Housing posts) -->
-          <button class="action-btn-mini housing-btn-icon" *ngIf="isHousingPost" (click)="openHousingApplicationModal()"
-            title="Apply for Housing">
+          <button class="action-btn-mini housing-btn-icon" *ngIf="isHousingPost && !isOwnPost"
+            (click)="navigateToHousingRequest()" title="Contact Agent">
             <i class="bi bi-house-heart-fill"></i>
           </button>
 
@@ -52,8 +52,8 @@
       </div>
 
       <!-- ✅ Housing Apply Button - Prominent Position Below Image -->
-      <div *ngIf="isHousingPost && !canEdit" class="apply-button-container animate__animated animate__fadeInUp">
-        <button class="apply-housing-btn-prominent" (click)="openHousingApplicationModal()">
+      <div *ngIf="isHousingPost && !isOwnPost" class="apply-button-container animate__animated animate__fadeInUp">
+        <button class="apply-housing-btn-prominent" (click)="navigateToHousingRequest()">
           <i class="bi bi-house-check-fill"></i>
           <span>Apply for Housing</span>
           <i class="bi bi-arrow-right-circle-fill"></i>
@@ -241,9 +241,9 @@
           <span>Report</span>
         </button>
 
-        <button *ngIf="isHousingPost && !canEdit" class="share-btn-accent me-2"
-          style="background: linear-gradient(135deg, #667eea, #764ba2); border: none;"
-          (click)="openHousingApplicationModal()">
+        <button *ngIf="isHousingPost && !isOwnPost" class="share-btn-accent me-2"
+          style="background: linear-gradient(135deg, #B59B62, #8E7947); border: none;"
+          (click)="navigateToHousingRequest()">
           <i class="bi bi-house-check-fill"></i>
           <span>APPLY NOW</span>
         </button>

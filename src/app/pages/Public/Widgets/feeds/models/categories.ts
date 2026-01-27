@@ -47,7 +47,7 @@ export const CATEGORY_THEMES: { [key: number]: any } = {
     ]
   },
   [CategoryEnum.Housing]: {
-    color: '#a52a2a', label: 'Housing', path: 'housing', icon: '/icon-category/housing.png', biIcon: 'bi-house-heart-fill',
+    color: '#B59B62', label: 'Housing', path: 'housing', icon: '/icon-category/housing.png', biIcon: 'bi-house-heart-fill',
     route: '/public/housing/home',
     topLinks: [
       { label: 'Feed', route: '/public/feed/housing' },

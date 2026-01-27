@@ -1,0 +1,221 @@
+<div class="agent-request-container">
+    <div class="background-decor"></div>
+
+    <div class="glass-card" *ngIf="!isSuccess; else successTemplate">
+        <div class="header">
+            <div class="badge">Housing Concierge</div>
+            <h2 *ngIf="!postTitle">Start Your Journey</h2>
+            <h2 *ngIf="postTitle" class="post-context-title">
+                <span class="prefix">Inquiry for:</span>
+                {{ postTitle }}
+            </h2>
+            <p *ngIf="!postTitle">Connect with a dedicated agent to secure your next home.</p>
+            <p *ngIf="postTitle">Send a direct inquiry to our housing agents regarding this property.</p>
+        </div>
+
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+            <!-- Section 1: Contact Details -->
+            <div class="form-section">
+                <div class="section-title">
+                    <i class="bi bi-person-lines-fill"></i>
+                    <span>Contact Information</span>
+                </div>
+
+                <div class="grid-row">
+                    <!-- Name -->
+                    <div class="input-group">
+                        <label>Full Name</label>
+                        <div class="input-wrapper">
+                            <i class="bi bi-person"></i>
+                            <input type="text" formControlName="Name" placeholder="e.g. John Doe"
+                                [class.invalid]="isFieldInvalid('Name')">
+                        </div>
+                        <span class="error-msg" *ngIf="isFieldInvalid('Name')">Name is required</span>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="input-group">
+                        <label>Email Address</label>
+                        <div class="input-wrapper">
+                            <i class="bi bi-envelope"></i>
+                            <input type="email" formControlName="Email" placeholder="john@example.com"
+                                [class.invalid]="isFieldInvalid('Email')">
+                        </div>
+                        <span class="error-msg" *ngIf="isFieldInvalid('Email')">Valid email is required</span>
+                    </div>
+                </div>
+
+                <div class="grid-row three-col">
+                    <!-- Phone -->
+                    <div class="input-group">
+                        <label>Phone Number</label>
+                        <div class="input-wrapper">
+                            <i class="bi bi-telephone"></i>
+                            <input type="tel" formControlName="PhoneNumber" placeholder="+1 (555) 000-0000"
+                                [class.invalid]="isFieldInvalid('PhoneNumber')">
+                        </div>
+                        <span class="error-msg" *ngIf="isFieldInvalid('PhoneNumber')">Phone is required</span>
+                    </div>
+
+                    <!-- Contact Method (Custom Dropdown) -->
+                    <div class="input-group">
+                        <label>Preferred Contact</label>
+                        <div class="input-wrapper select-wrapper" (click)="toggleContactDropdown($event)" tabindex="0">
+                            <i class="bi bi-chat-dots"></i>
+                            <div class="custom-select-trigger">
+                                {{ selectedContactLabel }}
+                            </div>
+                            <i class="bi bi-chevron-down arrow" [class.rotated]="showContactDropdown"></i>
+
+                            <!-- Dropdown Menu -->
+                            <div class="custom-options" *ngIf="showContactDropdown">
+                                <div class="option" *ngFor="let type of contactTypes" (click)="selectContactType(type)">
+                                    {{ type.label }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Best Time -->
+                    <div class="input-group">
+                        <label>Best Contact Time</label>
+                        <div class="input-wrapper">
+                            <i class="bi bi-clock"></i>
+                            <input type="datetime-local" formControlName="PreferredContactDate"
+                                [class.invalid]="isFieldInvalid('PreferredContactDate')">
+                        </div>
+                        <span class="error-msg" *ngIf="isFieldInvalid('PreferredContactDate')">Required</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2: Housing Preferences -->
+            <div class="form-section">
+                <div class="section-title">
+                    <i class="bi bi-house-door"></i>
+                    <span>Housing Requirements</span>
+                </div>
+
+                <div class="grid-row">
+                    <!-- Household Type (Custom Dropdown) -->
+                    <div class="input-group">
+                        <label>Household Type</label>
+                        <div class="input-wrapper select-wrapper" (click)="toggleHouseholdDropdown($event)"
+                            tabindex="0">
+                            <i class="bi bi-people"></i>
+                            <div class="custom-select-trigger">
+                                {{ selectedHouseholdLabel }}
+                            </div>
+                            <i class="bi bi-chevron-down arrow" [class.rotated]="showHouseholdDropdown"></i>
+
+                            <!-- Dropdown Menu -->
+                            <div class="custom-options" *ngIf="showHouseholdDropdown">
+                                <div class="option" *ngFor="let type of householdTypes"
+                                    (click)="selectHouseholdType(type)">
+                                    {{ type.label }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Move In Date -->
+                    <div class="input-group">
+                        <label>Target Move-In</label>
+                        <div class="input-wrapper">
+                            <i class="bi bi-calendar-check"></i>
+                            <input type="date" formControlName="MoveInDate"
+                                [class.invalid]="isFieldInvalid('MoveInDate')">
+                        </div>
+                        <span class="error-msg" *ngIf="isFieldInvalid('MoveInDate')">Date is required</span>
+                    </div>
+
+                    <!-- Move Out Date (Optional) -->
+                    <div class="input-group">
+                        <label>Target Move-Out <span class="optional">(Optional)</span></label>
+                        <div class="input-wrapper">
+                            <i class="bi bi-calendar-x"></i>
+                            <input type="date" formControlName="MoveOutDate">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 3: Tours & Message -->
+            <div class="form-section">
+                <div class="section-title">
+                    <i class="bi bi-calendar-event"></i>
+                    <span>Tours & Details</span>
+                </div>
+
+                <div class="grid-row">
+                    <div class="input-group">
+                        <label>Virtual Tour <span class="optional">(Optional)</span></label>
+                        <div class="input-wrapper">
+                            <i class="bi bi-camera-video"></i>
+                            <input type="datetime-local" formControlName="ScheduleVirtual">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>In-Person Tour <span class="optional">(Optional)</span></label>
+                        <div class="input-wrapper">
+                            <i class="bi bi-geo-alt"></i>
+                            <input type="datetime-local" formControlName="InPersonTour">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-group full-width">
+                    <label>Preferred Time Window <span class="optional">(Optional)</span></label>
+                    <div class="input-wrapper">
+                        <i class="bi bi-hourglass-split"></i>
+                        <input type="datetime-local" formControlName="TimeWindow">
+                    </div>
+                </div>
+
+                <div class="input-group full-width">
+                    <label>Additional Message</label>
+                    <div class="input-wrapper textarea-wrapper">
+                        <i class="bi bi-pencil-square"></i>
+                        <textarea formControlName="Message" rows="4"
+                            placeholder="Describe your ideal home, specific needs, or any questions..."
+                            [class.invalid]="isFieldInvalid('Message')"></textarea>
+                    </div>
+                    <span class="error-msg" *ngIf="isFieldInvalid('Message')">Please enter a message</span>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="form-actions">
+                <button type="button" class="btn-cancel" (click)="cancel()">
+                    <span>Cancel</span>
+                </button>
+                <button type="submit" class="btn-submit" [disabled]="isSubmitting">
+                    <span *ngIf="!isSubmitting">Submit Request <i class="bi bi-arrow-right"></i></span>
+                    <div *ngIf="isSubmitting" class="loading-dots">
+                        <span></span><span></span><span></span>
+                    </div>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Success State -->
+    <ng-template #successTemplate>
+        <div class="glass-card success-view">
+            <div class="success-icon-wrapper">
+                <i class="bi bi-check-lg"></i>
+                <div class="ripple"></div>
+            </div>
+            <h2>Request Submitted</h2>
+            <p>Our housing agents have received your request and will be in touch shortly to help you find your new
+                home.</p>
+
+            <div class="success-actions">
+                <button class="btn-primary" (click)="resetForm()">New Request</button>
+                <button class="btn-secondary" routerLink="/public/housing">Return to Housing</button>
+            </div>
+        </div>
+    </ng-template>
+</div>
