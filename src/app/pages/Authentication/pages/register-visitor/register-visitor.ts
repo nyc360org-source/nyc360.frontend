@@ -82,15 +82,15 @@ export class RegisterVisitorComponent {
             Username: ['', [Validators.required, Validators.minLength(4)]],
             Email: ['', [Validators.required, Validators.email]],
             Password: ['', [Validators.required, Validators.minLength(6), Validators.pattern(/^(?=.*[a-z])(?=.*\d).{6,}$/)]],
-            CityOfOrigin: [''],
-            CountryOfOrigin: [''],
+            CityOfOrigin: ['', Validators.required],
+            CountryOfOrigin: ['', Validators.required],
             VisitPurpose: [null, Validators.required],
             LengthOfStay: [null, Validators.required],
             ReceiveEventAndCultureRecommendations: [true],
             EnableLocationBasedSuggestions: [true],
             SavePlacesEventsGuides: [true],
             DiscoverableProfile: [true],
-            AllowMessagesFromNycPartners: [false]
+            AllowMessagesFromNycPartners: [true]
         });
     }
 

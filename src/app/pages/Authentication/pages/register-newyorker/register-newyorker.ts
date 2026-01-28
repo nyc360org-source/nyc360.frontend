@@ -60,6 +60,7 @@ export class RegisterNewYorkerComponent implements OnInit {
             Email: ['', [Validators.required, Validators.email]],
             Password: ['', [Validators.required, Validators.minLength(6), Validators.pattern(/^(?=.*[a-z])(?=.*\d).{6,}$/)]],
             Address: this.fb.group({
+                AddressId: [0], // For new registration
                 Street: ['', Validators.required],
                 BuildingNumber: ['', Validators.required],
                 ZipCode: ['', Validators.required],
@@ -93,7 +94,7 @@ export class RegisterNewYorkerComponent implements OnInit {
         const addressGroup = this.form.get('Address');
         addressGroup?.patchValue({
             LocationId: loc.id,
-            ZipCode: loc.zipCode || ''
+            ZipCode: loc.zipCode ? String(loc.zipCode) : ''
         });
 
         // Update the input field to show the selected location
@@ -151,6 +152,11 @@ export class RegisterNewYorkerComponent implements OnInit {
             ...formValue,
             Interests: this.selectedInterestIds
         };
+
+        // Explicitly stringify ZipCode for backend compatibility
+        if (payload.Address && payload.Address.ZipCode) {
+            payload.Address.ZipCode = String(payload.Address.ZipCode);
+        }
 
         this.registrationService.registerNewYorker(payload).subscribe({
             next: (res) => {

@@ -32,54 +32,47 @@ export class CreateHousingComponent implements OnInit {
         { value: false, label: 'For Sale', icon: 'bi-house-door' }
     ];
 
-    propertyTypes = [
-        { id: 0, name: 'Apartment', icon: 'bi-building' },
-        { id: 1, name: 'House', icon: 'bi-house' },
+    // Aligning with API BuildingType Enum (0=WalkUp, 1=Elevator, 2=Townhouse, 3=Detached)
+    buildingTypeOptions = [
+        { id: 0, name: 'Walk-up', icon: 'bi-building' },
+        { id: 1, name: 'Elevator', icon: 'bi-building-up' },
         { id: 2, name: 'Townhouse', icon: 'bi-house-heart' },
-        { id: 3, name: 'Studio', icon: 'bi-door-open' },
-        { id: 4, name: 'Room', icon: 'bi-person-badge' }
+        { id: 3, name: 'Detached', icon: 'bi-house' }
     ];
 
     householdTypes = [
         { id: 0, name: 'Individual' },
         { id: 1, name: 'Couple' },
-        { id: 2, name: 'Single Family' },
-        { id: 3, name: 'Multi Family' }
-    ];
-
-    buildingTypes = [
-        { id: 0, name: 'Walk-up' },
-        { id: 1, name: 'Elevator' },
-        { id: 2, name: 'Townhouse' },
-        { id: 3, name: 'Detached' }
+        { id: 2, name: 'SingleFamily' },
+        { id: 3, name: 'MultiFamily' }
     ];
 
     heatingSystems = [
-        { id: 0, name: 'Steam Radiator' },
-        { id: 1, name: 'Hot Water Central' },
-        { id: 2, name: 'Electric Baseboard' },
-        { id: 3, name: 'Forced Air' },
-        { id: 4, name: 'Heat Pump' },
+        { id: 0, name: 'SteamRadiator' },
+        { id: 1, name: 'HotWaterCentral' },
+        { id: 2, name: 'ElectricBaseboard' },
+        { id: 3, name: 'ForcedAir' },
+        { id: 4, name: 'HeatPump' },
         { id: 5, name: 'Other' }
     ];
 
     coolingSystems = [
-        { id: 0, name: 'Central AC' },
-        { id: 1, name: 'Ductless Mini-Split' },
-        { id: 2, name: 'Window Units Allowed' },
-        { id: 3, name: 'Through-Wall Units' },
-        { id: 4, name: 'No AC' }
+        { id: 0, name: 'CentralAc' },
+        { id: 1, name: 'DuctlessMiniSplit' },
+        { id: 2, name: 'WindowUnitsAllowed' },
+        { id: 3, name: 'ThroughWallUnits' },
+        { id: 4, name: 'NoAc' }
     ];
 
     tempControls = [
-        { id: 0, name: 'Individual Thermostat' },
-        { id: 1, name: 'Building Shared Control' },
-        { id: 2, name: 'Smart Thermostat' }
+        { id: 0, name: 'IndividualThermostat' },
+        { id: 1, name: 'BuildingSharedControl' },
+        { id: 2, name: 'SmartThermostat' }
     ];
 
     laundryTypes = [
-        { id: 0, name: 'In Unit' },
-        { id: 1, name: 'In Building' },
+        { id: 0, name: 'InUnit' },
+        { id: 1, name: 'InBuilding' },
         { id: 2, name: 'Nearby' }
     ];
 
@@ -87,7 +80,7 @@ export class CreateHousingComponent implements OnInit {
         { id: 0, name: 'Lease' },
         { id: 1, name: 'Sub-lease' },
         { id: 2, name: 'Short-term' },
-        { id: 3, name: 'Month-to-month' }, // Assumed
+        { id: 3, name: 'Month-to-month' },
         { id: 4, name: 'Flexible' }
     ];
 
@@ -176,7 +169,7 @@ export class CreateHousingComponent implements OnInit {
         this.form = this.fb.group({
             // Core
             IsRenting: [true, Validators.required],
-            Type: [0, Validators.required],
+            BuildingType: [0, Validators.required], // Mapped from property selection
             HouseholdType: [0], // Default Individual
             MoveInDate: [null, Validators.required],
             MoveOutDate: [null],
@@ -184,7 +177,7 @@ export class CreateHousingComponent implements OnInit {
             // Location
             locationInput: ['', Validators.required], // Neighborhood search
             Address: this.fb.group({
-                Street: [''], // Optional to match UI
+                Street: [''],
                 BuildingNumber: [''],
                 ZipCode: ['', [Validators.pattern(/^\d{5}$/)]]
             }),
@@ -193,36 +186,35 @@ export class CreateHousingComponent implements OnInit {
             NearbySubwayLines: [[]], // Array of strings
 
             // Details
-            NumberOfRooms: [1, [Validators.min(0)]],
-            NumberOfBathrooms: [1, [Validators.min(0)]],
-            MaxOccupants: [null],
-            Size: [null], // sqft
-            FloorLevel: [null],
-            YearBuilt: [null],
-            RenovatedIn: [null],
-            BuildingType: [0],
+            NumberOfRooms: [0, [Validators.min(0)]],
+            NumberOfBathrooms: [0, [Validators.min(0)]],
+            MaxOccupants: [0],
+            Size: [0], // sqft
+            FloorLevel: [0],
+            YearBuilt: [0],
+            RenovatedIn: [0],
 
             // Financials
-            StartingPrice: [null, [Validators.required, Validators.min(0)]],
-            SecurityDeposit: [null],
-            BrokerFee: [null],
-            MonthlyCostRange: [null],
+            StartingPrice: [0, [Validators.required, Validators.min(0)]],
+            SecurityDeposit: [0],
+            BrokerFee: [0],
+            MonthlyCostRange: [0],
 
             // Enums
-            HeatingSystem: [null],
-            CoolingSystem: [null],
-            TemperatureControl: [null],
-            LaundryType: [null],
+            HeatingSystem: [0],
+            CoolingSystem: [0],
+            TemperatureControl: [0],
+            LaundryType: [0],
 
             // Booleans / Features (Toggles)
-            IsShortTermStayAllowed: [false],
-            IsShortStayEligible: [false],
-            IsFurnished: [false],
-            IsAcceptsHousingVouchers: [false],
-            IsFamilyAndKidsFriendly: [false],
-            IsPetsFriendly: [false],
-            IsAccessibilityFriendly: [false],
-            IsSmokingAllowed: [false],
+            IsShortTermStayAllowed: [true], // Default matching schema example
+            IsShortStayEligible: [true],
+            IsFurnished: [true],
+            IsAcceptsHousingVouchers: [true],
+            IsFamilyAndKidsFriendly: [true],
+            IsPetsFriendly: [true],
+            IsAccessibilityFriendly: [true],
+            IsSmokingAllowed: [true],
 
             UtilitiesIncluded: [[]], // Array string
 
@@ -236,11 +228,11 @@ export class CreateHousingComponent implements OnInit {
 
             // Renting Specifics
             RentingLeaseType: [0],
-            RentingIsShared: [false],
+            RentingIsShared: [true],
             // Shared details
-            PrivacyType: ['Private Unit'], // "Private Unit" or "Shared Unit"
-            RentingIsSharedBathroom: [false], // true/false
-            RentingIsSharedKitchen: [false], // true/false (or 'No Kitchen' if managed via string, but stick to bool)
+            PrivacyType: ['Shared Unit'],
+            RentingIsSharedBathroom: [true],
+            RentingIsSharedKitchen: [true],
             RentingAboutCurrentResident: [''],
             RentingRulesAndPolicies: [''],
             RentingRoommateGroupChat: [''],
@@ -331,9 +323,14 @@ export class CreateHousingComponent implements OnInit {
         this.selectedLocation = loc;
         const display = `${loc.neighborhood}, ${loc.borough} - ${loc.zipCode}`;
         this.form.patchValue({ locationInput: display });
-        // Optional: auto-fill Zip if available in loc object
-        if (loc.zipCode) this.form.get('Address.ZipCode')?.setValue(loc.zipCode);
+
+        // Auto-populate zip code if available
+        if (loc.zipCode) {
+            this.form.get('Address.ZipCode')?.setValue(String(loc.zipCode));
+        }
+
         this.showLocationDropdown = false;
+        this.cdr.detectChanges();
     }
 
     onTagType(event: any) { this.tagSearch$.next(event.target.value); }
@@ -461,6 +458,20 @@ export class CreateHousingComponent implements OnInit {
             Tags: this.selectedTags.map(t => t.id),
             Attachments: this.selectedFiles
         };
+
+        // Strict numeric cleansing for root fields
+        const numericFields = [
+            'MaxOccupants', 'NumberOfRooms', 'NumberOfBathrooms',
+            'StartingPrice', 'SecurityDeposit', 'BrokerFee', 'MonthlyCostRange',
+            'Size', 'FloorLevel', 'YearBuilt', 'RenovatedIn'
+        ];
+        numericFields.forEach(field => {
+            if (payload[field] === null || payload[field] === undefined || payload[field] === '') {
+                payload[field] = 0;
+            } else {
+                payload[field] = Number(payload[field]);
+            }
+        });
 
         console.log('Submitting Payload:', payload);
 

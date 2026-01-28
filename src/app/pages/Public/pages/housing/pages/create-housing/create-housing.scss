@@ -1,63 +1,166 @@
 // Variables
 $gold: #B59B62;
-$gold-light: #f4eee0; // Very light gold/beige background
-$gold-hover: #d4c5a3;
-$gold-dark: #917845; // Added missing variable
+$gold-light: #fdfaf3; // Even lighter for backgrounds
+$gold-soft: rgba($gold, 0.1);
+$gold-hover: #c4ab75;
+$gold-dark: #8e784a;
 $dark: #1a1a1a;
-$gray-border: #e0e0e0;
-$text-gray: #666;
-$border-radius: 12px;
+$white: #ffffff;
+$gray-border: #ececec;
+$text-gray: #717171;
+$border-radius: 24px; // More rounded for modern feel
+$shadow-sm: 0 4px 20px rgba(0, 0, 0, 0.03);
+$shadow-md: 0 10px 30px rgba(181, 155, 98, 0.12);
+$transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulseGold {
+    0% {
+        box-shadow: 0 0 0 0 rgba($gold, 0.4);
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba($gold, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba($gold, 0);
+    }
+}
+
+@keyframes slideDownFade {
+    from {
+        opacity: 0;
+        transform: translateY(-12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 
 .create-housing-container {
-    background-color: #fbfbfb; // Light grayish background
-    font-family: 'DM Sans', sans-serif;
-    padding-bottom: 80px;
+    background-color: #fdfdfd;
+    font-family: 'Outfit', 'DM Sans', sans-serif;
+    padding-bottom: 100px;
+    overflow-x: hidden;
 
     .container {
-        max-width: 900px; // Slightly wider
+        max-width: 1000px;
         margin: 0 auto;
-        padding: 0 20px;
+        padding: 0 24px;
     }
 
     .page-header {
-        margin: 40px 0;
+        margin: 60px 0 40px;
+        text-align: center;
+        animation: fadeInUp 0.8s ease-out;
 
         h2 {
-            font-weight: 700;
+            font-size: 2.5rem;
+            font-weight: 800;
             color: $dark;
-            margin-bottom: 5px;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
         }
 
         p {
             color: $text-gray;
-            font-size: 0.95rem;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
         }
     }
 
     .form-section {
-        background: #fff;
-        padding: 30px;
+        background: $white;
+        padding: 40px;
         border-radius: $border-radius;
-        margin-bottom: 25px;
-        // Shadow is subtle
-        // box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+        margin-bottom: 30px;
+        border: 1px solid rgba($gold, 0.05);
+        box-shadow: $shadow-sm;
+        transition: $transition;
+        animation: fadeInUp 0.8s ease-out both;
+
+        @for $i from 1 through 15 {
+            &:nth-child(#{$i}) {
+                animation-delay: #{$i * 0.1}s;
+            }
+        }
+
+        &:hover {
+            box-shadow: $shadow-md;
+            border-color: rgba($gold, 0.2);
+            transform: translateY(-5px);
+        }
 
         &.no-bg {
             background: transparent;
             padding: 0;
             box-shadow: none;
+            border: none;
+
+            &:hover {
+                transform: none;
+                box-shadow: none;
+            }
         }
 
         &.gold-bg-section {
-            background-color: #faf5eb; // Light beige matching screenshot
-            border: none;
+            background-color: #faf7f0;
+            border: 1px dashed rgba($gold, 0.3);
+        }
+
+        &.luxury-border {
+            border: 1px solid rgba($gold, 0.2);
+            position: relative;
+
+            &::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 4px;
+                background: linear-gradient(90deg, transparent, $gold, transparent);
+                border-radius: $border-radius $border-radius 0 0;
+            }
         }
 
         .section-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin-bottom: 20px;
+            font-size: 1.35rem;
+            font-weight: 850;
+            margin-bottom: 30px;
             color: $dark;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+
+            &::before {
+                content: '';
+                width: 4px;
+                height: 26px;
+                background: $gold;
+                border-radius: 10px;
+                box-shadow: 0 0 10px rgba($gold, 0.3);
+            }
+
+            i {
+                color: $gold;
+                font-size: 1.25rem;
+            }
         }
     }
 
@@ -65,16 +168,17 @@ $border-radius: 12px;
     .listing-type-group {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 20px;
+        gap: 24px;
 
         .type-card-lg {
             position: relative;
-            height: 180px;
-            border-radius: 16px;
+            height: 220px;
+            border-radius: 30px;
             overflow: hidden;
             cursor: pointer;
-            border: 3px solid transparent;
-            transition: all 0.2s;
+            border: 2px solid transparent;
+            transition: $transition;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 
             .bg-img {
                 position: absolute;
@@ -83,27 +187,29 @@ $border-radius: 12px;
                 width: 100%;
                 height: 100%;
                 object-fit: cover;
-                filter: brightness(0.7);
+                filter: brightness(0.6);
+                transition: transform 0.6s ease;
                 z-index: 1;
             }
 
             .content {
                 position: relative;
                 z-index: 2;
-                padding: 25px;
+                padding: 35px;
                 height: 100%;
                 display: flex;
                 flex-direction: column;
                 justify-content: flex-end;
-                color: #fff;
+                color: $white;
 
                 h3 {
-                    font-size: 1.5rem;
-                    font-weight: 700;
+                    font-size: 1.8rem;
+                    font-weight: 800;
+                    margin-bottom: 8px;
                 }
 
                 p {
-                    font-size: 0.9rem;
+                    font-size: 1rem;
                     opacity: 0.9;
                     margin: 0;
                 }
@@ -111,71 +217,89 @@ $border-radius: 12px;
 
             .check-mark {
                 position: absolute;
-                top: 15px;
-                right: 15px;
+                top: 25px;
+                right: 25px;
                 z-index: 3;
-                width: 24px;
-                height: 24px;
-                background: #fff;
+                width: 32px;
+                height: 32px;
+                background: $white;
                 border-radius: 50%;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 color: $gold;
-                font-weight: bold;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+                animation: pulseGold 2s infinite;
             }
 
             &:hover {
-                transform: translateY(-2px);
+                transform: translateY(-8px) scale(1.02);
+
+                .bg-img {
+                    transform: scale(1.1);
+                }
             }
 
             &.active {
-                border-color: #2196F3;
+                border-color: $gold;
+                box-shadow: 0 15px 35px rgba($gold, 0.3);
             }
-
-            // Blue border for selection? Or Gold? Screenshot shows blue dashed line in Figma, but active state likely cleaner. Lets use blue or gold.
         }
     }
 
-    // Property Icons Row (Horizontal Scrollable or Grid)
+    // Property Icons Row
     .property-icons-row {
         display: flex;
-        gap: 15px;
+        gap: 16px;
         justify-content: space-between;
+        padding: 10px 0;
 
         .prop-icon-card {
             flex: 1;
-            background: #fff;
-            padding: 20px 10px;
-            border-radius: 16px;
+            background: $white;
+            padding: 25px 15px;
+            border-radius: 24px;
             text-align: center;
             cursor: pointer;
-            border: 1px solid transparent; // Hidden border
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 2px solid transparent;
+            box-shadow: $shadow-sm;
+            transition: $transition;
 
             i {
                 display: block;
-                font-size: 1.8rem;
-                color: $gold; // Or gray
-                margin-bottom: 10px;
+                font-size: 2.2rem;
+                color: $gold;
+                margin-bottom: 12px;
+                transition: $transition;
             }
 
             span {
-                font-weight: 600;
+                font-weight: 700;
                 color: $text-gray;
-                font-size: 0.9rem;
+                font-size: 0.95rem;
             }
 
             &:hover {
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+                transform: translateY(-5px);
+                border-color: rgba($gold, 0.2);
+                box-shadow: $shadow-md;
+
+                i {
+                    transform: scale(1.2);
+                }
             }
 
             &.selected {
-                border: 1px solid $gold;
-                background: #fffcf5;
+                border-color: $gold;
+                background: $gold-light;
+                box-shadow: 0 10px 25px rgba($gold, 0.15);
 
                 span {
-                    color: $dark;
+                    color: $gold-dark;
+                }
+
+                i {
+                    color: $gold-dark;
                 }
             }
         }
@@ -183,109 +307,108 @@ $border-radius: 12px;
 
     // Form Controls
     label {
-        font-weight: 600;
-        font-size: 0.9rem;
-        margin-bottom: 8px;
+        font-weight: 700;
+        font-size: 0.95rem;
+        margin-bottom: 10px;
         color: $dark;
+        display: block;
     }
 
     .form-control,
     .form-select {
-        height: 50px;
-        border-radius: 8px;
-        border: 1px solid $gray-border;
-        padding: 0 15px;
-        font-size: 0.95rem;
+        height: 56px;
+        border-radius: 16px;
+        border: 2px solid $gray-border;
+        padding: 0 20px;
+        font-size: 1rem;
+        transition: $transition;
+        background-color: #f9f9f9;
 
         &:focus {
+            background-color: $white;
             border-color: $gold;
-            box-shadow: 0 0 0 2px rgba($gold, 0.1);
+            box-shadow: 0 8px 15px rgba($gold, 0.1);
             outline: none;
         }
 
+        &::placeholder {
+            color: #bbb;
+        }
+
         &.is-invalid {
-            border-color: #dc3545; // Bootstrap red
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5zM6 8.2af.6.6 0 110-1.2.6.6 0 010 1.2z'/%3e%3c/svg%3e");
-            background-repeat: no-repeat;
-            background-position: right calc(0.375em + 0.1875rem) center;
-            background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+            border-color: #ff4d4f;
+            background-color: #fff1f0;
 
             &:focus {
-                box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
+                box-shadow: 0 0 0 4px rgba(#ff4d4f, 0.1);
             }
         }
+    }
+
+    textarea.form-control {
+        height: auto;
+        padding: 20px;
     }
 
     .invalid-feedback {
-        display: none;
-        width: 100%;
-        margin-top: 0.25rem;
-        font-size: 0.875em;
-        color: #dc3545;
+        font-weight: 600;
+        font-size: 0.85rem;
+        margin-top: 6px;
+        padding-left: 5px;
     }
 
-    .is-invalid~.invalid-feedback {
-        display: block;
-    }
-
-    // Input Icon Wrap (Date)
-    .input-icon-wrap {
-        position: relative;
-
-        input {
-            padding-right: 40px;
-        }
-
-        i {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: $text-gray;
-        }
-    }
-
-    // Pill Selector (Bedrooms/Bathrooms)
+    // Pill Selector
     .pill-selector {
         display: flex;
-        gap: 10px;
+        gap: 12px;
+        flex-wrap: wrap;
 
         button {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%; // Or rounded square? Screenshot looks like pill/rounded rect
-            border-radius: 12px; // Rounded rect
-            background: #f0f0f0;
-            border: none;
-            font-weight: 600;
+            min-width: 50px;
+            height: 50px;
+            padding: 0 15px;
+            border-radius: 16px;
+            background: #f5f5f5;
+            border: 2px solid transparent;
+            font-weight: 700;
             color: $text-gray;
             cursor: pointer;
-            transition: 0.2s;
+            transition: $transition;
 
             &.active {
-                background: $gold-light;
-                border: 1px solid $gold;
-                color: $gold-dark;
+                background: $gold;
+                color: $white;
+                border-color: $gold;
+                box-shadow: 0 8px 20px rgba($gold, 0.3);
             }
 
             &:hover:not(.active) {
-                background: #e0e0e0;
+                background: #eee;
+                transform: translateY(-2px);
             }
         }
     }
 
-    // Custom Radio (Gold Ring)
+    // Custom Radio
     .radio-group-row {
         display: flex;
         flex-wrap: wrap;
-        gap: 25px;
+        gap: 20px;
 
         .radio-custom {
+            background: #f9f9f9;
+            padding: 12px 20px;
+            border-radius: 50px;
+            border: 2px solid $gray-border;
+            transition: $transition;
             display: flex;
             align-items: center;
             cursor: pointer;
-            font-size: 0.95rem;
-            color: $dark;
+
+            &:hover {
+                border-color: rgba($gold, 0.3);
+                background: $white;
+            }
 
             input {
                 display: none;
@@ -294,365 +417,754 @@ $border-radius: 12px;
             .radio-mark {
                 width: 20px;
                 height: 20px;
-                border: 2px solid $gold; // Gold ring
+                border: 2px solid $gold;
                 border-radius: 50%;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                margin-right: 8px;
+                margin-right: 12px;
+                transition: $transition;
 
                 &::after {
                     content: '';
-                    width: 10px; // Inner dot
+                    width: 10px;
                     height: 10px;
                     background: $gold;
                     border-radius: 50%;
                     opacity: 0;
                     transform: scale(0);
-                    transition: 0.2s;
+                    transition: $transition;
                 }
             }
 
-            input:checked+.radio-mark::after {
-                opacity: 1;
-                transform: scale(1);
+            input:checked+.radio-mark {
+                background: $white;
+
+                &::after {
+                    opacity: 1;
+                    transform: scale(1);
+                }
             }
-        }
-    }
 
-    // Toggles Grid
-    .toggles-list-grid {
-        display: flex;
-        gap: 40px;
+            &:has(input:checked) {
+                border-color: $gold;
+                background: $gold-light;
+                box-shadow: 0 8px 20px rgba($gold, 0.1);
+            }
 
-        .toggle-col {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .toggle-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-
-            .text {
-                h6 {
-                    margin: 0;
-                    font-size: 0.95rem;
-                    font-weight: 700;
-                    color: $dark;
-                }
-
-                p {
-                    margin: 0;
-                    font-size: 0.8rem;
-                    color: #888;
-                }
+            .radio-label {
+                font-weight: 700;
+                font-size: 0.95rem;
+                color: $dark;
             }
         }
     }
 
     // Switch (iOS Style)
     .switch {
-        position: relative;
-        display: inline-block;
-        width: 50px;
-        height: 26px;
-        flex-shrink: 0; // Prevent shrinking
-
-        input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
+        width: 56px;
+        height: 30px;
 
         .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: .4s;
-            border-radius: 34px;
+            border-radius: 30px;
+            background-color: #e0e0e0;
 
-            &:before {
-                position: absolute;
-                content: "";
-                height: 22px;
-                width: 22px;
-                left: 2px;
-                bottom: 2px;
-                background-color: white;
-                transition: .4s;
-                border-radius: 50%;
+            &::before {
+                height: 24px;
+                width: 24px;
+                left: 3px;
+                bottom: 3px;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             }
         }
 
         input:checked+.slider {
             background-color: $gold;
-        }
 
-        input:checked+.slider:before {
-            transform: translateX(24px);
-        }
-    }
-
-    // Link Input Row (Direct Apply)
-    .link-input-row {
-        display: flex;
-        gap: 15px;
-        align-items: center;
-        background: #fff;
-        border: 1px solid $gray-border;
-        padding: 5px 15px; // Reduced padding
-        padding-right: 15px;
-        border-radius: 50px; // Pill shape input container
-        height: 50px;
-
-        input {
-            border: none;
-            flex: 1;
-            height: 100%;
-            padding: 0;
-
-            &:focus {
-                box-shadow: none;
+            &::before {
+                transform: translateX(26px);
             }
         }
+    }
 
-        .switch {
-            transform: scale(0.9);
+    // Feature Toggle Card (Premium versions)
+    .feature-toggle-card {
+        background: #f9f9f9;
+        padding: 20px 25px;
+        border-radius: 20px;
+        border: 2px solid transparent;
+        transition: $transition;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        &:hover {
+            background: $white;
+            border-color: rgba($gold, 0.1);
+            box-shadow: $shadow-sm;
+            transform: translateY(-3px);
+        }
+
+        .text-content {
+            h6 {
+                font-weight: 800;
+                font-size: 0.95rem;
+                color: $dark;
+                margin-bottom: 2px;
+            }
+
+            p {
+                font-size: 0.8rem;
+                color: $text-gray;
+            }
         }
     }
 
-    // Photo Upload
-    .photo-upload-area {
-        &.dashed-border {
-            border: 2px dashed #ddd;
-            border-radius: 16px;
-            padding: 40px;
-            text-align: center;
-            background: #fff;
-        }
+    // Amenities Grid
+    .amenities-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 15px;
 
-        .icon-circle-gold {
-            width: 60px;
-            height: 60px;
-            background: $gold-light;
-            color: $gold;
-            border-radius: 50%;
+        .btn-amenity {
+            background: #f9f9f9;
+            border: 2px solid $gray-border;
+            padding: 15px;
+            border-radius: 16px;
+            text-align: left;
+            font-weight: 700;
+            color: $text-gray;
+            transition: $transition;
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            margin: 0 auto 15px;
-        }
 
-        .btn-gold-soft {
-            background: $gold-light;
-            color: $gold-dark;
-            border: none;
-            padding: 10px 25px;
-            border-radius: 8px;
-            font-weight: 700;
-            cursor: pointer;
+            i {
+                font-size: 1.2rem;
+            }
+
+            &.active {
+                background: $gold-light;
+                border-color: $gold;
+                color: $gold-dark;
+                box-shadow: $shadow-sm;
+            }
 
             &:hover {
-                background: darken($gold-light, 5%);
+                transform: translateY(-3px);
+                border-color: rgba($gold, 0.3);
             }
         }
-    }
 
-    // Map Preview
-    .map-preview-card {
-        .map-placeholder {
-            position: relative;
-            border-radius: 16px;
-            overflow: hidden;
+        // Program Toggle Card (On/Off style)
+        .program-toggle-card {
+            background: #F8F9FA;
+            border: 1.5px solid rgba(0, 0, 0, 0.03);
+            border-radius: 12px;
+            padding: 12px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: $transition;
             height: 100%;
-            min-height: 200px;
 
-            img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
+            .program-name {
+                font-weight: 700;
+                font-size: 0.9rem;
+                color: $dark;
+                line-height: 1.3;
+                max-width: 80%;
             }
 
-            .btn-pin-map {
-                position: absolute;
-                bottom: 20px;
-                left: 50%;
-                transform: translateX(-50%);
-                background: #fff;
-                border: none;
-                padding: 10px 20px;
-                border-radius: 30px;
-                font-weight: 700;
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                cursor: pointer;
+            &:hover {
+                background: $white;
+                border-color: rgba($gold, 0.2);
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+                transform: translateY(-2px);
+            }
 
-                i {
-                    color: $gold;
+            &.active {
+                background: $white;
+                border-color: $gold;
+                box-shadow: 0 8px 25px rgba($gold, 0.12);
+
+                .program-name {
+                    color: $gold-dark;
+                }
+            }
+
+            .toggle-action {
+                pointer-events: none; // Let card handle click
+            }
+        }
+
+        // Map Preview
+        .map-preview-card {
+            height: 100%;
+            min-height: 380px;
+
+            .map-placeholder {
+                position: relative;
+                border-radius: 35px;
+                height: 100%;
+                overflow: hidden;
+                border: 1px solid rgba($gold, 0.15);
+                box-shadow: $shadow-md;
+                transition: $transition;
+                background: #f0f0f0;
+
+                &:hover {
+                    transform: scale(1.015);
+                    box-shadow: 0 25px 50px rgba($gold, 0.18);
+                    border-color: rgba($gold, 0.3);
+                }
+
+                img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    filter: saturate(0.9) contrast(1.05);
+                    transition: transform 0.6s ease;
+                }
+
+                &:hover img {
+                    transform: scale(1.05);
+                }
+
+                .btn-pin-map {
+                    position: absolute;
+                    bottom: 35px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    padding: 16px 36px;
+                    border-radius: 50px;
+                    background: $white;
+                    color: $dark;
+                    font-weight: 850;
+                    font-size: 0.95rem;
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+                    border: none;
+                    transition: $transition;
+                    z-index: 10;
+                    white-space: nowrap;
+
+                    i {
+                        font-size: 1.25rem;
+                        color: $gold;
+                        transition: $transition;
+                    }
+
+                    &:hover {
+                        background: $gold;
+                        color: $white;
+                        transform: translateX(-50%) translateY(-6px);
+                        box-shadow: 0 20px 45px rgba($gold, 0.45);
+
+                        i {
+                            color: $white;
+                            transform: rotate(-15deg) scale(1.2);
+                        }
+                    }
                 }
             }
         }
-    }
 
-    // Footer Actions
-    .form-actions-footer {
-        padding: 20px 0;
+        // Photo Upload
+        .photo-upload-area {
+            &.dashed-border {
+                border: 2px dashed rgba($gold, 0.3);
+                background: $gold-light;
+                padding: 60px 40px;
+                border-radius: 30px;
+                transition: $transition;
 
-        .btn-save-draft {
-            background: #FAF9F6; // Off-white beige matching image
-            color: #A68D65; // Muted gold text
-            border: none;
-            padding: 18px 45px; // Generous padding
-            border-radius: 50px; // Full pill
-            font-weight: 700;
-            font-size: 1.1rem;
-            letter-spacing: 0.3px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
+                &:hover {
+                    border-color: $gold;
+                    background: #f7f2e8;
+                }
+            }
 
-            &:hover {
-                background: #f0ede6;
+            .icon-circle-gold {
+                width: 80px;
+                height: 80px;
+                font-size: 2rem;
+                margin-bottom: 25px;
+                box-shadow: 0 10px 20px rgba($gold, 0.2);
+            }
+
+            h4 {
+                font-weight: 800;
+                color: $dark;
+            }
+
+            .btn-gold-soft {
+                background: $gold;
+                color: $white;
+                padding: 15px 40px;
+                border-radius: 50px;
+                font-size: 1rem;
+                box-shadow: 0 10px 25px rgba($gold, 0.3);
+
+                &:hover {
+                    background: $gold-dark;
+                    transform: translateY(-3px);
+                }
+            }
+        }
+
+        // Photo Previews
+        .photo-previews {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 15px;
+
+            .preview-item {
+                aspect-ratio: 1;
+                border-radius: 16px;
+                overflow: hidden;
+                position: relative;
+                box-shadow: $shadow-sm;
+
+                img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                }
+
+                .btn-remove {
+                    position: absolute;
+                    top: 8px;
+                    right: 8px;
+                    background: rgba(255, 255, 255, 0.9);
+                    color: #ff4d4f;
+                    width: 24px;
+                    height: 24px;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border: none;
+                    font-size: 18px;
+                    font-weight: bold;
+                    cursor: pointer;
+                }
+            }
+        }
+
+        // Footer Actions
+        .form-actions-footer {
+            .btn-save-draft {
+                border: 2px solid $gray-border;
+                padding: 20px 50px;
+                font-weight: 800;
+                color: $text-gray;
+                background: $white;
+
+                &:hover {
+                    border-color: $gold;
+                    color: $gold;
+                    background: $gold-light;
+                }
+            }
+
+            .btn-post-listing {
+                padding: 20px 80px;
+                background: $gold;
+                font-weight: 800;
+                box-shadow: 0 15px 40px rgba($gold, 0.4);
+
+                &:hover {
+                    background: $gold-dark;
+                    box-shadow: 0 20px 50px rgba($gold, 0.5);
+                }
+            }
+        }
+
+        // Link Row
+        .link-input-row {
+            height: 70px;
+            background: $white;
+            border: 2px solid $gold; // Premium gold border from image
+            padding: 0 25px;
+            border-radius: 12px;
+            transition: $transition;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+
+            i {
+                font-size: 1.4rem;
+            }
+
+            input {
+                font-size: 1.1rem;
+                font-weight: 500;
+
+                &::placeholder {
+                    color: #A0A0A0;
+                }
+            }
+
+            &:focus-within {
+                box-shadow: 0 8px 25px rgba($gold, 0.15);
                 transform: translateY(-2px);
             }
         }
 
-        .btn-post-listing {
-            background: #967D4D; // Exact matte gold-brown from image
-            color: #ffffff;
-            border: none;
-            padding: 18px 60px; // Wider for emphasis
-            border-radius: 50px;
-            font-weight: 700;
-            font-size: 1.1rem;
-            letter-spacing: 0.3px;
-            cursor: pointer;
-            box-shadow: 0 10px 25px rgba(150, 125, 77, 0.3); // Deep soft shadow
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); // Bouncy effect
-            display: inline-flex;
+        // Toggle Card (Editing Access)
+        .feature-toggle-card {
+            background: #F8F9FA;
+            border-radius: 20px;
+            padding: 20px 25px;
+            height: 100%;
+            display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
+            transition: $transition;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+
+            .text-content {
+                h6 {
+                    font-weight: 800;
+                    font-size: 1.05rem;
+                    color: $dark;
+                    margin-bottom: 3px;
+                }
+
+                p {
+                    font-size: 0.88rem;
+                    color: #787878;
+                }
+            }
 
             &:hover {
-                background: darken(#967D4D, 5%);
-                transform: translateY(-3px);
-                box-shadow: 0 15px 30px rgba(150, 125, 77, 0.4);
+                background: $white;
+                border-color: rgba($gold, 0.2);
+                box-shadow: $shadow-md;
+            }
+        }
+
+        // Premium Switch (Blue Checkbox style from image)
+        .switch-premium {
+            position: relative;
+            display: inline-block;
+            width: 22px;
+            height: 22px;
+
+            input {
+                opacity: 0;
+                width: 0;
+                height: 0;
+
+                &:checked+.slider-premium {
+                    background-color: #007bff;
+                    border-color: #007bff;
+
+                    &::before {
+                        opacity: 1;
+                        transform: translate(-50%, -50%) scale(1);
+                    }
+                }
+            }
+
+            .slider-premium {
+                position: absolute;
+                cursor: pointer;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: #fff;
+                border: 2px solid #ddd;
+                border-radius: 4px;
+                transition: .2s;
+
+                &::before {
+                    content: "\F26E"; // Bootstrap Icon check
+                    font-family: "bootstrap-icons" !important;
+                    font-style: normal;
+                    font-weight: normal !important;
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%) scale(0.5);
+                    color: white;
+                    font-size: 14px;
+                    opacity: 0;
+                    transition: .2s;
+                }
+            }
+        }
+
+        // Search & Results
+        .search-wrapper {
+            position: relative;
+
+            .search-icon {
+                position: absolute;
+                left: 20px;
+                top: 50%;
+                transform: translateY(-50%);
+                color: $gold;
+                font-size: 1.2rem;
+                z-index: 5;
+                transition: $transition;
+            }
+
+            .search-indicator {
+                position: absolute;
+                right: 20px;
+                top: 50%;
+                transform: translateY(-50%);
+                z-index: 5;
+            }
+
+            .form-control {
+                height: 60px;
+                padding: 0 25px 0 55px; // Space for icon
+                border-radius: 18px;
+                font-weight: 600;
+                background: #fbfbfb;
+                border: 2px solid $gray-border;
+                transition: $transition;
+
+                &:focus {
+                    background: $white;
+                    border-color: $gold;
+                    box-shadow: 0 10px 30px rgba($gold, 0.12);
+
+                    &+.search-icon {
+                        color: $gold-dark;
+                        transform: translateY(-50%) scale(1.1);
+                    }
+                }
+            }
+
+            .dropdown-results {
+                position: absolute;
+                top: 72px;
+                left: 0;
+                right: 0;
+                background: $white;
+                border-radius: 20px;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+                z-index: 1000;
+                max-height: 450px;
+                overflow-y: auto;
+                border: 1px solid rgba($gold, 0.1);
+                animation: slideDownFade 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+                backdrop-filter: blur(15px);
+
+                .result-item {
+                    padding: 18px 25px;
+                    display: flex;
+                    align-items: center;
+                    gap: 15px;
+                    cursor: pointer;
+                    transition: $transition;
+                    border-bottom: 1px solid #f2f2f2;
+
+                    i {
+                        width: 42px;
+                        height: 42px;
+                        background: $gold-light;
+                        color: $gold;
+                        border-radius: 12px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 1.2rem;
+                        transition: $transition;
+                    }
+
+                    .loc-name {
+                        font-weight: 800;
+                        color: $dark;
+                        display: block;
+                        font-size: 1.05rem;
+                    }
+
+                    .loc-sub {
+                        font-size: 0.85rem;
+                        color: $text-gray;
+                    }
+
+                    &:hover {
+                        background: $gold-light;
+                        padding-left: 35px;
+                        color: $gold-dark;
+
+                        i {
+                            background: $gold;
+                            color: $white;
+                            transform: scale(1.1) rotate(8deg);
+                            box-shadow: 0 5px 15px rgba($gold, 0.3);
+                        }
+                    }
+
+                    &:last-child {
+                        border-bottom: none;
+                    }
+                }
+            }
+        }
+
+        // Input Group Premium
+        .input-group-premium {
+            position: relative;
+            display: flex;
+            align-items: center;
+
+            i {
+                position: absolute;
+                left: 18px;
+                color: $gold;
+                font-size: 1.1rem;
+                z-index: 5;
+                transition: $transition;
+            }
+
+            .form-control {
+                height: 54px;
+                padding-left: 48px;
+                border-radius: 14px;
+                background: #fdfdfd;
+                border: 1.5px solid $gray-border;
+                font-weight: 500;
+                transition: $transition;
+
+                &:focus {
+                    border-color: $gold;
+                    background: $white;
+                    box-shadow: 0 5px 15px rgba($gold, 0.08);
+
+                    &+i {
+                        transform: scale(1.15);
+                    }
+                }
+            }
+        }
+
+        // Badges
+        .badge-gold-soft {
+            background: $gold-light;
+            color: $gold-dark;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+    }
+
+    // Transportation Pills
+    .trans-pill {
+        padding: 8px 18px !important;
+        border-radius: 12px !important;
+        font-weight: 700 !important;
+        border: 2px solid $gray-border !important;
+        transition: $transition !important;
+
+        &:hover {
+            border-color: rgba($gold, 0.4) !important;
+            transform: translateY(-2px);
+        }
+
+        &.active {
+            background: $gold !important;
+            border-color: $gold !important;
+            box-shadow: 0 8px 20px rgba($gold, 0.3);
+        }
+    }
+
+    // Luxury Submit Action
+    .submit-hero-action {
+        background: $white;
+        padding: 40px;
+        border-radius: 40px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.06);
+        border: 1px solid rgba($gold, 0.1);
+        display: inline-block;
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+
+        .btn-post-listing-luxury {
+            width: 100%;
+            background: linear-gradient(135deg, $dark 0%, #333 100%);
+            color: $white;
+            border: none;
+            padding: 22px 45px;
+            border-radius: 20px;
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+
+            .btn-content {
+                position: relative;
+                z-index: 2;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            &::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+                transition: 0.5s;
+                z-index: 1;
+            }
+
+            &:hover {
+                transform: translateY(-8px);
+                box-shadow: 0 20px 50px rgba($gold, 0.25);
+                background: linear-gradient(135deg, $gold-dark 0%, $gold 100%);
+
+                &::before {
+                    left: 100%;
+                }
+
+                i {
+                    transform: translateX(5px) translateY(-5px) rotate(10deg);
+                }
             }
 
             &:active {
-                transform: translateY(-1px);
+                transform: scale(0.96);
+            }
+
+            i {
+                display: inline-block;
+                transition: transform 0.4s ease;
             }
 
             &:disabled {
-                opacity: 0.7;
-                cursor: not-allowed;
+                background: #ccc;
                 transform: none;
-                box-shadow: none;
-            }
-        }
-    }
-
-    // Trans Pills & Search
-    .trans-pill {
-        display: inline-block;
-        padding: 5px 12px;
-        border: 1px solid #eee;
-        border-radius: 20px;
-        margin-right: 5px;
-        margin-bottom: 5px;
-        font-size: 0.85rem;
-        cursor: pointer;
-
-        &.active {
-            background: $gold;
-            color: #fff;
-            border-color: $gold;
-        }
-    }
-
-    // Checkbox Pills (Programs)
-    .checkbox-pill {
-        margin-right: 10px;
-        margin-bottom: 10px;
-        cursor: pointer;
-
-        input {
-            display: none;
-        }
-
-        span {
-            padding: 8px 16px;
-            border: 1px solid $gray-border;
-            border-radius: 20px;
-            display: block;
-            transition: 0.2s;
-        }
-
-        input:checked+span {
-            background: $gold-light;
-            border-color: $gold;
-            color: $gold-dark;
-        }
-    }
-
-    // Search Dropdown
-    .search-wrapper {
-        position: relative;
-    }
-
-    .dropdown-results {
-        position: absolute;
-        top: calc(100% + 5px); // Slight gap
-        left: 0;
-        right: 0;
-        background: #fff;
-        z-index: 1000;
-        border: 1px solid $gray-border;
-        border-radius: 8px;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
-        max-height: 250px;
-        overflow-y: auto;
-
-        .result-item {
-            padding: 10px 15px;
-            cursor: pointer;
-
-            &:hover {
-                background: #f9f9f9;
+                cursor: not-allowed;
             }
         }
     }
 }
 
-// Responsive
-@media (max-width: 768px) {
-    .create-housing-container {
-        padding-top: 20px;
+// Global Adjustment for search Pulse
+.search-indicator {
+    position: absolute;
+    right: 25px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+}
 
-        .toggles-list-grid {
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .type-card-lg {
-            height: 140px !important;
-
-            .content h3 {
-                font-size: 1.2rem;
-            }
-        }
-    }
+.uppercase {
+    text-transform: uppercase;
 }

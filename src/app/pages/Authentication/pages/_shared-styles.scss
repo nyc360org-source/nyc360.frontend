@@ -14,6 +14,22 @@ $danger: #ef4444;
 $font-family: 'Outfit', sans-serif;
 
 // --- 🌟 Global Animations ---
+@keyframes shake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-5px);
+    }
+
+    75% {
+        transform: translateX(5px);
+    }
+}
+
 @keyframes slideUpFade {
     from {
         opacity: 0;
@@ -215,6 +231,7 @@ $font-family: 'Outfit', sans-serif;
     &:hover {
         transform: translateY(-2px);
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+        z-index: 10;
     }
 }
 
@@ -327,7 +344,11 @@ textarea {
 .input-group-premium {
     position: relative;
     margin-bottom: 24px;
-    isolation: isolate; // Create stacking context
+    transition: z-index 0.3s;
+
+    &:focus-within {
+        z-index: 100; // Ensure focused group is above others
+    }
 
     // The Icon
     .input-icon {
@@ -418,13 +439,15 @@ textarea {
 
         // Error State
         &.is-invalid {
-            border-color: #fee2e2;
+            border-color: $danger;
             background: #fff5f5;
             color: $danger;
+            animation: shake 0.4s ease-in-out;
+            border-width: 2px;
+            box-shadow: 0 0 0 4px rgba($danger, 0.1);
 
             ~.input-icon {
                 color: $danger;
-                animation: shake 0.4s ease-in-out;
             }
 
             ~.floating-label {
@@ -474,14 +497,14 @@ textarea {
         top: calc(100% + 10px);
         left: 0;
         right: 0;
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(226, 232, 240, 0.8);
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba($accent, 0.2);
         border-radius: 20px;
-        max-height: 300px;
+        max-height: 320px;
         padding: 10px;
-        z-index: 100;
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+        z-index: 2000;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
         overflow-y: auto;
         animation: slideUpFade 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
 

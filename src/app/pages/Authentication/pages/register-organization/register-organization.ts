@@ -152,8 +152,8 @@ export class RegisterOrganizationComponent implements OnInit {
             Email: ['', [Validators.required, Validators.email]],
             Password: ['', [Validators.required, Validators.minLength(6), Validators.pattern(/^(?=.*[a-z])(?=.*\d).{6,}$/)]],
             OrganizationType: [null, Validators.required],
-            ServiceArea: [null, Validators.required],
-            Website: [''],
+            ServiceArea: [0, Validators.required], // Default Citywide
+            Website: ['', [Validators.pattern(/https?:\/\/.+/)]],
             PhoneNumber: ['', [Validators.pattern(/^\+?[0-9\s-]{10,15}$/)]],
             PublicEmail: ['', [Validators.email]],
             Description: ['', [Validators.maxLength(1000)]],
@@ -161,6 +161,7 @@ export class RegisterOrganizationComponent implements OnInit {
             IsTaxExempt: [true],
             IsNysRegistered: [true],
             Address: this.fb.group({
+                AddressId: [0], // Local default
                 Street: ['', Validators.required],
                 BuildingNumber: ['', Validators.required],
                 ZipCode: ['', Validators.required],
@@ -206,7 +207,7 @@ export class RegisterOrganizationComponent implements OnInit {
         const addressGroup = this.form.get('Address');
         addressGroup?.patchValue({
             LocationId: loc.id,
-            ZipCode: loc.zipCode || ''
+            ZipCode: loc.zipCode ? String(loc.zipCode) : ''
         });
 
         // Update the input field to show the selected location
@@ -268,13 +269,17 @@ export class RegisterOrganizationComponent implements OnInit {
             return;
         }
 
-        if (this.selectedInterestIds.length === 0) {
-            this.toastService.warning('Please select at least one interest.');
+        if (this.selectedServiceIds.length === 0) {
+            this.toastService.warning('Please select at least one "Service Provided" from the chips.');
+            const servicesEl = document.querySelector('.chips-grid');
+            servicesEl?.scrollIntoView({ behavior: 'smooth', block: 'center' });
             return;
         }
 
-        if (this.selectedServiceIds.length === 0) {
-            this.toastService.warning('Please select at least one service you provide.');
+        if (this.selectedInterestIds.length === 0) {
+            this.toastService.warning('Please select at least one "Civic Interest" focus area.');
+            const interestsEl = document.querySelectorAll('.chips-grid')[1];
+            interestsEl?.scrollIntoView({ behavior: 'smooth', block: 'center' });
             return;
         }
 
@@ -286,6 +291,11 @@ export class RegisterOrganizationComponent implements OnInit {
             Interests: this.selectedInterestIds,
             Services: this.selectedServiceIds
         };
+
+        // Ensure ZipCode is a string for the backend API
+        if (payload.Address && payload.Address.ZipCode) {
+            payload.Address.ZipCode = String(payload.Address.ZipCode);
+        }
 
         this.registrationService.registerOrganization(payload).subscribe({
             next: (res) => {
