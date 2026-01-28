@@ -147,6 +147,10 @@ $transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
         grid-template-columns: 1fr 1fr;
         gap: 24px;
 
+        @media (max-width: 768px) {
+            grid-template-columns: 1fr;
+        }
+
         .type-card-lg {
             position: relative;
             height: 220px;
@@ -230,6 +234,10 @@ $transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
         gap: 16px;
         justify-content: space-between;
         padding: 10px 0;
+
+        @media (max-width: 768px) {
+            flex-wrap: wrap;
+        }
 
         .prop-icon-card {
             flex: 1;

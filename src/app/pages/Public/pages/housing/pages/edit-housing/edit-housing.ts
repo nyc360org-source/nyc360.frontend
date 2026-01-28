@@ -7,11 +7,13 @@ import { debounceTime, distinctUntilChanged, switchMap, catchError } from 'rxjs/
 import { PostsService } from '../../../../pages/posts/services/posts';
 import { HousingService } from '../../service/housing.service';
 import { ToastService } from '../../../../../../shared/services/toast.service';
+import { ImageService } from '../../../../../../shared/services/image.service';
+import { ImgFallbackDirective } from '../../../../../../shared/directives/img-fallback.directive';
 
 @Component({
     selector: 'app-edit-housing',
     standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, RouterModule],
+    imports: [CommonModule, ReactiveFormsModule, RouterModule, ImgFallbackDirective],
     templateUrl: './edit-housing.html',
     styleUrls: ['./edit-housing.scss']
 })
@@ -23,6 +25,7 @@ export class EditHousingComponent implements OnInit {
     private toastService = inject(ToastService);
     private cdr = inject(ChangeDetectorRef);
     private fb = inject(FormBuilder);
+    public imageService = inject(ImageService); // Add public for template access
 
     form: FormGroup;
     isSubmitting = false;
@@ -342,6 +345,7 @@ export class EditHousingComponent implements OnInit {
 
         // 4. Attachments
         if (data.attachments) {
+            console.log('[EditHousing] Attachments from API:', data.attachments);
             this.existingAttachments = data.attachments;
         }
 

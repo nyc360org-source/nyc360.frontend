@@ -12,6 +12,7 @@ export class ImageService {
     // Global Default Assets
     readonly DEFAULT_POST = 'assets/images/default-post.jpg';
     readonly DEFAULT_AVATAR = 'assets/images/default-avatar.png';
+    readonly DEFAULT_HOUSING = 'housing-placeholder.png'; // Professional housing fallback
     readonly PLACEHOLDER = 'assets/images/default-post.jpg';
 
     constructor() { }
@@ -65,8 +66,14 @@ export class ImageService {
      * Resolves a simple image URL
      */
     resolveImageUrl(url: string | null | undefined, type: 'post' | 'avatar' | 'housing' = 'post'): string {
-        const fallback = type === 'avatar' ? this.DEFAULT_AVATAR : this.DEFAULT_POST;
-        if (!url || url.trim() === '') return fallback;
+        const fallback = type === 'avatar' ? this.DEFAULT_AVATAR :
+            type === 'housing' ? this.DEFAULT_HOUSING :
+                this.DEFAULT_POST;
+
+        if (!url || url.trim() === '') {
+            console.warn('[ImageService] No URL provided, using fallback:', fallback);
+            return fallback;
+        }
 
         if (type === 'avatar') {
             return this.cleanAndResolveAvatar(url, fallback);
@@ -78,10 +85,14 @@ export class ImageService {
     private cleanAndResolve(url: string, fallback: string, context: 'post' | 'housing' = 'post'): string {
         if (!url) return fallback;
 
-        let cleanUrl = url.replace('@local://', '');
+        let cleanUrl = url.replace('@local://', '').trim();
+
+        // Remove any leading/trailing slashes
+        cleanUrl = cleanUrl.replace(/^\/+|\/+$/g, '');
 
         // 1. If absolute or data URL, return as is
         if (cleanUrl.startsWith('http') || cleanUrl.startsWith('https') || cleanUrl.startsWith('data:')) {
+            console.log('[ImageService] Using absolute URL:', cleanUrl);
             return cleanUrl;
         }
 
@@ -89,16 +100,34 @@ export class ImageService {
 
         // 2. If it already has a known folder prefix, resolve to base URL
         if (lowerUrl.startsWith('posts/') || lowerUrl.startsWith('housing/') || lowerUrl.startsWith('avatars/')) {
-            return `${this.apiBaseUrl2}/${cleanUrl}`;
+            const finalUrl = `${this.apiBaseUrl2}/${cleanUrl}`;
+            console.log('[ImageService] Resolved with folder prefix:', { originalUrl: url, finalUrl });
+            return finalUrl;
         }
 
-        // 3. Handle based on context
+        // 3. For housing context, try multiple common patterns
         if (context === 'housing') {
-            return `${this.apiBaseUrl2}/housing/${cleanUrl}`;
+            // Common patterns: "filename.jpg", "housing/filename.jpg", "uploads/housing/filename.jpg"
+            const possiblePaths = [
+                `${this.apiBaseUrl2}/housing/${cleanUrl}`,
+                `${this.apiBaseUrl2}/uploads/housing/${cleanUrl}`,
+                `${this.apiBaseUrl2}/${cleanUrl}`,
+            ];
+
+            // For now, use the first one (can be enhanced with retry logic)
+            const finalUrl = possiblePaths[0];
+            console.log('[ImageService] Resolved housing context:', {
+                originalUrl: url,
+                finalUrl,
+                note: 'If this fails, image will fallback to placeholder'
+            });
+            return finalUrl;
         }
 
         // 4. Default to posts folder
-        return `${this.apiBaseUrl2}/posts/${cleanUrl}`;
+        const finalUrl = `${this.apiBaseUrl2}/posts/${cleanUrl}`;
+        console.log('[ImageService] Resolved default posts:', { originalUrl: url, finalUrl });
+        return finalUrl;
     }
 
     private cleanAndResolveAvatar(url: string, fallback: string): string {

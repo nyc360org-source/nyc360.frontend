@@ -1,16 +1,20 @@
 <div class="details-page" *ngIf="!isLoading && property">
     <!-- Gallery Grid -->
     <div class="gallery-section">
-        <div class="main-image">
-            <img [src]="activeImage" [appImgFallback]="'post'" alt="Property Main Image">
+        <div class="main-image" (click)="togglePhotos()">
+            <img [src]="activeImage" [appImgFallback]="'housing'" alt="Property Main Image">
+            <div class="image-counter" *ngIf="property.attachments?.length > 1">
+                <i class="bi bi-images"></i> {{ property.attachments.length }} Photos
+            </div>
         </div>
         <div class="side-images" *ngIf="property.attachments?.length > 1">
             <div class="sub-img" *ngFor="let img of (property.attachments | slice:1:4)"
                 (click)="setActiveImage($any(img))">
-                <img [src]="imageService.resolveImageUrl($any(img), 'housing')" [appImgFallback]="'post'">
+                <img [src]="imageService.resolveImageUrl($any(img), 'housing')" [appImgFallback]="'housing'">
             </div>
-            <div class="view-more-btn" *ngIf="property.attachments?.length > 4">
-                View {{ property.attachments.length }}+ Photos
+            <div class="view-more-btn" *ngIf="property.attachments?.length > 4" (click)="togglePhotos()">
+                <i class="bi bi-grid-3x3-gap"></i>
+                <span>View All {{ property.attachments.length }} Photos</span>
             </div>
         </div>
     </div>
@@ -325,6 +329,30 @@
                     </div>
                     <p class="sim-price">{{ formatPrice(item.startingPrice) }}</p>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Photos Overlay -->
+<div class="photos-overlay" *ngIf="showAllPhotos" (click)="togglePhotos()">
+    <div class="overlay-backdrop"></div>
+    <div class="overlay-content" (click)="$event.stopPropagation()">
+        <div class="overlay-header">
+            <div class="header-info">
+                <i class="bi bi-images"></i>
+                <h4>Property Photos</h4>
+                <span class="photo-count">{{ property.attachments?.length }} images</span>
+            </div>
+            <button class="close-btn" (click)="togglePhotos()" title="Close">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+        <div class="overlay-grid">
+            <div class="photo-item" *ngFor="let img of property.attachments; let i = index">
+                <img [src]="imageService.resolveImageUrl(img, 'housing')" [appImgFallback]="'housing'"
+                    [alt]="'Property photo ' + (i + 1)" loading="lazy">
+                <div class="photo-number">{{ i + 1 }}</div>
             </div>
         </div>
     </div>

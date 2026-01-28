@@ -198,7 +198,7 @@ $white: #ffffff;
 .property-grid {
     display: grid;
     gap: 30px;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
 }
 
 .property-card {

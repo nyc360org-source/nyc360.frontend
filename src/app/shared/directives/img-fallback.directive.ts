@@ -6,7 +6,7 @@ import { ImageService } from '../services/image.service';
     standalone: true
 })
 export class ImgFallbackDirective {
-    @Input() appImgFallback: 'post' | 'avatar' | string = 'post';
+    @Input() appImgFallback: 'post' | 'avatar' | 'housing' | string = 'post';
 
     private el = inject(ElementRef);
     private imageService = inject(ImageService);
@@ -17,10 +17,13 @@ export class ImgFallbackDirective {
         if (this.isFallbackApplied) return; // Prevent infinite loop
 
         const img: HTMLImageElement = this.el.nativeElement;
+        console.warn('[ImgFallback] Image failed to load:', img.src, 'Using fallback for type:', this.appImgFallback);
         this.isFallbackApplied = true;
 
         if (this.appImgFallback === 'avatar') {
             img.src = this.imageService.DEFAULT_AVATAR;
+        } else if (this.appImgFallback === 'housing') {
+            img.src = this.imageService.DEFAULT_HOUSING;
         } else if (this.appImgFallback === 'post') {
             img.src = this.imageService.DEFAULT_POST;
         } else if (this.appImgFallback && typeof this.appImgFallback === 'string') {

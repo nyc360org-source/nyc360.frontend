@@ -494,8 +494,8 @@
                             <h6 class="text-muted mb-3 small fw-bold">CURRENT PHOTOS</h6>
                             <div class="photo-previews">
                                 <div class="preview-item" *ngFor="let att of existingAttachments; let i = index">
-                                    <img [src]="att.url" alt="Existing Media"
-                                        onerror="this.src='/assets/placeholder.png'">
+                                    <img [src]="imageService.resolveImageUrl(att, 'housing')"
+                                        [appImgFallback]="'housing'" alt="Existing Media">
                                     <button type="button" class="btn-remove"
                                         (click)="removeExistingFile(i, att.id)">&times;</button>
                                 </div>

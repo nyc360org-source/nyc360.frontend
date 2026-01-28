@@ -29,6 +29,7 @@ export class HousingDetailsComponent implements OnInit {
     isLoading = true;
     activeImage: string | null = null;
     currentUserId: number | null = null;
+    showAllPhotos = false;
 
     ngOnInit(): void {
         this.currentUserId = this.authService.getUserId();
@@ -51,14 +52,22 @@ export class HousingDetailsComponent implements OnInit {
 
         this.housingService.getHousingDetails(id).subscribe({
             next: (res: any) => {
+                console.log('[HousingDetails] API Response:', res);
                 if (res.isSuccess) {
                     this.property = res.data.info;
                     this.similarProperties = res.data.similar || [];
 
+                    console.log('[HousingDetails] Property data:', this.property);
+                    console.log('[HousingDetails] Property attachments:', this.property.attachments);
+                    console.log('[HousingDetails] Property imageUrl:', this.property.imageUrl);
+
                     if (this.property.attachments?.length > 0) {
+                        console.log('[HousingDetails] First attachment:', this.property.attachments[0]);
                         this.activeImage = this.imageService.resolveImageUrl(this.property.attachments[0], 'housing');
+                        console.log('[HousingDetails] Active image URL:', this.activeImage);
                     } else if (this.property.imageUrl) {
                         this.activeImage = this.imageService.resolveImageUrl(this.property.imageUrl, 'housing');
+                        console.log('[HousingDetails] Active image from imageUrl:', this.activeImage);
                     }
                 }
                 this.isLoading = false;
@@ -74,6 +83,10 @@ export class HousingDetailsComponent implements OnInit {
 
     setActiveImage(url: string) {
         this.activeImage = this.imageService.resolveImageUrl(url, 'housing');
+    }
+
+    togglePhotos() {
+        this.showAllPhotos = !this.showAllPhotos;
     }
 
     // --- Enums & Options (Mapped from Create/Edit) ---
