@@ -30,7 +30,7 @@
                     </span>
                 </div>
 
-                <button class="btn-hero" [routerLink]="['/public/housing/details', heroPost.id]">View details</button>
+                <button class="btn-hero" [routerLink]="['/public/posts/details', heroPost.id]">View details</button>
             </div>
         </div>
     </div>
@@ -59,14 +59,7 @@
             </div>
         </div>
 
-        <!-- Filters -->
-        <div class="filters-row">
-            <div class="filter-dropdown">Location <i class="bi bi-chevron-down"></i></div>
-            <div class="filter-dropdown">Property Type <i class="bi bi-chevron-down"></i></div>
-            <div class="filter-dropdown">Rooms/Baths <i class="bi bi-chevron-down"></i></div>
-            <div class="filter-dropdown">Price <i class="bi bi-chevron-down"></i></div>
-            <a class="clear-btn">clear now</a>
-        </div>
+
     </div>
 
     <main class="content-body" *ngIf="!isLoading">
@@ -128,11 +121,10 @@
         <section class="section-wrapper" *ngIf="rssPosts.length > 0">
             <div class="section-head">
                 <h3 class="section-title">NYC Housing Programs Official Posts</h3>
-                <a href="#" class="view-all">View All</a>
             </div>
             <div class="housing-grid">
                 <div class="premium-card" *ngFor="let post of (rssPosts | slice:0:3)"
-                    [routerLink]="['/public/housing/details', post.id]">
+                    [routerLink]="['/public/posts/details', post.id]">
                     <div class="card-thumb" style="height: 220px;">
                         <img [src]="post.attachments?.[0]?.url" [appImgFallback]="'post'">
                     </div>
@@ -163,7 +155,7 @@
                     <div class="disc-footer">
                         <div class="replies"><i class="bi bi-chat-left-text"></i> {{ post.stats?.comments }} replies
                         </div>
-                        <button class="btn-join-disc" [routerLink]="['/public/housing/details', post.id]">Read
+                        <button class="btn-join-disc" [routerLink]="['/public/posts/details', post.id]">Read
                             More</button>
                     </div>
                 </div>
@@ -174,7 +166,6 @@
         <section class="section-wrapper">
             <div class="section-head">
                 <h3 class="section-title">All Posts</h3>
-                <a href="#" class="view-all">View All</a>
             </div>
             <div class="housing-grid four-cols">
                 <!-- Fallback to Renting if 'all' is empty for demonstration, or use allPosts if populated -->

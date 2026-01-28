@@ -485,20 +485,45 @@ $card-shadow: 0 10px 40px rgba(188, 157, 95, 0.08);
 
     .disc-footer {
         display: flex;
+        justify-content: space-between; // Push button to the right
         align-items: center;
         gap: 20px;
         color: #999;
         font-size: 0.9rem;
         font-weight: 500;
+        margin-top: 20px;
+        border-top: 1px solid #f5f5f5;
+        padding-top: 20px;
 
         .replies {
             display: flex;
             align-items: center;
             gap: 8px;
             cursor: pointer;
+            transition: color 0.2s;
 
             &:hover {
                 color: $housing-accent;
+            }
+        }
+
+        .btn-join-disc {
+            background: $housing-accent;
+            color: $white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba($housing-accent, 0.2);
+            text-decoration: none; // in case it's an anchor
+
+            &:hover {
+                background: $housing-accent-dark;
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba($housing-accent, 0.3);
             }
         }
     }

@@ -110,6 +110,9 @@
                         <strong>{{ property.moveInDate | date:'mediumDate' }}</strong>
                     </div>
 
+                    <button class="btn-action gold" [routerLink]="['/public/housing/agent-request']"
+                        [queryParams]="{postId: property.id}">Apply / Contact Agent</button>
+
                 </div>
 
                 <!-- Agent Info -->
