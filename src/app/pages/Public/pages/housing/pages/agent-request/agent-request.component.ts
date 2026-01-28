@@ -143,6 +143,8 @@ export class AgentRequestComponent implements OnInit {
         return field ? (field.invalid && (field.dirty || field.touched)) : false;
     }
 
+    errorMessage: string | null = null;
+
     onSubmit() {
         if (this.form.invalid) {
             this.form.markAllAsTouched();
@@ -151,6 +153,7 @@ export class AgentRequestComponent implements OnInit {
         }
 
         this.isSubmitting = true;
+        this.errorMessage = null;
         const rawData = this.form.value;
 
         const payload = {
@@ -182,20 +185,22 @@ export class AgentRequestComponent implements OnInit {
                         PostId: this.postId
                     });
                 } else {
-                    this.toastService.error(res.error?.message || 'Something went wrong.');
+                    this.errorMessage = res.error?.message || 'Something went wrong. Please try again.';
+                    this.toastService.error(this.errorMessage || 'Error');
                 }
             },
             error: (err) => {
                 this.isSubmitting = false;
-                this.toastService.error('Failed to submit request.');
+                this.errorMessage = 'Failed to submit request. Please check your connection and try again.';
+                this.toastService.error(this.errorMessage);
             }
         });
     }
 
-    private formatDate(dateStr: string): string | null {
-        if (!dateStr) return null;
+    private formatDate(dateStr: string): string | undefined {
+        if (!dateStr) return undefined;
         const date = new Date(dateStr);
-        return !isNaN(date.getTime()) ? date.toISOString() : null;
+        return !isNaN(date.getTime()) ? date.toISOString() : undefined;
     }
 
     resetForm() {

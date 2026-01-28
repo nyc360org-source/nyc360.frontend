@@ -525,3 +525,22 @@ $glass-border: rgba(0, 0, 0, 0.08);
         transform: scale(1);
     }
 }
+
+// Alerts - Added Step 1228
+.alert-error {
+    background: rgba($error, 0.08);
+    border: 1px solid rgba($error, 0.2);
+    color: darken($error, 10%);
+    padding: 1rem 1.5rem;
+    border-radius: $border-radius;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-weight: 500;
+    animation: slideDown 0.3s ease;
+
+    i {
+        font-size: 1.4rem;
+    }
+}
