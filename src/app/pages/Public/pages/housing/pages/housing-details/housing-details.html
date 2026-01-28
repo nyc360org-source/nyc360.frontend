@@ -8,11 +8,13 @@
             </div>
         </div>
         <div class="side-images" *ngIf="property.attachments?.length > 1">
-            <div class="sub-img" *ngFor="let img of (property.attachments | slice:1:4)"
+            <!-- Show first 2 additional images (index 1 and 2) -->
+            <div class="sub-img" *ngFor="let img of (property.attachments | slice:1:3)"
                 (click)="setActiveImage($any(img))">
                 <img [src]="imageService.resolveImageUrl($any(img), 'housing')" [appImgFallback]="'housing'">
             </div>
-            <div class="view-more-btn" *ngIf="property.attachments?.length > 4" (click)="togglePhotos()">
+            <!-- If more than 3 total images (1 main + 2 side = need 4+ for "view more") -->
+            <div class="view-more-btn" *ngIf="property.attachments?.length > 3" (click)="togglePhotos()">
                 <i class="bi bi-grid-3x3-gap"></i>
                 <span>View All {{ property.attachments.length }} Photos</span>
             </div>
