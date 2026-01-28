@@ -110,9 +110,6 @@
                         <strong>{{ property.moveInDate | date:'mediumDate' }}</strong>
                     </div>
 
-                    <button class="btn-action primary">Contact Agent</button>
-                    <!-- Only show Apply if Renting -->
-                    <button class="btn-action gold" *ngIf="property.isRenting">Apply Now</button>
                 </div>
 
                 <!-- Agent Info -->
@@ -124,7 +121,7 @@
                         </div>
                         <div class="agent-details">
                             <span class="label">Listed by</span>
-                            <h4 [routerLink]="['/profile', property.author?.username]" style="cursor: pointer;">
+                            <h4 [routerLink]="['/public/profile', property.author?.username]" style="cursor: pointer;">
                                 {{ property.author?.fullName || property.author?.username }}
                             </h4>
                             <span class="sub-label">Verified Agent</span>
@@ -132,12 +129,6 @@
                     </div>
                 </div>
 
-                <!-- Google Map Link -->
-                <div class="sidebar-card map-card" *ngIf="property.googleMapLink">
-                    <a [href]="property.googleMapLink" target="_blank" class="map-link-btn">
-                        <i class="bi bi-map"></i> View on Google Maps
-                    </a>
-                </div>
             </div>
         </div>
     </div>
