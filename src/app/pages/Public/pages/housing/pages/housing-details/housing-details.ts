@@ -163,7 +163,7 @@ export class HousingDetailsComponent implements OnInit {
     }
 
     formatPrice(price: number): string {
-        if (price === undefined || price === null) return 'Not Listed';
+        if (price === undefined || price === null || price === 0) return 'Contact for Price';
         return new Intl.NumberFormat('en-US', {
             style: 'currency',
             currency: 'USD',

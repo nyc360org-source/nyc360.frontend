@@ -47,20 +47,22 @@
 
                 <!-- Key Specs Grid -->
                 <div class="specs-grid">
-                    <div class="spec-item">
+                    <div class="spec-item" *ngIf="property.numberOfRooms > 0">
                         <span class="label">Bedrooms</span>
-                        <strong class="value"><i class="bi bi-door-open me-2"></i>{{ property.numberOfRooms ?? 'N/A'
-                            }}</strong>
+                        <strong class="value"><i class="bi bi-door-open me-2"></i>{{ property.numberOfRooms }}</strong>
                     </div>
-                    <div class="spec-item">
+                    <div class="spec-item" *ngIf="property.numberOfRooms === 0">
+                        <span class="label">Layout</span>
+                        <strong class="value"><i class="bi bi-door-open me-2"></i>Studio / Open</strong>
+                    </div>
+                    <div class="spec-item" *ngIf="property.numberOfBathrooms > 0">
                         <span class="label">Bathrooms</span>
-                        <strong class="value"><i class="bi bi-droplet me-2"></i>{{ property.numberOfBathrooms ?? 'N/A'
+                        <strong class="value"><i class="bi bi-droplet me-2"></i>{{ property.numberOfBathrooms
                             }}</strong>
                     </div>
-                    <div class="spec-item">
+                    <div class="spec-item" *ngIf="property.size > 0">
                         <span class="label">Size</span>
-                        <strong class="value"><i class="bi bi-rulers me-2"></i>{{ property.size ? property.size + ' Sq
-                            Ft' : 'N/A' }}</strong>
+                        <strong class="value"><i class="bi bi-rulers me-2"></i>{{ property.size }} Sq Ft</strong>
                     </div>
                     <div class="spec-item">
                         <span class="label">Type</span>
@@ -101,8 +103,8 @@
                     <div class="detail-group">
                         <h5><i class="bi bi-house-gear me-2"></i>Structure & Systems</h5>
                         <ul>
-                            <li><span>Year Built:</span> {{ property.yearBuilt || 'Not specified' }}</li>
-                            <li><span>Renovated:</span> {{ property.renovatedIn || 'Not specified' }}</li>
+                            <li *ngIf="property.yearBuilt > 0"><span>Year Built:</span> {{ property.yearBuilt }}</li>
+                            <li *ngIf="property.renovatedIn > 0"><span>Renovated:</span> {{ property.renovatedIn }}</li>
                             <li><span>Heating:</span> {{ getLabel(property.heatingSystem, heatingSystems) }}</li>
                             <li><span>Cooling:</span> {{ getLabel(property.coolingSystem, coolingSystems) }}</li>
                             <li><span>Temp Control:</span> {{ getLabel(property.temperatureControl, tempControls) }}
@@ -114,10 +116,11 @@
                         <h5><i class="bi bi-people me-2"></i>Living & Utility</h5>
                         <ul>
                             <li><span>Household:</span> {{ getLabel(property.householdType, householdTypes) }}</li>
-                            <li><span>Max Occupants:</span> {{ property.maxOccupants || 'Not specified' }}</li>
+                            <li *ngIf="property.maxOccupants > 0"><span>Max Occupants:</span> {{ property.maxOccupants
+                                }}</li>
                             <li><span>Laundry:</span> {{ getLabel(property.laundryType, laundryTypes) }}</li>
-                            <li><span>Floor Level:</span> {{ property.floorLevel || 'Not specified' }}</li>
-                            <li><span>Unit #:</span> {{ property.unitNumber || 'N/A' }}</li>
+                            <li *ngIf="property.floorLevel > 0"><span>Floor Level:</span> {{ property.floorLevel }}</li>
+                            <li *ngIf="property.unitNumber"><span>Unit #:</span> {{ property.unitNumber }}</li>
                         </ul>
                     </div>
 
@@ -207,7 +210,7 @@
 
                 <div class="map-placeholder-box">
                     <!-- If google link exists -->
-             
+
                     <!-- Fallback Info -->
                     <div class="loc-details p-4" *ngIf="!property.googleMapLink">
                         <h4>{{ property.address.location.neighborhood }}</h4>
@@ -276,7 +279,7 @@
                         [queryParams]="{postId: property.id}">
                         Request Tour / Apply
                     </button>
-               
+
                 </div>
 
                 <!-- Agent Info -->

@@ -236,7 +236,9 @@ export class EditHousingComponent implements OnInit {
         this.housingService.getHousingDetails(id).subscribe({
             next: (res: any) => {
                 if (res.isSuccess) {
-                    this.populateForm(res.data);
+                    // Check if data is wrapped in 'info' (common in this API) or direct
+                    const listingData = res.data.info || res.data;
+                    this.populateForm(listingData);
                 } else {
                     this.toastService.error('Failed to load listing details');
                     this.router.navigate(['/public/housing/home']);
@@ -312,21 +314,29 @@ export class EditHousingComponent implements OnInit {
         });
 
         // 3. Address & Location
+        // 3. Address & Location
         if (data.address) {
-            this.currentAddressId = data.address.addressId;
+            this.currentAddressId = data.address.id; // Corrected to match API response 'id'
             this.form.get('Address')?.patchValue({
-                Street: data.address.street,
-                BuildingNumber: data.address.buildingNumber,
-                ZipCode: data.address.zipCode
+                Street: data.address.street || '',
+                BuildingNumber: data.address.buildingNumber || '',
+                ZipCode: data.address.zipCode || ''
             });
-            // We need to set the Location details for the search input
-            // Ideally the API returns location details inside address or separate
-            // For now we assume we might need to fetch location separately or use what we have
-            // If data.address.location exists
-            if (data.address.locationId) {
-                this.selectedLocation = { id: data.address.locationId }; // Minimal obj
-                // If we have location names we set the input
-                // Assuming we might not have full location text, we leave input empty or set a placeholder
+
+            // Handle Location Display
+            if (data.address.location) {
+                const loc = data.address.location;
+                this.selectedLocation = { id: loc.id, neighborhood: loc.neighborhood, borough: loc.borough, zipCode: loc.zipCode };
+                const display = `${loc.neighborhood}, ${loc.borough} - ${loc.zipCode}`;
+                this.form.patchValue({ locationInput: display });
+
+                // Ensure zip code is synced if missing in address but present in location
+                if (!data.address.zipCode && loc.zipCode) {
+                    this.form.get('Address.ZipCode')?.setValue(String(loc.zipCode));
+                }
+            } else if (data.address.locationId) {
+                // Fallback if only ID is present (rare based on response schema)
+                this.selectedLocation = { id: data.address.locationId };
             }
         }
 
@@ -335,10 +345,16 @@ export class EditHousingComponent implements OnInit {
             this.existingAttachments = data.attachments;
         }
 
-        // 5. Derived UI State
+        // 5. Derived UI State & Handling Nulls
         this.form.patchValue({
-            PrivacyType: data.rentingIsShared ? 'Shared Unit' : 'Private Unit'
+            PrivacyType: data.rentingIsShared ? 'Shared Unit' : 'Private Unit',
+            // Default select values to 0 if null, to match "Not Specified" or first option
+            BuildingType: data.buildingType ?? 0,
+            HouseholdType: data.householdType ?? 0
         });
+
+        // Ensure proper change detection for arrays/UI
+        this.cdr.detectChanges();
     }
 
     setupSearch() {
