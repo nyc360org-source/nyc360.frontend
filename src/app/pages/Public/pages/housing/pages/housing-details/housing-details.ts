@@ -63,7 +63,12 @@ export class HousingDetailsComponent implements OnInit {
 
                     if (this.property.attachments?.length > 0) {
                         console.log('[HousingDetails] First attachment:', this.property.attachments[0]);
-                        this.activeImage = this.imageService.resolveImageUrl(this.property.attachments[0], 'housing');
+                        // Handle both object {id, url} and string formats
+                        const firstAttachment = this.property.attachments[0];
+                        const imageUrl = typeof firstAttachment === 'string'
+                            ? firstAttachment
+                            : (firstAttachment.url || firstAttachment);
+                        this.activeImage = this.imageService.resolveImageUrl(imageUrl, 'housing');
                         console.log('[HousingDetails] Active image URL:', this.activeImage);
                     } else if (this.property.imageUrl) {
                         this.activeImage = this.imageService.resolveImageUrl(this.property.imageUrl, 'housing');
@@ -81,8 +86,12 @@ export class HousingDetailsComponent implements OnInit {
         });
     }
 
-    setActiveImage(url: string) {
-        this.activeImage = this.imageService.resolveImageUrl(url, 'housing');
+    setActiveImage(attachment: any) {
+        // Handle both object {id, url} and string formats
+        const imageUrl = typeof attachment === 'string'
+            ? attachment
+            : (attachment.url || attachment);
+        this.activeImage = this.imageService.resolveImageUrl(imageUrl, 'housing');
     }
 
     togglePhotos() {

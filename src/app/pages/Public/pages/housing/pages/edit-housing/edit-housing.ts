@@ -346,7 +346,13 @@ export class EditHousingComponent implements OnInit {
         // 4. Attachments
         if (data.attachments) {
             console.log('[EditHousing] Attachments from API:', data.attachments);
-            this.existingAttachments = data.attachments;
+            // Map attachments to ensure we have the correct structure
+            this.existingAttachments = data.attachments.map((att: any) => ({
+                id: att.id || att.attachmentId || null, // Try different property names
+                url: att.url || att.imageUrl || att,
+                originalData: att // Keep original for debugging
+            }));
+            console.log('[EditHousing] Mapped attachments:', this.existingAttachments);
         }
 
         // 5. Derived UI State & Handling Nulls
@@ -474,7 +480,13 @@ export class EditHousingComponent implements OnInit {
     }
 
     removeExistingFile(index: number, id: number) {
-        this.deletedAttachmentIds.push(id);
+        console.log('[EditHousing] Removing attachment with ID:', id);
+        // Only add to deleted list if ID is valid
+        if (id !== null && id !== undefined && !isNaN(id)) {
+            this.deletedAttachmentIds.push(id);
+        } else {
+            console.warn('[EditHousing] Skipping invalid attachment ID:', id);
+        }
         this.existingAttachments.splice(index, 1);
     }
 
@@ -490,6 +502,13 @@ export class EditHousingComponent implements OnInit {
         const formVal = this.form.getRawValue();
 
         // Construct Update Payload
+        // Filter out any undefined/null/NaN values from deletedAttachmentIds
+        const validDeletedIds = this.deletedAttachmentIds.filter(
+            id => id !== null && id !== undefined && !isNaN(id)
+        );
+
+        console.log('[EditHousing] Valid deleted IDs:', validDeletedIds);
+
         const payload = {
             ...formVal,
             Address: {
@@ -498,7 +517,7 @@ export class EditHousingComponent implements OnInit {
                 LocationId: this.selectedLocation?.id || 0 // Use existing or new
             },
             NewAttachments: this.selectedFiles,
-            DeletedAttachmentIds: this.deletedAttachmentIds
+            DeletedAttachmentIds: validDeletedIds
         };
 
         if (this.postId) {

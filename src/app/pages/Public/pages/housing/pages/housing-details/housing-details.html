@@ -9,9 +9,9 @@
         </div>
         <div class="side-images" *ngIf="property.attachments?.length > 1">
             <!-- Show first 2 additional images (index 1 and 2) -->
-            <div class="sub-img" *ngFor="let img of (property.attachments | slice:1:3)"
-                (click)="setActiveImage($any(img))">
-                <img [src]="imageService.resolveImageUrl($any(img), 'housing')" [appImgFallback]="'housing'">
+            <div class="sub-img" *ngFor="let img of (property.attachments | slice:1:3)" (click)="setActiveImage(img)">
+                <img [src]="imageService.resolveImageUrl($any(img)?.url || img, 'housing')"
+                    [appImgFallback]="'housing'">
             </div>
             <!-- If more than 3 total images (1 main + 2 side = need 4+ for "view more") -->
             <div class="view-more-btn" *ngIf="property.attachments?.length > 3" (click)="togglePhotos()">
@@ -352,7 +352,7 @@
         </div>
         <div class="overlay-grid">
             <div class="photo-item" *ngFor="let img of property.attachments; let i = index">
-                <img [src]="imageService.resolveImageUrl(img, 'housing')" [appImgFallback]="'housing'"
+                <img [src]="imageService.resolveImageUrl($any(img)?.url || img, 'housing')" [appImgFallback]="'housing'"
                     [alt]="'Property photo ' + (i + 1)" loading="lazy">
                 <div class="photo-number">{{ i + 1 }}</div>
             </div>
