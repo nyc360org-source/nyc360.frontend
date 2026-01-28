@@ -46,9 +46,9 @@
                         <input type="date" class="form-control" formControlName="MoveOutDate">
                     </div>
                     <div class="col-md-4 form-group" *ngIf="isRenting">
-                        <label>Stay Type</label>
+                        <label>Lease Type *</label>
                         <select class="form-select" formControlName="RentingLeaseType">
-                            <option [ngValue]="null">Select Type</option>
+                            <option [ngValue]="null">Select Lease Type</option>
                             <option *ngFor="let l of leaseTypes" [ngValue]="l.id">{{ l.name }}</option>
                         </select>
                     </div>
@@ -308,44 +308,54 @@
                 <h3 class="section-title"><i class="bi bi-people me-2"></i>Shared Unit Details</h3>
                 <div class="row g-4">
                     <div class="col-md-6">
-                        <label class="mb-3">Bathroom Policy</label>
+                        <label class="mb-3">Bathroom</label>
                         <div class="radio-group-row">
                             <label class="radio-custom">
                                 <input type="radio" formControlName="RentingIsSharedBathroom" [value]="false">
                                 <span class="radio-mark"></span>
-                                <span class="radio-label">Private</span>
+                                <span class="radio-label">Private Bathroom</span>
                             </label>
                             <label class="radio-custom">
                                 <input type="radio" formControlName="RentingIsSharedBathroom" [value]="true">
                                 <span class="radio-mark"></span>
-                                <span class="radio-label">Shared</span>
+                                <span class="radio-label">Shared Bathroom</span>
                             </label>
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <label class="mb-3">Kitchen Policy</label>
+                        <label class="mb-3">Kitchen *</label>
                         <div class="radio-group-row">
                             <label class="radio-custom">
                                 <input type="radio" formControlName="RentingIsSharedKitchen" [value]="false">
                                 <span class="radio-mark"></span>
-                                <span class="radio-label">Private</span>
+                                <span class="radio-label">Private Kitchen</span>
                             </label>
                             <label class="radio-custom">
                                 <input type="radio" formControlName="RentingIsSharedKitchen" [value]="true">
                                 <span class="radio-mark"></span>
-                                <span class="radio-label">Shared</span>
+                                <span class="radio-label">Shared Kitchen</span>
+                            </label>
+                            <label class="radio-custom">
+                                <input type="radio" formControlName="RentingIsSharedKitchen" [value]="null">
+                                <span class="radio-mark"></span>
+                                <span class="radio-label">No Kitchen</span>
                             </label>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <label>Current Resident Info</label>
+                    <div class="col-md-12">
+                        <label>About Current Resident(s)</label>
                         <input type="text" class="form-control" formControlName="RentingAboutCurrentResident"
-                            placeholder="e.g. 2 males, 20s, professionals">
+                            placeholder="Add Short Brief About Current Resident(s)">
                     </div>
-                    <div class="col-md-6">
-                        <label>Roommate Rules</label>
+                    <div class="col-md-12">
+                        <label>Unit Rules & Policies</label>
                         <input type="text" class="form-control" formControlName="RentingRulesAndPolicies"
-                            placeholder="e.g. No overnight guests">
+                            placeholder="List The Unit Rules & Policies">
+                    </div>
+                    <div class="col-md-12">
+                        <label>Roommate's Group Chat</label>
+                        <input type="text" class="form-control" formControlName="RentingRoommateGroupChat"
+                            placeholder="Add Roommate Email/s address, to join the unite group chat.">
                     </div>
                 </div>
             </section>

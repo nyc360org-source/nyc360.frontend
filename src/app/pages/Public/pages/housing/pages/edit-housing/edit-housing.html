@@ -432,7 +432,7 @@
                 <div class="shared-unit-details mt-5 pt-4 border-top" *ngIf="f['RentingIsShared'].value">
                     <div class="row g-4">
                         <div class="col-md-6">
-                            <label class="fw-bold mb-3">Bathroom Policy</label>
+                            <label class="fw-bold mb-3">Bathroom</label>
                             <div class="radio-group-row">
                                 <label class="radio-custom">
                                     <input type="radio" formControlName="RentingIsSharedBathroom" [value]="false">
@@ -447,22 +447,22 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <label class="fw-bold mb-3">Kitchen Policy</label>
+                            <label class="fw-bold mb-3">Kitchen *</label>
                             <div class="radio-group-row">
                                 <label class="radio-custom">
                                     <input type="radio" formControlName="RentingIsSharedKitchen" [value]="false">
                                     <span class="radio-mark"></span>
-                                    <span class="radio-label">Private</span>
+                                    <span class="radio-label">Private Kitchen</span>
                                 </label>
                                 <label class="radio-custom">
                                     <input type="radio" formControlName="RentingIsSharedKitchen" [value]="true">
                                     <span class="radio-mark"></span>
-                                    <span class="radio-label">Shared</span>
+                                    <span class="radio-label">Shared Kitchen</span>
                                 </label>
                                 <label class="radio-custom">
                                     <input type="radio" formControlName="RentingIsSharedKitchen" [value]="null">
                                     <span class="radio-mark"></span>
-                                    <span class="radio-label">None</span>
+                                    <span class="radio-label">No Kitchen</span>
                                 </label>
                             </div>
                         </div>

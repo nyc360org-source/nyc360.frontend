@@ -81,16 +81,16 @@ export class EditHousingComponent implements OnInit {
     ];
 
     laundryTypes = [
-        { id: 0, name: 'InUnit' },
-        { id: 1, name: 'InBuilding' },
+        { id: 0, name: 'In-Unit' },
+        { id: 1, name: 'In-Building' },
         { id: 2, name: 'Nearby' }
     ];
 
     leaseTypes = [
         { id: 0, name: 'Lease' },
-        { id: 1, name: 'Sub-lease' },
-        { id: 2, name: 'Short-term' },
-        { id: 3, name: 'Month-to-month' },
+        { id: 1, name: 'Sub-Lease' },
+        { id: 2, name: 'Month-to-Month' },
+        { id: 3, name: 'Stabilized' },
         { id: 4, name: 'Flexible' }
     ];
 
