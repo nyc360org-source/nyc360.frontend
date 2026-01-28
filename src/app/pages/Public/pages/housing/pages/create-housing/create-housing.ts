@@ -331,6 +331,7 @@ export class CreateHousingComponent implements OnInit {
 
         this.showLocationDropdown = false;
         this.cdr.detectChanges();
+        console.log(this.selectedLocation);
     }
 
     onTagType(event: any) { this.tagSearch$.next(event.target.value); }
@@ -404,24 +405,18 @@ export class CreateHousingComponent implements OnInit {
     // --- Submit ---
     // --- Submit ---
     onSubmit() {
-        console.log('onSubmit triggered'); // Debug logic entry
+        console.log('onSubmit triggered');
 
         // 1. Validation Logic
         if (this.form.invalid) {
             this.form.markAllAsTouched();
-
-            // Find first invalid control to scroll to
             setTimeout(() => {
                 const firstInvalid = document.querySelector('.is-invalid, .ng-invalid.ng-touched:not(form)');
                 if (firstInvalid) {
                     firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    firstInvalid.classList.add('animate-shake'); // Optional visual cue
-                } else {
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
                 }
             }, 100);
 
-            // Log visible errors for debugging
             const invalidFields: string[] = [];
             Object.keys(this.form.controls).forEach(key => {
                 if (this.form.get(key)?.invalid) invalidFields.push(key);
@@ -430,63 +425,34 @@ export class CreateHousingComponent implements OnInit {
             return;
         }
 
-        // 2. Location Logic
-        // If user typed something but didn't select from dropdown
+        // 2. Location Guard
         if (!this.selectedLocation) {
-            const inputVal = this.form.get('locationInput')?.value;
-            if (inputVal && inputVal.length > 0) {
-                this.toastService.warning('Please click a location option from the dropdown list to confirm it.');
-            } else {
-                this.toastService.error('Please search and select a location.');
-            }
-            // Highlight location input
-            const locInput = document.querySelector('input[formControlName="locationInput"]');
-            if (locInput) {
-                (locInput as HTMLElement).focus();
-                locInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
+            this.toastService.error('Please search and select a location from the dropdown.');
             return;
         }
 
-        // 3. Prepare Payload
         this.isSubmitting = true;
-        const formVal = this.form.value;
+        const formVal = this.form.getRawValue();
 
+        // 3. Construct Payload (Pass plain object to Service, let Service handle FormData)
+        // We map specific fields to match what HousingService expects
         const payload = {
             ...formVal,
-            LocationsId: this.selectedLocation.id,
-            Tags: this.selectedTags.map(t => t.id),
+            LocationsId: this.selectedLocation.id, // Service expects 'LocationsId'
             Attachments: this.selectedFiles
         };
 
-        // Strict numeric cleansing for root fields
-        const numericFields = [
-            'MaxOccupants', 'NumberOfRooms', 'NumberOfBathrooms',
-            'StartingPrice', 'SecurityDeposit', 'BrokerFee', 'MonthlyCostRange',
-            'Size', 'FloorLevel', 'YearBuilt', 'RenovatedIn'
-        ];
-        numericFields.forEach(field => {
-            if (payload[field] === null || payload[field] === undefined || payload[field] === '') {
-                payload[field] = 0;
-            } else {
-                payload[field] = Number(payload[field]);
-            }
-        });
-
-        console.log('Submitting Payload:', payload);
+        console.log('Sending Payload to Service:', payload);
 
         // 4. Send Request
         this.housingService.createHousingPost(payload).subscribe({
             next: (res: any) => {
-                console.log('Response:', res);
                 this.isSubmitting = false;
-                // Handle various success shapes depending on backend wrapper
-                if (res && (res.isSuccess || res.statusCode === 200 || res.id)) {
+                if (res && res.isSuccess) {
                     this.toastService.success('Housing listing published successfully!');
                     this.router.navigate(['/public/housing']);
                 } else {
-                    const msg = res?.message || res?.error?.message || 'Failed to publish listing';
-                    this.toastService.error(msg);
+                    this.toastService.error(res?.message || 'Failed to publish listing');
                 }
             },
             error: (err: any) => {

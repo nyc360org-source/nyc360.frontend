@@ -53,7 +53,8 @@
 
         <!-- Property Grid -->
         <div class="property-grid" *ngIf="!isLoading && listings.length > 0">
-            <div class="property-card" *ngFor="let item of listings" [routerLink]="['/housing/details', item.id]">
+            <div class="property-card" *ngFor="let item of listings"
+                [routerLink]="['/public/housing/details', item.id]">
                 <div class="card-image">
                     <img [src]="imageService.resolveImageUrl(item.imageUrl, 'housing')" [appImgFallback]="'post'">
                     <span class="type-tag"

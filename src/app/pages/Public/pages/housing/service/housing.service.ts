@@ -114,4 +114,8 @@ export class HousingService {
         });
         return this.http.get(`${environment.apiBaseUrl}/housing/feed`, { params: httpParams });
     }
+
+    getHousingDetails(id: number | string): Observable<any> {
+        return this.http.get(`${environment.apiBaseUrl}/housing/${id}`);
+    }
 }

@@ -1,0 +1,170 @@
+<div class="details-page" *ngIf="!isLoading && property">
+    <!-- Gallery Grid -->
+    <div class="gallery-section">
+        <div class="main-image">
+            <img [src]="activeImage" [appImgFallback]="'post'" alt="Property Main Image">
+        </div>
+        <div class="side-images" *ngIf="property.attachments?.length > 1">
+            <div class="sub-img" *ngFor="let img of (property.attachments | slice:1:4)"
+                (click)="setActiveImage($any(img))">
+                <img [src]="imageService.resolveImageUrl($any(img), 'housing')" [appImgFallback]="'post'">
+            </div>
+            <div class="view-more-btn" *ngIf="property.attachments?.length > 4">
+                View {{ property.attachments.length }}+ Photos
+            </div>
+        </div>
+    </div>
+
+    <div class="content-container">
+        <!-- Left Column -->
+        <div class="main-info">
+            <div class="header-info">
+                <div class="status-badge mb-2">
+                    {{ property.isRenting ? 'For Rent' : 'For Sale' }}
+                </div>
+                <h1 class="prop-title">{{ property.title }}</h1>
+                <p class="prop-address" *ngIf="property.address">
+                    <span *ngIf="property.address.buildingNumber">{{ property.address.buildingNumber }} </span>
+                    <span *ngIf="property.address.street">{{ property.address.street }}, </span>
+                    <span *ngIf="property.address.location?.neighborhood">{{ property.address.location.neighborhood
+                        }}, </span>
+                    <span *ngIf="property.address.location?.borough">{{ property.address.location.borough }}</span>
+                    <span *ngIf="property.address.zipCode"> - {{ property.address.zipCode }}</span>
+                </p>
+
+                <div class="tags-row">
+                    <span class="amenity-tag" *ngIf="property.numberOfRooms > 0">
+                        <i class="bi bi-door-open"></i> {{ property.numberOfRooms }} Rooms
+                    </span>
+                    <span class="amenity-tag" *ngIf="property.numberOfBathrooms > 0">
+                        <i class="bi bi-droplet"></i> {{ property.numberOfBathrooms }} Baths
+                    </span>
+                    <span class="amenity-tag" *ngIf="property.size > 0">
+                        <i class="bi bi-rulers"></i> {{ property.size }} Sq Ft
+                    </span>
+                    <span class="amenity-tag" *ngIf="property.isFurnished">
+                        <i class="bi bi-lamp"></i> Furnished
+                    </span>
+                    <span class="amenity-tag" *ngIf="property.isPetsFriendly">
+                        <i class="bi bi-emoji-smile"></i> Pets Friendly
+                    </span>
+                </div>
+            </div>
+
+            <div class="description-box" *ngIf="property.description">
+                <h3>Description</h3>
+                <p>{{ property.description }}</p>
+            </div>
+
+            <!-- Features List (Only show if true) -->
+            <div class="features-section" *ngIf="hasFeatures()">
+                <h3>Property Features</h3>
+                <div class="features-grid">
+                    <div class="feature-item" *ngIf="property.isShortTermStayAllowed"><i class="bi bi-check2"></i> Short
+                        Term Allowed</div>
+                    <div class="feature-item" *ngIf="property.isFamilyAndKidsFriendly"><i class="bi bi-check2"></i>
+                        Family Friendly</div>
+                    <div class="feature-item" *ngIf="property.isAccessibilityFriendly"><i class="bi bi-check2"></i>
+                        Accessibility Friendly</div>
+                    <div class="feature-item" *ngIf="property.isSmokingAllowed"><i class="bi bi-check2"></i> Smoking
+                        Allowed</div>
+                </div>
+            </div>
+
+            <!-- Basic Location Info (Replaces Insights) -->
+            <div class="location-simple-section" *ngIf="property.address?.location">
+                <h3>Location</h3>
+                <div class="loc-card">
+                    <div class="loc-icon"><i class="bi bi-geo-alt"></i></div>
+                    <div class="loc-details">
+                        <h4>{{ property.address?.location?.neighborhood }}</h4>
+                        <p>{{ property.address?.location?.borough }} (Zip: {{ property.address?.zipCode ||
+                            property.address?.location?.zipCode }})</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transport (Only if data exists) -->
+            <div class="transport-section mt-4"
+                *ngIf="property.nearbySubwayLines && property.nearbySubwayLines.length > 0">
+                <h3>Nearby Transit</h3>
+                <div class="transit-lines">
+                    <span class="badge bg-secondary me-1" *ngFor="let line of property.nearbySubwayLines">{{ line
+                        }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-wrapper">
+                <!-- Price & Actions -->
+                <div class="sidebar-card price-card">
+                    <h2 class="price-display">
+                        {{ formatPrice(property.startingPrice || property.monthlyCostRange) }}
+                        <span class="period" *ngIf="property.isRenting">/mo</span>
+                    </h2>
+
+                    <div class="dates-info mb-3" *ngIf="property.moveInDate">
+                        <small class="text-muted d-block">Available from</small>
+                        <strong>{{ property.moveInDate | date:'mediumDate' }}</strong>
+                    </div>
+
+                    <button class="btn-action primary">Contact Agent</button>
+                    <!-- Only show Apply if Renting -->
+                    <button class="btn-action gold" *ngIf="property.isRenting">Apply Now</button>
+                </div>
+
+                <!-- Agent Info -->
+                <div class="sidebar-card agent-card">
+                    <div class="agent-row">
+                        <div class="agent-avatar">
+                            <img [src]="imageService.resolveImageUrl(property.author?.imageUrl, 'avatar')"
+                                [appImgFallback]="'avatar'">
+                        </div>
+                        <div class="agent-details">
+                            <span class="label">Listed by</span>
+                            <h4 [routerLink]="['/profile', property.author?.username]" style="cursor: pointer;">
+                                {{ property.author?.fullName || property.author?.username }}
+                            </h4>
+                            <span class="sub-label">Verified Agent</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Google Map Link -->
+                <div class="sidebar-card map-card" *ngIf="property.googleMapLink">
+                    <a [href]="property.googleMapLink" target="_blank" class="map-link-btn">
+                        <i class="bi bi-map"></i> View on Google Maps
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Similar Homes -->
+    <div class="similar-section" *ngIf="similarProperties.length > 0">
+        <h3>Similar Homes</h3>
+        <div class="similar-grid">
+            <div class="similar-card" *ngFor="let item of similarProperties"
+                [routerLink]="['/public/housing/details', item.id]">
+                <div class="sim-img">
+                    <img [src]="imageService.resolveImageUrl(item.imageUrl, 'housing')" [appImgFallback]="'post'">
+                </div>
+                <div class="sim-info">
+                    <h4>{{ item.title }}</h4>
+                    <div class="sim-stats" *ngIf="item.numberOfRooms > 0 || item.numberOfBathrooms > 0">
+                        <span *ngIf="item.numberOfRooms"><i class="bi bi-door-open"></i> {{ item.numberOfRooms }}</span>
+                        <span *ngIf="item.numberOfBathrooms"><i class="bi bi-droplet"></i> {{
+                            item.numberOfBathrooms}}</span>
+                    </div>
+                    <p class="sim-price">{{ formatPrice(item.startingPrice) }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="loading-overlay" *ngIf="isLoading">
+    <div class="spinner-border text-gold" role="status"></div>
+</div>

@@ -30,7 +30,7 @@
                     </span>
                 </div>
 
-                <button class="btn-hero" [routerLink]="['/housing/details', heroPost.id]">View details</button>
+                <button class="btn-hero" [routerLink]="['/public/housing/details', heroPost.id]">View details</button>
             </div>
         </div>
     </div>
@@ -39,7 +39,8 @@
     <div class="nav-filters-bar">
         <div class="action-row">
             <div class="tabs-group">
-                <button class="tab-btn" [class.active]="selectedTab === 'explore'" [routerLink]="['/housing/feed']">
+                <button class="tab-btn" [class.active]="selectedTab === 'explore'"
+                    [routerLink]="['/public/housing/feed']">
                     <i class="bi bi-compass-fill"></i> Explore Homes
                 </button>
                 <button class="tab-btn" [class.active]="selectedTab === 'inquiries'"
@@ -74,11 +75,11 @@
         <section class="section-wrapper" *ngIf="homesForSale.length > 0">
             <div class="section-head">
                 <h3 class="section-title">Homes For Sale</h3>
-                <a [routerLink]="['/housing/feed']" [queryParams]="{type: 'sale'}" class="view-all">View All</a>
+                <a [routerLink]="['/public/housing/feed']" [queryParams]="{type: 'sale'}" class="view-all">View All</a>
             </div>
             <div class="housing-grid">
                 <div class="premium-card" *ngFor="let item of homesForSale"
-                    [routerLink]="['/housing/details', item.id]">
+                    [routerLink]="['/public/housing/details', item.id]">
                     <div class="card-thumb">
                         <img [src]="imageService.resolveImageUrl(item.imageUrl, 'housing')" [appImgFallback]="'post'">
                         <span class="tag-price-badge">For Sale</span>
@@ -101,11 +102,11 @@
         <section class="section-wrapper" *ngIf="homesForRent.length > 0">
             <div class="section-head">
                 <h3 class="section-title">Homes For Rent</h3>
-                <a [routerLink]="['/housing/feed']" [queryParams]="{type: 'rent'}" class="view-all">View All</a>
+                <a [routerLink]="['/public/housing/feed']" [queryParams]="{type: 'rent'}" class="view-all">View All</a>
             </div>
             <div class="housing-grid four-cols">
                 <div class="premium-card" *ngFor="let item of (homesForRent | slice:0:4)"
-                    [routerLink]="['/housing/details', item.id]">
+                    [routerLink]="['/public/housing/details', item.id]">
                     <div class="card-thumb">
                         <img [src]="imageService.resolveImageUrl(item.imageUrl, 'housing')" [appImgFallback]="'post'">
                         <span class="tag-price-badge">For Rent</span>
@@ -130,7 +131,8 @@
                 <a href="#" class="view-all">View All</a>
             </div>
             <div class="housing-grid">
-                <div class="premium-card" *ngFor="let post of (rssPosts | slice:0:3)">
+                <div class="premium-card" *ngFor="let post of (rssPosts | slice:0:3)"
+                    [routerLink]="['/public/housing/details', post.id]">
                     <div class="card-thumb" style="height: 220px;">
                         <img [src]="post.attachments?.[0]?.url" [appImgFallback]="'post'">
                     </div>
@@ -161,6 +163,8 @@
                     <div class="disc-footer">
                         <div class="replies"><i class="bi bi-chat-left-text"></i> {{ post.stats?.comments }} replies
                         </div>
+                        <button class="btn-join-disc" [routerLink]="['/public/housing/details', post.id]">Read
+                            More</button>
                     </div>
                 </div>
             </div>
@@ -175,7 +179,8 @@
             <div class="housing-grid four-cols">
                 <!-- Fallback to Renting if 'all' is empty for demonstration, or use allPosts if populated -->
                 <div class="premium-card"
-                    *ngFor="let item of (allPosts.length > 0 ? allPosts : (homesForRent | slice:0:4))">
+                    *ngFor="let item of (allPosts.length > 0 ? allPosts : (homesForRent | slice:0:4))"
+                    [routerLink]="['/public/housing/details', item.id]">
                     <div class="card-thumb">
                         <img [src]="imageService.resolveImageUrl(item.imageUrl, 'housing')" [appImgFallback]="'post'">
                     </div>
