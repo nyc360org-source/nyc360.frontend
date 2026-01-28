@@ -171,7 +171,7 @@
                         <input type="number" class="form-control" formControlName="BrokerFee" placeholder="$">
                     </div>
                     <div class="col-md-3 form-group">
-                        <label>Monthly Utility Cost</label>
+                        <label>Monthly Cost rang </label>
                         <input type="number" class="form-control" formControlName="MonthlyCostRange" placeholder="$">
                     </div>
                 </div>
@@ -221,13 +221,25 @@
                 <h3 class="section-title"><i class="bi bi-stars me-2"></i>Features & Amenities</h3>
 
                 <div class="mb-5">
-                    <label class="fw-bold mb-3">Laundry Facilities</label>
+                    <label class="fw-bold mb-3">Laundry (Single-select or multi-select) *</label>
                     <div class="radio-group-row">
                         <label class="radio-custom" *ngFor="let l of laundryTypes">
                             <input type="radio" formControlName="LaundryType" [value]="l.id">
                             <span class="radio-mark"></span>
                             <span class="radio-label">{{l.name}}</span>
                         </label>
+                    </div>
+                </div>
+
+                <div class="mb-5">
+                    <label class="fw-bold mb-3">Amenities (Single-select or multi-select) *</label>
+                    <div class="amenities-grid">
+                        <button type="button" class="btn-amenity" *ngFor="let amenity of amenityOptions"
+                            [class.active]="f['Amenities'].value?.includes(amenity)" (click)="toggleAmenity(amenity)">
+                            <i class="bi"
+                                [ngClass]="f['Amenities'].value?.includes(amenity) ? 'bi-check-circle-fill' : 'bi-circle'"></i>
+                            <span class="ms-2">{{ amenity }}</span>
+                        </button>
                     </div>
                 </div>
 

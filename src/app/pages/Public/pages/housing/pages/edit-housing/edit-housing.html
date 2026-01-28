@@ -294,15 +294,29 @@
                     </div>
                 </div>
 
+
                 <div class="form-group mb-5">
-                    <label class="fw-bold mb-4"><i class="bi bi-droplets-fill me-2 text-gold"></i>Laundry
-                        Facilities</label>
+                    <label class="fw-bold mb-4"><i class="bi bi-droplets-fill me-2 text-gold"></i>Laundry (Single-select
+                        or multi-select) *</label>
                     <div class="radio-group-row">
                         <label class="radio-custom" *ngFor="let l of laundryTypes">
                             <input type="radio" formControlName="LaundryType" [value]="l.id">
                             <span class="radio-mark"></span>
                             <span class="radio-label">{{l.name}}</span>
                         </label>
+                    </div>
+                </div>
+
+                <div class="form-group mb-5">
+                    <label class="fw-bold mb-4"><i class="bi bi-star-fill me-2 text-gold"></i>Amenities (Single-select
+                        or multi-select) *</label>
+                    <div class="amenities-grid">
+                        <button type="button" class="btn-amenity" *ngFor="let amenity of amenityOptions"
+                            [class.active]="f['Amenities'].value?.includes(amenity)" (click)="toggleAmenity(amenity)">
+                            <i class="bi"
+                                [ngClass]="f['Amenities'].value?.includes(amenity) ? 'bi-patch-check-fill' : 'bi-circle'"></i>
+                            <span class="ms-2">{{ amenity }}</span>
+                        </button>
                     </div>
                 </div>
 

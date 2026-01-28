@@ -84,8 +84,21 @@ export class CreateHousingComponent implements OnInit {
         { id: 4, name: 'Flexible' }
     ];
 
+
     utilityOptions = [
         'Heat', 'Hot Water', 'Gas', 'Electricity', 'Internet', 'Cable'
+    ];
+
+    amenityOptions = [
+        'Fitness Center',
+        'Wellness Spa',
+        'Outdoor Spaces',
+        'Co-working Space',
+        'Lobby',
+        'Indoor Lounges',
+        'Bike Room',
+        'Parking',
+        'Security Attendant'
     ];
 
     nearbySubwayOptions = [
@@ -217,6 +230,7 @@ export class CreateHousingComponent implements OnInit {
             IsSmokingAllowed: [true],
 
             UtilitiesIncluded: [[]], // Array string
+            Amenities: [[]], // Array string - NEW FIELD
 
             // Programs
             AcceptedHousingPrograms: [[]], // Array int
@@ -351,6 +365,15 @@ export class CreateHousingComponent implements OnInit {
             this.form.patchValue({ UtilitiesIncluded: current.filter((u: string) => u !== util) });
         } else {
             this.form.patchValue({ UtilitiesIncluded: [...current, util] });
+        }
+    }
+
+    toggleAmenity(amenity: string) {
+        const current = this.form.get('Amenities')?.value || [];
+        if (current.includes(amenity)) {
+            this.form.patchValue({ Amenities: current.filter((a: string) => a !== amenity) });
+        } else {
+            this.form.patchValue({ Amenities: [...current, amenity] });
         }
     }
 

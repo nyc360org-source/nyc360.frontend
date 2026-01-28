@@ -98,6 +98,18 @@ export class EditHousingComponent implements OnInit {
         'Heat', 'Hot Water', 'Gas', 'Electricity', 'Internet', 'Cable'
     ];
 
+    amenityOptions = [
+        'Fitness Center',
+        'Wellness Spa',
+        'Outdoor Spaces',
+        'Co-working Space',
+        'Lobby',
+        'Indoor Lounges',
+        'Bike Room',
+        'Parking',
+        'Security Attendant'
+    ];
+
     housingPrograms = [
         { id: 0, name: 'Section 8 (Housing Choice Voucher)' },
         { id: 1, name: 'CityFHEPS' },
@@ -192,7 +204,9 @@ export class EditHousingComponent implements OnInit {
             IsAccessibilityFriendly: [true],
             IsSmokingAllowed: [true],
 
+
             UtilitiesIncluded: [[]],
+            Amenities: [[]], // NEW FIELD
             AcceptedHousingPrograms: [[]],
             AcceptedBuyerPrograms: [[]],
 
@@ -312,6 +326,7 @@ export class EditHousingComponent implements OnInit {
         this.form.patchValue({
             NearbySubwayLines: data.nearbySubwayLines || [],
             UtilitiesIncluded: data.utilitiesIncluded || [],
+            Amenities: data.amenities || [], // NEW FIELD
             AcceptedHousingPrograms: data.acceptedHousingPrograms || [],
             AcceptedBuyerPrograms: data.acceptedBuyerPrograms || []
         });
@@ -428,6 +443,15 @@ export class EditHousingComponent implements OnInit {
             this.form.patchValue({ UtilitiesIncluded: current.filter((u: string) => u !== util) });
         } else {
             this.form.patchValue({ UtilitiesIncluded: [...current, util] });
+        }
+    }
+
+    toggleAmenity(amenity: string) {
+        const current = this.form.get('Amenities')?.value || [];
+        if (current.includes(amenity)) {
+            this.form.patchValue({ Amenities: current.filter((a: string) => a !== amenity) });
+        } else {
+            this.form.patchValue({ Amenities: [...current, amenity] });
         }
     }
 
