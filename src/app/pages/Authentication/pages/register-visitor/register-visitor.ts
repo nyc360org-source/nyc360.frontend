@@ -37,6 +37,7 @@ export class RegisterVisitorComponent {
 
     form!: FormGroup;
     isLoading = false;
+    submitted = false;
 
     // Data Lists
     interestsList = Object.keys(CATEGORY_THEMES).map(key => {
@@ -112,10 +113,11 @@ export class RegisterVisitorComponent {
 
     isFieldInvalid(fieldName: string): boolean {
         const field = this.form.get(fieldName);
-        return !!(field && field.invalid && (field.dirty || field.touched));
+        return !!(field && field.invalid && (field.dirty || field.touched || this.submitted));
     }
 
     onSubmit() {
+        this.submitted = true;
         if (this.form.invalid) {
             this.form.markAllAsTouched();
             this.scrollToFirstInvalidControl();
@@ -167,10 +169,17 @@ export class RegisterVisitorComponent {
     }
 
     private scrollToFirstInvalidControl() {
-        const firstInvalidControl: HTMLElement = document.querySelector('.ng-invalid[formControlName], .ng-invalid[formArrayName], .ng-invalid textarea, .ng-invalid select') as HTMLElement;
+        const firstInvalidControl: HTMLElement = document.querySelector(
+            'input.ng-invalid:not(form), select.ng-invalid:not(form), textarea.ng-invalid:not(form), .is-invalid'
+        ) as HTMLElement;
+
         if (firstInvalidControl) {
             firstInvalidControl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            firstInvalidControl.focus();
+            firstInvalidControl.classList.add('highlight-error');
+            setTimeout(() => {
+                firstInvalidControl.classList.remove('highlight-error');
+                firstInvalidControl.focus();
+            }, 600);
         }
     }
 }

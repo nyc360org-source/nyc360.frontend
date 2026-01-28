@@ -238,15 +238,16 @@ textarea {
     }
 
     &.is-invalid {
-        border-color: #f87171; // Softer red
-        background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
-        animation: shake 0.5s ease-in-out; // Shake on error
+        border-color: #dc2626 !important; // Stronger red (Red 600)
+        border-width: 3px !important; // Thicker border
+        background: linear-gradient(135deg, #fff5f5 0%, #fee2e2 100%);
+        animation: shake 0.5s ease-in-out;
 
         &:focus {
             box-shadow:
-                0 0 0 5px rgba(239, 68, 68, 0.1),
-                0 8px 24px rgba(239, 68, 68, 0.12);
-            border-color: #ef4444;
+                0 0 0 6px rgba(220, 38, 38, 0.15),
+                0 8px 24px rgba(220, 38, 38, 0.2);
+            border-color: #b91c1c !important;
         }
     }
 
@@ -368,24 +369,24 @@ textarea {
 
         // Error State
         &.is-invalid {
-            border-color: $danger;
+            border-color: #dc2626 !important;
+            border-width: 3px !important;
             background: #fff5f5;
-            color: $danger;
+            color: #dc2626;
             animation: shake 0.4s ease-in-out;
-            border-width: 2px;
-            box-shadow: 0 0 0 4px rgba($danger, 0.1);
+            box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.1);
 
             ~.input-icon {
-                color: $danger;
+                color: #dc2626;
             }
 
             ~.floating-label {
-                color: $danger;
+                color: #dc2626;
             }
 
             &:focus {
-                border-color: $danger;
-                box-shadow: 0 10px 25px rgba($danger, 0.1);
+                border-color: #b91c1c !important;
+                box-shadow: 0 10px 25px rgba(220, 38, 38, 0.2);
             }
         }
     }
@@ -830,4 +831,27 @@ button[type="submit"],
         padding: 8px 18px;
         font-size: 0.85rem;
     }
+}
+
+@keyframes highlightPulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7);
+    }
+
+    50% {
+        transform: scale(1.02);
+        box-shadow: 0 0 0 20px rgba(220, 38, 38, 0);
+    }
+
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
+    }
+}
+
+.highlight-error {
+    animation: highlightPulse 0.6s ease-out !important;
+    border-color: #dc2626 !important;
+    border-width: 4px !important;
 }
