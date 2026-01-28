@@ -13,6 +13,11 @@
             <p *ngIf="postTitle">Send a direct inquiry to our housing agents regarding this property.</p>
         </div>
 
+        <div class="alert-error" *ngIf="errorMessage">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <span>{{ errorMessage }}</span>
+        </div>
+
         <form [formGroup]="form" (ngSubmit)="onSubmit()">
 
             <!-- Section 1: Contact Details -->

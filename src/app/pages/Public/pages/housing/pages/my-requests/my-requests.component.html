@@ -1,0 +1,142 @@
+<div class="requests-page-container">
+
+    <!-- Header Section -->
+    <div class="page-header">
+        <div class="header-content">
+            <h1 class="page-title">My Requests</h1>
+            <p class="page-subtitle">Track the status of your housing applications.</p>
+        </div>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading-state" *ngIf="isLoading">
+        <div class="spinner-gold"></div>
+        <p>Loading your requests...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="!isLoading && requests.length === 0">
+        <div class="empty-icon">
+            <i class="bi bi-send-x"></i>
+        </div>
+        <h3>No Requests Yet</h3>
+        <p>You haven't submitted any housing inquiries yet.</p>
+        <button class="btn-browse" routerLink="/public/housing/feed">Browse Housing</button>
+    </div>
+
+    <!-- Requests Grid -->
+    <div class="requests-grid" *ngIf="!isLoading && requests.length > 0">
+
+        <div class="request-card" *ngFor="let req of requests">
+            <div class="card-header">
+                <div class="user-info">
+                    <div class="avatar-placeholder">
+                        <i class="bi bi-house-door-fill"></i>
+                    </div>
+                    <div>
+                        <h3 class="property-title post-link" (click)="viewPost(req.housingInfo?.id)">
+                            {{ req.housingInfo?.title || 'Unknown Property' }}
+                        </h3>
+                        <div class="property-specs">
+                            <span><i class="bi bi-currency-dollar"></i> {{ req.housingInfo?.startingPrice |
+                                currency:'USD':'symbol':'1.0-0' }}</span>
+                            <span *ngIf="req.housingInfo?.numberOfRooms"><i class="bi bi-door-open"></i> {{
+                                req.housingInfo?.numberOfRooms }} Bed</span>
+                            <span *ngIf="req.housingInfo?.numberOfBathrooms"><i class="bi bi-droplet"></i> {{
+                                req.housingInfo?.numberOfBathrooms }} Bath</span>
+                            <span *ngIf="req.housingInfo?.size"><i class="bi bi-aspect-ratio"></i> {{
+                                req.housingInfo?.size }} sqft</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="status-badge sent">Sent</div>
+            </div>
+
+            <div class="card-body">
+
+                <!-- Section: Contact Details -->
+                <div class="details-section">
+                    <h4 class="section-label">My Contact Details</h4>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <i class="bi bi-person icon"></i>
+                            <span>{{ req.name }}</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="bi bi-envelope icon"></i>
+                            <span>{{ req.email }}</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="bi bi-telephone icon"></i>
+                            <span>{{ req.phoneNumber }}</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="bi bi-chat-dots icon"></i>
+                            <span>Prefers: {{ getContactType(req.preferredContactType) }}</span>
+                        </div>
+                        <div class="info-item full-width" *ngIf="req.preferredContactDate">
+                            <i class="bi bi-clock icon"></i>
+                            <span>Best Time: {{ req.preferredContactDate | date:'medium' }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section: Preferences -->
+                <div class="details-section">
+                    <h4 class="section-label">Preferences</h4>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <i class="bi bi-people icon"></i>
+                            <span>{{ getHouseholdType(req.householdType) }}</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="bi bi-calendar-check icon"></i>
+                            <span>Move-in: {{ req.moveInDate | date:'mediumDate' }}</span>
+                        </div>
+                        <div class="info-item" *ngIf="req.moveOutDate">
+                            <i class="bi bi-calendar-x icon"></i>
+                            <span>Move-out: {{ req.moveOutDate | date:'mediumDate' }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section: Tours -->
+                <div class="details-section" *ngIf="req.scheduleVirtual || req.inPersonTour || req.timeWindow">
+                    <h4 class="section-label">Tour Requests</h4>
+                    <div class="info-grid">
+                        <div class="info-item" *ngIf="req.timeWindow">
+                            <i class="bi bi-hourglass-split icon"></i>
+                            <span>Window: {{ req.timeWindow | date:'medium' }}</span>
+                        </div>
+                        <div class="info-item" *ngIf="req.inPersonTour">
+                            <i class="bi bi-geo-alt icon"></i>
+                            <span>In-Person: {{ req.inPersonTour | date:'medium' }}</span>
+                        </div>
+                        <div class="info-item" *ngIf="req.scheduleVirtual">
+                            <i class="bi bi-camera-video icon"></i>
+                            <span>Virtual: {{ req.scheduleVirtual | date:'medium' }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section: Message -->
+                <div class="details-section" *ngIf="req.message">
+                    <h4 class="section-label">Message</h4>
+                    <div class="message-box">
+                        "{{ req.message }}"
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="card-footer">
+                <span class="request-date">Applied on: {{ req.preferredContactDate | date:'mediumDate' }}</span>
+                <button class="btn-view" (click)="viewPost(req.housingInfo?.id)">
+                    View Property <i class="bi bi-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+</div>

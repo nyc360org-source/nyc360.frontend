@@ -53,6 +53,7 @@ export const PUBLIC_ROUTES: Routes = [
       { path: 'housing/create', loadComponent: () => import('../pages/Public/pages/housing/pages/create-housing/create-housing').then(m => m.CreateHousingComponent) },
       { path: 'housing/details/:id', loadComponent: () => import('../pages/Public/pages/housing/pages/housing-details/housing-details').then(m => m.HousingDetailsComponent) },
       { path: 'housing/requests', loadComponent: () => import('../pages/Public/pages/housing/pages/housing-requests/housing-requests.component').then(m => m.HousingRequestsComponent) },
+      { path: 'housing/my-requests', loadComponent: () => import('../pages/Public/pages/housing/pages/my-requests/my-requests.component').then(m => m.MyRequestsComponent) },
       { path: 'housing/agent-request', loadComponent: () => import('../pages/Public/pages/housing/pages/agent-request/agent-request.component').then(m => m.AgentRequestComponent) },
       { path: 'housing', redirectTo: 'housing/home', pathMatch: 'full' },
 

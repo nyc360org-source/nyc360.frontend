@@ -38,21 +38,26 @@ export class HousingHomeComponent implements OnInit {
         this.isLoading = true;
         this.housingService.getHousingHome().subscribe({
             next: (res: any) => {
-                if (res.isSuccess) {
-                    const data = res.data;
+                try {
+                    if (res.isSuccess && res.data) {
+                        const data = res.data;
 
-                    // Process Hero Post
-                    this.heroPost = data.hero ? this.processPost(data.hero) : null;
+                        // Process Hero Post
+                        this.heroPost = data.hero ? this.processPost(data.hero) : null;
 
-                    // Process Lists
-                    this.homesForSale = data.forSale || [];
-                    this.homesForRent = data.forRenting || [];
-                    this.rssPosts = (data.rss || []).map((p: any) => this.processPost(p));
-                    this.discussionPosts = (data.discussions || []).map((p: any) => this.processPost(p));
-                    this.allPosts = (data.all || []).map((p: any) => this.processPost(p));
+                        // Process Lists
+                        this.homesForSale = data.forSale || [];
+                        this.homesForRent = data.forRenting || [];
+                        this.rssPosts = (data.rss || []).map((p: any) => this.processPost(p));
+                        this.discussionPosts = (data.discussions || []).map((p: any) => this.processPost(p));
+                        this.allPosts = (data.all || []).map((p: any) => this.processPost(p));
+                    }
+                } catch (error) {
+                    console.error('Error processing housing data:', error);
+                } finally {
+                    this.isLoading = false;
+                    this.cdr.markForCheck();
                 }
-                this.isLoading = false;
-                this.cdr.markForCheck();
             },
             error: (err) => {
                 console.error('Error fetching housing home:', err);
@@ -89,6 +94,6 @@ export class HousingHomeComponent implements OnInit {
             style: 'currency',
             currency: 'USD',
             maximumFractionDigits: 0
-        }).format(price);
+        }).format(price || 0);
     }
 }
