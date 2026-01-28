@@ -50,7 +50,7 @@ export const CATEGORY_THEMES: { [key: number]: any } = {
     color: '#B59B62', label: 'Housing', path: 'housing', icon: '/icon-category/housing.png', biIcon: 'bi-house-heart-fill',
     route: '/public/housing/home',
     topLinks: [
-      { label: 'Feed', route: '/public/feed/housing' },
+      { label: 'Feed', route: '/public/housing/feed' },
       { label: 'Initiatives', route: '/public/initiatives/housing' },
       { label: 'Housing Requests', route: '/public/housing/requests' },
       { label: 'post listing', route: '/public/housing/create' },

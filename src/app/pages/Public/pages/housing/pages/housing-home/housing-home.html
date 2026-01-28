@@ -1,156 +1,198 @@
-<div class="housing-page" *ngIf="!isLoading">
-    <!-- Header -->
+<div class="housing-page">
+    <!-- 1. Elegant Header -->
     <header class="housing-header">
-        <p class="welcome-text">Welcome at NYC360</p>
+        <span class="welcome-text">Welcome at NYC360</span>
         <h1 class="page-title">Housing</h1>
-        <p class="sub-title">Where New Yorkers can share ideas, discussions, and local conversations</p>
+        <p class="page-subtitle">Where New Yorkers can share ideas, discussions, and local conversations</p>
     </header>
 
-    <!-- Hero Section -->
-    <section class="hero-section" *ngIf="heroPost">
-        <div class="hero-card">
-            <div class="hero-image-wrapper">
-                <img [src]="imageService.resolveImageUrl(heroPost.imageUrl || (heroPost.attachments?.[0]?.url))"
-                    alt="Hero Home" appImgFallback="post">
+    <!-- 2. Hero Component -->
+    <div class="hero-container" *ngIf="heroPost">
+        <div class="hero-premium-card">
+            <div class="hero-visual">
+                <img [src]="imageService.resolveImageUrl(heroPost.attachments?.[0]?.url, 'housing')"
+                    [appImgFallback]="'post'" alt="Hero Featured">
             </div>
-            <div class="hero-content">
-                <div class="tags">
-                    <span class="tag-pill">New Listing</span>
-                    <span class="tag-simple">{{ heroPost.location?.borough || 'NYC' }}</span>
+            <div class="hero-info">
+                <div class="meta-tags">
+                    <span class="status-badge" *ngIf="heroPost.metadata?.IsRenting">For Rent</span>
+                    <span class="status-badge" *ngIf="!heroPost.metadata?.IsRenting">For Sale</span>
+                    <span class="time">{{ heroPost.createdAt | date:'shortTime' }}</span>
                 </div>
-                <h2>{{ heroPost.title }}</h2>
-                <p class="hero-desc">{{ heroPost.content | slice:0:150 }}...</p>
-                <div class="hero-actions">
-                    <a [routerLink]="['/public/posts/details', heroPost.id]" class="btn-gold-solid">View details</a>
+                <h2 class="hero-title">{{ heroPost.title }}</h2>
+                <p class="hero-desc">
+                    {{ heroPost.displayDescription | slice:0:180 }}
+                </p>
+
+                <div class="hero-meta mb-4" *ngIf="heroPost.metadata">
+                    <span class="price-value" style="font-size: 1.8rem; color: #BC9D5F; font-weight: 800;">
+                        {{ formatPrice(heroPost.metadata.Price || 0) }}{{ heroPost.metadata.IsRenting ? '/mo' : '' }}
+                    </span>
                 </div>
+
+                <button class="btn-hero" [routerLink]="['/housing/details', heroPost.id]">View details</button>
             </div>
         </div>
-    </section>
-
-    <!-- Action Bar -->
-    <div class="action-bar-container">
-        <div class="main-actions">
-            <div class="left-group">
-                <button class="btn-tab active"><i class="bi bi-check-circle-fill"></i> Explore Homes</button>
-                <button class="btn-tab" routerLink="/public/housing/requests"><i
-                        class="bi bi-layout-text-window-reverse"></i> My Inquiries</button>
-            </div>
-            <div class="right-group">
-                <a routerLink="/public/housing/create" class="btn-outline-gold"><i class="bi bi-plus-lg"></i> Post
-                    Listing</a>
-                <a routerLink="/public/posts/create" class="btn-outline-gold"><i class="bi bi-pencil-square"></i> Create
-                    Post</a>
-            </div>
-        </div>
-
-
     </div>
 
-    <!-- Homes For Sale -->
-    <section class="listing-section" *ngIf="homesForSale.length > 0">
-        <div class="section-header">
-            <h3>Homes For Sale</h3>
-        </div>
-        <div class="grid-cards">
-            <div class="property-card" *ngFor="let item of homesForSale"
-                [routerLink]="['/public/posts/details', item.id]">
-                <div class="card-img">
-                    <img [src]="imageService.resolveImageUrl(item.attachments?.[0]?.url || item.imageUrl)"
-                        alt="Property" appImgFallback="post">
-                </div>
-                <div class="card-body">
-                    <h4 class="prop-title">{{ item.title }}</h4>
+    <!-- 3. Navigation & Actions Bar -->
+    <div class="nav-filters-bar">
+        <div class="action-row">
+            <div class="tabs-group">
+                <button class="tab-btn" [class.active]="selectedTab === 'explore'" [routerLink]="['/housing/feed']">
+                    <i class="bi bi-compass-fill"></i> Explore Homes
+                </button>
+                <button class="tab-btn" [class.active]="selectedTab === 'inquiries'"
+                    (click)="selectedTab = 'inquiries'">
+                    <i class="bi bi-chat-left-text"></i> My Inquiries
+                </button>
+            </div>
 
-                    <ng-container *ngIf="getPostMetadata(item.content) as meta">
+            <div class="quick-actions">
+                <button class="btn-action gold">
+                    <i class="bi bi-plus-lg"></i> Post Listing
+                </button>
+                <button class="btn-action">
+                    <i class="bi bi-pencil-square"></i> Create Post
+                </button>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters-row">
+            <div class="filter-dropdown">Location <i class="bi bi-chevron-down"></i></div>
+            <div class="filter-dropdown">Property Type <i class="bi bi-chevron-down"></i></div>
+            <div class="filter-dropdown">Rooms/Baths <i class="bi bi-chevron-down"></i></div>
+            <div class="filter-dropdown">Price <i class="bi bi-chevron-down"></i></div>
+            <a class="clear-btn">clear now</a>
+        </div>
+    </div>
+
+    <main class="content-body" *ngIf="!isLoading">
+
+        <!-- 4. Homes For Sale Section -->
+        <section class="section-wrapper" *ngIf="homesForSale.length > 0">
+            <div class="section-head">
+                <h3 class="section-title">Homes For Sale</h3>
+                <a [routerLink]="['/housing/feed']" [queryParams]="{type: 'sale'}" class="view-all">View All</a>
+            </div>
+            <div class="housing-grid">
+                <div class="premium-card" *ngFor="let item of homesForSale"
+                    [routerLink]="['/housing/details', item.id]">
+                    <div class="card-thumb">
+                        <img [src]="imageService.resolveImageUrl(item.imageUrl, 'housing')" [appImgFallback]="'post'">
+                        <span class="tag-price-badge">For Sale</span>
+                    </div>
+                    <div class="card-content">
+                        <span class="loc-label">{{ item.location?.neighborhood || 'NYC Area' }}</span>
+                        <h4 class="prop-title">{{ item.title }}</h4>
                         <div class="prop-stats">
-                            <span><i class="bi bi-rulers"></i> {{ meta.SizeSqFt || 0 }} sqft</span>
-                            <span><i class="bi bi-door-closed"></i> {{ meta.Rooms || 0 }} rooms</span>
-                            <span><i class="bi bi-droplet"></i> {{ meta.Bathrooms || 0 }} baths</span>
+                            <span><i class="bi bi-rulers"></i> {{ item.size }} SQFT</span>
+                            <span><i class="bi bi-door-open"></i> {{ item.numberOfRooms }} ROOMS</span>
+                            <span><i class="bi bi-droplet"></i> {{ item.numberOfBathrooms }} BATH</span>
                         </div>
-                        <div class="prop-price">{{ formatPrice(meta.Price || 0) }}</div>
-                    </ng-container>
-                    <ng-container *ngIf="!getPostMetadata(item.content)">
-                        <div class="prop-price" style="font-size: 0.9rem; color: #777;">Contact for Price</div>
-                    </ng-container>
+                        <p class="price-value">{{ formatPrice(item.startingPrice) }}</p>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Homes For Rent -->
-    <section class="listing-section" *ngIf="homesForRent.length > 0">
-        <div class="section-header">
-            <h3>Homes For Rent</h3>
-        </div>
-        <div class="grid-cards">
-            <div class="property-card" *ngFor="let item of homesForRent"
-                [routerLink]="['/public/posts/details', item.id]">
-                <div class="card-img">
-                    <img [src]="imageService.resolveImageUrl(item.attachments?.[0]?.url || item.imageUrl)"
-                        alt="Property" appImgFallback="post">
-                </div>
-                <div class="card-body">
-                    <div class="loc-badge-row">
-                        <span class="neighborhood">{{ item.location?.neighborhood || 'NYC' }}</span>
-                        <span class="status-badge">FOR RENT</span>
+        <!-- 5. Homes For Rent Section -->
+        <section class="section-wrapper" *ngIf="homesForRent.length > 0">
+            <div class="section-head">
+                <h3 class="section-title">Homes For Rent</h3>
+                <a [routerLink]="['/housing/feed']" [queryParams]="{type: 'rent'}" class="view-all">View All</a>
+            </div>
+            <div class="housing-grid four-cols">
+                <div class="premium-card" *ngFor="let item of (homesForRent | slice:0:4)"
+                    [routerLink]="['/housing/details', item.id]">
+                    <div class="card-thumb">
+                        <img [src]="imageService.resolveImageUrl(item.imageUrl, 'housing')" [appImgFallback]="'post'">
+                        <span class="tag-price-badge">For Rent</span>
                     </div>
-
-                    <ng-container *ngIf="getPostMetadata(item.content) as meta">
-                        <div class="prop-price-large">{{ formatPrice(meta.Price || 0) }}/mo</div>
-                        <div class="prop-stats compact">
-                            <span><i class="bi bi-door-closed"></i> {{ meta.Rooms }} Bed</span>
-                            <span><i class="bi bi-droplet"></i> {{ meta.Bathrooms }} Bath</span>
-                            <span class="details-link">Details</span>
+                    <div class="card-content">
+                        <span class="loc-label">{{ item.location?.neighborhood || 'Upper West Side' }}</span>
+                        <h4 class="prop-title">{{ item.title }}</h4>
+                        <p class="price-value">{{ formatPrice(item.startingPrice) }}/mo</p>
+                        <div class="prop-stats mt-2" style="background: none; padding: 0;">
+                            <span><i class="bi bi-door-open"></i> {{ item.numberOfRooms }} Bed</span>
+                            <span><i class="bi bi-droplet"></i> {{ item.numberOfBathrooms }} Bath</span>
                         </div>
-                    </ng-container>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- NYC Housing Programs (RSS) -->
-    <section class="listing-section" *ngIf="rssPosts.length > 0">
-        <div class="section-header">
-            <h3>NYC Housing Programs Official Posts</h3>
-        </div>
-        <div class="grid-cards">
-            <div class="property-card" *ngFor="let item of rssPosts" [routerLink]="['/public/posts/details', item.id]">
-                <div class="card-img">
-                    <img [src]="imageService.resolveImageUrl(item.attachments?.[0]?.url || item.imageUrl)" alt="News"
-                        appImgFallback="post">
-                </div>
-                <div class="card-body">
-                    <h4 class="prop-title text-truncate">{{ item.title }}</h4>
-                    <div class="prop-stats">
-                        <span style="font-size: 0.8rem; color: #777;"><i class="bi bi-clock"></i> {{ item.createdAt |
-                            date:'mediumDate' }}</span>
                     </div>
-                    <div class="prop-price" style="font-size: 1rem; color: #B59B62;">Read Article</div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Discussions -->
-    <section class="discussion-section" *ngIf="discussionPosts.length > 0">
-        <div class="discussions-container">
-            <div class="discussion-item" *ngFor="let item of discussionPosts">
-                <div class="disc-meta">
-                    <span class="author-name">{{ item.author?.username || 'User' }}</span> •
-                    <span class="cat-link">HousingDiscussion</span> •
-                    <span class="date">{{ item.createdAt | date:'shortDate' }}</span>
-                </div>
-                <h4 class="disc-title" [routerLink]="['/public/posts/details', item.id]">{{ item.title }}</h4>
-                <p class="disc-excerpt">{{ item.content | slice:0:180 }}...</p>
-                <div class="disc-footer">
-                  
+        <!-- 6. Official Posts (RSS) Section -->
+        <section class="section-wrapper" *ngIf="rssPosts.length > 0">
+            <div class="section-head">
+                <h3 class="section-title">NYC Housing Programs Official Posts</h3>
+                <a href="#" class="view-all">View All</a>
+            </div>
+            <div class="housing-grid">
+                <div class="premium-card" *ngFor="let post of (rssPosts | slice:0:3)">
+                    <div class="card-thumb" style="height: 220px;">
+                        <img [src]="post.attachments?.[0]?.url" [appImgFallback]="'post'">
+                    </div>
+                    <div class="card-content">
+                        <h4 class="prop-title">{{ post.title }}</h4>
+                        <div class="prop-stats">
+                            <span><i class="bi bi-building"></i> Programs</span>
+                        </div>
+                        <p class="price-value" style="font-size: 0.95rem; color: #999;">Read Official Guidelines</p>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
-</div>
-<div *ngIf="isLoading" style="text-align: center; padding: 50px;">
-    <div class="spinner-border text-gold" role="status">
-        <span class="visually-hidden">Loading...</span>
+        </section>
+
+        <!-- 7. Discussion Spotlight Section -->
+        <section class="discussion-section" *ngIf="discussionPosts.length > 0">
+            <div class="section-wrapper">
+                <div class="discussion-spotlight" *ngFor="let post of (discussionPosts | slice:0:1)">
+                    <div class="disc-meta">
+                        <span class="user">{{ post.author?.fullName || post.CreatorName }}</span>
+                        <span class="dot"></span>
+                        <span>Housing</span>
+                        <span class="dot"></span>
+                        <span>{{ post.createdAt | date }}</span>
+                    </div>
+                    <h3 class="disc-title">{{ post.title }}</h3>
+                    <p class="disc-body">"{{ post.displayDescription || post.content | slice:0:250 }}..."</p>
+                    <div class="disc-footer">
+                        <div class="replies"><i class="bi bi-chat-left-text"></i> {{ post.stats?.comments }} replies
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 8. All Posts Grid -->
+        <section class="section-wrapper">
+            <div class="section-head">
+                <h3 class="section-title">All Posts</h3>
+                <a href="#" class="view-all">View All</a>
+            </div>
+            <div class="housing-grid four-cols">
+                <!-- Fallback to Renting if 'all' is empty for demonstration, or use allPosts if populated -->
+                <div class="premium-card"
+                    *ngFor="let item of (allPosts.length > 0 ? allPosts : (homesForRent | slice:0:4))">
+                    <div class="card-thumb">
+                        <img [src]="imageService.resolveImageUrl(item.imageUrl, 'housing')" [appImgFallback]="'post'">
+                    </div>
+                    <div class="card-content">
+                        <span class="loc-label">{{ item.location?.neighborhood || 'Manhattan' }}</span>
+                        <h4 class="prop-title">{{ item.title }}</h4>
+                        <p class="price-value">{{ formatPrice(item.startingPrice) }}</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Loading State -->
+    <div class="housing-loader" *ngIf="isLoading">
+        <div class="spinner"></div>
+        <p>Curating your housing experience...</p>
     </div>
 </div>

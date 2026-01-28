@@ -104,4 +104,14 @@ export class HousingService {
     getHousingHome(): Observable<any> {
         return this.http.get(`${environment.apiBaseUrl}/housing/home`);
     }
+
+    getHousingFeed(params: any): Observable<any> {
+        let httpParams = new HttpParams();
+        Object.keys(params).forEach(key => {
+            if (params[key] !== null && params[key] !== undefined && params[key] !== '') {
+                httpParams = httpParams.append(key, params[key]);
+            }
+        });
+        return this.http.get(`${environment.apiBaseUrl}/housing/feed`, { params: httpParams });
+    }
 }

@@ -12,7 +12,7 @@ export class ImageService {
     // Global Default Assets
     readonly DEFAULT_POST = 'assets/images/default-post.jpg';
     readonly DEFAULT_AVATAR = 'assets/images/default-avatar.png';
-    readonly PLACEHOLDER = 'assets/images/placeholder.jpg';
+    readonly PLACEHOLDER = 'assets/images/default-post.jpg';
 
     constructor() { }
 
@@ -64,14 +64,18 @@ export class ImageService {
     /**
      * Resolves a simple image URL
      */
-    resolveImageUrl(url: string | null | undefined, type: 'post' | 'avatar' = 'post'): string {
-        const fallback = type === 'post' ? this.DEFAULT_POST : this.DEFAULT_AVATAR;
+    resolveImageUrl(url: string | null | undefined, type: 'post' | 'avatar' | 'housing' = 'post'): string {
+        const fallback = type === 'avatar' ? this.DEFAULT_AVATAR : this.DEFAULT_POST;
         if (!url || url.trim() === '') return fallback;
 
-        return type === 'post' ? this.cleanAndResolve(url, fallback) : this.cleanAndResolveAvatar(url, fallback);
+        if (type === 'avatar') {
+            return this.cleanAndResolveAvatar(url, fallback);
+        }
+
+        return this.cleanAndResolve(url, fallback, type);
     }
 
-    private cleanAndResolve(url: string, fallback: string): string {
+    private cleanAndResolve(url: string, fallback: string, context: 'post' | 'housing' = 'post'): string {
         if (!url) return fallback;
 
         let cleanUrl = url.replace('@local://', '');
@@ -81,17 +85,19 @@ export class ImageService {
             return cleanUrl;
         }
 
-        // 2. If it already starts with 'posts/', resolve to secondary base (root)
-        if (cleanUrl.toLowerCase().startsWith('posts/')) {
+        const lowerUrl = cleanUrl.toLowerCase();
+
+        // 2. If it already has a known folder prefix, resolve to base URL
+        if (lowerUrl.startsWith('posts/') || lowerUrl.startsWith('housing/') || lowerUrl.startsWith('avatars/')) {
             return `${this.apiBaseUrl2}/${cleanUrl}`;
         }
 
-        // 3. Otherwise, treat as a filename in the 'posts' folder
-        // Use apiBaseUrl3 if it points to /posts, or prepend posts/ to apiBaseUrl2
-        if (this.apiBaseUrl3.endsWith('/posts')) {
-            return `${this.apiBaseUrl3}/${cleanUrl}`;
+        // 3. Handle based on context
+        if (context === 'housing') {
+            return `${this.apiBaseUrl2}/housing/${cleanUrl}`;
         }
 
+        // 4. Default to posts folder
         return `${this.apiBaseUrl2}/posts/${cleanUrl}`;
     }
 
@@ -105,8 +111,11 @@ export class ImageService {
         }
 
         // Usually avatars are in /avatars/
+        if (cleanUrl.toLowerCase().startsWith('avatars/')) {
+            return `${this.apiBaseUrl2}/${cleanUrl}`;
+        }
+
         if (cleanUrl.includes('/') || cleanUrl.includes('\\')) {
-            // If it already has a path, assume it's relative to root
             return `${this.apiBaseUrl2}/${cleanUrl}`;
         }
 

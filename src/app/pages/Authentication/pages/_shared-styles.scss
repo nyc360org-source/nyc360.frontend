@@ -1,17 +1,17 @@
 @use "sass:color";
 
 // --- 🎨 Premium Design System ---
-$bg-dark: #081223;
-$accent: #BC5E3D; // Copper
-$accent-hover: #a34e30;
+$bg-dark: #0A3D91;
+$accent: #0A3D91; // Original Blue
+$accent-hover: #002a6b;
 $white: #ffffff;
-$text-main: #0f172a;
-$text-sub: #64748b;
-$border: #e2e8f0; // Softer border
-$input-bg: #f8fafc;
-$success: #10b981;
+$text-main: #1a1a1a;
+$text-sub: #666666;
+$border: #e2e8f0;
+$input-bg: #ffffff;
+$success: #4bb71b;
 $danger: #ef4444;
-$font-family: 'Outfit', sans-serif;
+$font-family: 'Inter', sans-serif;
 
 // --- 🌟 Global Animations ---
 @keyframes shake {
@@ -116,84 +116,13 @@ $font-family: 'Outfit', sans-serif;
     }
 }
 
-.brand-panel {
-    flex: 0 0 35%;
-    background-color: $bg-dark;
-    color: $white;
-    padding: 80px 60px;
+.registration-container {
+    min-height: 100vh;
+    padding: 60px 20px;
+    background: #f8fafc;
     display: flex;
     justify-content: center;
-    position: relative;
-    background-image: radial-gradient(circle at top left, color.adjust($bg-dark, $lightness: 10%), $bg-dark);
-
-    .brand-content {
-        position: sticky;
-        top: 80px;
-        z-index: 5;
-    }
-
-    .logo-text {
-        font-size: 2.2rem;
-        font-weight: 900;
-        letter-spacing: -1px;
-    }
-
-    .highlight {
-        color: $accent;
-    }
-
-    .brand-title {
-        font-size: 3.5rem;
-        font-weight: 800;
-        line-height: 1.1;
-        margin: 20px 0;
-        background: linear-gradient(to right, #fff, #cbd5e1);
-        background-clip: text;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-
-    .brand-subtitle {
-        font-size: 1.1rem;
-        color: #cbd5e1;
-        line-height: 1.6;
-    }
-
-    .glow-circle {
-        position: absolute;
-        width: 500px;
-        height: 500px;
-        background: radial-gradient(circle, rgba($accent, 0.15), transparent 70%);
-        border-radius: 50%;
-        top: -100px;
-        right: -100px;
-        pointer-events: none;
-    }
-
-    @media (max-width: 992px) {
-        flex: 0 0 auto;
-        min-height: 300px;
-        padding: 50px 30px;
-
-        .brand-content {
-            position: static;
-        }
-
-        .brand-title {
-            font-size: 2.5rem;
-        }
-    }
-}
-
-.choices-panel {
-    flex: 1;
-    background: #fafbfc;
-    padding: 40px;
-    overflow-y: auto;
-
-    @media (max-width: 992px) {
-        padding: 20px;
-    }
+    align-items: flex-start;
 }
 
 .form-container {

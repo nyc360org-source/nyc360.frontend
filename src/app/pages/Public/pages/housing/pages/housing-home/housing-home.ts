@@ -28,6 +28,7 @@ export class HousingHomeComponent implements OnInit {
     discussionPosts: any[] = [];
     allPosts: any[] = [];
     isLoading = true;
+    selectedTab: string = 'explore';
 
     ngOnInit(): void {
         this.loadData();
@@ -38,12 +39,17 @@ export class HousingHomeComponent implements OnInit {
         this.housingService.getHousingHome().subscribe({
             next: (res: any) => {
                 if (res.isSuccess) {
-                    this.heroPost = res.data.hero;
-                    this.homesForSale = res.data.forSale || [];
-                    this.homesForRent = res.data.forRenting || [];
-                    this.rssPosts = res.data.rss || [];
-                    this.discussionPosts = res.data.discussions || [];
-                    this.allPosts = res.data.allPosts || [];
+                    const data = res.data;
+
+                    // Process Hero Post
+                    this.heroPost = data.hero ? this.processPost(data.hero) : null;
+
+                    // Process Lists
+                    this.homesForSale = data.forSale || [];
+                    this.homesForRent = data.forRenting || [];
+                    this.rssPosts = (data.rss || []).map((p: any) => this.processPost(p));
+                    this.discussionPosts = (data.discussions || []).map((p: any) => this.processPost(p));
+                    this.allPosts = (data.all || []).map((p: any) => this.processPost(p));
                 }
                 this.isLoading = false;
                 this.cdr.markForCheck();
@@ -54,6 +60,17 @@ export class HousingHomeComponent implements OnInit {
                 this.cdr.markForCheck();
             }
         });
+    }
+
+    private processPost(post: any): any {
+        if (!post || !post.content) return post;
+
+        const metadata = this.getPostMetadata(post.content);
+        return {
+            ...post,
+            metadata: metadata,
+            displayDescription: post.content.split('\n\n\n')[0]
+        };
     }
 
     // --- Helpers ---
