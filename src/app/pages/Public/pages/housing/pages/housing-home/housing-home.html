@@ -45,31 +45,7 @@
     </div>
 
     <!-- 3. Navigation & Actions Bar -->
-    <div class="nav-filters-bar">
-        <div class="action-row">
-            <div class="tabs-group">
-                <button class="tab-btn" [class.active]="selectedTab === 'explore'"
-                    [routerLink]="['/public/housing/feed']">
-                    <i class="bi bi-compass-fill"></i> Explore Homes
-                </button>
-                <button class="tab-btn" [class.active]="selectedTab === 'inquiries'"
-                    (click)="selectedTab = 'inquiries'">
-                    <i class="bi bi-chat-left-text"></i> My Inquiries
-                </button>
-            </div>
 
-            <div class="quick-actions">
-                <button class="btn-action gold">
-                    <i class="bi bi-plus-lg"></i> Post Listing
-                </button>
-                <button class="btn-action">
-                    <i class="bi bi-pencil-square"></i> Create Post
-                </button>
-            </div>
-        </div>
-
-
-    </div>
 
     <main class="content-body" *ngIf="!isLoading">
 

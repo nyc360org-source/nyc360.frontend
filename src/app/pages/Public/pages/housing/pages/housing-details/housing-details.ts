@@ -6,6 +6,8 @@ import { ImageService } from '../../../../../../shared/services/image.service';
 import { ImgFallbackDirective } from '../../../../../../shared/directives/img-fallback.directive';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
+import { AuthService } from '../../../../../Authentication/Service/auth';
+
 @Component({
     selector: 'app-housing-details',
     standalone: true,
@@ -20,19 +22,26 @@ export class HousingDetailsComponent implements OnInit {
     private cdr = inject(ChangeDetectorRef);
     protected imageService = inject(ImageService);
     private router = inject(Router);
+    private authService = inject(AuthService);
 
     property: any = null;
     similarProperties: any[] = [];
     isLoading = true;
     activeImage: string | null = null;
+    currentUserId: number | null = null;
 
     ngOnInit(): void {
+        this.currentUserId = this.authService.getUserId();
         this.route.paramMap.subscribe(params => {
             const id = params.get('id');
             if (id) {
                 this.loadDetails(id);
             }
         });
+    }
+
+    get canEdit(): boolean {
+        return !!this.property && !!this.currentUserId && this.property.author?.id === this.currentUserId;
     }
 
     loadDetails(id: string) {

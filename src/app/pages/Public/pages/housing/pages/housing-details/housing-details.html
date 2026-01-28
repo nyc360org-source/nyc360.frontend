@@ -98,6 +98,24 @@
         <!-- Right Sidebar -->
         <div class="sidebar">
             <div class="sidebar-wrapper">
+                <!-- Owner Actions (Visible only to Author) -->
+                <div class="sidebar-card owner-actions-card mb-4" *ngIf="canEdit"
+                    style="border-color: #B59B62; background: #fffcf5;">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="icon-circle me-3"
+                            style="width: 40px; height: 40px; background: rgba(181, 155, 98, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #B59B62;">
+                            <i class="bi bi-pencil-square fs-5"></i>
+                        </div>
+                        <div>
+                            <h5 class="mb-0 fw-bold" style="color: #1a1a1a;">Manage Listing</h5>
+                            <small class="text-muted">You are the owner</small>
+                        </div>
+                    </div>
+                    <button class="btn-action gold w-100" [routerLink]="['/public/housing/edit', property.id]">
+                        Edit Property Details
+                    </button>
+                </div>
+
                 <!-- Price & Actions -->
                 <div class="sidebar-card price-card">
                     <h2 class="price-display">

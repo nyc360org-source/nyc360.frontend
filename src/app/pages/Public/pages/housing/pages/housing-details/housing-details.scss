@@ -361,33 +361,34 @@ $text-light: #7f8c8d;
                 margin-bottom: 20px;
             }
 
-            .btn-action {
-                width: 100%;
-                padding: 14px;
-                border-radius: 10px;
-                font-weight: 600;
-                font-size: 1rem;
-                margin-bottom: 12px;
-                cursor: pointer;
-                border: none;
-                transition: all 0.2s;
+        }
 
-                &.primary {
-                    background: $text-dark;
-                    color: white;
+        .btn-action {
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 12px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
 
-                    &:hover {
-                        background: #000;
-                    }
+            &.primary {
+                background: $text-dark;
+                color: white;
+
+                &:hover {
+                    background: #000;
                 }
+            }
 
-                &.gold {
-                    background: $housing-accent;
-                    color: white;
+            &.gold {
+                background: $housing-accent;
+                color: white;
 
-                    &:hover {
-                        background: $housing-accent-dark;
-                    }
+                &:hover {
+                    background: $housing-accent-dark;
                 }
             }
         }
