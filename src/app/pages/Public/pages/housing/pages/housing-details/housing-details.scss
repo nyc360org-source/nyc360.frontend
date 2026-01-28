@@ -5,6 +5,7 @@ $housing-accent-dark: #a3854a;
 $bg-main: #f8f9fa;
 $text-dark: #2c3e50;
 $text-light: #7f8c8d;
+$border-color: #e9ecef;
 
 // General Layout
 .details-page {
@@ -12,13 +13,13 @@ $text-light: #7f8c8d;
     min-height: 100vh;
     padding-bottom: 60px;
     font-family: 'Inter', sans-serif;
-    overflow-x: hidden; // Prevent horizontal scroll on mobile
+    overflow-x: hidden;
 }
 
 .content-container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 16px; // Base padding for mobile
+    padding: 0 16px;
     display: grid;
     grid-template-columns: 2fr 1fr; // Desktop Layout
     gap: 30px;
@@ -33,23 +34,23 @@ $text-light: #7f8c8d;
 .gallery-section {
     max-width: 1200px;
     margin: 0 auto 30px;
-    padding: 20px 16px 0; // Add top spacing
+    padding: 20px 16px 0;
     display: grid;
     grid-template-columns: 2fr 1fr;
     gap: 12px;
     height: 500px;
 
     @media (max-width: 768px) {
-        grid-template-columns: 1fr; // Single column
+        grid-template-columns: 1fr;
         height: auto;
         padding-top: 10px;
 
         .side-images {
-            display: none !important; // Hide side images on mobile to save space, or make them scrollable row
+            display: none !important;
         }
 
         .main-image {
-            height: 300px; // Fixed height for mobile main image
+            height: 300px;
             border-radius: 12px;
             overflow: hidden;
         }
@@ -75,7 +76,7 @@ $text-light: #7f8c8d;
 
     .side-images {
         display: grid;
-        grid-template-columns: 1fr; // Stack vertically on desktop side
+        grid-template-columns: 1fr;
         gap: 12px;
         grid-template-rows: repeat(2, 1fr);
         height: 100%;
@@ -125,12 +126,11 @@ $text-light: #7f8c8d;
     box-shadow: 0 2px 15px rgba(0, 0, 0, 0.03);
 
     @media (max-width: 768px) {
-        padding: 20px; // Less padding on mobile
+        padding: 20px;
     }
 
+    // New Header Styles
     .header-info {
-        border-bottom: 1px solid #eee;
-        padding-bottom: 25px;
         margin-bottom: 25px;
 
         .status-badge {
@@ -143,7 +143,6 @@ $text-light: #7f8c8d;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-bottom: 10px;
         }
 
         .prop-title {
@@ -155,162 +154,189 @@ $text-light: #7f8c8d;
             line-height: 1.2;
 
             @media (max-width: 768px) {
-                font-size: 1.8rem; // Smaller title on mobile
+                font-size: 1.8rem;
             }
         }
 
         .prop-address {
             color: $text-light;
             font-size: 1.1rem;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            flex-wrap: wrap; // Allow address to wrap
+            margin-bottom: 25px;
 
             i {
                 color: $housing-accent;
             }
         }
 
-        .tags-row {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap; // Essential for mobile
+        .specs-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            padding: 20px;
+            background: #fdfdfd;
+            border: 1px solid $border-color;
+            border-radius: 12px;
 
-            .amenity-tag {
-                background: #f8f9fa;
-                border: 1px solid #e9ecef;
-                padding: 8px 16px;
-                border-radius: 8px;
-                font-size: 0.9rem;
-                font-weight: 600;
-                color: $text-dark;
+            @media (max-width: 768px) {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .spec-item {
                 display: flex;
-                align-items: center;
-                gap: 6px;
+                flex-direction: column;
 
-                i {
-                    color: $housing-accent;
+                .label {
+                    font-size: 0.8rem;
+                    color: $text-light;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                    margin-bottom: 4px;
+                }
+
+                .value {
                     font-size: 1.1rem;
+                    color: $text-dark;
+                    font-weight: 700;
+
+                    i {
+                        color: $housing-accent;
+                    }
                 }
             }
         }
     }
 
-    .description-box {
-        margin-bottom: 35px;
+    .divider {
+        border-top: 1px solid $border-color;
+        margin: 30px 0;
+        opacity: 0.5;
+    }
 
+    .info-block {
         h3 {
             font-family: 'Playfair Display', serif;
             font-size: 1.4rem;
             font-weight: 700;
-            margin-bottom: 12px;
+            margin-bottom: 20px;
             color: $text-dark;
         }
 
-        p {
+        .desc-text {
             color: #555;
             line-height: 1.8;
             font-size: 1rem;
-        }
-    }
-
-    .features-section {
-        margin-bottom: 35px;
-
-        h3 {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.4rem;
-            font-weight: 700;
-            margin-bottom: 15px;
-            color: $text-dark;
+            white-space: pre-line;
         }
 
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); // Responsive grid
-            gap: 15px;
+        // Highlights Pills
+        .highlights-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
 
-            .feature-item {
+            .highlight-pill {
+                background: #fcfcfc;
+                border: 1px solid $border-color;
+                padding: 8px 16px;
+                border-radius: 50px;
+                font-size: 0.9rem;
+                color: $text-dark;
+                font-weight: 600;
                 display: flex;
                 align-items: center;
-                gap: 10px;
-                font-size: 0.95rem;
+                gap: 8px;
+
+                i {
+                    color: $housing-accent;
+                }
+            }
+        }
+
+        // Details Grid List
+        .details-grid-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+
+            @media (max-width: 768px) {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .detail-group {
+                h5 {
+                    font-size: 1rem;
+                    font-weight: 700;
+                    margin-bottom: 12px;
+                    color: $housing-accent-dark;
+
+                    i {
+                        color: $housing-accent;
+                    }
+                }
+
+                ul {
+                    list-style: none;
+                    padding: 0;
+                    margin: 0;
+
+                    li {
+                        display: flex;
+                        justify-content: space-between;
+                        padding: 8px 0;
+                        border-bottom: 1px dashed #eee;
+                        font-size: 0.95rem;
+
+                        &:last-child {
+                            border-bottom: none;
+                        }
+
+                        span {
+                            color: $text-light;
+                            font-weight: 500;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Tags Cloud
+        .tags-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+
+            .tag {
+                background: #f8f9fa;
+                padding: 6px 14px;
+                border-radius: 6px;
+                font-size: 0.9rem;
                 color: $text-dark;
-                background: #fdfdfd;
-                padding: 10px;
-                border-radius: 8px;
-                border: 1px solid #f0f0f0;
+                border: 1px solid #eee;
 
                 i {
                     color: #27ae60;
-                    font-size: 1.2rem;
                 }
 
-                // Green Check
+                &.program {
+                    background: #fffcf5;
+                    border-color: rgba($housing-accent, 0.2);
+                    color: $housing-accent-dark;
+                    font-weight: 500;
+                }
             }
         }
-    }
 
-    .location-simple-section,
-    .transport-section {
-        h3 {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.4rem;
-            font-weight: 700;
-            margin-bottom: 15px;
-            color: $text-dark;
-        }
-
-        .loc-card {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            background: #fff;
-            border: 1px solid #eee;
-            padding: 20px;
+        // Map Placeholder
+        .map-placeholder-box {
+            background: #fcfcfc;
+            border: 1px solid $border-color;
             border-radius: 12px;
-
-            .loc-icon {
-                min-width: 50px;
-                width: 50px;
-                height: 50px;
-                background: rgba($housing-accent, 0.1);
-                color: $housing-accent-dark;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                border-radius: 50%;
-                font-size: 1.4rem;
-            }
+            overflow: hidden;
 
             .loc-details {
-                h4 {
-                    margin: 0 0 4px;
-                    font-size: 1.1rem;
-                    font-weight: 700;
-                    color: $text-dark;
-                }
-
-                p {
-                    margin: 0;
-                    color: $text-light;
-                    font-size: 0.95rem;
-                }
-            }
-        }
-
-        .transit-lines {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 10px;
-
-            .badge {
-                font-size: 0.9rem;
-                padding: 8px 12px;
-                font-weight: 500;
+                border-top: 1px solid $border-color;
+                background: white;
             }
         }
     }
@@ -320,10 +346,10 @@ $text-light: #7f8c8d;
 .sidebar {
     .sidebar-wrapper {
         position: sticky;
-        top: 20px; // Stick to top on desktop
+        top: 20px;
 
         @media (max-width: 992px) {
-            position: static; // Unstick on mobile/tablet
+            position: static;
         }
     }
 
@@ -337,7 +363,7 @@ $text-light: #7f8c8d;
 
         &.price-card {
             text-align: center;
-            border-top: 4px solid $housing-accent; // Gold top border accent
+            border-top: 4px solid $housing-accent;
 
             .price-display {
                 font-size: 2.2rem;
@@ -354,13 +380,44 @@ $text-light: #7f8c8d;
                 }
             }
 
-            .dates-info {
-                background: #f8f9fa;
-                padding: 10px;
+            .financials-list {
+                background: #fdfdfd;
+                border: 1px solid $border-color;
                 border-radius: 8px;
-                margin-bottom: 20px;
+                padding: 10px;
+
+                .fin-row {
+                    display: flex;
+                    justify-content: space-between;
+                    font-size: 0.9rem;
+                    padding: 5px 0;
+                    border-bottom: 1px dashed #eee;
+
+                    &:last-child {
+                        border-bottom: none;
+                    }
+
+                    span {
+                        color: $text-light;
+                    }
+
+                    strong {
+                        color: $text-dark;
+                    }
+                }
             }
 
+            .dates-info {
+                background: #f8f9fa;
+                padding: 12px;
+                border-radius: 8px;
+                margin-bottom: 20px;
+                text-align: center;
+
+                strong {
+                    color: $housing-accent-dark;
+                }
+            }
         }
 
         .btn-action {
@@ -402,7 +459,7 @@ $text-light: #7f8c8d;
                 .agent-avatar {
                     min-width: 60px;
                     width: 60px;
-                    height: 60px; // Fixed size
+                    height: 60px;
                     border-radius: 50%;
                     overflow: hidden;
                     border: 2px solid #eee;
@@ -442,36 +499,6 @@ $text-light: #7f8c8d;
                 }
             }
         }
-
-        &.map-card {
-            padding: 15px;
-
-            .map-link-btn {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 10px;
-                width: 100%;
-                padding: 14px;
-                background: white;
-                border: 1px solid #ddd;
-                border-radius: 8px;
-                color: $text-dark;
-                font-weight: 600;
-                text-decoration: none;
-                transition: all 0.2s;
-
-                &:hover {
-                    background: #f8f9fa;
-                    border-color: #ccc;
-                }
-
-                i {
-                    color: #EA4335;
-                    font-size: 1.2rem;
-                }
-            }
-        }
     }
 }
 
@@ -493,19 +520,16 @@ $text-light: #7f8c8d;
 
     .similar-grid {
         display: grid;
-        grid-template-columns: repeat(3, 1fr); // Desktop
+        grid-template-columns: repeat(3, 1fr);
         gap: 25px;
 
         @media (max-width: 992px) {
             grid-template-columns: repeat(2, 1fr);
         }
 
-        // Tablet
         @media (max-width: 600px) {
             grid-template-columns: 1fr;
         }
-
-        // Mobile
 
         .similar-card {
             background: white;
@@ -522,9 +546,9 @@ $text-light: #7f8c8d;
             }
 
             .sim-img {
-                height: 200px; // Taller images
+                height: 200px;
                 position: relative;
-                font-size: 0; // Remove space
+                font-size: 0;
 
                 img {
                     width: 100%;
@@ -534,7 +558,7 @@ $text-light: #7f8c8d;
             }
 
             .sim-info {
-                padding: 18px; // More padding
+                padding: 18px;
 
                 h4 {
                     font-size: 1.05rem;

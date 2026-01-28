@@ -16,83 +16,211 @@
     </div>
 
     <div class="content-container">
-        <!-- Left Column -->
+        <!-- Left Column (Main Info) -->
         <div class="main-info">
+            <!-- Header -->
             <div class="header-info">
-                <div class="status-badge mb-2">
-                    {{ property.isRenting ? 'For Rent' : 'For Sale' }}
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="status-badge mb-2">
+                            {{ property.isRenting ? 'For Rent' : 'For Sale' }}
+                        </div>
+                        <h1 class="prop-title">{{ property.title || 'Untitled Property' }}</h1>
+                    </div>
+                    <div class="text-end" *ngIf="property.priceChange">
+                        <!-- Placeholder for price drops if any data provided later -->
+                    </div>
                 </div>
-                <h1 class="prop-title">{{ property.title }}</h1>
-                <p class="prop-address" *ngIf="property.address">
-                    <span *ngIf="property.address.buildingNumber">{{ property.address.buildingNumber }} </span>
-                    <span *ngIf="property.address.street">{{ property.address.street }}, </span>
-                    <span *ngIf="property.address.location?.neighborhood">{{ property.address.location.neighborhood
-                        }}, </span>
-                    <span *ngIf="property.address.location?.borough">{{ property.address.location.borough }}</span>
-                    <span *ngIf="property.address.zipCode"> - {{ property.address.zipCode }}</span>
+
+                <p class="prop-address">
+                    <i class="bi bi-geo-alt-fill me-1"></i>
+                    <span *ngIf="property.address">
+                        <span *ngIf="property.address.buildingNumber">{{ property.address.buildingNumber }} </span>
+                        <span *ngIf="property.address.street">{{ property.address.street }}, </span>
+                        <span *ngIf="property.address.location?.neighborhood">{{ property.address.location.neighborhood
+                            }}, </span>
+                        <span *ngIf="property.address.location?.borough">{{ property.address.location.borough }}</span>
+                        <span *ngIf="property.address.zipCode"> - {{ property.address.zipCode }}</span>
+                    </span>
+                    <span *ngIf="!property.address">Address Not Disclosed</span>
                 </p>
 
-                <div class="tags-row">
-                    <span class="amenity-tag" *ngIf="property.numberOfRooms > 0">
-                        <i class="bi bi-door-open"></i> {{ property.numberOfRooms }} Rooms
-                    </span>
-                    <span class="amenity-tag" *ngIf="property.numberOfBathrooms > 0">
-                        <i class="bi bi-droplet"></i> {{ property.numberOfBathrooms }} Baths
-                    </span>
-                    <span class="amenity-tag" *ngIf="property.size > 0">
-                        <i class="bi bi-rulers"></i> {{ property.size }} Sq Ft
-                    </span>
-                    <span class="amenity-tag" *ngIf="property.isFurnished">
-                        <i class="bi bi-lamp"></i> Furnished
-                    </span>
-                    <span class="amenity-tag" *ngIf="property.isPetsFriendly">
-                        <i class="bi bi-emoji-smile"></i> Pets Friendly
-                    </span>
-                </div>
-            </div>
-
-            <div class="description-box" *ngIf="property.description">
-                <h3>Description</h3>
-                <p>{{ property.description }}</p>
-            </div>
-
-            <!-- Features List (Only show if true) -->
-            <div class="features-section" *ngIf="hasFeatures()">
-                <h3>Property Features</h3>
-                <div class="features-grid">
-                    <div class="feature-item" *ngIf="property.isShortTermStayAllowed"><i class="bi bi-check2"></i> Short
-                        Term Allowed</div>
-                    <div class="feature-item" *ngIf="property.isFamilyAndKidsFriendly"><i class="bi bi-check2"></i>
-                        Family Friendly</div>
-                    <div class="feature-item" *ngIf="property.isAccessibilityFriendly"><i class="bi bi-check2"></i>
-                        Accessibility Friendly</div>
-                    <div class="feature-item" *ngIf="property.isSmokingAllowed"><i class="bi bi-check2"></i> Smoking
-                        Allowed</div>
-                </div>
-            </div>
-
-            <!-- Basic Location Info (Replaces Insights) -->
-            <div class="location-simple-section" *ngIf="property.address?.location">
-                <h3>Location</h3>
-                <div class="loc-card">
-                    <div class="loc-icon"><i class="bi bi-geo-alt"></i></div>
-                    <div class="loc-details">
-                        <h4>{{ property.address?.location?.neighborhood }}</h4>
-                        <p>{{ property.address?.location?.borough }} (Zip: {{ property.address?.zipCode ||
-                            property.address?.location?.zipCode }})</p>
+                <!-- Key Specs Grid -->
+                <div class="specs-grid">
+                    <div class="spec-item">
+                        <span class="label">Bedrooms</span>
+                        <strong class="value"><i class="bi bi-door-open me-2"></i>{{ property.numberOfRooms ?? 'N/A'
+                            }}</strong>
+                    </div>
+                    <div class="spec-item">
+                        <span class="label">Bathrooms</span>
+                        <strong class="value"><i class="bi bi-droplet me-2"></i>{{ property.numberOfBathrooms ?? 'N/A'
+                            }}</strong>
+                    </div>
+                    <div class="spec-item">
+                        <span class="label">Size</span>
+                        <strong class="value"><i class="bi bi-rulers me-2"></i>{{ property.size ? property.size + ' Sq
+                            Ft' : 'N/A' }}</strong>
+                    </div>
+                    <div class="spec-item">
+                        <span class="label">Type</span>
+                        <strong class="value"><i class="bi bi-building me-2"></i>{{ getLabel(property.buildingType,
+                            buildingTypeOptions) }}</strong>
                     </div>
                 </div>
             </div>
 
-            <!-- Transport (Only if data exists) -->
-            <div class="transport-section mt-4"
-                *ngIf="property.nearbySubwayLines && property.nearbySubwayLines.length > 0">
-                <h3>Nearby Transit</h3>
-                <div class="transit-lines">
-                    <span class="badge bg-secondary me-1" *ngFor="let line of property.nearbySubwayLines">{{ line
-                        }}</span>
+            <!-- Description -->
+            <div class="info-block">
+                <h3>About This Home</h3>
+                <p class="desc-text">{{ property.description || 'No description provided.' }}</p>
+
+                <div class="highlights-row mt-4">
+                    <div class="highlight-pill" *ngIf="property.isFurnished">
+                        <i class="bi bi-lamp-fill"></i> Furnished
+                    </div>
+                    <div class="highlight-pill" *ngIf="property.isPetsFriendly">
+                        <i class="bi bi-emoji-smile-fill"></i> Pets Friendly
+                    </div>
+                    <div class="highlight-pill" *ngIf="property.isShortTermStayAllowed">
+                        <i class="bi bi-clock-history"></i> Short-Term Allowed
+                    </div>
+                    <div class="highlight-pill" *ngIf="property.isAcceptsHousingVouchers">
+                        <i class="bi bi-ticket-perforated-fill"></i> Vouchers Accepted
+                    </div>
                 </div>
             </div>
+
+            <hr class="divider">
+
+            <!-- Property Details Grid -->
+            <div class="info-block">
+                <h3>Property Facts & Features</h3>
+                <div class="details-grid-list">
+
+                    <div class="detail-group">
+                        <h5><i class="bi bi-house-gear me-2"></i>Structure & Systems</h5>
+                        <ul>
+                            <li><span>Year Built:</span> {{ property.yearBuilt || 'Not specified' }}</li>
+                            <li><span>Renovated:</span> {{ property.renovatedIn || 'Not specified' }}</li>
+                            <li><span>Heating:</span> {{ getLabel(property.heatingSystem, heatingSystems) }}</li>
+                            <li><span>Cooling:</span> {{ getLabel(property.coolingSystem, coolingSystems) }}</li>
+                            <li><span>Temp Control:</span> {{ getLabel(property.temperatureControl, tempControls) }}
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="detail-group">
+                        <h5><i class="bi bi-people me-2"></i>Living & Utility</h5>
+                        <ul>
+                            <li><span>Household:</span> {{ getLabel(property.householdType, householdTypes) }}</li>
+                            <li><span>Max Occupants:</span> {{ property.maxOccupants || 'Not specified' }}</li>
+                            <li><span>Laundry:</span> {{ getLabel(property.laundryType, laundryTypes) }}</li>
+                            <li><span>Floor Level:</span> {{ property.floorLevel || 'Not specified' }}</li>
+                            <li><span>Unit #:</span> {{ property.unitNumber || 'N/A' }}</li>
+                        </ul>
+                    </div>
+
+                    <div class="detail-group" *ngIf="property.isRenting">
+                        <h5><i class="bi bi-key me-2"></i>Lease Details</h5>
+                        <ul>
+                            <li><span>Lease Type:</span> {{ getLabel(property.rentingLeaseType, leaseTypes) }}</li>
+                            <li><span>Shared Unit:</span> {{ property.rentingIsShared ? 'Yes' : 'No' }}</li>
+                            <li *ngIf="property.rentingIsShared"><span>Shared Bathroom:</span> {{
+                                property.rentingIsSharedBathroom ? 'Yes' : 'Private' }}</li>
+                            <li *ngIf="property.rentingIsShared"><span>Shared Kitchen:</span> {{
+                                property.rentingIsSharedKitchen ? 'Yes' : 'Private' }}</li>
+                        </ul>
+                    </div>
+
+                    <div class="detail-group" *ngIf="!property.isRenting">
+                        <h5><i class="bi bi-cash-coin me-2"></i>Sale specifics</h5>
+                        <ul>
+                            <li><span>Property Class:</span> Resale</li>
+                            <!-- Placeholder, API doesn't clearly distinguish Resale/New Dev yet -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="divider">
+
+            <!-- Amenities & Utilities -->
+            <div class="info-block">
+                <h3>Utilities & Programs</h3>
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <h6 class="text-muted text-uppercase small fw-bold mb-3">Utilities Included</h6>
+                        <div class="tags-cloud" *ngIf="property.utilitiesIncluded?.length > 0; else noUtils">
+                            <span class="tag" *ngFor="let u of property.utilitiesIncluded"><i
+                                    class="bi bi-check2 me-1"></i> {{ u }}</span>
+                        </div>
+                        <ng-template #noUtils>
+                            <p class="text-muted fst-italic">None specified</p>
+                        </ng-template>
+                    </div>
+
+                    <div class="col-md-6" *ngIf="property.isRenting">
+                        <h6 class="text-muted text-uppercase small fw-bold mb-3">Programs Accepted</h6>
+                        <div class="tags-cloud" *ngIf="property.acceptedHousingPrograms?.length > 0; else noProgs">
+                            <span class="tag program"
+                                *ngFor="let p of getProgramLabels(property.acceptedHousingPrograms, housingPrograms)">{{
+                                p }}</span>
+                        </div>
+                        <ng-template #noProgs>
+                            <p class="text-muted fst-italic">No specific programs listed</p>
+                        </ng-template>
+                    </div>
+
+                    <div class="col-md-6" *ngIf="!property.isRenting">
+                        <h6 class="text-muted text-uppercase small fw-bold mb-3">Buyer Assistance</h6>
+                        <div class="tags-cloud" *ngIf="property.acceptedBuyerPrograms?.length > 0; else noBuyers">
+                            <span class="tag program"
+                                *ngFor="let p of getProgramLabels(property.acceptedBuyerPrograms, buyerPrograms)">{{ p
+                                }}</span>
+                        </div>
+                        <ng-template #noBuyers>
+                            <p class="text-muted fst-italic">No buyer programs listed</p>
+                        </ng-template>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="divider">
+
+            <!-- Rules & Policies (Show only if relevant) -->
+            <div class="info-block"
+                *ngIf="property.isRenting && (property.rentingRulesAndPolicies || property.rentingAboutCurrentResident)">
+                <h3>House Rules & Info</h3>
+                <div class="alert alert-light border" *ngIf="property.rentingAboutCurrentResident">
+                    <h6 class="fw-bold"><i class="bi bi-info-circle me-2"></i>Current Residents</h6>
+                    <p class="mb-0">{{ property.rentingAboutCurrentResident }}</p>
+                </div>
+                <div class="alert alert-light border" *ngIf="property.rentingRulesAndPolicies">
+                    <h6 class="fw-bold"><i class="bi bi-file-text me-2"></i>Policies</h6>
+                    <p class="mb-0">{{ property.rentingRulesAndPolicies }}</p>
+                </div>
+            </div>
+
+            <!-- Location Map Area -->
+            <div class="info-block" *ngIf="property.address?.location">
+
+                <div class="map-placeholder-box">
+                    <!-- If google link exists -->
+             
+                    <!-- Fallback Info -->
+                    <div class="loc-details p-4" *ngIf="!property.googleMapLink">
+                        <h4>{{ property.address.location.neighborhood }}</h4>
+                        <p class="text-muted">{{ property.address.location.borough }} • {{
+                            property.address.location.zipCode }}</p>
+                        <div class="nearby-transit mt-3" *ngIf="property.nearbySubwayLines?.length">
+                            <strong class="d-block mb-2 text-muted small">NEARBY TRANSIT</strong>
+                            <span class="badge bg-dark me-1" *ngFor="let l of property.nearbySubwayLines">{{ l }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
         <!-- Right Sidebar -->
@@ -123,14 +251,32 @@
                         <span class="period" *ngIf="property.isRenting">/mo</span>
                     </h2>
 
+                    <div class="financials-list mb-3">
+                        <div class="fin-row" *ngIf="property.isRenting && property.securityDeposit">
+                            <span>Security Deposit</span>
+                            <strong>{{ formatPrice(property.securityDeposit) }}</strong>
+                        </div>
+                        <div class="fin-row" *ngIf="property.isRenting && property.brokerFee">
+                            <span>Broker Fee</span>
+                            <strong>{{ formatPrice(property.brokerFee) }}</strong>
+                        </div>
+                    </div>
+
                     <div class="dates-info mb-3" *ngIf="property.moveInDate">
-                        <small class="text-muted d-block">Available from</small>
-                        <strong>{{ property.moveInDate | date:'mediumDate' }}</strong>
+                        <small class="text-muted d-block text-uppercase"
+                            style="font-size: 0.7rem; letter-spacing: 1px;">Move-in Date</small>
+                        <strong class="fs-5">{{ property.moveInDate | date:'mediumDate' }}</strong>
+                        <div class="mt-2" *ngIf="property.moveOutDate"
+                            style="border-top: 1px solid #eee; padding-top: 5px;">
+                            <small class="text-muted">Move-out: {{ property.moveOutDate | date:'mediumDate' }}</small>
+                        </div>
                     </div>
 
                     <button class="btn-action gold" [routerLink]="['/public/housing/agent-request']"
-                        [queryParams]="{postId: property.id}">Apply / Contact Agent</button>
-
+                        [queryParams]="{postId: property.id}">
+                        Request Tour / Apply
+                    </button>
+               
                 </div>
 
                 <!-- Agent Info -->
@@ -145,7 +291,10 @@
                             <h4 [routerLink]="['/public/profile', property.author?.username]" style="cursor: pointer;">
                                 {{ property.author?.fullName || property.author?.username }}
                             </h4>
-                            <span class="sub-label">Verified Agent</span>
+                            <span class="sub-label">
+                                <i class="bi bi-patch-check-fill me-1"></i>
+                                {{ property.author?.type === 1 ? 'Organization' : 'Verified User' }}
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -156,7 +305,7 @@
 
     <!-- Similar Homes -->
     <div class="similar-section" *ngIf="similarProperties.length > 0">
-        <h3>Similar Homes</h3>
+        <h3>Similar Homes Nearby</h3>
         <div class="similar-grid">
             <div class="similar-card" *ngFor="let item of similarProperties"
                 [routerLink]="['/public/housing/details', item.id]">
@@ -166,9 +315,10 @@
                 <div class="sim-info">
                     <h4>{{ item.title }}</h4>
                     <div class="sim-stats" *ngIf="item.numberOfRooms > 0 || item.numberOfBathrooms > 0">
-                        <span *ngIf="item.numberOfRooms"><i class="bi bi-door-open"></i> {{ item.numberOfRooms }}</span>
-                        <span *ngIf="item.numberOfBathrooms"><i class="bi bi-droplet"></i> {{
-                            item.numberOfBathrooms}}</span>
+                        <span *ngIf="item.numberOfRooms"><i class="bi bi-door-open"></i> {{ item.numberOfRooms }}
+                            Bed</span>
+                        <span *ngIf="item.numberOfBathrooms"><i class="bi bi-droplet"></i> {{ item.numberOfBathrooms}}
+                            Bath</span>
                     </div>
                     <p class="sim-price">{{ formatPrice(item.startingPrice) }}</p>
                 </div>
