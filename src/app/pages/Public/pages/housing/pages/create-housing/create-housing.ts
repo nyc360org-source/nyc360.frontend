@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormArray } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { Subject, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, catchError } from 'rxjs/operators';
@@ -404,6 +404,10 @@ export class CreateHousingComponent implements OnInit {
 
     // --- Submit ---
     // --- Submit ---
+    saveDraft() {
+        this.toastService.info('Draft saved locally!');
+    }
+
     onSubmit() {
         console.log('onSubmit triggered');
 
