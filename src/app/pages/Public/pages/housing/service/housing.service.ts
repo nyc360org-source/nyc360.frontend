@@ -18,6 +18,7 @@ export class HousingService {
         formData.append('Description', data.Description || '');
         if (data.UnitNumber) formData.append('UnitNumber', data.UnitNumber);
         if (data.GoogleMapLink) formData.append('GoogleMapLink', data.GoogleMapLink);
+        if (data.LegalUnitCount) formData.append('LegalUnitCount', data.LegalUnitCount);
 
         // 2. Dates
         if (data.MoveInDate) formData.append('MoveInDate', new Date(data.MoveInDate).toISOString());
@@ -50,7 +51,9 @@ export class HousingService {
         appendInt('LaundryType', data.LaundryType);
         appendInt('RentingLeaseType', data.RentingLeaseType);
 
-        appendInt('MaxOccupants', data.MaxOccupants);
+        // Map SuggestedOccupants to MaxOccupants if present
+        const maxOcc = data.SuggestedOccupants || data.MaxOccupants;
+        appendInt('MaxOccupants', maxOcc);
         appendInt('NumberOfRooms', data.NumberOfRooms);
         appendInt('NumberOfBathrooms', data.NumberOfBathrooms);
         appendInt('StartingPrice', data.StartingPrice);
@@ -90,6 +93,7 @@ export class HousingService {
         appendArray('AcceptedBuyerPrograms', data.AcceptedBuyerPrograms);
         appendArray('NearbySubwayLines', data.NearbySubwayLines);
         appendArray('UtilitiesIncluded', data.UtilitiesIncluded);
+        appendArray('Amenities', data.Amenities);
 
         // 8. Attachments (Multiple files under same key)
         if (data.Attachments && Array.isArray(data.Attachments)) {
@@ -128,6 +132,7 @@ export class HousingService {
         formData.append('Description', data.Description || '');
         if (data.UnitNumber) formData.append('UnitNumber', data.UnitNumber);
         if (data.GoogleMapLink) formData.append('GoogleMapLink', data.GoogleMapLink);
+        if (data.LegalUnitCount) formData.append('LegalUnitCount', data.LegalUnitCount);
 
         // 2. Dates
         if (data.MoveInDate) formData.append('MoveInDate', new Date(data.MoveInDate).toISOString());
@@ -160,7 +165,8 @@ export class HousingService {
         appendInt('LaundryType', data.LaundryType);
         appendInt('RentingLeaseType', data.RentingLeaseType);
 
-        appendInt('MaxOccupants', data.MaxOccupants);
+        const maxOccUpdate = data.SuggestedOccupants || data.MaxOccupants;
+        appendInt('MaxOccupants', maxOccUpdate);
         appendInt('NumberOfRooms', data.NumberOfRooms);
         appendInt('NumberOfBathrooms', data.NumberOfBathrooms);
         appendInt('StartingPrice', data.StartingPrice);

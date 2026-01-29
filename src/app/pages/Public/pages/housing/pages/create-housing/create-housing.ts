@@ -34,11 +34,14 @@ export class CreateHousingComponent implements OnInit {
 
     // Aligning with API BuildingType Enum (0=WalkUp, 1=Elevator, 2=Townhouse, 3=Detached)
     buildingTypeOptions = [
-        { id: 0, name: 'Walk-up', icon: 'bi-building' },
-        { id: 1, name: 'Elevator', icon: 'bi-building-up' },
-        { id: 2, name: 'Townhouse', icon: 'bi-house-heart' },
-        { id: 3, name: 'Detached', icon: 'bi-house' }
+        { id: 0, name: 'Apartment', icon: 'bi-building' },
+        { id: 1, name: 'House', icon: 'bi-house-door' },
+        { id: 2, name: 'Townhouse', icon: 'bi-houses' },
+        { id: 3, name: 'Studio', icon: 'bi-grid-1x2' },
+        { id: 4, name: 'Room', icon: 'bi-person-badge' }
     ];
+
+    boroughOptions = ['Manhattan', 'Brooklyn', 'Queens', 'Bronx', 'Staten Island'];
 
     householdTypes = [
         { id: 0, name: 'Individual' },
@@ -178,23 +181,90 @@ export class CreateHousingComponent implements OnInit {
     selectedTags: any[] = [];
     showTagDropdown = false;
 
+    // --- Collapsible Sections State ---
+    openSections: { [key: string]: boolean } = {
+        listingType: true,
+        availability: false,
+        address: false,
+        rooms: false,
+        financials: false,
+        spaceProperty: false,
+        amenities: false,
+        extraFeatures: false,
+        programs: false,
+        description: false,
+        rentingDetails: false,
+        sharedDetails: false,
+        applyPhotos: false,
+        coListing: false
+    };
+
+    toggleSection(section: string) {
+        this.openSections[section] = !this.openSections[section];
+        this.cdr.detectChanges();
+    }
+
+    isSectionComplete(section: string): boolean {
+        switch (section) {
+            case 'availability':
+                return !!(this.f['MoveInDate'].value && this.f['MoveOutDate'].value && this.f['BuildingType'].value);
+            case 'address':
+                const addr = this.form.get('Address');
+                return !!(addr?.get('Neighborhood')?.value && this.f['Borough']?.value && this.f['UnitNumber']?.value);
+            case 'rooms':
+                return !!(this.f['NumberOfRooms'].value && this.f['NumberOfBathrooms'].value);
+            case 'financials':
+                return !!(this.f['StartingPrice'].value);
+            case 'spaceProperty':
+                return !!(this.f['BuildingType'].value && this.f['Size'].value);
+            case 'description':
+                return !!(this.f['Title'].value && this.f['Description'].value);
+            case 'rentingDetails':
+                return !!(this.f['RentingLeaseType'].value);
+            case 'applyPhotos':
+                return this.selectedFiles.length >= 1;
+            default:
+                return false;
+        }
+    }
+
+    isSectionInvalid(section: string): boolean {
+        switch (section) {
+            case 'availability':
+                return (this.f['MoveInDate'].touched && !this.f['MoveInDate'].value) ||
+                    (this.f['MoveOutDate'].touched && !this.f['MoveOutDate'].value);
+            case 'financials':
+                return this.f['StartingPrice'].touched && !this.f['StartingPrice'].value;
+            case 'description':
+                return (this.f['Title'].touched && !this.f['Title'].value) ||
+                    (this.f['Description'].touched && !this.f['Description'].value);
+            default:
+                return false;
+        }
+    }
+
     constructor() {
         this.form = this.fb.group({
             // Core
             IsRenting: [true, Validators.required],
-            BuildingType: [0, Validators.required], // Mapped from property selection
+            BuildingType: [null, Validators.required], // Mapped from property selection
             HouseholdType: [0], // Default Individual
             MoveInDate: [null, Validators.required],
             MoveOutDate: [null],
+            LegalUnitCount: [''], // NEW FIELD
 
             // Location
-            locationInput: ['', Validators.required], // Neighborhood search
+            locationInput: ['', Validators.required],
+            Borough: ['', Validators.required],
+            SuggestedOccupants: [''],
             Address: this.fb.group({
+                FullAddress: [''],
                 Street: [''],
                 BuildingNumber: [''],
-                ZipCode: ['', [Validators.pattern(/^\d{5}$/)]]
+                Neighborhood: ['', Validators.required],
+                ZipCode: ['', [Validators.required, Validators.pattern(/^\d{5}$/)]]
             }),
-            UnitNumber: [''],
+            UnitNumber: ['', Validators.required],
             GoogleMapLink: [''],
             NearbySubwayLines: [[]], // Array of strings
 
@@ -336,7 +406,13 @@ export class CreateHousingComponent implements OnInit {
     selectLocation(loc: any) {
         this.selectedLocation = loc;
         const display = `${loc.neighborhood}, ${loc.borough} - ${loc.zipCode}`;
-        this.form.patchValue({ locationInput: display });
+        this.form.patchValue({
+            locationInput: display,
+            Borough: loc.borough
+        });
+
+        // Patch Neighborhood in Address group
+        this.form.get('Address.Neighborhood')?.setValue(loc.neighborhood);
 
         // Auto-populate zip code if available
         if (loc.zipCode) {
@@ -384,6 +460,11 @@ export class CreateHousingComponent implements OnInit {
         } else {
             this.form.patchValue({ NearbySubwayLines: [...current, line] });
         }
+    }
+
+    toggleTransportation(option: string) {
+        // We reuse NearbySubwayLines array for all transportation types requested by user
+        this.toggleSubway(option);
     }
 
     toggleProgram(id: number) {

@@ -1,29 +1,21 @@
 <div class="create-housing-container">
     <div class="container">
+        <!-- Header -->
         <header class="page-header">
-            <h2><i class="bi bi-pencil-square me-2 text-gold"></i>Edit Your Property</h2>
-            <p>Update your listing details to keep buyers and tenants informed.</p>
+            <h2>Edit Property Listing</h2>
+            <p>Update your property details to keep them accurate and attractive for potential clients.</p>
         </header>
 
-        <div *ngIf="isLoading" class="text-center py-5">
-            <div class="spinner-border text-gold" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-            <p class="mt-2 text-muted">Loading listing details...</p>
-        </div>
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="housing-form">
 
-        <form *ngIf="!isLoading" [formGroup]="form" (ngSubmit)="onSubmit()" class="housing-form">
-
-            <!-- 1. Category & Identity (Identity of the Place) -->
-            <section class="form-section">
-                <h3 class="section-title"><i class="bi bi-tag-fill me-2"></i>Classification</h3>
-
-                <div class="listing-type-group mb-5">
+            <!-- 1. Rent / Sale Choice -->
+            <section class="form-section no-bg mb-5 text-center">
+                <div class="listing-type-group justify-content-center">
                     <div class="type-card-lg" [class.active]="isRenting" (click)="onListingTypeChange(true)">
                         <img src="assets/images/housing-rent-bg.jpg" alt="Rent" class="bg-img"
                             onerror="this.src='https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80'">
                         <div class="content">
-                            <h3><i class="bi bi-key-fill me-2"></i>For Rent</h3>
+                            <h3>For Rent</h3>
                             <p>List for Long-Term or Short-Term leases</p>
                         </div>
                         <div class="check-mark" *ngIf="isRenting"><i class="bi bi-check-lg"></i></div>
@@ -32,189 +24,150 @@
                         <img src="assets/images/housing-sale-bg.jpg" alt="Sale" class="bg-img"
                             onerror="this.src='https://images.unsplash.com/photo-1568605114967-8130f3a36994?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80'">
                         <div class="content">
-                            <h3><i class="bi bi-tag-fill me-2"></i>For Sale</h3>
+                            <h3>For Sale</h3>
                             <p>List as a Real Estate listing</p>
                         </div>
                         <div class="check-mark" *ngIf="!isRenting"><i class="bi bi-check-lg"></i></div>
                     </div>
                 </div>
 
-                <div class="row g-4">
-                    <div class="col-md-12 form-group mb-2">
-                        <label class="fw-bold mb-3"><i class="bi bi-pencil-square me-2 text-gold"></i>Listing Name
-                            *</label>
-                        <input type="text" class="form-control form-control-lg" formControlName="Title"
-                            placeholder="e.g. Luxurious 2BR Apartment with Skyline Views"
-                            [class.is-invalid]="f['Title'].invalid && f['Title'].touched">
-                        <div class="invalid-feedback">Title must be at least 5 characters long</div>
+                <!-- Property Icons Row -->
+                <div class="property-icons-row mt-5">
+                    <div class="prop-icon-card" *ngFor="let type of buildingTypeOptions"
+                        [class.selected]="f['BuildingType'].value === type.id"
+                        (click)="f['BuildingType'].setValue(type.id)">
+                        <i class="bi" [ngClass]="type.icon"></i>
+                        <span>{{ type.name }}</span>
                     </div>
+                </div>
+            </section>
 
-                    <div class="col-md-12">
-                        <label class="fw-bold mb-3"><i class="bi bi-building me-2 text-gold"></i>Property
-                            Structure</label>
-                        <div class="property-icons-row border-0 px-0">
-                            <div class="prop-icon-card" *ngFor="let type of buildingTypeOptions"
-                                [class.selected]="f['BuildingType'].value === type.id"
-                                (click)="f['BuildingType'].setValue(type.id)">
-                                <i class="bi" [ngClass]="type.icon"></i>
-                                <span>{{ type.name }}</span>
-                            </div>
+            <!-- 2. Availability -->
+            <section class="form-section mb-4" [class.section-done]="isSectionComplete('availability')"
+                [class.section-error]="isSectionInvalid('availability')">
+                <div class="section-header" (click)="toggleSection('availability')">
+                    <div class="header-info">
+                        <div class="icon-box"><i class="bi bi-calendar-check"></i></div>
+                        <h3>Availability</h3>
+                        <div class="status-badge complete" *ngIf="isSectionComplete('availability')">
+                            <i class="bi bi-check-circle-fill"></i>
+                        </div>
+                    </div>
+                    <div class="right-info">
+                        <span class="error-text" *ngIf="isSectionInvalid('availability')">Missing Data</span>
+                        <div class="toggle-btn" [class.is-open]="openSections['availability']">
+                            <i class="bi bi-chevron-down"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="section-content text-center" [class.collapsed]="!openSections['availability']">
+                    <div class="row g-4 mb-4 justify-content-center">
+                        <div class="col-md-4 form-group">
+                            <label>Select Opening Date *</label>
+                            <input type="date" class="form-control" formControlName="MoveInDate">
+                        </div>
+                        <div class="col-md-4 form-group">
+                            <label>Available Until Date *</label>
+                            <input type="date" class="form-control" formControlName="MoveOutDate">
+                        </div>
+                        <div class="col-md-4 form-group">
+                            <label>Tenancy Type *</label>
+                            <select class="form-select" formControlName="RentingLeaseType">
+                                <option [ngValue]="null">Select Tenancy Type</option>
+                                <option *ngFor="let l of leaseTypes" [ngValue]="l.id">{{ l.name }}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row g-4 justify-content-center">
+                        <div class="col-md-4 form-group">
+                            <label>Building Type *</label>
+                            <select class="form-select" formControlName="BuildingType">
+                                <option [ngValue]="0" disabled selected hidden>Select Building Type</option>
+                                <option *ngFor="let type of buildingTypeOptions" [ngValue]="type.id">{{ type.name }}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 form-group" formGroupName="Address">
+                            <label>ZIP Code *</label>
+                            <input type="text" class="form-control" formControlName="ZipCode"
+                                placeholder="Enter ZIP Code">
+                        </div>
+                        <div class="col-md-4 form-group">
+                            <label>Legal unit count</label>
+                            <input type="text" class="form-control" formControlName="LegalUnitCount"
+                                placeholder="Add Legal unit count #">
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- 2. Primary Specifications & Financials -->
-            <section class="form-section">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h3 class="section-title mb-0"><i class="bi bi-info-circle-fill me-2"></i>Basics & Financials</h3>
-                    <span class="badge-gold-soft"><i class="bi bi-cash-stack me-1"></i> Core Details</span>
-                </div>
-
-                <div class="row g-4">
-                    <!-- Dates -->
-                    <div class="col-md-3 form-group">
-                        <label><i class="bi bi-calendar-event me-2"></i>Move-in *</label>
-                        <input type="date" class="form-control" formControlName="MoveInDate"
-                            [class.is-invalid]="f['MoveInDate'].invalid && f['MoveInDate'].touched">
+            <!-- 3. Address -->
+            <section class="form-section mb-4" [class.section-done]="isSectionComplete('address')">
+                <div class="section-header" (click)="toggleSection('address')">
+                    <div class="header-info">
+                        <div class="icon-box"><i class="bi bi-geo-alt"></i></div>
+                        <h3>Address</h3>
+                        <div class="status-badge complete" *ngIf="isSectionComplete('address')">
+                            <i class="bi bi-check-circle-fill"></i>
+                        </div>
                     </div>
-                    <div class="col-md-3 form-group">
-                        <label><i class="bi bi-calendar-x me-2"></i>Move-out</label>
-                        <input type="date" class="form-control" formControlName="MoveOutDate">
-                    </div>
-
-                    <!-- Price -->
-                    <div class="col-md-3 form-group">
-                        <label><i class="bi bi-currency-dollar me-2"></i>{{ isRenting ? 'Monthly Rent *' : 'Asking Price
-                            *' }}</label>
-                        <input type="number" class="form-control" formControlName="StartingPrice" placeholder="7,200"
-                            [class.is-invalid]="f['StartingPrice'].invalid && f['StartingPrice'].touched">
-                    </div>
-                    <div class="col-md-3 form-group">
-                        <label><i class="bi bi-shield-check me-2"></i>Security Deposit</label>
-                        <input type="number" class="form-control" formControlName="SecurityDeposit" placeholder="7,200">
-                    </div>
-
-                    <!-- Household & Building -->
-                    <div class="col-md-3 form-group">
-                        <label><i class="bi bi-people-fill me-2"></i>Household</label>
-                        <select class="form-select" formControlName="HouseholdType">
-                            <option [ngValue]="null">Select Household</option>
-                            <option *ngFor="let h of householdTypes" [ngValue]="h.id">{{ h.name }}</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3 form-group">
-                        <label><i class="bi bi-person-plus me-2"></i>Max Occupants</label>
-                        <input type="number" class="form-control" formControlName="MaxOccupants" placeholder="# People">
-                    </div>
-                    <div class="col-md-3 form-group">
-                        <label><i class="bi bi-person-badge me-2"></i>Broker Fee</label>
-                        <input type="number" class="form-control" formControlName="BrokerFee" placeholder="0">
-                    </div>
-                    <div class="col-md-3 form-group">
-                        <label><i class="bi bi-graph-up me-2"></i>Utility Cost</label>
-                        <input type="number" class="form-control" formControlName="MonthlyCostRange" placeholder="300">
+                    <div class="toggle-btn" [class.is-open]="openSections['address']">
+                        <i class="bi bi-chevron-down"></i>
                     </div>
                 </div>
-            </section>
-
-            <!-- 3. Location, Address & Accessibility -->
-            <section class="form-section">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h3 class="section-title mb-0"><i class="bi bi-geo-alt-fill me-2"></i>Location & Connectivity</h3>
-                    <span class="badge-gold-soft"><i class="bi bi-shield-check me-1"></i> Verified NYC
-                        Neighborhoods</span>
-                </div>
-
-                <div class="row g-4">
-                    <!-- Search -->
-                    <div class="col-md-12 form-group search-group mb-2">
-                        <label class="fw-bold mb-3"><i class="bi bi-compass me-2 text-gold"></i>Where is it located?
-                            *</label>
-                        <div class="search-wrapper">
-                            <i class="bi bi-search search-icon"></i>
-                            <input type="text" class="form-control"
-                                placeholder="Search neighborhood (e.g. Bronx Park, Clason Point)"
-                                (input)="onLocationInput($event)" formControlName="locationInput"
-                                [class.is-invalid]="f['locationInput'].invalid && f['locationInput'].touched">
-                            <div class="invalid-feedback">Please select a neighborhood from the list</div>
-
-                            <div class="search-indicator"
-                                *ngIf="locationResults.length === 0 && f['locationInput'].value?.length > 1">
-                                <span class="spinner-grow spinner-grow-sm text-gold"></span>
-                            </div>
-
-                            <div class="dropdown-results" *ngIf="showLocationDropdown">
-                                <div class="result-item" *ngFor="let loc of locationResults"
-                                    (click)="selectLocation(loc)">
-                                    <i class="bi bi-geo-fill"></i>
-                                    <div class="d-flex flex-column">
-                                        <span class="loc-name">{{ loc.neighborhood }}</span>
-                                        <span class="loc-sub">{{ loc.borough }} • {{ loc.zipCode }}</span>
+                <div class="section-content text-center" [class.collapsed]="!openSections['address']">
+                    <div class="row g-4 mb-4 justify-content-center">
+                        <div class="col-md-6 form-group">
+                            <label>Neighborhood Search *</label>
+                            <div class="position-relative search-group">
+                                <div class="search-wrapper">
+                                    <input type="text" class="form-control text-center"
+                                        placeholder="Select City / Neighborhood Search"
+                                        (input)="onLocationInput($event)" formControlName="locationInput">
+                                    <div class="dropdown-results shadow-lg" *ngIf="showLocationDropdown">
+                                        <div class="result-item" *ngFor="let loc of locationResults"
+                                            (click)="selectLocation(loc)">
+                                            <div class="list-icon"><i class="bi bi-geo-alt-fill"></i></div>
+                                            <div class="loc-info text-start">
+                                                <span class="loc-name">{{ loc.neighborhood }}</span>
+                                                <span class="loc-sub">{{ loc.borough }} • {{ loc.zipCode }}</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Address Details -->
-                    <div class="col-md-6">
-                        <div class="form-group mb-3" formGroupName="Address">
-                            <label class="small fw-bold text-muted mb-2">STREET ADDRESS & BUILDING (OPTIONAL)</label>
-                            <div class="input-group-premium">
-                                <i class="bi bi-building-add"></i>
-                                <input type="text" class="form-control" formControlName="Street"
-                                    placeholder="e.g. 123 Main St">
-                            </div>
+                        <div class="col-md-6 form-group" formGroupName="Address">
+                            <label>Full address (optional)</label>
+                            <input type="text" class="form-control text-center" formControlName="FullAddress"
+                                placeholder="Add Full Address">
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="form-group mb-3">
-                            <label class="small fw-bold text-muted mb-2">UNIT / APT #</label>
-                            <div class="input-group-premium">
-                                <i class="bi bi-hash"></i>
-                                <input type="text" class="form-control" formControlName="UnitNumber"
-                                    placeholder="e.g. 4B">
-                            </div>
-                        </div>
+                    <div class="form-group mb-4">
+                        <label>Unit / Apt / Suite number *</label>
+                        <input type="text" class="form-control text-center mx-auto" style="max-width: 400px;"
+                            formControlName="UnitNumber" placeholder="Add Unit / Apt / Suite number #">
                     </div>
-                    <div class="col-md-3">
-                        <div class="form-group mb-3" formGroupName="Address">
-                            <label class="small fw-bold text-muted mb-2">ZIP CODE</label>
-                            <div class="input-group-premium">
-                                <i class="bi bi-pin-map"></i>
-                                <input type="text" class="form-control" formControlName="ZipCode" placeholder="11692">
-                            </div>
-                        </div>
+                    <div class="form-group mb-4">
+                        <label>Google Map Share Link</label>
+                        <input type="text" class="form-control text-center mx-auto" style="max-width: 500px;"
+                            formControlName="GoogleMapLink" placeholder="Add Google Map Share Link">
                     </div>
-
-                    <div class="col-md-12">
-                        <div class="form-group mb-3">
-                            <label class="small fw-bold text-muted mb-2">GOOGLE MAPS / LOCATION URL</label>
-                            <div class="input-group-premium">
-                                <i class="bi bi-link-45deg"></i>
-                                <input type="text" class="form-control" formControlName="GoogleMapLink"
-                                    placeholder="Paste share link here">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Transportation -->
-                    <div class="col-md-12 mt-3">
-                        <label class="mb-4 fw-bold"><i class="bi bi-train-front me-2 text-gold"></i>Nearby
-                            Transportation</label>
-                        <div class="transportation-groups">
-                            <div class="trans-group" *ngFor="let group of transportationGroups">
-                                <div class="group-header d-flex align-items-center mb-3">
-                                    <i class="bi" [ngClass]="group.icon" style="color: #B59B62; font-size: 1.2rem;"></i>
-                                    <span class="ms-2 fw-bold text-muted small uppercase">{{ group.category }}</span>
+                    <!-- Transportation Selection (Multi-Select Chips) -->
+                    <div class="transportation-section mt-5">
+                        <label class="fw-bold mb-4 d-block">Nearby Transportation (Select all that apply)</label>
+                        <div class="transport-groups-grid">
+                            <div class="transport-category" *ngFor="let group of transportationGroups">
+                                <div class="category-title">
+                                    <i class="bi" [ngClass]="group.icon"></i>
+                                    <span>{{group.category}}</span>
                                 </div>
-                                <div class="group-options d-flex flex-wrap gap-2 mb-4">
-                                    <span class="trans-pill" *ngFor="let opt of group.options"
+                                <div class="options-flex">
+                                    <button type="button" class="btn-transport-chip" *ngFor="let opt of group.options"
                                         [class.active]="f['NearbySubwayLines'].value?.includes(opt)"
-                                        (click)="toggleSubway(opt)">
-                                        {{ opt }}
-                                    </span>
+                                        (click)="toggleTransportation(opt)">
+                                        {{opt}}
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -222,313 +175,451 @@
                 </div>
             </section>
 
-            <!-- 4. Space & Physical Details -->
-            <section class="form-section">
-                <h3 class="section-title"><i class="bi bi-view-stacked me-2"></i>Physical Space</h3>
-                <div class="row g-4">
-                    <div class="col-md-6">
-                        <label class="fw-bold mb-3"><i class="bi bi-bedroom-child me-2 text-gold"></i>Bedrooms *</label>
-                        <div class="pill-selector">
-                            <button type="button" *ngFor="let n of [0,1,2,3,4,5]"
+            <!-- 4. Rooms -->
+            <section class="form-section mb-4" [class.section-done]="isSectionComplete('rooms')">
+                <div class="section-header" (click)="toggleSection('rooms')">
+                    <div class="header-info">
+                        <div class="icon-box"><i class="bi bi-door-open"></i></div>
+                        <h3>Rooms</h3>
+                        <div class="status-badge complete" *ngIf="isSectionComplete('rooms')">
+                            <i class="bi bi-check-circle-fill"></i>
+                        </div>
+                    </div>
+                    <div class="toggle-btn" [class.is-open]="openSections['rooms']">
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                </div>
+                <div class="section-content text-center" [class.collapsed]="!openSections['rooms']">
+                    <div class="mb-4">
+                        <label class="mb-3">Bedrooms *</label>
+                        <div class="pill-selector justify-content-center">
+                            <button type="button" *ngFor="let n of [1,2,3,4,5]"
                                 [class.active]="f['NumberOfRooms'].value === n"
-                                (click)="f['NumberOfRooms'].setValue(n)">{{ n === 0 ? 'Studio' : n }}</button>
+                                (click)="f['NumberOfRooms'].setValue(n)">{{ n }}</button>
                             <button type="button" [class.active]="f['NumberOfRooms'].value >= 6"
                                 (click)="f['NumberOfRooms'].setValue(6)">6+</button>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <label class="fw-bold mb-3"><i class="bi bi-water me-2 text-gold"></i>Bathrooms *</label>
-                        <div class="pill-selector">
-                            <button type="button" *ngFor="let n of [1,1.5,2,2.5,3,4]"
+                    <div>
+                        <label class="mb-3">Bathrooms *</label>
+                        <div class="pill-selector justify-content-center">
+                            <button type="button" *ngFor="let n of [1,2,3,4,5]"
                                 [class.active]="f['NumberOfBathrooms'].value === n"
-                                (click)="f['NumberOfBathrooms'].setValue(n)">{{n}}</button>
-                            <button type="button" [class.active]="f['NumberOfBathrooms'].value >= 5"
-                                (click)="f['NumberOfBathrooms'].setValue(5)">5+</button>
+                                (click)="f['NumberOfBathrooms'].setValue(n)">{{ n }}</button>
+                            <button type="button" [class.active]="f['NumberOfBathrooms'].value >= 6"
+                                (click)="f['NumberOfBathrooms'].setValue(6)">6+</button>
                         </div>
-                    </div>
-
-                    <div class="col-md-3 form-group">
-                        <label><i class="bi bi-rulers me-2"></i>Size (SQFT)</label>
-                        <input type="number" class="form-control" formControlName="Size" placeholder="850">
-                    </div>
-                    <div class="col-md-3 form-group">
-                        <label><i class="bi bi-layers me-2"></i>Floor Level</label>
-                        <input type="number" class="form-control" formControlName="FloorLevel" placeholder="4">
-                    </div>
-                    <div class="col-md-3 form-group">
-                        <label><i class="bi bi-hammer me-2"></i>Year Built</label>
-                        <input type="number" class="form-control" formControlName="YearBuilt" placeholder="1995">
-                    </div>
-                    <div class="col-md-3 form-group">
-                        <label><i class="bi bi-stars me-2"></i>Renovated In</label>
-                        <input type="number" class="form-control" formControlName="RenovatedIn" placeholder="2022">
                     </div>
                 </div>
             </section>
 
-            <!-- 5. Amenities & Systems -->
-            <section class="form-section">
-                <h3 class="section-title"><i class="bi bi-snow2 me-2"></i>Systems & Features</h3>
-
-                <div class="row g-4 mb-5">
-                    <div class="col-md-4 form-group">
-                        <label class="small fw-bold text-muted mb-2">HEATING SYSTEM</label>
-                        <select class="form-select" formControlName="HeatingSystem">
-                            <option [ngValue]="null">Select Heating</option>
-                            <option *ngFor="let t of heatingSystems" [ngValue]="t.id">{{ t.name }}</option>
-                        </select>
+            <!-- 5. Financials -->
+            <section class="form-section mb-4" [class.section-done]="isSectionComplete('financials')"
+                [class.section-error]="isSectionInvalid('financials')">
+                <div class="section-header" (click)="toggleSection('financials')">
+                    <div class="header-info">
+                        <div class="icon-box"><i class="bi bi-currency-dollar"></i></div>
+                        <h3>Financials</h3>
+                        <div class="status-badge complete" *ngIf="isSectionComplete('financials')">
+                            <i class="bi bi-check-circle-fill"></i>
+                        </div>
                     </div>
-                    <div class="col-md-4 form-group">
-                        <label class="small fw-bold text-muted mb-2">COOLING SYSTEM</label>
-                        <select class="form-select" formControlName="CoolingSystem">
-                            <option [ngValue]="null">Select Cooling</option>
-                            <option *ngFor="let t of coolingSystems" [ngValue]="t.id">{{ t.name }}</option>
-                        </select>
-                    </div>
-                    <div class="col-md-4 form-group">
-                        <label class="small fw-bold text-muted mb-2">TEMP CONTROL</label>
-                        <select class="form-select" formControlName="TemperatureControl">
-                            <option [ngValue]="null">Select Control</option>
-                            <option *ngFor="let t of tempControls" [ngValue]="t.id">{{ t.name }}</option>
-                        </select>
+                    <div class="right-info">
+                        <span class="error-text" *ngIf="isSectionInvalid('financials')">Missing Price</span>
+                        <div class="toggle-btn" [class.is-open]="openSections['financials']">
+                            <i class="bi bi-chevron-down"></i>
+                        </div>
                     </div>
                 </div>
-
-
-                <div class="form-group mb-5">
-                    <label class="fw-bold mb-4"><i class="bi bi-droplets-fill me-2 text-gold"></i>Laundry (Single-select
-                        or multi-select) *</label>
-                    <div class="radio-group-row">
-                        <label class="radio-custom" *ngFor="let l of laundryTypes">
-                            <input type="radio" formControlName="LaundryType" [value]="l.id">
-                            <span class="radio-mark"></span>
-                            <span class="radio-label">{{l.name}}</span>
-                        </label>
+                <div class="section-content text-center" [class.collapsed]="!openSections['financials']">
+                    <div class="row g-4 justify-content-center">
+                        <div class="col-md-3 form-group">
+                            <label>Monthly rent ($) *</label>
+                            <input type="number" class="form-control text-center" formControlName="StartingPrice"
+                                placeholder="$ 0.00">
+                        </div>
+                        <div class="col-md-3 form-group">
+                            <label>Security Deposit ($) </label>
+                            <input type="number" class="form-control text-center" formControlName="SecurityDeposit"
+                                placeholder="$ 0.00">
+                        </div>
+                        <div class="col-md-3 form-group">
+                            <label>Broker Fee</label>
+                            <input type="number" class="form-control text-center" formControlName="BrokerFee"
+                                placeholder="$ 0.00">
+                        </div>
+                        <div class="col-md-3 form-group">
+                            <label>Monthly Cost rang </label>
+                            <input type="number" class="form-control text-center" formControlName="MonthlyCostRange"
+                                placeholder="$ 0.00">
+                        </div>
                     </div>
                 </div>
+            </section>
 
-                <div class="form-group mb-5">
-                    <label class="fw-bold mb-4"><i class="bi bi-star-fill me-2 text-gold"></i>Amenities (Single-select
-                        or multi-select) *</label>
-                    <div class="amenities-grid">
-                        <button type="button" class="btn-amenity" *ngFor="let amenity of amenityOptions"
-                            [class.active]="f['Amenities'].value?.includes(amenity)" (click)="toggleAmenity(amenity)">
-                            <i class="bi"
-                                [ngClass]="f['Amenities'].value?.includes(amenity) ? 'bi-patch-check-fill' : 'bi-circle'"></i>
-                            <span class="ms-2">{{ amenity }}</span>
-                        </button>
+            <!-- 6. Space Property -->
+            <section class="form-section mb-4" [class.section-done]="isSectionComplete('spaceProperty')">
+                <div class="section-header" (click)="toggleSection('spaceProperty')">
+                    <div class="header-info">
+                        <div class="icon-box"><i class="bi bi-house-gear"></i></div>
+                        <h3>Space Property</h3>
+                        <div class="status-badge complete" *ngIf="isSectionComplete('spaceProperty')">
+                            <i class="bi bi-check-circle-fill"></i>
+                        </div>
+                    </div>
+                    <div class="toggle-btn" [class.is-open]="openSections['spaceProperty']">
+                        <i class="bi bi-chevron-down"></i>
                     </div>
                 </div>
+                <div class="section-content text-center" [class.collapsed]="!openSections['spaceProperty']">
+                    <div class="form-group mb-5">
+                        <label class="mb-3">Building Type *</label>
+                        <div class="radio-group-row justify-content-center">
+                            <label class="radio-chip" *ngFor="let t of buildingTypeOptions">
+                                <input type="radio" formControlName="BuildingType" [value]="t.id">
+                                <span class="chip-label"><i class="bi" [ngClass]="t.icon"></i> {{t.name}}</span>
+                            </label>
+                        </div>
+                    </div>
 
-                <div class="form-group mb-5">
-                    <label class="fw-bold mb-4"><i class="bi bi-lightning-charge-fill me-2 text-gold"></i>Utilities &
-                        Amenities Included</label>
-                    <div class="amenities-grid">
-                        <button type="button" class="btn-amenity" *ngFor="let u of utilityOptions"
-                            [class.active]="f['UtilitiesIncluded'].value?.includes(u)" (click)="toggleUtility(u)">
-                            <i class="bi"
-                                [ngClass]="f['UtilitiesIncluded'].value?.includes(u) ? 'bi-patch-check-fill' : 'bi-circle'"></i>
-                            <span class="ms-2">{{ u }}</span>
-                        </button>
+                    <div class="row g-4 mb-4 justify-content-center">
+                        <div class="col-md-3 form-group">
+                            <label>Size (sqft)</label>
+                            <input type="number" class="form-control text-center" formControlName="Size"
+                                placeholder="Select Size">
+                        </div>
+                        <div class="col-md-3 form-group">
+                            <label>Floor Level</label>
+                            <input type="number" class="form-control text-center" formControlName="FloorLevel"
+                                placeholder="Select Floor Level">
+                        </div>
+                        <div class="col-md-3 form-group">
+                            <label>Built</label>
+                            <input type="number" class="form-control text-center" formControlName="YearBuilt"
+                                placeholder="Built Year">
+                        </div>
+                        <div class="col-md-3 form-group">
+                            <label>Renovated</label>
+                            <input type="number" class="form-control text-center" formControlName="RenovatedIn"
+                                placeholder="Renovated Year">
+                        </div>
+                    </div>
+
+                    <div class="row g-4 justify-content-center">
+                        <div class="col-md-4 form-group">
+                            <label>Heating</label>
+                            <select class="form-select text-center" formControlName="HeatingSystem">
+                                <option *ngFor="let t of heatingSystems" [ngValue]="t.id">{{t.name}}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 form-group">
+                            <label>Cooling</label>
+                            <select class="form-select text-center" formControlName="CoolingSystem">
+                                <option *ngFor="let t of coolingSystems" [ngValue]="t.id">{{t.name}}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 form-group">
+                            <label>Temperature Control</label>
+                            <select class="form-select text-center" formControlName="TemperatureControl">
+                                <option *ngFor="let t of tempControls" [ngValue]="t.id">{{t.name}}</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
+            </section>
 
-                <div class="row g-4">
-                    <div class="col-md-6" *ngFor="let t of [
-                        {key: 'IsShortTermStayAllowed', title: 'Short-Term Stays', desc: 'Allows duration stays under 6 months', icon: 'bi-clock-history'},
-                        {key: 'IsFurnished', title: 'Fully Furnished', desc: 'Furniture included in price', icon: 'bi-lamp'},
-                        {key: 'IsFamilyAndKidsFriendly', title: 'Family Friendly', desc: 'Safe for children and toddlers', icon: 'bi-emoji-smile'},
-                        {key: 'IsPetsFriendly', title: 'Pet Friendly', desc: 'Cats and Dogs allowed', icon: 'bi-dog'},
-                        {key: 'IsAccessibilityFriendly', title: 'Accessibility', desc: 'ADA compliant features', icon: 'bi-person-wheelchair'},
-                        {key: 'IsSmokingAllowed', title: 'Smoking Allowed', desc: 'In-unit smoking permitted', icon: 'bi-wind'}
-                    ]">
-                        <div class="feature-toggle-card p-3 px-4">
-                            <div class="d-flex align-items-center">
-                                <i class="bi {{t.icon}} me-3 text-gold fs-4"></i>
-                                <div class="text-content">
-                                    <h6 class="mb-0">{{t.title}}</h6>
-                                    <p class="text-muted mb-0 small">{{t.desc}}</p>
-                                </div>
-                            </div>
-                            <label class="switch-premium ms-3">
-                                <input type="checkbox" [formControlName]="t.key">
-                                <span class="slider-premium"></span>
+            <!-- 7. Laundry & Amenities -->
+            <section class="form-section mb-4">
+                <div class="section-header" (click)="toggleSection('amenities')">
+                    <div class="header-info">
+                        <div class="icon-box"><i class="bi bi-stars"></i></div>
+                        <h3>Laundry & Amenities</h3>
+                    </div>
+                    <div class="toggle-btn" [class.is-open]="openSections['amenities']">
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                </div>
+                <div class="section-content text-center" [class.collapsed]="!openSections['amenities']">
+                    <div class="mb-5">
+                        <label class="fw-bold mb-3">Laundry Set / Included in rent</label>
+                        <div class="radio-group-row justify-content-center">
+                            <label class="radio-chip" *ngFor="let l of laundryTypes">
+                                <input type="radio" formControlName="LaundryType" [value]="l.id">
+                                <span class="chip-label"><i class="bi bi-circle"></i> {{l.name}}</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="fw-bold mb-3">Amenities / Included in rent / Service charge</label>
+                        <div class="amenities-grid-simple justify-content-center">
+                            <label class="check-chip" *ngFor="let amenity of utilityOptions">
+                                <input type="checkbox" (change)="toggleUtility(amenity)"
+                                    [checked]="f['UtilitiesIncluded'].value?.includes(amenity)">
+                                <span class="chip-label"><i class="bi bi-circle"></i> {{amenity}}</span>
+                            </label>
+                            <label class="check-chip" *ngFor="let amenity of amenityOptions">
+                                <input type="checkbox" (change)="toggleAmenity(amenity)"
+                                    [checked]="f['Amenities'].value?.includes(amenity)">
+                                <span class="chip-label"><i class="bi bi-circle"></i> {{amenity}}</span>
                             </label>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- 6. Housing Programs (Vouchers / Buyer Asst) -->
-            <section class="form-section">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h3 class="section-title mb-0"><i class="bi bi-award-fill me-2"></i>Housing Support & Programs</h3>
-                    <span class="badge-gold-soft"><i class="bi bi-patch-check-fill me-1"></i> Official Programs</span>
+            <!-- 8. Features Toggles -->
+            <section class="form-section mb-4">
+                <div class="section-header" (click)="toggleSection('extraFeatures')">
+                    <div class="header-info">
+                        <div class="icon-box"><i class="bi bi-toggle-on"></i></div>
+                        <h3>Extra Features</h3>
+                    </div>
+                    <div class="toggle-btn" [class.is-open]="openSections['extraFeatures']">
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
                 </div>
-
-                <div class="row g-3">
-                    <ng-container *ngIf="isRenting">
-                        <div class="col-lg-4 col-md-6" *ngFor="let prog of housingPrograms">
-                            <div class="program-toggle-card"
-                                [class.active]="f['AcceptedHousingPrograms'].value?.includes(prog.id)"
-                                (click)="toggleProgram(prog.id)">
-                                <span class="program-name">{{ prog.name }}</span>
-                                <div class="toggle-action">
-                                    <label class="switch-premium">
-                                        <input type="checkbox"
-                                            [checked]="f['AcceptedHousingPrograms'].value?.includes(prog.id)">
-                                        <span class="slider-premium"></span>
-                                    </label>
+                <div class="section-content" [class.collapsed]="!openSections['extraFeatures']">
+                    <div class="row g-4 justify-content-center">
+                        <div class="col-md-6" *ngFor="let t of [
+                            {key: 'IsShortTermStayAllowed', title: 'Short-Term stay allowed?', desc: 'Allow short-term stay in your house.'},
+                            {key: 'IsShortStayEligible', title: 'Short-Stay Eligible?', desc: 'Short-Stay stay in your house.'},
+                            {key: 'IsFurnished', title: 'Furnished?', desc: 'Furniture included in the rent price.'},
+                            {key: 'IsAcceptsHousingVouchers', title: 'Acceptance of Housing Vouchers?', desc: 'Short terms of the voucher house.'},
+                            {key: 'IsFamilyAndKidsFriendly', title: 'Family & Kids Friendly?', desc: 'Allows children in your house.'},
+                            {key: 'IsPetsFriendly', title: 'Pets Friendly?', desc: 'Allowed pets in your house.'},
+                            {key: 'IsAccessibilityFriendly', title: 'Accessibility / Wheelchair friendly?', desc: 'Accessibility in your house.'},
+                            {key: 'IsSmokingAllowed', title: 'Smoking allowed?', desc: 'Allows smoking in your house.'}
+                        ]">
+                            <div class="feature-toggle-card simple">
+                                <div class="text-content text-start">
+                                    <h6>{{t.title}}</h6>
+                                    <p class="mb-0">{{t.desc}}</p>
                                 </div>
+                                <label class="switch">
+                                    <input type="checkbox" [formControlName]="t.key">
+                                    <span class="slider round"></span>
+                                </label>
                             </div>
                         </div>
-                    </ng-container>
-                    <ng-container *ngIf="!isRenting">
-                        <div class="col-lg-4 col-md-6" *ngFor="let prog of buyerPrograms">
-                            <div class="program-toggle-card"
-                                [class.active]="f['AcceptedBuyerPrograms'].value?.includes(prog.id)"
-                                (click)="toggleBuyerProgram(prog.id)">
-                                <span class="program-name">{{ prog.name }}</span>
-                                <div class="toggle-action">
-                                    <label class="switch-premium">
-                                        <input type="checkbox"
-                                            [checked]="f['AcceptedBuyerPrograms'].value?.includes(prog.id)">
-                                        <span class="slider-premium"></span>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                    </ng-container>
+                    </div>
+                </div>
+            </section>
 
-                    <div class="col-md-12 mt-4" *ngIf="isRenting">
-                        <div class="feature-toggle-card">
-                            <div class="text-content">
-                                <h6>Accepts Housing Vouchers</h6>
-                                <p class="mb-0">Legally required to accept Section 8 or other voucher programs</p>
-                            </div>
+            <!-- 9. Housing programs -->
+            <section class="form-section mb-4">
+                <div class="section-header" (click)="toggleSection('programs')">
+                    <div class="header-info">
+                        <div class="icon-box"><i class="bi bi-clipboard-check"></i></div>
+                        <h3>Housing Programs</h3>
+                    </div>
+                    <div class="toggle-btn" [class.is-open]="openSections['programs']">
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                </div>
+                <div class="section-content text-center" [class.collapsed]="!openSections['programs']">
+                    <label>Accepted Housing programs</label>
+                    <select class="form-select mx-auto" style="max-width: 500px;">
+                        <option value="">Select all Accepted Housing programs</option>
+                        <option *ngFor="let p of housingPrograms" [value]="p.id">{{p.name}}</option>
+                    </select>
+                </div>
+            </section>
+
+            <!-- 10. Description -->
+            <section class="form-section mb-4" [class.section-done]="isSectionComplete('description')"
+                [class.section-error]="isSectionInvalid('description')">
+                <div class="section-header" (click)="toggleSection('description')">
+                    <div class="header-info">
+                        <div class="icon-box"><i class="bi bi-justify-left"></i></div>
+                        <h3>Description</h3>
+                        <div class="status-badge complete" *ngIf="isSectionComplete('description')">
+                            <i class="bi bi-check-circle-fill"></i>
+                        </div>
+                    </div>
+                    <div class="right-info">
+                        <span class="error-text" *ngIf="isSectionInvalid('description')">Missing Info</span>
+                        <div class="toggle-btn" [class.is-open]="openSections['description']">
+                            <i class="bi bi-chevron-down"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="section-content text-center" [class.collapsed]="!openSections['description']">
+                    <div class="form-group mb-4">
+                        <label>Post Title *</label>
+                        <input type="text" class="form-control text-center mx-auto" style="max-width: 600px;"
+                            formControlName="Title" placeholder="Enter a catchy title for your listing">
+                    </div>
+                    <label>Description *</label>
+                    <textarea class="form-control text-center mx-auto" style="max-width: 800px;" rows="6"
+                        formControlName="Description" placeholder="Add Full Details Of Your Housing..."></textarea>
+                </div>
+            </section>
+
+            <!-- 11. Renting Details (Gold) -->
+            <section class="form-section gold-bg-section mb-4" *ngIf="isRenting"
+                [class.section-done]="isSectionComplete('rentingDetails')">
+                <div class="section-header" (click)="toggleSection('rentingDetails')" style="background: transparent;">
+                    <div class="header-info">
+                        <div class="icon-box"><i class="bi bi-info-circle"></i></div>
+                        <h3>Renting Details</h3>
+                        <div class="status-badge complete" *ngIf="isSectionComplete('rentingDetails')">
+                            <i class="bi bi-check-circle-fill"></i>
+                        </div>
+                    </div>
+                    <div class="toggle-btn" [class.is-open]="openSections['rentingDetails']">
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                </div>
+                <div class="section-content text-center" [class.collapsed]="!openSections['rentingDetails']">
+                    <div class="mb-5">
+                        <label class="fw-bold mb-3">Renting Details - Lease Type *</label>
+                        <div class="radio-group-row justify-content-center">
+                            <label class="radio-chip" *ngFor="let l of leaseTypes">
+                                <input type="radio" formControlName="RentingLeaseType" [value]="l.id">
+                                <span class="chip-label"><i class="bi bi-circle"></i> {{l.name}}</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="fw-bold mb-3">Privacy Type *</label>
+                        <div class="radio-group-row justify-content-center">
+                            <label class="radio-chip" *ngFor="let p of privacyTypes">
+                                <input type="radio" formControlName="PrivacyType" [value]="p.value"
+                                    (change)="f['RentingIsShared'].setValue(p.value === 'Shared Unit')">
+                                <span class="chip-label"><i class="bi bi-circle"></i> {{p.label}}</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 12. Shared Unit Details (Gold) -->
+            <section class="form-section gold-bg-section mb-4" *ngIf="isShared && isRenting">
+                <div class="section-header" (click)="toggleSection('sharedDetails')" style="background: transparent;">
+                    <div class="header-info">
+                        <div class="icon-box"><i class="bi bi-people"></i></div>
+                        <h3>Shared Unit Details</h3>
+                    </div>
+                    <div class="toggle-btn" [class.is-open]="openSections['sharedDetails']">
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                </div>
+                <div class="section-content text-center" [class.collapsed]="!openSections['sharedDetails']">
+                    <div class="mb-4">
+                        <label class="mb-3">Bathroom</label>
+                        <div class="icon-radio-group justify-content-center">
+                            <label class="icon-radio" [class.active]="f['RentingIsSharedBathroom'].value === false"
+                                (click)="f['RentingIsSharedBathroom'].setValue(false)">
+                                <i class="bi bi-droplets"></i>
+                                <span>Private Bathroom</span>
+                            </label>
+                            <label class="icon-radio" [class.active]="f['RentingIsSharedBathroom'].value === true"
+                                (click)="f['RentingIsSharedBathroom'].setValue(true)">
+                                <i class="bi bi-people"></i>
+                                <span>Shared Bathroom</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="mb-5">
+                        <label class="mb-3">Kitchen *</label>
+                        <div class="icon-radio-group justify-content-center">
+                            <label class="icon-radio" [class.active]="f['RentingIsSharedKitchen'].value === false"
+                                (click)="f['RentingIsSharedKitchen'].setValue(false)">
+                                <i class="bi bi-house-door"></i>
+                                <span>Private Kitchen</span>
+                            </label>
+                            <label class="icon-radio" [class.active]="f['RentingIsSharedKitchen'].value === true"
+                                (click)="f['RentingIsSharedKitchen'].setValue(true)">
+                                <i class="bi bi-people"></i>
+                                <span>Shared Kitchen</span>
+                            </label>
+                            <label class="icon-radio" [class.active]="f['RentingIsSharedKitchen'].value === null"
+                                (click)="f['RentingIsSharedKitchen'].setValue(null)">
+                                <i class="bi bi-x-circle"></i>
+                                <span>No Kitchen</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group mb-4">
+                        <label>About Current Resident(s)</label>
+                        <input type="text" class="form-control text-center mx-auto" style="max-width: 600px;"
+                            formControlName="RentingAboutCurrentResident"
+                            placeholder="Add Short Brief About Current Resident(s)">
+                    </div>
+                    <div class="form-group mb-4">
+                        <label>Unit Rules & Policies</label>
+                        <input type="text" class="form-control text-center mx-auto" style="max-width: 600px;"
+                            formControlName="RentingRulesAndPolicies" placeholder="List The Unit Rules & Policies">
+                    </div>
+                    <div class="form-group mb-4">
+                        <label>Roommate's Group Chat</label>
+                        <input type="text" class="form-control text-center mx-auto" style="max-width: 600px;"
+                            formControlName="RentingRoommateGroupChat"
+                            placeholder="Add Roommate Email/s address, to join the unite group chat.">
+                    </div>
+                </div>
+            </section>
+
+            <!-- 13. Direct Apply & Photos -->
+            <section class="form-section mb-4" [class.section-done]="isSectionComplete('applyPhotos')">
+                <div class="section-header" (click)="toggleSection('applyPhotos')">
+                    <div class="header-info">
+                        <div class="icon-box"><i class="bi bi-card-image"></i></div>
+                        <h3>Apply & Photos</h3>
+                        <div class="status-badge complete" *ngIf="isSectionComplete('applyPhotos')">
+                            <i class="bi bi-check-circle-fill"></i>
+                        </div>
+                    </div>
+                    <div class="toggle-btn" [class.is-open]="openSections['applyPhotos']">
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                </div>
+                <div class="section-content text-center" [class.collapsed]="!openSections['applyPhotos']">
+                    <div class="mb-5">
+                        <label class="fw-bold mb-3">Direct Apply Link</label>
+                        <div class="input-toggle-wrapper mx-auto" style="max-width: 600px;">
+                            <input type="text" class="form-control text-center" formControlName="DirectApplyLink"
+                                placeholder="Add Direct Apply Link">
                             <label class="switch">
-                                <input type="checkbox" formControlName="IsAcceptsHousingVouchers">
+                                <input type="checkbox" checked>
                                 <span class="slider round"></span>
                             </label>
                         </div>
                     </div>
-                </div>
-            </section>
 
-            <!-- 7. Lease Details (Rental Only) -->
-            <section class="form-section gold-bg-section" *ngIf="isRenting">
-                <h3 class="section-title"><i class="bi bi-key-fill me-2"></i>Renting Specifics</h3>
-                <div class="row g-4">
-                    <div class="col-md-6">
-                        <label class="fw-bold mb-3">Lease Type *</label>
-                        <div class="radio-group-row">
-                            <label class="radio-custom" *ngFor="let l of leaseTypes">
-                                <input type="radio" formControlName="RentingLeaseType" [value]="l.id">
-                                <span class="radio-mark"></span>
-                                <span class="radio-label">{{l.name}}</span>
-                            </label>
+                    <div class="photos-header justify-content-center flex-column align-items-center text-center">
+                        <div class="text-info mb-3">
+                            <h3>Photos</h3>
+                            <p>Always we love natural light show off the view</p>
+                        </div>
+                        <div class="recommend-pill">
+                            Min 5 photos recommended<br>& at least 1 video
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <label class="fw-bold mb-3">Privacy & Layout *</label>
-                        <div class="radio-group-row">
-                            <label class="radio-custom" *ngFor="let p of privacyTypes">
-                                <input type="radio" formControlName="PrivacyType" [value]="p.value"
-                                    (change)="f['RentingIsShared'].setValue(p.value === 'Shared Unit')">
-                                <span class="radio-mark"></span>
-                                <span class="radio-label">{{p.label}}</span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Shared Details -->
-                <div class="shared-unit-details mt-5 pt-4 border-top" *ngIf="f['RentingIsShared'].value">
-                    <div class="row g-4">
-                        <div class="col-md-6">
-                            <label class="fw-bold mb-3">Bathroom</label>
-                            <div class="radio-group-row">
-                                <label class="radio-custom">
-                                    <input type="radio" formControlName="RentingIsSharedBathroom" [value]="false">
-                                    <span class="radio-mark"></span>
-                                    <span class="radio-label">Private Bathroom</span>
-                                </label>
-                                <label class="radio-custom">
-                                    <input type="radio" formControlName="RentingIsSharedBathroom" [value]="true">
-                                    <span class="radio-mark"></span>
-                                    <span class="radio-label">Shared Bathroom</span>
-                                </label>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="fw-bold mb-3">Kitchen *</label>
-                            <div class="radio-group-row">
-                                <label class="radio-custom">
-                                    <input type="radio" formControlName="RentingIsSharedKitchen" [value]="false">
-                                    <span class="radio-mark"></span>
-                                    <span class="radio-label">Private Kitchen</span>
-                                </label>
-                                <label class="radio-custom">
-                                    <input type="radio" formControlName="RentingIsSharedKitchen" [value]="true">
-                                    <span class="radio-mark"></span>
-                                    <span class="radio-label">Shared Kitchen</span>
-                                </label>
-                                <label class="radio-custom">
-                                    <input type="radio" formControlName="RentingIsSharedKitchen" [value]="null">
-                                    <span class="radio-mark"></span>
-                                    <span class="radio-label">No Kitchen</span>
-                                </label>
+                    <!-- Existing Media -->
+                    <div class="existing-media mb-4" *ngIf="existingAttachments.length > 0">
+                        <h6 class="text-muted mb-3 small fw-bold">CURRENT PHOTOS</h6>
+                        <div class="photo-previews justify-content-center">
+                            <div class="preview-item" *ngFor="let att of existingAttachments; let i = index">
+                                <img [src]="imageService.resolveImageUrl(att.url, 'housing')"
+                                    [appImgFallback]="'housing'" alt="Existing Media">
+                                <button type="button" class="btn-remove"
+                                    (click)="removeExistingFile(i, att.id)">&times;</button>
                             </div>
                         </div>
                     </div>
-                </div>
-            </section>
 
-            <!-- 8. Media & Finishing Touches -->
-            <section class="form-section luxury-border">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h3 class="section-title mb-0"><i class="bi bi-magic me-2"></i>Showcase Your Space</h3>
-                    <span class="badge-gold-soft"><i class="bi bi-star-fill me-1"></i> Professional Visibility</span>
-                </div>
+                    <div class="photo-upload-area dashed-border mt-4">
+                        <div class="icon-circle-upload"><i class="bi bi-camera-fill"></i></div>
+                        <h4>Add New Photos</h4>
+                        <p class="support-text">Drag and drop images here.</p>
+                        <button type="button" class="btn-select-files" (click)="fileInput.click()">Select Files</button>
+                        <input type="file" multiple (change)="onFileSelect($event)" accept="image/*" class="d-none"
+                            #fileInput>
 
-                <div class="row g-4">
-                    <div class="col-md-12 form-group">
-                        <label class="fw-bold mb-3">Detailed Description *</label>
-                        <textarea class="form-control" rows="8" formControlName="Description"
-                            placeholder="Describe the lifestyle, neighborhood, and unique features that make this space special..."
-                            [class.is-invalid]="f['Description'].invalid && f['Description'].touched"></textarea>
-                        <div class="invalid-feedback">Description must be at least 20 characters long</div>
-                    </div>
-
-                    <div class="col-md-12 mt-4">
-                        <label class="fw-bold mb-3">Property Media</label>
-
-                        <!-- Existing Attachments -->
-                        <div class="existing-media mb-4" *ngIf="existingAttachments.length > 0">
-                            <h6 class="text-muted mb-3 small fw-bold">CURRENT PHOTOS</h6>
-                            <div class="photo-previews">
-                                <div class="preview-item" *ngFor="let att of existingAttachments; let i = index">
-                                    <img [src]="imageService.resolveImageUrl(att.url, 'housing')"
-                                        [appImgFallback]="'housing'" alt="Existing Media">
-                                    <button type="button" class="btn-remove"
-                                        (click)="removeExistingFile(i, att.id)">&times;</button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="photo-upload-area dashed-border">
-                            <div class="upload-trigger">
-                                <div class="icon-circle-gold"><i class="bi bi-cloud-arrow-up-fill"></i></div>
-                                <h4>Add New Photos</h4>
-                                <p class="text-muted">Drag and drop images or video here, or click to browse</p>
-                                <input type="file" multiple (change)="onFileSelect($event)" accept="image/*,video/*"
-                                    class="d-none" #fileInput>
-                                <button type="button" class="btn-gold-soft mt-3" (click)="fileInput.click()">
-                                    <i class="bi bi-plus-circle me-2"></i>Add Media
-                                </button>
-                            </div>
-                        </div>
-                        <div class="photo-previews mt-4" *ngIf="imagePreviews.length > 0">
+                        <div class="photo-previews mt-4 justify-content-center" *ngIf="imagePreviews.length > 0">
                             <div class="preview-item" *ngFor="let img of imagePreviews; let i = index">
                                 <img [src]="img" alt="Preview">
                                 <button type="button" class="btn-remove" (click)="removeFile(i)">&times;</button>
@@ -536,51 +627,62 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </section>
 
-                    <div class="col-md-12 pt-4">
-                        <h5 class="mb-4">Collaboration & Links</h5>
-                        <div class="row g-4">
-                            <div class="col-md-6">
-                                <label class="small fw-bold text-muted mb-2">APPLICATION / APPLY LINK</label>
-                                <div class="link-input-row d-flex align-items-center">
-                                    <i class="bi bi-globe2 me-3 text-gold"></i>
-                                    <input type="text" class="form-control border-0 bg-transparent flex-grow-1"
-                                        formControlName="DirectApplyLink" placeholder="https://example.com/apply-now">
-                                    <label class="switch-premium ms-auto">
-                                        <input type="checkbox" checked>
-                                        <span class="slider-premium"></span>
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="small fw-bold text-muted mb-2">INVITE CO-LISTER (EMAIL)</label>
-                                <div class="link-input-row d-flex align-items-center">
-                                    <i class="bi bi-envelope-at me-3 text-gold"></i>
-                                    <input type="text" class="form-control border-0 bg-transparent flex-grow-1"
-                                        formControlName="InviteCoListerEmail" placeholder="co-lister@example.com">
-                                    <label class="switch-premium ms-auto">
-                                        <input type="checkbox" checked>
-                                        <span class="slider-premium"></span>
-                                    </label>
-                                </div>
+            <!-- 14. Co-Listing -->
+            <section class="form-section mb-4 no-bg pb-0">
+                <div class="section-header" (click)="toggleSection('coListing')"
+                    style="padding-left: 0; padding-right: 0; background: transparent;">
+                    <div class="header-info">
+                        <div class="icon-box"><i class="bi bi-person-plus"></i></div>
+                        <h3>Co-Listing</h3>
+                    </div>
+                    <div class="toggle-btn" [class.is-open]="openSections['coListing']">
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                </div>
+                <div class="section-content text-center" [class.collapsed]="!openSections['coListing']"
+                    style="padding-left: 0; padding-right: 0;">
+                    <div class="co-listing-row flex-column align-items-center g-4">
+                        <div class="w-100" style="max-width: 600px;">
+                            <label>Invite Co-Listing</label>
+                            <div class="input-toggle-wrapper">
+                                <input type="text" class="form-control text-center"
+                                    formControlName="InviteCoListerEmail"
+                                    placeholder="Add Co-Lister Email address, to join your listing.">
+                                <label class="switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider round"></span>
+                                </label>
                             </div>
                         </div>
+                        <div class="w-100" style="max-width: 600px;">
+                            <label>Allow Co-Listing editing Listing</label>
+                            <div class="input-toggle-wrapper">
+                                <input type="text" class="form-control text-center"
+                                    placeholder="Allow Co-Lister editing Listing" disabled>
+                                <label class="switch">
+                                    <input type="checkbox">
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-5 mt-4 mx-auto" style="max-width: 800px;">
+                        <label class="fw-bold d-block mb-3">Co-Listing edited details</label>
+                        <textarea class="textarea-premium text-center"
+                            placeholder="Add Co-Listing edited details by Co-Listing"></textarea>
                     </div>
                 </div>
             </section>
 
-            <!-- Actions Footer -->
-            <div class="form-actions-footer text-center mt-5 mb-5 pb-5">
-                <div class="submit-hero-action">
-                    <button type="submit" class="btn-post-listing-luxury" [disabled]="isSubmitting">
-                        <div class="btn-content">
-                            <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2"></span>
-                            <i class="bi bi-check-circle-fill me-2" *ngIf="!isSubmitting"></i>
-                            {{ isSubmitting ? 'Updating Listing...' : 'Save Changes' }}
-                        </div>
-                    </button>
-                    <p class="mt-3 text-muted small">Updates will be reviewed immediately.</p>
-                </div>
+            <!-- Footer Footer -->
+            <div class="form-actions-footer-final text-center">
+                <button type="submit" class="btn-post-listing-luxury w-100" [disabled]="isSubmitting">
+                    <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2"></span>
+                    {{ isSubmitting ? 'Updating Listing...' : 'Save Changes' }}
+                </button>
             </div>
 
         </form>

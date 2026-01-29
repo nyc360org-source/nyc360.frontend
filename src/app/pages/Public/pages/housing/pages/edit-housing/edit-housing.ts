@@ -44,10 +44,11 @@ export class EditHousingComponent implements OnInit {
     ];
 
     buildingTypeOptions = [
-        { id: 0, name: 'Walk-up', icon: 'bi-building' },
-        { id: 1, name: 'Elevator', icon: 'bi-building-up' },
-        { id: 2, name: 'Townhouse', icon: 'bi-house-heart' },
-        { id: 3, name: 'Detached', icon: 'bi-house' }
+        { id: 0, name: 'Apartment', icon: 'bi-building' },
+        { id: 1, name: 'House', icon: 'bi-house-door' },
+        { id: 2, name: 'Townhouse', icon: 'bi-houses' },
+        { id: 3, name: 'Studio', icon: 'bi-grid-1x2' },
+        { id: 4, name: 'Room', icon: 'bi-person-badge' }
     ];
 
     householdTypes = [
@@ -143,6 +144,8 @@ export class EditHousingComponent implements OnInit {
         { category: 'Car Access', icon: 'bi-car-front', options: ['Easy Highway Access', 'Street Parking Available', 'Garage Parking Nearby'] }
     ];
 
+    boroughOptions = ['Manhattan', 'Brooklyn', 'Queens', 'Bronx', 'Staten Island'];
+
     // --- Files for New Uploads ---
     selectedFiles: File[] = [];
     imagePreviews: string[] = [];
@@ -153,23 +156,90 @@ export class EditHousingComponent implements OnInit {
     selectedLocation: any = null;
     showLocationDropdown = false;
 
+    // --- Collapsible Sections State ---
+    openSections: { [key: string]: boolean } = {
+        listingType: true,
+        availability: false,
+        address: false,
+        rooms: false,
+        financials: false,
+        spaceProperty: false,
+        amenities: false,
+        extraFeatures: false,
+        programs: false,
+        description: false,
+        rentingDetails: false,
+        sharedDetails: false,
+        applyPhotos: false,
+        coListing: false
+    };
+
+    toggleSection(section: string) {
+        this.openSections[section] = !this.openSections[section];
+        this.cdr.detectChanges();
+    }
+
+    isSectionComplete(section: string): boolean {
+        switch (section) {
+            case 'availability':
+                return !!(this.f['MoveInDate'].value && this.f['MoveOutDate'].value && this.f['BuildingType'].value);
+            case 'address':
+                const addr = this.form.get('Address');
+                return !!(addr?.get('Neighborhood')?.value && this.f['Borough']?.value && this.f['UnitNumber']?.value);
+            case 'rooms':
+                return !!(this.f['NumberOfRooms'].value && this.f['NumberOfBathrooms'].value);
+            case 'financials':
+                return !!(this.f['StartingPrice'].value);
+            case 'spaceProperty':
+                return !!(this.f['BuildingType'].value && this.f['Size'].value);
+            case 'description':
+                return !!(this.f['Title'].value && this.f['Description'].value);
+            case 'rentingDetails':
+                return !!(this.f['RentingLeaseType'].value);
+            case 'applyPhotos':
+                return this.selectedFiles.length >= 1 || this.existingAttachments.length >= 1;
+            default:
+                return false;
+        }
+    }
+
+    isSectionInvalid(section: string): boolean {
+        switch (section) {
+            case 'availability':
+                return (this.f['MoveInDate'].touched && !this.f['MoveInDate'].value) ||
+                    (this.f['MoveOutDate'].touched && !this.f['MoveOutDate'].value);
+            case 'financials':
+                return this.f['StartingPrice'].touched && !this.f['StartingPrice'].value;
+            case 'description':
+                return (this.f['Title'].touched && !this.f['Title'].value) ||
+                    (this.f['Description'].touched && !this.f['Description'].value);
+            default:
+                return false;
+        }
+    }
+
     constructor() {
         this.form = this.fb.group({
             // Core
             IsRenting: [true, Validators.required],
-            BuildingType: [0, Validators.required],
+            BuildingType: [null, Validators.required],
             HouseholdType: [0],
             MoveInDate: [null, Validators.required],
             MoveOutDate: [null],
+            LegalUnitCount: [''], // NEW FIELD
 
             // Location
             locationInput: ['', Validators.required],
+            Borough: ['', Validators.required],
+            SuggestedOccupants: [''],
             Address: this.fb.group({
+                FullAddress: [''],
                 Street: [''],
                 BuildingNumber: [''],
-                ZipCode: ['', [Validators.pattern(/^\d{5}$/)]]
+                Neighborhood: ['', Validators.required],
+                ZipCode: ['', [Validators.required, Validators.pattern(/^\d{5}$/)]]
             }),
-            UnitNumber: [''],
+            UnitNumber: ['', Validators.required],
             GoogleMapLink: [''],
             NearbySubwayLines: [[]],
 
@@ -319,7 +389,9 @@ export class EditHousingComponent implements OnInit {
 
             // Optional / Extra
             UnitNumber: data.unitNumber,
-            GoogleMapLink: data.googleMapLink
+            GoogleMapLink: data.googleMapLink,
+            Borough: data.address?.location?.borough || '',
+            SuggestedOccupants: data.maxOccupants // Map from maxOccupants
         });
 
         // 2. Arrays
@@ -428,10 +500,18 @@ export class EditHousingComponent implements OnInit {
     selectLocation(loc: any) {
         this.selectedLocation = loc;
         const display = `${loc.neighborhood}, ${loc.borough} - ${loc.zipCode}`;
-        this.form.patchValue({ locationInput: display });
+        this.form.patchValue({
+            locationInput: display,
+            Borough: loc.borough
+        });
+
+        // Patch Neighborhood
+        this.form.get('Address.Neighborhood')?.setValue(loc.neighborhood);
+
         if (loc.zipCode) {
             this.form.get('Address.ZipCode')?.setValue(String(loc.zipCode));
         }
+
         this.showLocationDropdown = false;
         this.cdr.detectChanges();
     }
@@ -464,6 +544,9 @@ export class EditHousingComponent implements OnInit {
         }
     }
 
+    toggleTransportation(option: string) {
+        this.toggleSubway(option);
+    }
     toggleProgram(id: number) {
         const current = this.form.get('AcceptedHousingPrograms')?.value || [];
         if (current.includes(id)) {
