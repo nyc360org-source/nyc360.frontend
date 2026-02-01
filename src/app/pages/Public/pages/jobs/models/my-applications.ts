@@ -1,8 +1,10 @@
 export enum ApplicationStatus {
   Pending = 0,
-  Accepted = 1,
-  Rejected = 2,
-  Withdrawn = 3
+  Reviewed = 1,
+  Interviewing = 2,
+  Rejected = 3,
+  Accepted = 4,
+  Withdrawn = 5
 }
 
 export interface MyApplication {

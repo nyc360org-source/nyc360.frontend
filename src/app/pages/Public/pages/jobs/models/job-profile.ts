@@ -4,6 +4,7 @@ export enum ApplicationStatus {
   Interviewing = 2,
   Rejected = 3,
   Accepted = 4,
+  Withdrawn = 5
 }
 
 export interface Location {
