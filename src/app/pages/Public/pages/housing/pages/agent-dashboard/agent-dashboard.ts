@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { HousingService } from '../../service/housing.service';
 import { ImageService } from '../../../../../../shared/services/image.service';
+import { AuthService } from '../../../../../Authentication/Service/auth';
 
 @Component({
     selector: 'app-agent-dashboard',
@@ -15,6 +16,7 @@ import { ImageService } from '../../../../../../shared/services/image.service';
 export class AgentDashboardComponent implements OnInit {
     private housingService = inject(HousingService);
     public imageService = inject(ImageService);
+    public authService = inject(AuthService);
 
     stats: any = null;
     trends: any[] = [];
