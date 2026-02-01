@@ -1,180 +1,176 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GlobalLoaderService } from './global-loader.service';
+import { map, switchMap, timer, of, distinctUntilChanged } from 'rxjs';
 
 @Component({
   selector: 'app-nyc-loader',
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="loader-overlay" *ngIf="loading$ | async">
-      <div class="loader-content">
-        <!-- Spinner Animation -->
-        <div class="spinner-wrapper">
-          <div class="ring-one"></div>
-          <div class="ring-two"></div>
-          <div class="logo-center">
-            <i class="bi bi-rocket-takeoff-fill"></i>
-          </div>
-        </div>
-        
-        <!-- Text Animation -->
-        <div class="text-wrapper">
-          <span class="brand-nyc">NYC</span>
-          <span class="brand-separator">-</span>
-          <span class="brand-360">360</span>
-        </div>
-        
-        <div class="loading-bar-wrapper">
-          <div class="loading-bar"></div>
-        </div>
+    <div class="loader-overlay" *ngIf="displayLoading$ | async">
+      <div class="logo-loader">
+        <svg viewBox="0 0 400 150" class="nyc-logo-svg">
+          <!-- NYC Text - Blue Paths -->
+          <g class="nyc-group">
+            <path class="letter-n" d="M 40,100 V 60 c 0,-20 30,-20 30,0 v 40" />
+            <path class="letter-y" d="M 80,60 v 40 c 0,20 -30,20 -30,30 c 0,10 12,12 20,4" />
+            <path class="letter-c" d="M 140,65 c -5,-7 -15,-10 -25,-10 -15,0 -25,10 -25,25 0,15 10,25 25,25 10,0 20,-3 25,-10" />
+          </g>
+
+          <!-- 360 Text - Orange Paths -->
+          <g class="group-360">
+            <!-- 3 -->
+            <path class="char-3" d="M 160,60 c 20,-5 30,5 20,15 c 10,0 20,10 10,25 c -10,10 -25,5 -25,5" />
+            <!-- 6 -->
+            <path class="char-6" d="M 225,60 c -15,0 -25,10 -25,25 c 0,15 10,15 25,15 c 15,0 25,-10 25,-20 c 0,-10 -10,-20 -25,-20" />
+            <!-- 0 -->
+            <path class="char-0" d="M 265,80 c 0,-25 20,-25 20,0 c 0,25 -20,25 -20,0 Z" />
+          </g>
+          
+          <!-- Orange Swoosh -->
+          <path class="swoosh" d="M 20,75 Q 40,115 100,55" />
+        </svg>
       </div>
+      <div class="loading-bar-container">
+        <div class="loading-bar"></div>
+      </div>
+      <div class="writing-status">NYC360 is Loading...</div>
     </div>
   `,
   styles: [`
+    /* Brand Colors */
+    $nyc-blue: #003580;
+    $nyc-orange: #FF7A00;
+    
     .loader-overlay {
       position: fixed;
       inset: 0;
       width: 100%;
       height: 100%;
-      background: rgba(255, 255, 255, 0.85);
-      backdrop-filter: blur(8px);
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(12px);
       z-index: 99999;
       display: flex;
-      justify-content: center;
-      align-items: center;
-      animation: fadeIn 0.3s ease-out;
-    }
-
-    .loader-content {
-      display: flex;
       flex-direction: column;
-      align-items: center;
-      gap: 1.5rem;
-      position: relative;
-    }
-
-    /* --- Spinner Rings --- */
-    .spinner-wrapper {
-      position: relative;
-      width: 80px;
-      height: 80px;
-      display: flex;
       justify-content: center;
       align-items: center;
+      animation: fadeIn 0.4s ease-out;
     }
 
-    .ring-one, .ring-two {
-      position: absolute;
-      border-radius: 50%;
-      border: 3px solid transparent;
+    .logo-loader {
+      width: 320px;
+      max-width: 90%;
+      margin-bottom: 30px;
+
+      .nyc-logo-svg {
+        width: 100%;
+        height: auto;
+        filter: drop-shadow(0 10px 15px rgba(0, 53, 128, 0.1));
+
+        path {
+          fill: none;
+          stroke-width: 7;
+          stroke: #003580;
+          stroke-linecap: round;
+          stroke-linejoin: round;
+        }
+
+        .letter-n, .letter-y, .letter-c {
+          stroke: #003580;
+          stroke-dasharray: 400;
+          stroke-dashoffset: 400;
+          animation: writeLogo 2s ease-in-out forwards;
+        }
+
+        .letter-y { animation-delay: 0.1s; }
+        .letter-c { animation-delay: 0.2s; }
+
+        .char-3, .char-6, .char-0 {
+          stroke: #FF7A00;
+          stroke-dasharray: 300;
+          stroke-dashoffset: 300;
+          animation: writeLogo 2s ease-in-out forwards;
+          animation-delay: 0.3s;
+        }
+
+        .char-6 { animation-delay: 0.4s; }
+        .char-0 { animation-delay: 0.5s; }
+
+        .swoosh {
+          stroke: #FF7A00;
+          stroke-width: 9;
+          stroke-dasharray: 600;
+          stroke-dashoffset: 600;
+          animation: writeLogo 2s ease-in-out forwards;
+          animation-delay: 0.6s;
+        }
+      }
     }
 
-    .ring-one {
-      width: 100%;
-      height: 100%;
-      border-top-color: #0066cc;
-      border-left-color: #0066cc;
-      animation: spin 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
-    }
-
-    .ring-two {
-      width: 70%;
-      height: 70%;
-      border-bottom-color: #0f172a; /* Dark sleek color */
-      border-right-color: #0f172a;
-      animation: spin-reverse 1.2s linear infinite;
-    }
-
-    .logo-center {
-      color: #0066cc;
-      font-size: 1.5rem;
-      animation: pulse-logo 2s infinite ease-in-out;
-    }
-
-    /* --- Typography --- */
-    .text-wrapper {
+    .writing-status {
+      margin-top: 20px;
+      color: #003580;
+      font-weight: 700;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
       font-family: 'Inter', sans-serif;
-      font-weight: 800;
-      font-size: 1.5rem;
-      display: flex;
-      align-items: center;
-      gap: 2px;
-      letter-spacing: -0.5px;
+      animation: pulseOpacity 1.5s ease-in-out infinite alternate;
     }
 
-    .brand-nyc {
-      color: #0f172a;
-      animation: slideInLeft 0.5s ease-out;
+    @keyframes pulseOpacity {
+      from { opacity: 0.4; }
+      to { opacity: 1; }
     }
 
-    .brand-separator {
-      color: #64748b;
-      margin: 0 2px;
-    }
-
-    .brand-360 {
-      background: linear-gradient(135deg, #0066cc 0%, #3b82f6 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      position: relative;
-    }
-
-    /* --- Loading Bar --- */
-    .loading-bar-wrapper {
-      width: 120px;
+    .loading-bar-container {
+      width: 200px;
       height: 4px;
-      background: #e2e8f0;
+      background: rgba(0, 53, 128, 0.1);
       border-radius: 10px;
       overflow: hidden;
-      position: relative;
+
+      .loading-bar {
+        width: 40%;
+        height: 100%;
+        background: linear-gradient(90deg, #003580, #FF7A00);
+        border-radius: 10px;
+        position: relative;
+        animation: loadingMove 1.5s infinite ease-in-out;
+      }
     }
 
-    .loading-bar {
-      position: absolute;
-      left: 0;
-      top: 0;
-      height: 100%;
-      width: 40%;
-      background: #0066cc;
-      border-radius: 10px;
-      animation: shuttle 1.5s infinite ease-in-out;
+    @keyframes writeLogo {
+      to {
+        stroke-dashoffset: 0;
+      }
     }
 
-    /* --- Animations --- */
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    @keyframes spin-reverse {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(-360deg); }
-    }
-
-    @keyframes pulse-logo {
-      0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(0.85); opacity: 0.7; }
-    }
-
-    @keyframes shuttle {
+    @keyframes loadingMove {
       0% { left: -40%; }
-      50% { left: 40%; width: 60%; }
-      100% { left: 100%; width: 40%; }
+      100% { left: 100%; }
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.95); }
-      to { opacity: 1; transform: scale(1); }
-    }
-
-    @keyframes slideInLeft {
-      from { transform: translateX(-10px); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
   `]
 })
 export class GlobalLoaderComponent {
   private loaderService = inject(GlobalLoaderService);
-  loading$ = this.loaderService.loading$;
+
+  // Use switchMap to ensure that when loading turns false, we wait for 2 seconds (animation duration)
+  displayLoading$ = this.loaderService.loading$.pipe(
+    distinctUntilChanged(),
+    switchMap(isLoading => {
+      if (isLoading) {
+        return of(true);
+      } else {
+        // Wait 2 seconds before actually hiding the loader to allow animation to finish
+        return timer(2200).pipe(map(() => false));
+      }
+    })
+  );
 }
