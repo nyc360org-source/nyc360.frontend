@@ -248,7 +248,8 @@
                             <small class="text-muted">You are the owner</small>
                         </div>
                     </div>
-                    <button class="btn-action gold w-100" [routerLink]="['/public/housing/edit', property.id]">
+                    <button class="btn-action gold w-100"
+                        [routerLink]="property.isRenting ? ['/public/housing/edit/renting', property.id] : ['/public/housing/edit/sale', property.id]">
                         Edit Property Details
                     </button>
                 </div>

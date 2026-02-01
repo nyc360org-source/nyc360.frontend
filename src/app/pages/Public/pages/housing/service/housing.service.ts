@@ -231,103 +231,211 @@ export class HousingService {
         return this.http.get(`${environment.apiBaseUrl}/housing/${id}`);
     }
 
-    updateHousingPost(id: number, data: any): Observable<any> {
+    updateRentingPost(id: number, data: any): Observable<any> {
         const formData = new FormData();
-        const apiUrl = `${environment.apiBaseUrl}/housing/${id}/edit`;
+        const apiUrl = `${environment.apiBaseUrl}/housing/${id}/edit/rent`;
 
-        // 1. Core Strings
-        formData.append('Title', data.Title || '');
-        formData.append('Description', data.Description || '');
-        if (data.UnitNumber) formData.append('UnitNumber', data.UnitNumber);
-        if (data.GoogleMapLink) formData.append('GoogleMapLink', data.GoogleMapLink);
-        if (data.LegalUnitCount) formData.append('LegalUnitCount', data.LegalUnitCount);
+        const appendInt = (key: string, val: any) => {
+            const num = parseInt(val, 10);
+            formData.append(key, isNaN(num) ? '0' : String(num));
+        };
+        const appendString = (key: string, val: any) => {
+            formData.append(key, (val !== null && val !== undefined) ? String(val) : '');
+        };
 
-        // 2. Dates
+        // 1. Enums & Integers
+        appendInt('HouseType', data.HouseType);
+        appendInt('PropertyType', data.PropertyType);
+        appendInt('BuildingType', data.BuildingType);
+        appendInt('Bedrooms', data.Bedrooms);
+        appendInt('Bathrooms', data.Bathrooms);
+        appendInt('MonthlyRent', data.MonthlyRent);
+        appendInt('SecurityDeposit', data.SecurityDeposit);
+        appendInt('BrokerFee', data.BrokerFee);
+        appendInt('MonthlyCostRange', data.MonthlyCostRange);
+        appendInt('BuiltIn', data.BuiltIn);
+        appendInt('RenovatedIn', data.RenovatedIn);
+        appendInt('Sqft', data.Sqft);
+        appendInt('MaxOccupants', data.MaxOccupants);
+        appendInt('LeaseType', data.LeaseType);
+        appendInt('PrivacyType', data.PrivacyType);
+        appendInt('SharedBathroomType', data.SharedBathroomType);
+        appendInt('SharedKitchenType', data.SharedKitchenType);
+        appendInt('Heating', data.Heating);
+        appendInt('Cooling', data.Cooling);
+        appendInt('TemperatureControl', data.TemperatureControl);
+
+        let floorVal = 0;
+        if (data.FloorLevel === 'Ground') floorVal = 0;
+        else if (data.FloorLevel === '10+') floorVal = 11;
+        else floorVal = parseInt(data.FloorLevel, 10) || 0;
+        formData.append('FloorLevel', String(floorVal));
+
+        // 2. Strings
+        appendString('Borough', data.Borough);
+        appendString('ZipCode', data.ZipCode);
+        appendString('Neighborhood', data.Neighborhood);
+        appendString('FullAddress', data.FullAddress);
+        appendString('UnitNumber', data.UnitNumber);
+        appendString('GoogleMap', data.GoogleMap);
+        appendString('Description', data.Description);
+        appendString('AboutCurrentResident', data.AboutCurrentResident);
+        appendString('UnitRulesAndPolicies', data.UnitRulesAndPolicies);
+        appendString('RoommatesGroupChat', data.RoommatesGroupChat);
+        appendString('DirectApplyLink', data.DirectApplyLink);
+
+        // 3. Dates
         if (data.MoveInDate) formData.append('MoveInDate', new Date(data.MoveInDate).toISOString());
         if (data.MoveOutDate) formData.append('MoveOutDate', new Date(data.MoveOutDate).toISOString());
 
-        // 3. Address
-        const addressObj = {
-            AddressId: data.Address?.AddressId || 0,
-            LocationId: Number(data.Address?.LocationId || data.LocationsId || 0),
-            Street: data.Address?.Street || '',
-            BuildingNumber: data.Address?.BuildingNumber || '',
-            ZipCode: String(data.Address?.ZipCode || '')
-        };
-        formData.append('Address', JSON.stringify(addressObj));
+        // 4. Booleans
+        const boolFields = [
+            'ShortTermStayAllowed', 'ShortStayEligiblity', 'Furnished',
+            'AcceptsHousingVouchers', 'FamilyAndKidsFriendly', 'PetsFriendly',
+            'AccessibilityFriendly', 'SmokingAllowed', 'IsPublished',
+            'AddDirectApplyLink', 'AllowColisterEditing'
+        ];
+        boolFields.forEach(field => {
+            formData.append(field, data[field] ? 'true' : 'false');
+        });
 
-        // 4. Integers & Enums (similar to create)
-        const appendInt = (key: string, val: any) => {
-            if (val !== null && val !== undefined && val !== '') {
-                formData.append(key, String(parseInt(val, 10)));
+        // 5. Arrays
+        const appendArrayOrZero = (key: string, arr: any[]) => {
+            if (arr && Array.isArray(arr) && arr.length > 0) {
+                arr.forEach(item => formData.append(key, String(item)));
             } else {
                 formData.append(key, '0');
             }
         };
 
-        appendInt('HouseholdType', data.HouseholdType);
-        appendInt('BuildingType', data.BuildingType);
-        appendInt('HeatingSystem', data.HeatingSystem);
-        appendInt('CoolingSystem', data.CoolingSystem);
-        appendInt('TemperatureControl', data.TemperatureControl);
-        appendInt('LaundryType', data.LaundryType);
-        appendInt('RentingLeaseType', data.RentingLeaseType);
+        appendArrayOrZero('NearbyTransportation', data.NearbyTransportation);
+        appendArrayOrZero('Laundry', data.Laundry);
+        appendArrayOrZero('Amenities', data.Amenities);
+        appendArrayOrZero('AcceptedHousingPrograms', data.AcceptedHousingPrograms);
 
-        const maxOccUpdate = data.SuggestedOccupants || data.MaxOccupants;
-        appendInt('MaxOccupants', maxOccUpdate);
-        appendInt('NumberOfRooms', data.NumberOfRooms);
-        appendInt('NumberOfBathrooms', data.NumberOfBathrooms);
-        appendInt('StartingPrice', data.StartingPrice);
-        appendInt('SecurityDeposit', data.SecurityDeposit);
-        appendInt('BrokerFee', data.BrokerFee);
-        appendInt('MonthlyCostRange', data.MonthlyCostRange);
-        appendInt('YearBuilt', data.YearBuilt);
-        appendInt('RenovatedIn', data.RenovatedIn);
-        appendInt('Size', data.Size);
-        appendInt('FloorLevel', data.FloorLevel);
-
-        // 5. Booleans
-        const boolFields = [
-            'IsRenting', 'IsShortTermStayAllowed', 'IsShortStayEligible',
-            'IsFurnished', 'IsAcceptsHousingVouchers', 'IsFamilyAndKidsFriendly',
-            'IsPetsFriendly', 'IsAccessibilityFriendly', 'IsSmokingAllowed',
-            'RentingIsShared', 'RentingIsSharedBathroom', 'RentingIsSharedKitchen'
-        ];
-        boolFields.forEach(field => {
-            const val = data[field];
-            formData.append(field, (val === true || val === 'true') ? 'true' : 'false');
-        });
-
-        // 6. Renting Strings
-        if (data.RentingAboutCurrentResident) formData.append('RentingAboutCurrentResident', data.RentingAboutCurrentResident);
-        if (data.RentingRulesAndPolicies) formData.append('RentingRulesAndPolicies', data.RentingRulesAndPolicies);
-        if (data.RentingRoommateGroupChat) formData.append('RentingRoommateGroupChat', data.RentingRoommateGroupChat);
-
-        // 7. Arrays (Programs, Utilities, Subway)
-        const appendArray = (key: string, arr: any[]) => {
-            if (arr && Array.isArray(arr) && arr.length > 0) {
-                arr.forEach(item => formData.append(key, String(item)));
-            }
-        };
-        appendArray('AcceptedHousingPrograms', data.AcceptedHousingPrograms);
-        appendArray('AcceptedBuyerPrograms', data.AcceptedBuyerPrograms);
-        appendArray('NearbySubwayLines', data.NearbySubwayLines);
-        appendArray('UtilitiesIncluded', data.UtilitiesIncluded);
-
-        // 8. New Attachments
-        if (data.NewAttachments && Array.isArray(data.NewAttachments)) {
-            data.NewAttachments.forEach((file: File) => {
-                formData.append('NewAttachments', file);
+        // CoListing Logic
+        if (data.CoListing && Array.isArray(data.CoListing) && data.CoListing.length > 0) {
+            data.CoListing.forEach((id: any) => {
+                if (id !== null && id !== undefined && id !== '') {
+                    formData.append('CoListing', String(id));
+                }
             });
         }
 
-        // 9. Deleted Attachment Ids
-        if (data.DeletedAttachmentIds && Array.isArray(data.DeletedAttachmentIds)) {
-            data.DeletedAttachmentIds.forEach((id: number) => {
-                formData.append('DeletedAttachmentIds', String(id));
+        // 6. Photos
+        if (data.NewPhotos && Array.isArray(data.NewPhotos)) {
+            data.NewPhotos.forEach((file: any) => {
+                if (file instanceof File) formData.append('NewPhotos', file);
+            });
+        }
+        if (data.DeletedPhotoIds && Array.isArray(data.DeletedPhotoIds)) {
+            data.DeletedPhotoIds.forEach((id: any) => {
+                formData.append('DeletedPhotoIds', String(id));
             });
         }
 
         return this.http.put(apiUrl, formData);
+    }
+
+    updateSalePost(id: number, data: any): Observable<any> {
+        const formData = new FormData();
+        const apiUrl = `${environment.apiBaseUrl}/housing/${id}/edit/sale`;
+
+        const appendInt = (key: string, val: any) => {
+            const num = parseInt(val, 10);
+            formData.append(key, isNaN(num) ? '0' : String(num));
+        };
+        const appendString = (key: string, val: any) => {
+            formData.append(key, (val !== null && val !== undefined) ? String(val) : '');
+        };
+
+        // 1. Enums & Integers
+        appendInt('HouseType', data.HouseType);
+        appendInt('PropertyType', data.PropertyType);
+        appendInt('BuildingType', data.BuildingType);
+        appendInt('Bedrooms', data.Bedrooms);
+        appendInt('Bathrooms', data.Bathrooms);
+        appendInt('AskingPrice', data.AskingPrice);
+        appendInt('DownPayment', data.DownPayment);
+        appendInt('BrokerFee', data.BrokerFee);
+        appendInt('MonthlyCostRange', data.MonthlyCostRange);
+        appendInt('BuiltIn', data.BuiltIn);
+        appendInt('RenovatedIn', data.RenovatedIn);
+        appendInt('Sqft', data.Sqft);
+        appendInt('FloorLevel', data.FloorLevel);
+        appendInt('Heating', data.Heating);
+        appendInt('Cooling', data.Cooling);
+        appendInt('TemperatureControl', data.TemperatureControl);
+        appendInt('SuggestedOccupants', data.SuggestedOccupants);
+        appendInt('LegalUnitCount', data.LegalUnitCount);
+
+        // 2. Strings
+        appendString('Borough', data.Borough);
+        appendString('ZipCode', data.ZipCode);
+        appendString('Neighborhood', data.Neighborhood);
+        appendString('FullAddress', data.FullAddress);
+        appendString('UnitNumber', data.UnitNumber);
+        appendString('GoogleMap', data.GoogleMap);
+        appendString('Description', data.Description);
+        appendString('DirectApplyLink', data.DirectApplyLink);
+
+        // 3. Dates
+        if (data.OpeningDate) formData.append('OpeningDate', new Date(data.OpeningDate).toISOString());
+
+        // 4. Booleans
+        const boolFields = [
+            'Furnished', 'AcceptsHousingVouchers', 'FamilyAndKidsFriendly',
+            'PetsFriendly', 'AccessibilityFriendly', 'SmokingAllowed',
+            'AddDirectApplyLink', 'AllowColisterEditing', 'IsPublished'
+        ];
+        boolFields.forEach(field => {
+            formData.append(field, data[field] ? 'true' : 'false');
+        });
+
+        // 5. Arrays
+        const appendArrayOrZero = (key: string, arr: any[]) => {
+            if (arr && Array.isArray(arr) && arr.length > 0) {
+                arr.forEach(item => formData.append(key, String(item)));
+            } else {
+                formData.append(key, '0');
+            }
+        };
+
+        appendArrayOrZero('NearbyTransportation', data.NearbyTransportation);
+        appendArrayOrZero('Laundry', data.Laundry);
+        appendArrayOrZero('Amenities', data.Amenities);
+        appendArrayOrZero('AcceptedBuyerPrograms', data.AcceptedBuyerPrograms);
+
+        // CoListing Logic
+        if (data.CoListing && Array.isArray(data.CoListing) && data.CoListing.length > 0) {
+            data.CoListing.forEach((id: any) => {
+                if (id !== null && id !== undefined && id !== '') {
+                    formData.append('CoListing', String(id));
+                }
+            });
+        }
+
+        // 6. Photos
+        if (data.NewPhotos && Array.isArray(data.NewPhotos)) {
+            data.NewPhotos.forEach((file: any) => {
+                if (file instanceof File) formData.append('NewPhotos', file);
+            });
+        }
+        if (data.DeletedPhotoIds && Array.isArray(data.DeletedPhotoIds)) {
+            data.DeletedPhotoIds.forEach((id: any) => {
+                formData.append('DeletedPhotoIds', String(id));
+            });
+        }
+
+        return this.http.put(apiUrl, formData);
+    }
+
+    updateHousingPost(id: number, data: any): Observable<any> {
+        // Fallback or generic method
+        if (data.IsRenting) {
+            return this.updateRentingPost(id, data);
+        } else {
+            return this.updateSalePost(id, data);
+        }
     }
 }
