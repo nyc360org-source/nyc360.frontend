@@ -517,7 +517,7 @@
                     <button type="button" class="btn-draft-luxury" (click)="onSubmit(false)" [disabled]="isSubmitting">
                         Save a Draft
                     </button>
-                    <button type="submit" class="btn-post-luxury" [disabled]="isSubmitting">
+                    <button type="button" class="btn-post-luxury" (click)="onSubmit(true)" [disabled]="isSubmitting">
                         <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2"></span>
                         Post Listing
                     </button>

@@ -20,110 +20,194 @@ export class HousingService {
         const formData = new FormData();
         const apiUrl = `${environment.apiBaseUrl}/housing/create/renting`;
 
-        // Helper to append safely
-        const append = (key: string, val: any) => {
-            if (val !== null && val !== undefined && val !== '') {
-                formData.append(key, String(val));
-            }
+        // Helper to append integer strings - ALWAYS send a value
+        const appendInt = (key: string, val: any) => {
+            const num = parseInt(val, 10);
+            formData.append(key, isNaN(num) ? '0' : String(num));
         };
 
-        // 1. Enums & Integers (Aligned with API expectations)
-        append('HouseholdType', data.HouseType);
-        append('BuildingType', data.BuildingType);
-        append('NumberOfRooms', data.Bedrooms);
-        append('NumberOfBathrooms', data.Bathrooms);
-        append('StartingPrice', data.MonthlyRent);
-        append('SecurityDeposit', data.SecurityDeposit);
-        append('BrokerFee', data.BrokerFee);
-        append('MonthlyCostRange', data.MonthlyCostRange);
-        append('YearBuilt', data.BuiltIn);
-        append('RenovatedIn', data.RenovatedIn);
-        append('Size', data.Sqft);
-        append('FloorLevel', data.FloorLevel);
-        append('HeatingSystem', data.Heating);
-        append('CoolingSystem', data.Cooling);
-        append('TemperatureControl', data.TemperatureControl);
-        append('LaundryType', data.LaundryType !== undefined ? data.LaundryType : (data.Laundry && data.Laundry[0])); // Fallback if data is array
-        append('RentingLeaseType', data.LeaseType);
-        append('MaxOccupants', data.MaxOccupants);
+        // Helper to append strings - ALWAYS send a value (even if empty)
+        const appendString = (key: string, val: any) => {
+            formData.append(key, (val !== null && val !== undefined) ? String(val) : '');
+        };
+
+        // 1. Enums & Integers
+        appendInt('HouseType', data.HouseType);
+        appendInt('PropertyType', data.PropertyType);
+        appendInt('BuildingType', data.BuildingType);
+        appendInt('Bedrooms', data.Bedrooms);
+        appendInt('Bathrooms', data.Bathrooms);
+        appendInt('MonthlyRent', data.MonthlyRent);
+        appendInt('SecurityDeposit', data.SecurityDeposit);
+        appendInt('BrokerFee', data.BrokerFee);
+        appendInt('MonthlyCostRange', data.MonthlyCostRange);
+        appendInt('BuiltIn', data.BuiltIn);
+        appendInt('RenovatedIn', data.RenovatedIn);
+        appendInt('Sqft', data.Sqft);
+
+        // FloorLevel Logic: Ground -> 0, 10+ -> 11, else int
+        let floorVal = 0;
+        if (data.FloorLevel === 'Ground') floorVal = 0;
+        else if (data.FloorLevel === '10+') floorVal = 11;
+        else floorVal = parseInt(data.FloorLevel, 10) || 0;
+        formData.append('FloorLevel', String(floorVal));
+
+        appendInt('Heating', data.Heating);
+        appendInt('Cooling', data.Cooling);
+        appendInt('TemperatureControl', data.TemperatureControl);
+        appendInt('LeaseType', data.LeaseType);
+        appendInt('PrivacyType', data.PrivacyType);
+        appendInt('SharedBathroomType', data.SharedBathroomType);
+        appendInt('SharedKitchenType', data.SharedKitchenType);
+        appendInt('MaxOccupants', data.MaxOccupants);
 
         // 2. Strings
-        append('Borough', data.Borough);
-        append('ZipCode', data.ZipCode);
-        append('Neighborhood', data.Neighborhood);
-        append('FullAddress', data.FullAddress);
-        append('UnitNumber', data.UnitNumber);
-        append('GoogleMapLink', data.GoogleMap); // Aligned name
-        append('Description', data.Description);
-        append('RentingAboutCurrentResident', data.AboutCurrentResident);
-        append('RentingRulesAndPolicies', data.UnitRulesAndPolicies);
-        append('RentingRoommateGroupChat', data.RoommatesGroupChat);
+        appendString('Borough', data.Borough);
+        appendString('ZipCode', data.ZipCode);
+        appendString('Neighborhood', data.Neighborhood);
+        appendString('FullAddress', data.FullAddress);
+        appendString('UnitNumber', data.UnitNumber);
+        appendString('GoogleMap', data.GoogleMap);
+        appendString('Description', data.Description);
+        appendString('AboutCurrentResident', data.AboutCurrentResident);
+        appendString('UnitRulesAndPolicies', data.UnitRulesAndPolicies);
+        appendString('RoommatesGroupChat', data.RoommatesGroupChat);
 
-        // 3. Dates (ISO Formatting)
-        try {
-            if (data.MoveInDate) formData.append('MoveInDate', new Date(data.MoveInDate).toISOString());
-            if (data.MoveOutDate) formData.append('MoveOutDate', new Date(data.MoveOutDate).toISOString());
-        } catch (e) { console.error('Date formatting error', e); }
+        // CoListing Logic: Send only if it has real values to avoid 400 errors
+        if (data.CoListing && Array.isArray(data.CoListing) && data.CoListing.length > 0) {
+            data.CoListing.forEach((id: any) => {
+                if (id !== null && id !== undefined && id !== '') {
+                    formData.append('CoListing', String(id));
+                }
+            });
+        }
+        // If empty, we skip it entirely. Swagger succeeds with '0' sometimes, but skipping is safer for Lists.
 
-        // 4. Booleans (Special Handling for Renting specifics)
-        const isShared = data.PrivacyType === 1;
-        formData.append('RentingIsShared', isShared ? 'true' : 'false');
-        formData.append('RentingIsSharedBathroom', (isShared && data.SharedBathroomType === 1) ? 'true' : 'false');
-        formData.append('RentingIsSharedKitchen', (isShared && data.SharedKitchenType === 1) ? 'true' : 'false');
+        // 3. Dates
+        if (data.MoveInDate) formData.append('MoveInDate', new Date(data.MoveInDate).toISOString());
+        if (data.MoveOutDate) formData.append('MoveOutDate', new Date(data.MoveOutDate).toISOString());
 
-        // Other Booleans
+        // 4. Booleans
         const boolFields = [
-            { api: 'IsShortTermStayAllowed', form: 'ShortTermStayAllowed' },
-            { api: 'IsShortStayEligible', form: 'ShortStayEligiblity' },
-            { api: 'IsFurnished', form: 'Furnished' },
-            { api: 'IsAcceptsHousingVouchers', form: 'AcceptsHousingVouchers' },
-            { api: 'IsFamilyAndKidsFriendly', form: 'FamilyAndKidsFriendly' },
-            { api: 'IsPetsFriendly', form: 'PetsFriendly' },
-            { api: 'IsAccessibilityFriendly', form: 'AccessibilityFriendly' },
-            { api: 'IsSmokingAllowed', form: 'SmokingAllowed' },
-            { api: 'IsPublished', form: 'IsPublished' }
+            'ShortTermStayAllowed', 'ShortStayEligiblity', 'Furnished',
+            'AcceptsHousingVouchers', 'FamilyAndKidsFriendly', 'PetsFriendly',
+            'AccessibilityFriendly', 'SmokingAllowed', 'IsPublished',
+            'AddDirectApplyLink', 'AllowColisterEditing'
         ];
-
         boolFields.forEach(field => {
-            const val = data[field.form];
-            if (val !== undefined) {
-                formData.append(field.api, val ? 'true' : 'false');
-            }
+            formData.append(field, data[field] ? 'true' : 'false');
         });
 
-        // 5. Arrays
-        const appendArray = (key: string, arr: any[]) => {
-            if (arr && Array.isArray(arr)) {
+        // 5. Arrays (Match Swagger's default '0' for empty arrays in your CURL)
+        const appendArrayOrZero = (key: string, arr: any[]) => {
+            if (arr && Array.isArray(arr) && arr.length > 0) {
                 arr.forEach(item => formData.append(key, String(item)));
+            } else {
+                formData.append(key, '0'); // Swagger sends 0 for these if unselected
             }
         };
 
-        appendArray('NearbySubwayLines', data.NearbyTransportation); // Aligned name
-        appendArray('LaundryTypes', data.Laundry); // Aligned name plural if needed? No, usually same as create
-        appendArray('Amenities', data.Amenities);
-        appendArray('AcceptedHousingPrograms', data.AcceptedHousingPrograms);
+        appendArrayOrZero('NearbyTransportation', data.NearbyTransportation);
+        appendArrayOrZero('Laundry', data.Laundry);
+        appendArrayOrZero('Amenities', data.Amenities);
+        appendArrayOrZero('AcceptedHousingPrograms', data.AcceptedHousingPrograms);
 
         // 6. Photos
-        if (data.Photos && Array.isArray(data.Photos)) {
-            data.Photos.forEach((file: File) => {
-                formData.append('Photos', file);
+        if (data.Photos && Array.isArray(data.Photos) && data.Photos.length > 0) {
+            data.Photos.forEach((file: any) => {
+                if (file instanceof File) formData.append('Photos', file);
             });
         }
-
         return this.http.post(apiUrl, formData);
     }
 
     createSalePost(data: any): Observable<any> {
         const formData = new FormData();
         const apiUrl = `${environment.apiBaseUrl}/housing/create/sale`;
-        // Generic append for now
-        Object.keys(data).forEach(key => {
-            if (Array.isArray(data[key])) {
-                data[key].forEach((item: any) => formData.append(key, String(item)));
-            } else {
-                formData.append(key, String(data[key]));
-            }
+
+        // Helper to append integer strings - ALWAYS send a value
+        const appendInt = (key: string, val: any) => {
+            const num = parseInt(val, 10);
+            formData.append(key, isNaN(num) ? '0' : String(num));
+        };
+
+        // Helper to append strings - ALWAYS send a value (even if empty)
+        const appendString = (key: string, val: any) => {
+            formData.append(key, (val !== null && val !== undefined) ? String(val) : '');
+        };
+
+        // 1. Enums & Integers
+        appendInt('HouseType', data.HouseType);
+        appendInt('PropertyType', data.PropertyType);
+        appendInt('BuildingType', data.BuildingType);
+        appendInt('Bedrooms', data.Bedrooms);
+        appendInt('Bathrooms', data.Bathrooms);
+        appendInt('AskingPrice', data.AskingPrice);
+        appendInt('DownPayment', data.DownPayment);
+        appendInt('BrokerFee', data.BrokerFee);
+        appendInt('MonthlyCostRange', data.MonthlyCostRange);
+        appendInt('BuiltIn', data.BuiltIn);
+        appendInt('RenovatedIn', data.RenovatedIn);
+        appendInt('Sqft', data.Sqft);
+        appendInt('FloorLevel', data.FloorLevel);
+        appendInt('Heating', data.Heating);
+        appendInt('Cooling', data.Cooling);
+        appendInt('TemperatureControl', data.TemperatureControl);
+        appendInt('SuggestedOccupants', data.SuggestedOccupants || data.MaxOccupants);
+        appendInt('LegalUnitCount', data.LegalUnitCount);
+
+        // 2. Strings
+        appendString('Borough', data.Borough);
+        appendString('ZipCode', data.ZipCode);
+        appendString('Neighborhood', data.Neighborhood);
+        appendString('FullAddress', data.FullAddress);
+        appendString('UnitNumber', data.UnitNumber);
+        appendString('GoogleMap', data.GoogleMap);
+        appendString('Description', data.Description);
+
+        // 3. Dates
+        if (data.OpeningDate) formData.append('OpeningDate', new Date(data.OpeningDate).toISOString());
+
+        // 4. Booleans
+        const boolFields = [
+            'Furnished', 'AcceptsHousingVouchers', 'FamilyAndKidsFriendly',
+            'PetsFriendly', 'AccessibilityFriendly', 'SmokingAllowed',
+            'AddDirectApplyLink', 'AllowColisterEditing', 'IsPublished'
+        ];
+        boolFields.forEach(field => {
+            formData.append(field, data[field] ? 'true' : 'false');
         });
+
+        // 5. Arrays (Match Swagger's default '0' for empty arrays)
+        const appendArrayOrZero = (key: string, arr: any[]) => {
+            if (arr && Array.isArray(arr) && arr.length > 0) {
+                arr.forEach(item => formData.append(key, String(item)));
+            } else {
+                formData.append(key, '0');
+            }
+        };
+
+        appendArrayOrZero('NearbyTransportation', data.NearbyTransportation);
+        appendArrayOrZero('Laundry', data.Laundry);
+        appendArrayOrZero('Amenities', data.Amenities);
+        appendArrayOrZero('AcceptedBuyerPrograms', data.AcceptedBuyerPrograms);
+
+        // CoListing Logic: Skip if empty
+        if (data.CoListing && Array.isArray(data.CoListing) && data.CoListing.length > 0) {
+            data.CoListing.forEach((id: any) => {
+                if (id !== null && id !== undefined && id !== '') {
+                    formData.append('CoListing', String(id));
+                }
+            });
+        }
+
+        // 6. Photos
+        if (data.Photos && Array.isArray(data.Photos) && data.Photos.length > 0) {
+            data.Photos.forEach((file: any) => {
+                if (file instanceof File) formData.append('Photos', file);
+            });
+        }
+
         return this.http.post(apiUrl, formData);
     }
 

@@ -333,6 +333,7 @@ export class CreateHousingComponent implements OnInit {
     onSubmit(isPublished: boolean = true) {
         if (this.form.invalid) {
             this.form.markAllAsTouched();
+            this.scrollToFirstInvalidControl();
             this.toastService.error('Please fill in valid data.');
             return;
         }
@@ -366,6 +367,33 @@ export class CreateHousingComponent implements OnInit {
                 this.toastService.error('Error publishing listing');
             }
         });
+    }
+
+    scrollToFirstInvalidControl() {
+        const firstInvalidControl: HTMLElement = document.querySelector(
+            '.ng-invalid[formControlName], .ng-invalid[formGroupName], .ng-invalid select, .ng-invalid input, .ng-invalid textarea'
+        ) as HTMLElement;
+
+        if (firstInvalidControl) {
+            firstInvalidControl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            // Subtle pulse animation to highlight the error
+            firstInvalidControl.classList.add('error-pulse');
+            setTimeout(() => firstInvalidControl.classList.remove('error-pulse'), 2000);
+
+            firstInvalidControl.focus();
+        }
+    }
+
+    getFormValidationErrors() {
+        const errors: any = {};
+        Object.keys(this.form.controls).forEach(key => {
+            const controlErrors = this.form.get(key)?.errors;
+            if (controlErrors != null) {
+                errors[key] = controlErrors;
+            }
+        });
+        return errors;
     }
 
     transportationGroups = [
