@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, HostListener } from '@angular/core';
+import { Component, OnInit, inject, HostListener, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -19,10 +19,12 @@ export class AgentRequestComponent implements OnInit {
     private postsService = inject(PostsService);
     private toastService = inject(ToastService);
 
+    @Input() postId: number = 0;
+    @Output() close = new EventEmitter<void>();
+
     form: FormGroup;
     isSubmitting = false;
     isSuccess = false;
-    postId: number = 0;
 
     showContactDropdown = false;
     showHouseholdDropdown = false;
@@ -48,12 +50,15 @@ export class AgentRequestComponent implements OnInit {
             PhoneNumber: ['', [Validators.required, Validators.pattern('^[0-9+\\-\\s()]*$')]],
             PreferredContactType: [0, Validators.required],
             HouseholdType: [0, Validators.required],
-            PreferredContactDate: ['', Validators.required],
+            // Split fields for UI
+            PrefContactDate: ['', Validators.required],
+            PrefContactTime: ['', Validators.required],
             MoveInDate: ['', Validators.required],
             MoveOutDate: [''],
-            ScheduleVirtual: [''],
-            TimeWindow: [''],
-            InPersonTour: [''],
+            ScheduleVirtualDate: [''],
+            VirtualTime: [''],
+            InPersonTourDate: [''],
+            InPersonTime: [''],
             Message: ['', [Validators.required, Validators.minLength(10)]],
             AddDirectApplyLink: [false],
             DirectApplyLink: [''],
@@ -67,13 +72,18 @@ export class AgentRequestComponent implements OnInit {
     postImage: string | null = null;
 
     ngOnInit() {
-        this.route.queryParams.subscribe(params => {
-            if (params['postId']) {
-                this.postId = +params['postId'];
-                this.form.patchValue({ PostId: this.postId });
-                this.loadPostDetails(this.postId);
-            }
-        });
+        if (this.postId) {
+            this.form.patchValue({ PostId: this.postId });
+            this.loadPostDetails(this.postId);
+        } else {
+            this.route.queryParams.subscribe(params => {
+                if (params['postId']) {
+                    this.postId = +params['postId'];
+                    this.form.patchValue({ PostId: this.postId });
+                    this.loadPostDetails(this.postId);
+                }
+            });
+        }
     }
 
     loadPostDetails(id: number) {
@@ -92,10 +102,10 @@ export class AgentRequestComponent implements OnInit {
     }
 
     cancel() {
-        if (this.postId) {
-            this.router.navigate(['/public/posts/details', this.postId]);
-        } else {
-            this.router.navigate(['/public/housing']);
+        this.close.emit();
+        // Fallback for if still used as a page (unlikely but safe)
+        if (window.history.length > 1) {
+            // this.router.navigate(['/public/housing/details', this.postId]);
         }
     }
 
@@ -151,12 +161,22 @@ export class AgentRequestComponent implements OnInit {
     errorMessage: string | null = null;
 
     onSubmit() {
+        console.log('AgentRequestComponent: onSubmit called');
         if (this.form.invalid) {
+            console.log('AgentRequestComponent: Form is invalid', this.form.errors);
+            // Log exactly which field is invalid
+            Object.keys(this.form.controls).forEach(key => {
+                const controlErrors = this.form.get(key)?.errors;
+                if (controlErrors != null) {
+                    console.log('Key control: ' + key + ', errors: ', controlErrors);
+                }
+            });
             this.form.markAllAsTouched();
             this.toastService.error('Please check the form for errors.');
             return;
         }
 
+        console.log('AgentRequestComponent: Submitting form...', this.form.value);
         this.isSubmitting = true;
         this.errorMessage = null;
         const rawData = this.form.value;
@@ -168,12 +188,12 @@ export class AgentRequestComponent implements OnInit {
             PhoneNumber: rawData.PhoneNumber,
             PreferredContactType: Number(rawData.PreferredContactType),
             HouseholdType: Number(rawData.HouseholdType),
-            PreferredContactDate: this.formatDate(rawData.PreferredContactDate),
+            PreferredContactDate: this.mergeDateTime(rawData.PrefContactDate, rawData.PrefContactTime),
             MoveInDate: this.formatDate(rawData.MoveInDate),
             MoveOutDate: this.formatDate(rawData.MoveOutDate),
-            ScheduleVirtual: this.formatDate(rawData.ScheduleVirtual),
-            TimeWindow: this.formatDate(rawData.TimeWindow),
-            InPersonTour: this.formatDate(rawData.InPersonTour),
+            ScheduleVirtual: this.mergeDateTime(rawData.ScheduleVirtualDate, rawData.VirtualTime),
+            TimeWindow: rawData.VirtualTime || rawData.InPersonTime || undefined,
+            InPersonTour: this.mergeDateTime(rawData.InPersonTourDate, rawData.InPersonTime),
             Message: rawData.Message
         };
 
@@ -200,6 +220,16 @@ export class AgentRequestComponent implements OnInit {
                 this.toastService.error(this.errorMessage);
             }
         });
+    }
+
+    private mergeDateTime(dateStr: string, timeStr: string): string | undefined {
+        if (!dateStr) return undefined;
+        if (!timeStr) return this.formatDate(dateStr);
+
+        const [year, month, day] = dateStr.split('-').map(Number);
+        const [hours, minutes] = timeStr.split(':').map(Number);
+        const date = new Date(year, month - 1, day, hours, minutes);
+        return date.toISOString();
     }
 
     private formatDate(dateStr: string): string | undefined {

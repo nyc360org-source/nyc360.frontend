@@ -921,3 +921,66 @@ $border-color: #e9ecef;
         }
     }
 }
+
+// Agent Request Modal Overlay
+.agent-request-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    z-index: 5000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    animation: fadeIn 0.3s ease;
+
+    .modal-content-wrapper {
+        width: 100%;
+        max-width: 850px;
+        max-height: 95vh;
+        background: white;
+        border-radius: 24px;
+        overflow-y: auto;
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
+        animation: slideUpModal 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+
+        &::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        &::-webkit-scrollbar-track {
+            background: #f8f9fa;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background: #B59B62;
+            border-radius: 4px;
+        }
+    }
+}
+
+@keyframes fadeInOverlay {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUpModal {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}

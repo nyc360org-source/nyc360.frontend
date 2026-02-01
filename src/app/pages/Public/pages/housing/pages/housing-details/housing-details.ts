@@ -8,10 +8,13 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 import { AuthService } from '../../../../../Authentication/Service/auth';
 
+import { HousingDetailsComponent as HousingDetailsType } from './housing-details';
+import { AgentRequestComponent } from '../agent-request/agent-request.component';
+
 @Component({
     selector: 'app-housing-details',
     standalone: true,
-    imports: [CommonModule, RouterModule, ImgFallbackDirective],
+    imports: [CommonModule, RouterModule, ImgFallbackDirective, AgentRequestComponent],
     templateUrl: './housing-details.html',
     styleUrls: ['./housing-details.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
@@ -30,6 +33,7 @@ export class HousingDetailsComponent implements OnInit {
     activeImage: string | null = null;
     currentUserId: number | null = null;
     showAllPhotos = false;
+    showAgentRequestModal = false;
 
     ngOnInit(): void {
         this.currentUserId = this.authService.getUserId();
@@ -235,5 +239,19 @@ export class HousingDetailsComponent implements OnInit {
     hasFeatures(): boolean {
         // Updated to be always true or just check if property loaded because we will show "Not specified" if false
         return !!this.property;
+    }
+
+    openAgentRequest() {
+        if (!this.currentUserId) {
+            this.router.navigate(['/auth/login'], { queryParams: { returnUrl: this.router.url } });
+            return;
+        }
+        this.showAgentRequestModal = true;
+        this.cdr.markForCheck();
+    }
+
+    closeAgentRequest() {
+        this.showAgentRequestModal = false;
+        this.cdr.markForCheck();
     }
 }
