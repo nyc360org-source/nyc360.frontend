@@ -26,10 +26,10 @@ export const PUBLIC_ROUTES: Routes = [
       { path: 'post/:id', loadComponent: () => import('../pages/Public/pages/communities/pages/post-details/post-details').then(m => m.PostDetailsComponent) },
 
       // jobs
-      { path: 'create-offer', loadComponent: () => import('../pages/Public/pages/jobs/pages/create-offer/create-offer').then(m => m.CreateOfferComponent) },
-      { path: 'job-profile/:id', loadComponent: () => import('../pages/Public/pages/jobs/pages/job-profile/job-profile').then(m => m.JobProfileComponent) },
       { path: 'profession/feed', loadComponent: () => import('../pages/Public/pages/jobs/pages/profession-feed/profession-feed').then(m => m.ProfessionFeedComponent) },
       { path: 'profession/my-applications', loadComponent: () => import('../pages/Public/pages/jobs/pages/my-applications.component/my-applications.component').then(m => m.MyApplicationsComponent) },
+      { path: 'create-offer', loadComponent: () => import('../pages/Public/pages/jobs/pages/create-offer/create-offer').then(m => m.CreateOfferComponent) },
+      { path: 'job-profile/:id', loadComponent: () => import('../pages/Public/pages/jobs/pages/job-profile/job-profile').then(m => m.JobProfileComponent) },
       { path: 'profession/jobs', loadComponent: () => import('../pages/Public/pages/jobs/pages/job-search/job-search').then(m => m.JobSearchComponent) },
       { path: 'profession/my-offers', loadComponent: () => import('../pages/Public/pages/jobs/pages/my-offers/my-offers').then(m => m.MyOffersComponent) },
       { path: 'edit-offer/:id', loadComponent: () => import('../pages/Public/pages/jobs/pages/edit-offer/edit-offer').then(m => m.EditOfferComponent) },

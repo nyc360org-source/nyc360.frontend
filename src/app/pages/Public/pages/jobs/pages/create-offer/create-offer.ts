@@ -41,11 +41,17 @@ export class CreateOfferComponent implements OnInit {
     locationId: [null],     // 🛠️ Now Optional
     street: [''],           // Optional
     buildingNumber: [''],   // Optional
-    zipCode: ['']           // Optional
+    zipCode: ['', [Validators.pattern('^[0-9]*$')]]
   });
 
   ngOnInit() {
     this.setupLocationSearch();
+  }
+
+  // ✅ Helper for template validation display
+  isFieldInvalid(fieldName: string): boolean {
+    const control = this.form.get(fieldName);
+    return !!(control && control.invalid && (control.touched || control.dirty));
   }
 
   setupLocationSearch() {
@@ -141,6 +147,7 @@ export class CreateOfferComponent implements OnInit {
   submit() {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      this.scrollToFirstInvalidControl();
       this.cdr.detectChanges();
       return;
     }
@@ -156,7 +163,7 @@ export class CreateOfferComponent implements OnInit {
       LocationId: Number(val.locationId),
       Street: val.street || null,
       BuildingNumber: val.buildingNumber || null,
-      ZipCode: val.zipCode ? Number(val.zipCode) : null
+      ZipCode: val.zipCode ? String(val.zipCode) : null
     } : null;
 
     const payload = {
@@ -190,5 +197,14 @@ export class CreateOfferComponent implements OnInit {
         this.cdr.detectChanges();
       }
     });
+  }
+
+  private scrollToFirstInvalidControl() {
+    const firstInvalidControl = document.querySelector('form .ng-invalid');
+    if (firstInvalidControl) {
+      firstInvalidControl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const input = firstInvalidControl.querySelector('input, select, textarea') as HTMLElement;
+      if (input) input.focus();
+    }
   }
 }
