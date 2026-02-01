@@ -98,13 +98,13 @@
         <!-- Tag Dropdown -->
         <ul class="dropdown-results" *ngIf="showTagDropdown">
           <li *ngFor="let tag of tagResults" (click)="selectTag(tag)">
-            #{{ tag.name }}
+            {{ tag.name }}
           </li>
         </ul>
 
         <div class="tags-list mt-3" *ngIf="selectedTags.length > 0">
           <span class="tag-badge" *ngFor="let tag of selectedTags; let i = index">
-            #{{ tag.name }}
+            {{ tag.name }}
             <i class="bi bi-x-circle-fill remove-tag" (click)="removeTag(i)"></i>
           </span>
         </div>
