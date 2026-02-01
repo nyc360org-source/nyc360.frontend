@@ -153,10 +153,10 @@ export class CreateOfferComponent implements OnInit {
     // If no locationId, Address should be null as per the record definition nullable Address
     const address = val.locationId ? {
       AddressId: 0,
-      LocationId: val.locationId,
+      LocationId: Number(val.locationId),
       Street: val.street || null,
       BuildingNumber: val.buildingNumber || null,
-      ZipCode: val.zipCode || null
+      ZipCode: val.zipCode ? Number(val.zipCode) : null
     } : null;
 
     const payload = {
@@ -165,8 +165,8 @@ export class CreateOfferComponent implements OnInit {
       Requirements: val.requirements || null,
       Benefits: val.benefits || null,
       Responsibilities: val.responsibilities || null,
-      SalaryMin: val.salaryMin,
-      SalaryMax: val.salaryMax,
+      SalaryMin: val.salaryMin !== null ? Number(val.salaryMin) : null,
+      SalaryMax: val.salaryMax !== null ? Number(val.salaryMax) : null,
       WorkArrangement: Number(val.workArrangement),
       EmploymentType: Number(val.employmentType),
       EmploymentLevel: Number(val.employmentLevel),
@@ -178,7 +178,7 @@ export class CreateOfferComponent implements OnInit {
         this.isSubmitting = false;
         if (res.isSuccess) {
           this.toastService.success('Job Offer Created Successfully!');
-          this.router.navigate(['/public/profession/feed']);
+          this.router.navigate(['/public/job-profile', res.data]);
         } else {
           this.toastService.error(res.error?.message || 'Failed to create offer');
         }

@@ -7,7 +7,7 @@ export interface AddressInputDto {
   LocationId: number;
   Street?: string;
   BuildingNumber?: string;
-  ZipCode?: string;
+  ZipCode?: number;
 }
 
 export interface CreateOfferRequest {
