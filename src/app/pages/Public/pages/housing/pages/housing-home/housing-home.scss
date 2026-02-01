@@ -83,6 +83,13 @@ $card-shadow: 0 10px 40px rgba(188, 157, 95, 0.08);
                 box-shadow: 0 5px 15px rgba($housing-accent, 0.2);
             }
 
+            &.active {
+                background: $housing-accent;
+                color: $white;
+                border-color: $housing-accent;
+                box-shadow: 0 4px 12px rgba($housing-accent, 0.2);
+            }
+
             &.gold {
                 background: $housing-accent;
                 color: $white;
