@@ -194,7 +194,7 @@ export class AgentRequestComponent implements OnInit {
             MoveInDate: this.formatDate(rawData.MoveInDate),
             MoveOutDate: this.formatDate(rawData.MoveOutDate),
             ScheduleVirtual: this.mergeDateTime(rawData.ScheduleVirtualDate, rawData.VirtualTime),
-            TimeWindow: rawData.VirtualTime || rawData.InPersonTime || undefined,
+            TimeWindow: this.mergeDateTime(rawData.InPersonTourDate || rawData.ScheduleVirtualDate || rawData.PrefContactDate, rawData.InPersonTime || rawData.VirtualTime),
             InPersonTour: this.mergeDateTime(rawData.InPersonTourDate, rawData.InPersonTime),
             Message: rawData.Message
         };
@@ -219,17 +219,25 @@ export class AgentRequestComponent implements OnInit {
         });
     }
 
-    private mergeDateTime(dateStr: string, timeStr: string): string | undefined {
-        if (!dateStr) return undefined;
-        if (!timeStr) return this.formatDate(dateStr);
+    private mergeDateTime(dateStr: any, timeStr: any): string | undefined {
+        if (!dateStr && !timeStr) return undefined;
 
-        const [year, month, day] = dateStr.split('-').map(Number);
-        const [hours, minutes] = timeStr.split(':').map(Number);
-        const date = new Date(year, month - 1, day, hours, minutes);
-        return date.toISOString();
+        // If we have time but no date, use today's date as a base to satisfy the DateTime requirement
+        const baseDate = dateStr ? new Date(dateStr) : new Date();
+        if (isNaN(baseDate.getTime())) return undefined;
+
+        if (!timeStr) return baseDate.toISOString();
+
+        try {
+            const [hours, minutes] = timeStr.split(':').map(Number);
+            baseDate.setHours(hours || 0, minutes || 0, 0, 0);
+            return baseDate.toISOString();
+        } catch (e) {
+            return baseDate.toISOString();
+        }
     }
 
-    private formatDate(dateStr: string): string | undefined {
+    private formatDate(dateStr: any): string | undefined {
         if (!dateStr) return undefined;
         const date = new Date(dateStr);
         return !isNaN(date.getTime()) ? date.toISOString() : undefined;

@@ -1,4 +1,4 @@
-@import '../../../../../../../styles.scss';
+@use '../../../../../../../styles.scss' as *;
 
 // --- Design Tokens (Image Inspiration) ---
 $housing-bg: #F9F5E8;
