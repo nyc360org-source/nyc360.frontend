@@ -1,8 +1,7 @@
 <div class="agent-dashboard-container">
     <div class="dashboard-sidebar">
         <div class="brand-logo mb-5">
-            <img src="assets/images/logo.png" alt="NYC360" class="logo-img"
-                onerror="this.src='https://nyc360.runasp.net/assets/images/logo.png'">
+            <!-- <img src="image_0_0.jpg" alt="NYC360" class="logo-img"> -->
             <span class="brand-name">NYC360</span>
         </div>
 
@@ -17,6 +16,18 @@
                 <i class="bi bi-gear-fill"></i> Settings
             </a>
         </nav>
+
+        <div class="user-profile-mini mt-auto" *ngIf="authService.currentUser$ | async as user">
+            <div class="avatar-circle">
+                {{ user.username?.charAt(0) || user.email?.charAt(0) || 'A' }}
+            </div>
+            <div class="user-info-mini">
+                <div class="user-name text-truncate" style="max-width: 150px;">{{ user.username || user.email }}</div>
+                <div class="user-status small text-success">
+                    <i class="bi bi-circle-fill" style="font-size: 0.5rem;"></i> Online
+                </div>
+            </div>
+        </div>
 
     </div>
 
@@ -40,8 +51,13 @@
                 <div class="stat-card">
                     <span class="stat-label">NEW INQUIRIES TODAY</span>
                     <div class="stat-value gold">{{ stats?.newInquiriesToday?.value || 0 }}</div>
-                    <div class="stat-footer text-muted small" *ngIf="stats?.newInquiriesToday?.lastUpdatedMinutesAgo">
+                    <div class="stat-footer text-muted small"
+                        *ngIf="stats?.newInquiriesToday?.lastUpdatedMinutesAgo && stats.newInquiriesToday.lastUpdatedMinutesAgo < 1000000">
                         Last updated: {{ stats.newInquiriesToday.lastUpdatedMinutesAgo }} MIN ago
+                    </div>
+                    <div class="stat-footer text-muted small"
+                        *ngIf="stats?.newInquiriesToday?.lastUpdatedMinutesAgo && stats.newInquiriesToday.lastUpdatedMinutesAgo >= 1000000">
+                        Last updated: Just now
                     </div>
                 </div>
 
@@ -84,6 +100,9 @@
                     <h5 class="section-title-sm mb-4">Most Requested</h5>
                     <div class="neighborhood-list">
                         <div class="neighborhood-item" *ngFor="let item of topNeighborhoods">
+                            <div class="n-icon-box">
+                                <i class="bi bi-geo-alt-fill"></i>
+                            </div>
                             <div class="item-info">
                                 <span class="n-name">{{ item.name || 'Manhattan Area' }}</span>
                                 <span class="n-count text-muted small">{{ item.count }} Inquiries</span>
@@ -115,8 +134,13 @@
                             <tr *ngFor="let inquiry of recentInquiries">
                                 <td>
                                     <div class="user-info">
-                                        <span class="u-name">{{ inquiry.user?.name }}</span>
-                                        <span class="u-email">{{ inquiry.user?.email }}</span>
+                                        <img [src]="imageService.resolveAvatar(inquiry.user)" class="u-avatar shadow-sm"
+                                            alt="User">
+                                        <div class="u-details">
+                                            <span class="u-name">{{ inquiry.user?.name || 'Anonymous User' }}</span>
+                                            <span class="u-email text-muted small">{{ inquiry.user?.email || 'No email
+                                                provided' }}</span>
+                                        </div>
                                     </div>
                                 </td>
                                 <td>

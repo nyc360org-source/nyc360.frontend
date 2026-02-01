@@ -288,7 +288,7 @@ export class HousingService {
         appendString('RoommatesGroupChat', data.RoommatesGroupChat);
         appendString('DirectApplyLink', data.DirectApplyLink);
 
-        // 3. Dates - Skip "0001-01-01" which often causes 500 errors in backend databases
+        // 3. Dates
         const appendDate = (key: string, val: any) => {
             if (!val) return;
             const d = new Date(val);
@@ -310,33 +310,28 @@ export class HousingService {
             formData.append(field, data[field] ? 'true' : 'false');
         });
 
-        // 5. Arrays - Skip appending if empty instead of sending '0' (which might be an invalid ID/Enum)
-        const appendArray = (key: string, arr: any[]) => {
+        // 5. Arrays - ALWAYS send '0' if empty to match Swagger/CURL
+        const appendArrayOrZero = (key: string, arr: any[]) => {
             if (arr && Array.isArray(arr) && arr.length > 0) {
                 arr.forEach(item => {
-                    if (item !== null && item !== undefined) formData.append(key, String(item));
+                    if (item !== null && item !== undefined && item !== '') formData.append(key, String(item));
                 });
             } else {
-                // For some backends, we might need a placeholder, but usually empty is better
-                // formData.append(key, '0'); // ONLY if required by specific API design
+                formData.append(key, '0');
             }
         };
 
-        appendArray('NearbyTransportation', data.NearbyTransportation);
-        appendArray('Laundry', data.Laundry);
-        appendArray('Amenities', data.Amenities);
-        appendArray('AcceptedHousingPrograms', data.AcceptedHousingPrograms);
-        appendArray('CoListing', data.CoListing);
+        appendArrayOrZero('NearbyTransportation', data.NearbyTransportation);
+        appendArrayOrZero('Laundry', data.Laundry);
+        appendArrayOrZero('Amenities', data.Amenities);
+        appendArrayOrZero('AcceptedHousingPrograms', data.AcceptedHousingPrograms);
+        appendArrayOrZero('CoListing', data.CoListing);
+        appendArrayOrZero('DeletedPhotoIds', data.DeletedPhotoIds);
 
         // 6. Photos
         if (data.NewPhotos && Array.isArray(data.NewPhotos)) {
             data.NewPhotos.forEach((file: any) => {
                 if (file instanceof File) formData.append('NewPhotos', file);
-            });
-        }
-        if (data.DeletedPhotoIds && Array.isArray(data.DeletedPhotoIds)) {
-            data.DeletedPhotoIds.forEach((id: any) => {
-                formData.append('DeletedPhotoIds', String(id));
             });
         }
 
@@ -385,7 +380,7 @@ export class HousingService {
         appendString('Description', data.Description);
         appendString('DirectApplyLink', data.DirectApplyLink);
 
-        // 3. Dates - Skip "0001-01-01" as it crashes many DBs
+        // 3. Dates
         const appendDate = (key: string, val: any) => {
             if (!val) return;
             const d = new Date(val);
@@ -405,30 +400,28 @@ export class HousingService {
             formData.append(field, data[field] ? 'true' : 'false');
         });
 
-        // 5. Arrays
-        const appendArray = (key: string, arr: any[]) => {
+        // 5. Arrays - ALWAYS send '0' if empty
+        const appendArrayOrZero = (key: string, arr: any[]) => {
             if (arr && Array.isArray(arr) && arr.length > 0) {
                 arr.forEach(item => {
-                    if (item !== null && item !== undefined) formData.append(key, String(item));
+                    if (item !== null && item !== undefined && item !== '') formData.append(key, String(item));
                 });
+            } else {
+                formData.append(key, '0');
             }
         };
 
-        appendArray('NearbyTransportation', data.NearbyTransportation);
-        appendArray('Laundry', data.Laundry);
-        appendArray('Amenities', data.Amenities);
-        appendArray('AcceptedBuyerPrograms', data.AcceptedBuyerPrograms);
-        appendArray('CoListing', data.CoListing);
+        appendArrayOrZero('NearbyTransportation', data.NearbyTransportation);
+        appendArrayOrZero('Laundry', data.Laundry);
+        appendArrayOrZero('Amenities', data.Amenities);
+        appendArrayOrZero('AcceptedBuyerPrograms', data.AcceptedBuyerPrograms);
+        appendArrayOrZero('CoListing', data.CoListing);
+        appendArrayOrZero('DeletedPhotoIds', data.DeletedPhotoIds);
 
         // 6. Photos
         if (data.NewPhotos && Array.isArray(data.NewPhotos)) {
             data.NewPhotos.forEach((file: any) => {
                 if (file instanceof File) formData.append('NewPhotos', file);
-            });
-        }
-        if (data.DeletedPhotoIds && Array.isArray(data.DeletedPhotoIds)) {
-            data.DeletedPhotoIds.forEach((id: any) => {
-                formData.append('DeletedPhotoIds', String(id));
             });
         }
 
