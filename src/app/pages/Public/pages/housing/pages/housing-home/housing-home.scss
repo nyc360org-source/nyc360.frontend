@@ -75,6 +75,11 @@ $card-shadow: 0 10px 40px rgba(188, 157, 95, 0.08);
             letter-spacing: 0.5px;
             backdrop-filter: blur(5px);
 
+            i {
+                font-size: 1.1rem;
+                margin-right: 8px;
+            }
+
             &:hover {
                 background: $housing-accent;
                 color: $white;
