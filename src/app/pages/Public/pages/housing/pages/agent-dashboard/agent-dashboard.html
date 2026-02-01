@@ -1,0 +1,141 @@
+<div class="agent-dashboard-container">
+    <div class="dashboard-sidebar">
+        <div class="brand-logo mb-5">
+            <img src="assets/images/logo.png" alt="NYC360" class="logo-img"
+                onerror="this.src='https://nyc360.runasp.net/assets/images/logo.png'">
+            <span class="brand-name">NYC360</span>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a routerLink="/public/housing/agent/dashboard" class="nav-item active">
+                <i class="bi bi-grid-fill"></i> Dashboard
+            </a>
+            <a routerLink="/public/housing/home" class="nav-item">
+                <i class="bi bi-list-task"></i> Listing
+            </a>
+            <a routerLink="/public/profile/settings" class="nav-item">
+                <i class="bi bi-gear-fill"></i> Settings
+            </a>
+        </nav>
+
+    </div>
+
+    <main class="dashboard-main-content">
+        <div class="dashboard-loading" *ngIf="isLoading">
+            <div class="spinner-border text-gold" role="status"></div>
+        </div>
+
+        <div class="content-wrapper" *ngIf="!isLoading">
+            <!-- Top Stats -->
+            <div class="stats-row mb-4">
+                <div class="stat-card">
+                    <span class="stat-label">TOTAL INQUIRIES</span>
+                    <div class="stat-value">{{ stats?.totalInquiries?.value || 0 }}</div>
+                    <div class="stat-trend positive" *ngIf="stats?.totalInquiries?.monthlyChangePercentage">
+                        <i class="bi bi-arrow-up-right"></i> +{{ stats.totalInquiries.monthlyChangePercentage }}% This
+                        month
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <span class="stat-label">NEW INQUIRIES TODAY</span>
+                    <div class="stat-value gold">{{ stats?.newInquiriesToday?.value || 0 }}</div>
+                    <div class="stat-footer text-muted small" *ngIf="stats?.newInquiriesToday?.lastUpdatedMinutesAgo">
+                        Last updated: {{ stats.newInquiriesToday.lastUpdatedMinutesAgo }} MIN ago
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <span class="stat-label">INQUIRIES TYPE BREAKDOWN</span>
+                    <div class="breakdown-bars mt-3">
+                        <div class="bar-header d-flex justify-content-between">
+                            <span class="small fw-bold">Rent</span>
+                            <span class="small fw-bold text-muted">{{ stats?.typeBreakdown?.rentPercentage || 0
+                                }}%</span>
+                        </div>
+                        <div class="progress-premium mb-3">
+                            <div class="progress-bar-premium rent"
+                                [style.width.%]="stats?.typeBreakdown?.rentPercentage || 0"></div>
+                        </div>
+
+                        <div class="bar-header d-flex justify-content-between">
+                            <span class="small fw-bold">Sale</span>
+                            <span class="small fw-bold text-muted">{{ stats?.typeBreakdown?.salePercentage || 0
+                                }}%</span>
+                        </div>
+                        <div class="progress-premium">
+                            <div class="progress-bar-premium sale"
+                                [style.width.%]="stats?.typeBreakdown?.salePercentage || 0"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Middle Row: Chart & Most Requested -->
+            <div class="visual-row mb-4">
+                <div class="chart-card">
+                    <div class="chart-placeholder">
+                        <div class="wave-shape"></div>
+                        <div class="wave-overlay"></div>
+                    </div>
+                </div>
+
+                <div class="requested-card">
+                    <h5 class="section-title-sm mb-4">Most Requested</h5>
+                    <div class="neighborhood-list">
+                        <div class="neighborhood-item" *ngFor="let item of topNeighborhoods">
+                            <div class="item-info">
+                                <span class="n-name">{{ item.name || 'Manhattan Area' }}</span>
+                                <span class="n-count text-muted small">{{ item.count }} Inquiries</span>
+                            </div>
+                            <i class="bi bi-chevron-right"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Inquiries Table -->
+            <div class="recent-card">
+                <div class="d-flex justify-content-between align-items-center mb-4 p-3">
+                    <h3 class="section-title m-0">Recent Inquiries</h3>
+                </div>
+
+                <div class="table-container shadow-sm">
+                    <table class="premium-table">
+                        <thead>
+                            <tr>
+                                <th>USERNAME</th>
+                                <th>TYPE</th>
+                                <th>NEIGHBORHOOD</th>
+                                <th>PROPERTY TYPE</th>
+                                <th>STATUS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let inquiry of recentInquiries">
+                                <td>
+                                    <div class="user-info">
+                                        <span class="u-name">{{ inquiry.user?.name }}</span>
+                                        <span class="u-email">{{ inquiry.user?.email }}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="type-badge" [ngClass]="inquiry.type === 0 ? 'rent' : 'sale'">
+                                        {{ getTypeLabel(inquiry.type) }}
+                                    </span>
+                                </td>
+                                <td>{{ inquiry.neighborhood || 'Chelsea' }}</td>
+                                <td>{{ inquiry.propertyType || 'Apartment' }}</td>
+                                <td>
+                                    <span class="status-pill" [ngClass]="getStatusClass(inquiry.status)">
+                                        {{ inquiry.status }}
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>

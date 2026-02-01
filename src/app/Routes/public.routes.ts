@@ -57,6 +57,7 @@ export const PUBLIC_ROUTES: Routes = [
       { path: 'housing/requests', loadComponent: () => import('../pages/Public/pages/housing/pages/housing-requests/housing-requests.component').then(m => m.HousingRequestsComponent) },
       { path: 'housing/my-requests', loadComponent: () => import('../pages/Public/pages/housing/pages/my-requests/my-requests.component').then(m => m.MyRequestsComponent) },
       { path: 'housing/agent-request', loadComponent: () => import('../pages/Public/pages/housing/pages/agent-request/agent-request.component').then(m => m.AgentRequestComponent) },
+      { path: 'housing/agent/dashboard', loadComponent: () => import('../pages/Public/pages/housing/pages/agent-dashboard/agent-dashboard').then(m => m.AgentDashboardComponent) },
       { path: 'housing/edit/:id', loadComponent: () => import('../pages/Public/pages/housing/pages/edit-housing/edit-housing').then(m => m.EditHousingComponent) },
       { path: 'housing/edit/renting/:id', loadComponent: () => import('../pages/Public/pages/housing/pages/edit-renting/edit-renting').then(m => m.EditRentingComponent) },
       { path: 'housing/edit/sale/:id', loadComponent: () => import('../pages/Public/pages/housing/pages/edit-sale/edit-sale').then(m => m.EditSaleComponent) },

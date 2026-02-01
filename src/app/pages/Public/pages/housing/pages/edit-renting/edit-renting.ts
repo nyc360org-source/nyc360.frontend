@@ -267,14 +267,14 @@ export class EditRentingComponent implements OnInit {
             TemperatureControl: data.temperatureControl,
             Laundry: data.laundry || data.laundryTypes || [],
             Amenities: data.amenities || [],
-            ShortTermStayAllowed: data.shortTermStayAllowed ?? data.isShortTermStayAllowed,
-            ShortStayEligiblity: data.shortStayEligiblity ?? data.isShortStayEligible,
-            Furnished: data.furnished ?? data.isFurnished,
-            AcceptsHousingVouchers: data.acceptsHousingVouchers ?? data.isAcceptsHousingVouchers,
-            FamilyAndKidsFriendly: data.familyAndKidsFriendly ?? data.isFamilyAndKidsFriendly,
-            PetsFriendly: data.petsFriendly ?? data.isPetsFriendly,
-            AccessibilityFriendly: data.accessibilityFriendly ?? data.isAccessibilityFriendly,
-            SmokingAllowed: data.smokingAllowed ?? data.isSmokingAllowed,
+            ShortTermStayAllowed: data.shortTermStayAllowed ?? data.isShortTermStayAllowed ?? false,
+            ShortStayEligiblity: data.shortStayEligiblity ?? data.isShortStayEligible ?? false,
+            Furnished: data.furnished ?? data.isFurnished ?? false,
+            AcceptsHousingVouchers: data.acceptsHousingVouchers ?? data.isAcceptsHousingVouchers ?? false,
+            FamilyAndKidsFriendly: data.familyAndKidsFriendly ?? data.isFamilyAndKidsFriendly ?? false,
+            PetsFriendly: data.petsFriendly ?? data.isPetsFriendly ?? false,
+            AccessibilityFriendly: data.accessibilityFriendly ?? data.isAccessibilityFriendly ?? false,
+            SmokingAllowed: data.smokingAllowed ?? data.isSmokingAllowed ?? false,
             AcceptedHousingPrograms: data.acceptedHousingPrograms || data.rentHousingPrograms || [],
             Description: data.description,
             LeaseType: data.leaseType !== undefined ? data.leaseType : data.rentingLeaseType,
@@ -296,7 +296,21 @@ export class EditRentingComponent implements OnInit {
             GoogleMap: data.googleMap || data.googleMapLink
         });
 
-        this.existingAttachments = data.attachments || [];
+        // Robust Attachment Mapping
+        const attachments = data.attachments || [];
+        this.existingAttachments = attachments.map((att: any) => {
+            if (typeof att === 'string') return { url: att, id: null };
+            return {
+                url: att.url || att.imageUrl || '',
+                id: att.id || att.attachmentId || null
+            };
+        });
+
+        // If there's a top-level imageUrl not in attachments, add it
+        if (data.imageUrl && !this.existingAttachments.some(a => a.url === data.imageUrl)) {
+            this.existingAttachments.unshift({ url: data.imageUrl, id: null });
+        }
+
         this.cdr.detectChanges();
     }
 

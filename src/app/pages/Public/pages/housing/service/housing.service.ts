@@ -231,6 +231,10 @@ export class HousingService {
         return this.http.get(`${environment.apiBaseUrl}/housing/${id}`);
     }
 
+    getAgentDashboard(): Observable<any> {
+        return this.http.get(`${environment.apiBaseUrl}/housing/agent/dashboard`);
+    }
+
     updateRentingPost(id: number, data: any): Observable<any> {
         const formData = new FormData();
         const apiUrl = `${environment.apiBaseUrl}/housing/${id}/edit/rent`;
@@ -284,9 +288,16 @@ export class HousingService {
         appendString('RoommatesGroupChat', data.RoommatesGroupChat);
         appendString('DirectApplyLink', data.DirectApplyLink);
 
-        // 3. Dates
-        if (data.MoveInDate) formData.append('MoveInDate', new Date(data.MoveInDate).toISOString());
-        if (data.MoveOutDate) formData.append('MoveOutDate', new Date(data.MoveOutDate).toISOString());
+        // 3. Dates - Skip "0001-01-01" which often causes 500 errors in backend databases
+        const appendDate = (key: string, val: any) => {
+            if (!val) return;
+            const d = new Date(val);
+            if (!isNaN(d.getTime()) && d.getFullYear() > 1900) {
+                formData.append(key, d.toISOString());
+            }
+        };
+        appendDate('MoveInDate', data.MoveInDate);
+        appendDate('MoveOutDate', data.MoveOutDate);
 
         // 4. Booleans
         const boolFields = [
@@ -299,28 +310,23 @@ export class HousingService {
             formData.append(field, data[field] ? 'true' : 'false');
         });
 
-        // 5. Arrays
-        const appendArrayOrZero = (key: string, arr: any[]) => {
+        // 5. Arrays - Skip appending if empty instead of sending '0' (which might be an invalid ID/Enum)
+        const appendArray = (key: string, arr: any[]) => {
             if (arr && Array.isArray(arr) && arr.length > 0) {
-                arr.forEach(item => formData.append(key, String(item)));
+                arr.forEach(item => {
+                    if (item !== null && item !== undefined) formData.append(key, String(item));
+                });
             } else {
-                formData.append(key, '0');
+                // For some backends, we might need a placeholder, but usually empty is better
+                // formData.append(key, '0'); // ONLY if required by specific API design
             }
         };
 
-        appendArrayOrZero('NearbyTransportation', data.NearbyTransportation);
-        appendArrayOrZero('Laundry', data.Laundry);
-        appendArrayOrZero('Amenities', data.Amenities);
-        appendArrayOrZero('AcceptedHousingPrograms', data.AcceptedHousingPrograms);
-
-        // CoListing Logic
-        if (data.CoListing && Array.isArray(data.CoListing) && data.CoListing.length > 0) {
-            data.CoListing.forEach((id: any) => {
-                if (id !== null && id !== undefined && id !== '') {
-                    formData.append('CoListing', String(id));
-                }
-            });
-        }
+        appendArray('NearbyTransportation', data.NearbyTransportation);
+        appendArray('Laundry', data.Laundry);
+        appendArray('Amenities', data.Amenities);
+        appendArray('AcceptedHousingPrograms', data.AcceptedHousingPrograms);
+        appendArray('CoListing', data.CoListing);
 
         // 6. Photos
         if (data.NewPhotos && Array.isArray(data.NewPhotos)) {
@@ -379,8 +385,15 @@ export class HousingService {
         appendString('Description', data.Description);
         appendString('DirectApplyLink', data.DirectApplyLink);
 
-        // 3. Dates
-        if (data.OpeningDate) formData.append('OpeningDate', new Date(data.OpeningDate).toISOString());
+        // 3. Dates - Skip "0001-01-01" as it crashes many DBs
+        const appendDate = (key: string, val: any) => {
+            if (!val) return;
+            const d = new Date(val);
+            if (!isNaN(d.getTime()) && d.getFullYear() > 1900) {
+                formData.append(key, d.toISOString());
+            }
+        };
+        appendDate('OpeningDate', data.OpeningDate);
 
         // 4. Booleans
         const boolFields = [
@@ -393,27 +406,19 @@ export class HousingService {
         });
 
         // 5. Arrays
-        const appendArrayOrZero = (key: string, arr: any[]) => {
+        const appendArray = (key: string, arr: any[]) => {
             if (arr && Array.isArray(arr) && arr.length > 0) {
-                arr.forEach(item => formData.append(key, String(item)));
-            } else {
-                formData.append(key, '0');
+                arr.forEach(item => {
+                    if (item !== null && item !== undefined) formData.append(key, String(item));
+                });
             }
         };
 
-        appendArrayOrZero('NearbyTransportation', data.NearbyTransportation);
-        appendArrayOrZero('Laundry', data.Laundry);
-        appendArrayOrZero('Amenities', data.Amenities);
-        appendArrayOrZero('AcceptedBuyerPrograms', data.AcceptedBuyerPrograms);
-
-        // CoListing Logic
-        if (data.CoListing && Array.isArray(data.CoListing) && data.CoListing.length > 0) {
-            data.CoListing.forEach((id: any) => {
-                if (id !== null && id !== undefined && id !== '') {
-                    formData.append('CoListing', String(id));
-                }
-            });
-        }
+        appendArray('NearbyTransportation', data.NearbyTransportation);
+        appendArray('Laundry', data.Laundry);
+        appendArray('Amenities', data.Amenities);
+        appendArray('AcceptedBuyerPrograms', data.AcceptedBuyerPrograms);
+        appendArray('CoListing', data.CoListing);
 
         // 6. Photos
         if (data.NewPhotos && Array.isArray(data.NewPhotos)) {

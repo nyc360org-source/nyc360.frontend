@@ -282,7 +282,7 @@
                         </div>
                     </div>
 
-                    <button class="btn-action gold" [routerLink]="['/public/housing/agent-request']"
+                    <button *ngIf="!canEdit" class="btn-action gold" [routerLink]="['/public/housing/agent-request']"
                         [queryParams]="{postId: property.id}">
                         Request Tour / Apply
                     </button>
