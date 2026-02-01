@@ -235,6 +235,13 @@ export class HousingService {
         return this.http.get(`${environment.apiBaseUrl}/housing/agent/dashboard`);
     }
 
+    getAgentListings(page: number, pageSize: number): Observable<any> {
+        let params = new HttpParams()
+            .set('page', page.toString())
+            .set('pageSize', pageSize.toString());
+        return this.http.get(`${environment.apiBaseUrl}/housing/agent/listings`, { params });
+    }
+
     updateRentingPost(id: number, data: any): Observable<any> {
         const formData = new FormData();
         const apiUrl = `${environment.apiBaseUrl}/housing/${id}/edit/rent`;

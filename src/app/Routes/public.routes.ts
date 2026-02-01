@@ -60,7 +60,8 @@ export const PUBLIC_ROUTES: Routes = [
         loadComponent: () => import('../pages/Public/pages/housing/pages/agent-dashboard/agent-dashboard').then(m => m.AgentDashboardComponent),
         children: [
           { path: '', loadComponent: () => import('../pages/Public/pages/housing/pages/agent-dashboard/pages/overview/agent-overview').then(m => m.AgentOverviewComponent) },
-          { path: 'requests', loadComponent: () => import('../pages/Public/pages/housing/pages/agent-dashboard/pages/agent-requests/agent-requests.component').then(m => m.AgentRequestsComponent) }
+          { path: 'requests', loadComponent: () => import('../pages/Public/pages/housing/pages/agent-dashboard/pages/agent-requests/agent-requests.component').then(m => m.AgentRequestsComponent) },
+          { path: 'listings', loadComponent: () => import('../pages/Public/pages/housing/pages/agent-dashboard/pages/agent-listings/agent-listings.component').then(m => m.AgentListingsComponent) }
         ]
       },
       { path: 'housing/my-requests', loadComponent: () => import('../pages/Public/pages/housing/pages/my-requests/my-requests.component').then(m => m.MyRequestsComponent) },

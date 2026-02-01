@@ -1,0 +1,123 @@
+<div class="listings-page-container">
+    <div class="page-header">
+        <div class="header-content">
+            <h1 class="page-title">My Listings</h1>
+            <p class="page-subtitle">Manage your active and inactive housing properties.</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn-create" routerLink="/public/housing/create">
+                <i class="bi bi-plus-lg"></i> New Listing
+            </button>
+        </div>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading-state" *ngIf="isLoading">
+        <div class="spinner-premium"></div>
+        <p>Loading your properties...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state-premium" *ngIf="!isLoading && listings.length === 0">
+        <div class="empty-illustration">
+            <i class="bi bi-building"></i>
+        </div>
+        <h3>No Listings Found</h3>
+        <p>You haven't posted any housing listings yet. Start by creating your first one!</p>
+        <button class="btn-primary-gold mt-4" routerLink="/public/housing/create">Create My First Listing</button>
+    </div>
+
+    <!-- Listings Table -->
+    <div class="listings-table-wrapper" *ngIf="!isLoading && listings.length > 0">
+        <table class="premium-table">
+            <thead>
+                <tr>
+                    <th>PROPERTY</th>
+                    <th>NEIGHBORHOOD</th>
+                    <th>TYPE</th>
+                    <th>PRICE</th>
+                    <th>BEDS / BATHS</th>
+                    <th>INQUIRIES</th>
+                    <th>STATUS</th>
+                    <th>ACTIONS</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of listings">
+                    <td>
+                        <div class="property-info-cell">
+                            <img [src]="imageService.resolveImageUrl(item.imageUrl, 'housing')" class="prop-thumb"
+                                alt="Property">
+                            <div class="prop-meta">
+                                <span class="prop-id">#{{ item.id }}</span>
+                                <span class="prop-date">{{ item.createdAt | date:'MMM d, y' }}</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="location-badge">
+                            <i class="bi bi-geo-alt"></i> {{ item.neighborhood }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="type-badge">{{ item.houseType }}</span>
+                    </td>
+                    <td>
+                        <span class="price-val">{{ formatPrice(item.price) }}</span>
+                    </td>
+                    <td>
+                        <div class="stats-cell">
+                            <span>{{ item.bedrooms }} <i class="bi bi-door-open"></i></span>
+                            <span class="mx-2 separator"></span>
+                            <span>{{ item.bathrooms }} <i class="bi bi-droplet"></i></span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="inquiry-count" [routerLink]="['/public/housing/agent/dashboard/requests']">
+                            <i class="bi bi-chat-left-dots"></i>
+                            <strong>{{ item.totalInquiries }}</strong>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="status-pill" [class.published]="item.isPublished"
+                            [class.draft]="!item.isPublished">
+                            {{ item.isPublished ? 'Published' : 'Draft' }}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="icon-btn edit" [routerLink]="['/public/housing/edit', item.id]" title="Edit">
+                                <i class="bi bi-pencil-square"></i>
+                            </button>
+                            <button class="icon-btn view" [routerLink]="['/public/housing/details', item.id]"
+                                title="View">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Pagination -->
+        <div class="pagination-footer" *ngIf="totalPages > 1">
+            <span class="total-info">Showing {{ listings.length }} of {{ totalCount }} properties</span>
+            <div class="page-controls">
+                <button class="page-btn" [disabled]="currentPage === 1" (click)="onPageChange(currentPage - 1)">
+                    <i class="bi bi-chevron-left"></i>
+                </button>
+                <div class="page-numbers">
+                    <!-- Simple array for simulation of numbers -->
+                    <span *ngFor="let p of [].constructor(totalPages); let i = index" class="page-num"
+                        [class.active]="currentPage === i + 1" (click)="onPageChange(i + 1)">
+                        {{ i + 1 }}
+                    </span>
+                </div>
+                <button class="page-btn" [disabled]="currentPage === totalPages"
+                    (click)="onPageChange(currentPage + 1)">
+                    <i class="bi bi-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
