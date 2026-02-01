@@ -11,7 +11,7 @@ import { JobSearchService } from '../../../Public/pages/jobs/service/job-search'
 @Component({
     selector: 'app-register-newyorker',
     standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, RouterLink, AuthSuccessModalComponent],
+    imports: [CommonModule, ReactiveFormsModule, AuthSuccessModalComponent],
     templateUrl: './register-newyorker.html',
     styleUrls: ['./register-newyorker.scss']
 })

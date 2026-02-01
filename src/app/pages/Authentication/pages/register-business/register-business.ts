@@ -78,7 +78,7 @@ export enum OwnershipType {
 @Component({
     selector: 'app-register-business',
     standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, RouterLink, AuthSuccessModalComponent],
+    imports: [CommonModule, ReactiveFormsModule, AuthSuccessModalComponent],
     templateUrl: './register-business.html',
     styleUrls: ['./register-business.scss']
 })

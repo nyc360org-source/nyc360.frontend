@@ -25,7 +25,7 @@ export enum VisitingLengthOfStay {
 @Component({
     selector: 'app-register-visitor',
     standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, RouterLink, AuthSuccessModalComponent],
+    imports: [CommonModule, ReactiveFormsModule,  AuthSuccessModalComponent],
     templateUrl: './register-visitor.html',
     styleUrls: ['./register-visitor.scss']
 })

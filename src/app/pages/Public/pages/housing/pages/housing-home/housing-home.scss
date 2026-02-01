@@ -581,3 +581,42 @@ $card-shadow: 0 10px 40px rgba(188, 157, 95, 0.08);
         transform: rotate(360deg);
     }
 }
+
+/* --- Quick Actions Bar --- */
+.quick-actions-bar {
+    max-width: 1200px;
+    margin: 40px auto 10px;
+    padding: 0 20px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+
+    .action-btn {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 28px;
+        background: #ffffff;
+        border: 1px solid rgba(188, 157, 95, 0.2);
+        border-radius: 16px;
+        color: #a3854a;
+        font-weight: 700;
+        font-size: 0.95rem;
+        text-decoration: none;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+
+        i {
+            font-size: 1.2rem;
+            color: #BC9D5F;
+        }
+
+        &:hover {
+            background: #F9F5E8;
+            border-color: #BC9D5F;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(188, 157, 95, 0.15);
+        }
+    }
+}

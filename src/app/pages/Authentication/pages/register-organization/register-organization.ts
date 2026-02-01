@@ -55,7 +55,7 @@ export enum FundType {
 @Component({
     selector: 'app-register-organization',
     standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, RouterLink, AuthSuccessModalComponent],
+    imports: [CommonModule, ReactiveFormsModule,  AuthSuccessModalComponent],
     templateUrl: './register-organization.html',
     styleUrls: ['./register-organization.scss']
 })

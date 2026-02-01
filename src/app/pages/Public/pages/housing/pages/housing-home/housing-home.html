@@ -5,18 +5,11 @@
         <h1 class="page-title">Housing</h1>
         <p class="page-subtitle">Where New Yorkers can share ideas, discussions, and local conversations</p>
 
-        <div class="header-nav-buttons">
-            <a routerLink="/public/housing/feed" class="nav-btn">Explore</a>
-            <a routerLink="/public/housing/my-requests" class="nav-btn">My Inquiries</a>
-            <a routerLink="/public/housing/my-requests" class="nav-btn">Contributer Dashboard</a>
-            <a routerLink="/public/housing/create" class="nav-btn">Contributer Activity</a>
-            <a routerLink="/public/housing/requests" class="nav-btn">Housing Requests</a>
-            <a routerLink="/public/posts/create" class="nav-btn">Ask a Question</a>
-        </div>
     </header>
 
     <!-- 2. Hero Component -->
     <div class="hero-container" *ngIf="heroPost">
+
         <div class="hero-premium-card">
             <div class="hero-visual">
                 <img [src]="imageService.resolveImageUrl(heroPost.attachments?.[0]?.url, 'housing')"
@@ -48,6 +41,27 @@
 
 
     <main class="content-body" *ngIf="!isLoading">
+        <!-- Quick Actions Bar -->
+        <div class="quick-actions-bar mb-5">
+            <a routerLink="/public/housing/feed" class="action-btn">
+                <i class="bi bi-search"></i> Explore
+            </a>
+            <a routerLink="/public/housing/create/renting" class="action-btn">
+                <i class="bi bi-key-fill"></i> Post for Rent
+            </a>
+            <a routerLink="/public/housing/create/sale" class="action-btn">
+                <i class="bi bi-house-door-fill"></i> Post for Sale
+            </a>
+            <a routerLink="/public/housing/requests" class="action-btn">
+                <i class="bi bi-clipboard-pulse"></i> Housing Requests
+            </a>
+            <a routerLink="/public/housing/my-requests" class="action-btn">
+                <i class="bi bi-person-badge"></i> My Inquiries
+            </a>
+            <a routerLink="/public/posts/create" class="action-btn">
+                <i class="bi bi-question-circle"></i> Ask NYC360
+            </a>
+        </div>
 
         <!-- 4. Homes For Sale Section -->
         <section class="section-wrapper" *ngIf="homesForSale.length > 0">
