@@ -24,7 +24,7 @@
           <div class="form-group full-width">
             <label>Job Title <span class="required">*</span></label>
             <input type="text" formControlName="title" placeholder="e.g. Senior Frontend Developer (Remote)">
-            <div class="field-error" *ngIf="form.get('title')?.touched && form.get('title')?.invalid">
+            <div class="field-error" *ngIf="isFieldInvalid('title')">
               <i class="bi bi-exclamation-circle"></i> Job Title is required (min 5 characters).
             </div>
           </div>
@@ -75,8 +75,8 @@
           <label>General Description <span class="required">*</span></label>
           <textarea formControlName="description" rows="5"
             placeholder="What is this role about? What is the team like?"></textarea>
-          <div class="field-error" *ngIf="form.get('description')?.touched && form.get('description')?.invalid">
-            Description is required (min 20 characters).
+          <div class="field-error" *ngIf="isFieldInvalid('description')">
+            <i class="bi bi-exclamation-circle"></i> Description is required (min 20 characters).
           </div>
         </div>
 
@@ -177,6 +177,9 @@
             <label>Zip Code <span class="optional">(Optional)</span></label>
             <input type="text" formControlName="zipCode" placeholder="e.g. 10001" (blur)="onZipCodeBlur()"
               (keyup.enter)="onZipCodeBlur()">
+            <div class="field-error" *ngIf="isFieldInvalid('zipCode')">
+              <i class="bi bi-exclamation-circle"></i> Zip Code must be numeric.
+            </div>
           </div>
         </div>
       </section>
