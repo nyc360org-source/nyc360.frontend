@@ -275,7 +275,15 @@ export class PostDetailsComponent implements OnInit {
     });
   }
 
-  toggleMenu() { this.showMenu = !this.showMenu; }
+  toggleMenu(event: Event) {
+    event.stopPropagation();
+    this.showMenu = !this.showMenu;
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event) {
+    this.showMenu = false;
+  }
 
   openReportModal() {
     if (!this.currentUserId) {
