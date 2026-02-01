@@ -1,0 +1,118 @@
+<div class="requests-page-container">
+
+    <!-- Header Section -->
+    <div class="page-header">
+        <div class="header-content">
+            <h1 class="page-title">Agent Requests</h1>
+            <p class="page-subtitle">Track and manage responses to your housing listings.</p>
+        </div>
+
+        <div class="header-actions">
+            <!-- Search Bar -->
+            <div class="search-wrapper">
+                <i class="bi bi-search search-icon"></i>
+                <input type="text" placeholder="Search applicant or property..." [(ngModel)]="searchQuery"
+                    (input)="onSearchChange()" class="search-input">
+            </div>
+
+            <button class="btn-refresh" (click)="loadRequests()" [class.spinning]="isLoading">
+                <i class="bi bi-arrow-clockwise"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading-state" *ngIf="isLoading">
+        <div class="spinner-premium"></div>
+        <p>Fetching your latest inquiries...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state-premium" *ngIf="!isLoading && filteredRequests.length === 0">
+        <div class="empty-illustration">
+            <i class="bi bi-mailbox-flag"></i>
+        </div>
+        <h3>No Inquiries Yet</h3>
+        <p>When users express interest in your listings, they'll appear here.</p>
+    </div>
+
+    <!-- Requests Grid -->
+    <div class="requests-grid" *ngIf="!isLoading && filteredRequests.length > 0">
+
+        <div class="request-premium-card" *ngFor="let req of filteredRequests">
+            <div class="card-status-strip" [class.new]="!req.isReviewed"></div>
+
+            <div class="card-inner">
+                <div class="card-top">
+                    <div class="applicant-profile">
+                        <div class="avatar-gradient">
+                            {{ req.name ? req.name.charAt(0).toUpperCase() : 'U' }}
+                        </div>
+                        <div class="applicant-meta">
+                            <h3 class="applicant-name">{{ req.name }}</h3>
+                            <span class="applicant-email">{{ req.email }}</span>
+                        </div>
+                    </div>
+                    <div class="request-time">
+                        {{ req.createdAt | date:'MMM d, h:mm a' }}
+                    </div>
+                </div>
+
+                <div class="property-link-box" (click)="viewPost(req.housingInfo?.id)">
+                    <div class="prop-icon">
+                        <i class="bi bi-house-heart"></i>
+                    </div>
+                    <div class="prop-details">
+                        <span class="prop-label">Interested in Property</span>
+                        <h4 class="prop-title text-truncate">{{ req.housingInfo?.title || 'Property Details' }}</h4>
+                    </div>
+                    <i class="bi bi-chevron-right arrow-icon"></i>
+                </div>
+
+                <div class="inquiry-stats">
+                    <div class="stat-item">
+                        <div class="s-icon"><i class="bi bi-people"></i></div>
+                        <div class="s-info">
+                            <span class="s-label">Household</span>
+                            <span class="s-val">{{ getHouseholdType(req.householdType) }}</span>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="s-icon"><i class="bi bi-calendar-check"></i></div>
+                        <div class="s-info">
+                            <span class="s-label">Move-in Date</span>
+                            <span class="s-val">{{ req.moveInDate | date:'mediumDate' }}</span>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="s-icon"><i class="bi bi-chat-dots"></i></div>
+                        <div class="s-info">
+                            <span class="s-label">Pref. Contact</span>
+                            <span class="s-val">{{ getContactType(req.preferredContactType) }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="message-container" *ngIf="req.message">
+                    <p class="message-bubble">
+                        {{ req.message }}
+                    </p>
+                </div>
+
+                <div class="card-actions">
+                    <a [href]="'tel:' + req.phoneNumber" class="action-btn call">
+                        <i class="bi bi-telephone"></i> Call
+                    </a>
+                    <a [href]="'mailto:' + req.email" class="action-btn email">
+                        <i class="bi bi-envelope"></i> Email
+                    </a>
+                    <button class="action-btn primary" (click)="$event.stopPropagation()">
+                        Manage Inquiry
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>

@@ -1,17 +1,17 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { PostsService } from '../../../posts/services/posts';
+import { PostsService } from '../../../../../posts/services/posts';
 import { Router } from '@angular/router';
 
 @Component({
-    selector: 'app-housing-requests',
+    selector: 'app-agent-requests',
     standalone: true,
     imports: [CommonModule, FormsModule],
-    templateUrl: './housing-requests.component.html',
-    styleUrls: ['./housing-requests.component.scss']
+    templateUrl: './agent-requests.component.html',
+    styleUrls: ['./agent-requests.component.scss']
 })
-export class HousingRequestsComponent implements OnInit {
+export class AgentRequestsComponent implements OnInit {
 
     private postsService = inject(PostsService);
     private router = inject(Router);

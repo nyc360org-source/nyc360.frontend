@@ -54,10 +54,16 @@ export const PUBLIC_ROUTES: Routes = [
       { path: 'housing/create/sale', loadComponent: () => import('../pages/Public/pages/housing/pages/create-sale/create-sale.component').then(m => m.CreateSaleComponent) },
       { path: 'housing/create', redirectTo: 'housing/create/renting', pathMatch: 'full' },
       { path: 'housing/details/:id', loadComponent: () => import('../pages/Public/pages/housing/pages/housing-details/housing-details').then(m => m.HousingDetailsComponent) },
-      { path: 'housing/requests', loadComponent: () => import('../pages/Public/pages/housing/pages/housing-requests/housing-requests.component').then(m => m.HousingRequestsComponent) },
+      { path: 'housing/agent/requests', redirectTo: 'housing/agent/dashboard/requests', pathMatch: 'full' },
+      {
+        path: 'housing/agent/dashboard',
+        loadComponent: () => import('../pages/Public/pages/housing/pages/agent-dashboard/agent-dashboard').then(m => m.AgentDashboardComponent),
+        children: [
+          { path: '', loadComponent: () => import('../pages/Public/pages/housing/pages/agent-dashboard/pages/overview/agent-overview').then(m => m.AgentOverviewComponent) },
+          { path: 'requests', loadComponent: () => import('../pages/Public/pages/housing/pages/agent-dashboard/pages/agent-requests/agent-requests.component').then(m => m.AgentRequestsComponent) }
+        ]
+      },
       { path: 'housing/my-requests', loadComponent: () => import('../pages/Public/pages/housing/pages/my-requests/my-requests.component').then(m => m.MyRequestsComponent) },
-      { path: 'housing/agent-request', loadComponent: () => import('../pages/Public/pages/housing/pages/agent-request/agent-request.component').then(m => m.AgentRequestComponent) },
-      { path: 'housing/agent/dashboard', loadComponent: () => import('../pages/Public/pages/housing/pages/agent-dashboard/agent-dashboard').then(m => m.AgentDashboardComponent) },
       { path: 'housing/edit/:id', loadComponent: () => import('../pages/Public/pages/housing/pages/edit-housing/edit-housing').then(m => m.EditHousingComponent) },
       { path: 'housing/edit/renting/:id', loadComponent: () => import('../pages/Public/pages/housing/pages/edit-renting/edit-renting').then(m => m.EditRentingComponent) },
       { path: 'housing/edit/sale/:id', loadComponent: () => import('../pages/Public/pages/housing/pages/edit-sale/edit-sale').then(m => m.EditSaleComponent) },
