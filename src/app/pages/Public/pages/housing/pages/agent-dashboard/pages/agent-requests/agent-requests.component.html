@@ -100,12 +100,27 @@
                 </div>
 
                 <div class="card-actions">
-                    <a [href]="'tel:' + req.phoneNumber" class="action-btn call">
-                        <i class="bi bi-telephone"></i> Call
-                    </a>
-                    <a [href]="'mailto:' + req.email" class="action-btn email">
-                        <i class="bi bi-envelope"></i> Email
-                    </a>
+                    <div class="action-group">
+                        <a [href]="'tel:' + req.phoneNumber" class="action-btn call">
+                            <i class="bi bi-telephone"></i> Call
+                        </a>
+                        <button class="copy-small-btn"
+                            (click)="$event.stopPropagation(); copyToClipboard(req.phoneNumber, 'Phone')"
+                            title="Copy Phone">
+                            <i class="bi bi-copy"></i>
+                        </button>
+                    </div>
+
+                    <div class="action-group">
+                        <a [href]="'mailto:' + req.email" class="action-btn email">
+                            <i class="bi bi-envelope"></i> Email
+                        </a>
+                        <button class="copy-small-btn"
+                            (click)="$event.stopPropagation(); copyToClipboard(req.email, 'Email')" title="Copy Email">
+                            <i class="bi bi-copy"></i>
+                        </button>
+                    </div>
+
                     <button class="action-btn primary" (click)="$event.stopPropagation()">
                         Manage Inquiry
                     </button>
