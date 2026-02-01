@@ -16,9 +16,6 @@ import { map, switchMap, timer, of, distinctUntilChanged } from 'rxjs';
              <img src="/image_0_0.jpg" alt="NYC 360 Logo" class="official-logo">
              <div class="scan-line"></div>
           </div>
-          <div class="brand-text-reveal">
-            <!-- <span class="word-nyc">NYC</span><span class="word-360">360</span> -->
-          </div>
         </div>
 
         <!-- Professional Progress Context -->
