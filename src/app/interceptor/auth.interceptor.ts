@@ -1,6 +1,6 @@
 import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { catchError, switchMap, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, switchMap, throwError, filter, take } from 'rxjs';
 import { AuthService } from '../pages/Authentication/Service/auth';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
@@ -26,6 +26,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   }
 
   const authService = inject(AuthService);
+  let isRefreshing = false;
+  const refreshTokenSubject = new BehaviorSubject<string | null>(null);
 
   return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {
@@ -34,37 +36,50 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       if (error.status === 401 && !req.url.includes('/auth/login') && !req.url.includes('/auth/refresh-token')) {
 
         const refreshToken = authService.getRefreshToken();
-        const currentToken = token;
 
-        if (refreshToken && currentToken) {
+        if (!refreshToken) {
+          authService.logout();
+          return throwError(() => error);
+        }
 
-          // 🔄 Attempt Refresh Token
-          return authService.refreshToken({
-            accessToken: currentToken,
-            refreshToken: refreshToken
-          }).pipe(
+        if (!isRefreshing) {
+          isRefreshing = true;
+          refreshTokenSubject.next(null);
+
+          return authService.refreshToken({ token: refreshToken }).pipe(
             switchMap((res: any) => {
-              if (res.isSuccess) {
-                // ✅ Success! Retry the FAILED request with the NEW token
+              isRefreshing = false;
+              if (res.isSuccess && res.data) {
+                authService.saveTokens(res.data.accessToken, res.data.refreshToken);
+                refreshTokenSubject.next(res.data.accessToken);
+
                 const newReq = req.clone({
                   setHeaders: { Authorization: `Bearer ${res.data.accessToken}` }
                 });
                 return next(newReq);
               } else {
-                // ❌ Refresh rejected by server -> Security Breach or Session Dead -> Forced Logout
                 authService.logout();
                 return throwError(() => error);
               }
             }),
             catchError((refreshErr) => {
-              // ❌ Network/Server error during refresh -> Forced Logout
+              isRefreshing = false;
               authService.logout();
               return throwError(() => refreshErr);
             })
           );
         } else {
-          // ❌ No credentials to refresh -> Forced Logout
-          authService.logout();
+          // Queue the request until refresh is done
+          return refreshTokenSubject.pipe(
+            filter(token => token !== null),
+            take(1),
+            switchMap(newToken => {
+              const retryReq = req.clone({
+                setHeaders: { Authorization: `Bearer ${newToken}` }
+              });
+              return next(retryReq);
+            })
+          );
         }
       }
 

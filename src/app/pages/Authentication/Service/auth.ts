@@ -97,7 +97,27 @@ export class AuthService {
   // ============================================================
 
   refreshToken(data: RefreshTokenRequest): Observable<AuthResponse<LoginResponseData>> {
-    return this.http.post<AuthResponse<LoginResponseData>>(`${this.apiUrl}/refresh-token`, data);
+    // We send { Token: refreshToken }
+    return this.http.post<any>(`${this.apiUrl}/refresh-token`, {
+      Token: data.token
+    }).pipe(
+      map(response => {
+        const isSuccess = response.IsSuccess ?? response.isSuccess ?? false;
+        const error = response.Error || response.error || null;
+        let loginData: LoginResponseData | any = null;
+
+        const rawData = response.Data || response.data;
+        if (rawData) {
+          loginData = {
+            accessToken: rawData.AccessToken ?? rawData.accessToken,
+            refreshToken: rawData.RefreshToken ?? rawData.refreshToken,
+            twoFactorRequired: rawData.TwoFactorRequired ?? rawData.twoFactorRequired ?? false
+          };
+        }
+
+        return { isSuccess, data: loginData, error };
+      })
+    );
   }
 
   confirmEmail(data: ConfirmEmailRequest): Observable<AuthResponse> {
@@ -253,27 +273,62 @@ export class AuthService {
    * 🔥 Check Token Validity Periodically
    * يقوم بتشغيل فحص دوري للتأكد من أن التوكن لم ينتهي أثناء استخدام التطبيق
    */
+  private isRefreshing = false;
+
   private startTokenCheck() {
     if (!isPlatformBrowser(this.platformId)) return;
 
-    // فحص كل دقيقة
+    // Check every 30 seconds
     setInterval(() => {
       this.checkTokenExpiration();
-    }, 60000);
+    }, 30000);
   }
 
   private checkTokenExpiration() {
+    if (this.isRefreshing) return;
+
     const token = this.getToken();
     if (!token) return;
 
     try {
       const decoded: any = jwtDecode(token);
-      if (decoded.exp && (decoded.exp * 1000) < Date.now()) {
-        console.warn('⚠️ Token expired during session. Logging out.');
-        this.logout();
+      if (!decoded.exp) return;
+
+      const expirationTime = decoded.exp * 1000;
+      const currentTime = Date.now();
+      const timeLeft = expirationTime - currentTime;
+
+      // If token will expire in less than 20 seconds, or it is already expired -> Refresh
+      if (timeLeft < 20000) {
+        const refreshTokenVal = this.getRefreshToken();
+        if (refreshTokenVal) {
+          console.log('🔄 Proactive Token Refresh starting...');
+          this.isRefreshing = true;
+          this.refreshToken({ token: refreshTokenVal }).subscribe({
+            next: (res) => {
+              if (res.isSuccess && res.data) {
+                this.saveTokens(res.data.accessToken, res.data.refreshToken);
+                console.log('✅ Token refreshed successfully (Proactive)');
+              } else {
+                console.warn('❌ Refresh failed (Proactive response invalid). Logging out.');
+                this.logout();
+              }
+              this.isRefreshing = false;
+            },
+            error: (err) => {
+              console.error('❌ Proactive refresh error:', err);
+              this.isRefreshing = false;
+              this.logout();
+            }
+          });
+        } else {
+          // No refresh token available and token is about to expire/expired
+          console.warn('⚠️ No refresh token available. Logging out.');
+          this.logout();
+        }
       }
     } catch (e) {
-      // إذا كان التوكن تالفاً
+      console.error('Invalid token during check:', e);
       this.logout();
     }
   }

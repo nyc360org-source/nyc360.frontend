@@ -46,8 +46,7 @@ export interface ResetPasswordRequest {
 }
 
 export interface RefreshTokenRequest {
-  accessToken: string;
-  refreshToken: string;
+  token: string;
 }
 
 // Update LoginResponseData if not already updated
