@@ -160,27 +160,70 @@
       </div>
     </section>
 
-    <!-- Hiring News -->
-    <section class="hiring-section mt-5 p-5 shadow-lg" *ngIf="hiringNews.length > 0">
-      <div class="d-flex justify-content-between align-items-center mb-4 text-white">
-        <h2 class="merriweather-font h3 m-0">Hiring News</h2>
-        <a routerLink="/public/profession/jobs" class="btn-view-all text-white border-white">View All</a>
+    <!-- Hiring News - High Impact Section -->
+    <section class="hiring-premium-section mt-5" *ngIf="hiringNews.length > 0">
+      <div class="section-overlay-blob"></div>
+
+      <div class="section-header-row mb-5">
+        <div class="title-group">
+          <span class="premium-badge">OPPORTUNITIES</span>
+          <h2 class="merriweather-font display-6 fw-bold">NYC Hiring Spotlight</h2>
+          <p>Hand-picked roles from NYC's most innovative companies.</p>
+        </div>
+        <a routerLink="/public/profession/jobs" class="luxury-btn-primary">
+          <span>View All Roles</span>
+          <i class="bi bi-arrow-right"></i>
+        </a>
       </div>
 
-      <div class="row g-4">
-        <div class="col-md-6" *ngFor="let job of hiringNews">
-          <div class="job-card-white shadow-sm h-100" [routerLink]="['/public/job-profile', job.id]">
-            <div class="p-4">
-              <div class="hiring-header">
-                <img [src]="imageService.resolveAvatar({imageUrl: job.authorAvatarUrl})" class="company-avatar"
-                  appImgFallback="avatar">
-                <h4 class="fw-bold">"{{ job.companyName }} is expanding"</h4>
+      <div class="row g-4 justify-content-center">
+        <div class="col-md-6 col-lg-5" *ngFor="let job of hiringNews">
+          <div class="premium-job-card" [routerLink]="['/public/job-profile', job.id]">
+            <div class="card-inner">
+              <div class="job-meta-top">
+                <div class="company-brand">
+                  <img [src]="imageService.resolveAvatar({imageUrl: job.authorAvatarUrl})" class="brand-logo"
+                    appImgFallback="avatar">
+                  <div class="brand-info">
+                    <span class="company-name">{{ job.companyName }}</span>
+                    <span class="post-date">Recently Posted</span>
+                  </div>
+                </div>
+                <div class="arrangement-tag" [attr.data-type]="getWorkArrangement(job.workArrangement)">
+                  <i class="bi" [ngClass]="{
+                    'bi-house-heart': job.workArrangement === 1,
+                    'bi-building': job.workArrangement === 0,
+                    'bi-door-open': job.workArrangement === 2
+                  }"></i>
+                  {{ getWorkArrangement(job.workArrangement) }}
+                </div>
               </div>
-              <p class="text-secondary small mb-4">
-                Explore the latest roles and career opportunities at {{ job.companyName }}.
-              </p>
-              <div class="d-flex align-items-center text-success fw-bold small">
-                See Open Roles <i class="bi bi-arrow-right ms-2"></i>
+
+              <h3 class="job-title">{{ job.title }}</h3>
+
+              <div class="job-details-grid">
+                <div class="detail-item">
+                  <i class="bi bi-cash-stack"></i>
+                  <span>{{ formatSalary(job.salaryMin, job.salaryMax) }}</span>
+                </div>
+                <div class="detail-item">
+                  <i class="bi bi-briefcase"></i>
+                  <span>{{ getEmploymentType(job.employmentType) }}</span>
+                </div>
+                <div class="detail-item">
+                  <i class="bi bi-graph-up-arrow"></i>
+                  <span>{{ getLevel(job.employmentLevel) }}</span>
+                </div>
+              </div>
+
+              <div class="card-action-bar">
+                <div class="applicants-status">
+                  <i class="bi bi-lightning-charge-fill text-warning"></i>
+                  <span>Actively Recruiting</span>
+                </div>
+                <button class="btn-apply-small">
+                  Details <i class="bi bi-chevron-right"></i>
+                </button>
               </div>
             </div>
           </div>

@@ -84,4 +84,27 @@ export class ProfessionFeedComponent implements OnInit {
   getAuthorAvatar(author: any): string {
     return this.imageService.resolveAvatar(author);
   }
+
+  // Label Helpers
+  getWorkArrangement(val: number): string {
+    const map: any = { 0: 'On-Site', 1: 'Remote', 2: 'Hybrid' };
+    return map[val] || 'On-Site';
+  }
+
+  getEmploymentType(val: number): string {
+    const map: any = { 0: 'Full-Time', 1: 'Part-Time', 2: 'Contract', 3: 'Internship', 4: 'Freelance' };
+    return map[val] || 'Full-Time';
+  }
+
+  getLevel(val: number): string {
+    const map: any = { 1: 'Junior', 2: 'Mid', 3: 'Mid-Senior', 4: 'Senior' };
+    return map[val] || 'Mid-Level';
+  }
+
+  formatSalary(min: number | undefined, max: number | undefined): string {
+    if (min != null && max != null) return `$${min.toLocaleString()} - $${max.toLocaleString()}`;
+    if (min != null) return `$${min.toLocaleString()}+`;
+    if (max != null) return `Up to $${max.toLocaleString()}`;
+    return 'Salary Undisclosed';
+  }
 }
