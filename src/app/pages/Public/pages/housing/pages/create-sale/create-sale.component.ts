@@ -38,8 +38,7 @@ export class CreateSaleComponent implements OnInit {
         { id: 0, name: 'Apartment', icon: 'bi-building' },
         { id: 1, name: 'House', icon: 'bi-house-door' },
         { id: 2, name: 'Townhouse', icon: 'bi-houses' },
-        { id: 3, name: 'Studio', icon: 'bi-grid-1x2' },
-        { id: 4, name: 'Room', icon: 'bi-person-badge' }
+        { id: 3, name: 'Studio', icon: 'bi-grid-1x2' }
     ];
 
     propertyTypes = [
@@ -109,6 +108,7 @@ export class CreateSaleComponent implements OnInit {
     ];
 
     years: number[] = [];
+    floors: string[] = ['Ground', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '10+'];
     boroughs = ['Manhattan', 'Brooklyn', 'Queens', 'The Bronx', 'Staten Island'];
 
     // --- State ---

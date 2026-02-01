@@ -1,5 +1,5 @@
 import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
-import { inject } from '@angular/core';
+import { inject, Injector } from '@angular/core';
 import { catchError, switchMap, throwError, filter, take } from 'rxjs';
 import { AuthService } from '../pages/Authentication/Service/auth';
 
@@ -25,13 +25,14 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     });
   }
 
-  const authService = inject(AuthService);
+  const injector = inject(Injector);
 
   return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {
 
       // 🛑 Case 1: 401 Unauthorized (Token Expired or Invalid)
       if (error.status === 401 && !req.url.includes('/auth/login') && !req.url.includes('/auth/refresh-token')) {
+        const authService = injector.get(AuthService);
         return authService.refreshAccessToken().pipe(
           switchMap((newToken) => {
             if (newToken) {

@@ -1,7 +1,7 @@
 <div class="create-housing-container">
     <div class="container">
         <!-- Header -->
-        <header class="page-header text-center mb-5">
+        <header class="page-header mb-5">
             <h1 class="fw-bold">List for Sale</h1>
             <p class="text-muted">Enter the details of the property you want to sell.</p>
         </header>
@@ -9,8 +9,8 @@
         <form [formGroup]="form" class="housing-form-premium">
 
             <!-- 1. Rent / Sale Choice Cards -->
-            <section class="form-section no-bg mb-5 text-center">
-                <div class="listing-type-group justify-content-center">
+            <section class="form-section no-bg mb-5">
+                <div class="listing-type-group">
                     <!-- For Rent -->
                     <div class="type-card-lg" routerLink="/public/housing/create/renting">
                         <img src="assets/images/housing-rent-bg.jpg" alt="Rent" class="bg-img"
@@ -50,7 +50,7 @@
                         [class.is-complete]="isSectionValid('availability')"></i>
                 </h3>
                 <div class="row g-4">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <label class="form-label-premium">Opening Date *</label>
                         <div class="input-with-icon">
                             <input type="date" class="form-control-premium" formControlName="OpeningDate"
@@ -59,13 +59,17 @@
                             <i class="bi bi-calendar3"></i>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <label class="form-label-premium">Property Type *</label>
                         <select class="form-select-premium" formControlName="PropertyType"
                             [class.is-invalid]="f['PropertyType'].invalid && f['PropertyType'].touched">
                             <option [ngValue]="null">Select Property Type</option>
                             <option *ngFor="let p of propertyTypes" [ngValue]="p.id">{{ p.name }}</option>
                         </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label-premium">Legal Unit Count</label>
+                        <input type="number" class="form-control-premium" formControlName="LegalUnitCount">
                     </div>
                 </div>
             </section>
@@ -254,8 +258,11 @@
                         <input type="number" class="form-control-premium" formControlName="Sqft" placeholder="1200">
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label-premium">Legal Unit Count</label>
-                        <input type="number" class="form-control-premium" formControlName="LegalUnitCount">
+                        <label class="form-label-premium">Floor Level</label>
+                        <select class="form-select-premium" formControlName="FloorLevel">
+                            <option [ngValue]="null">Select Floor</option>
+                            <option *ngFor="let fl of floors" [value]="fl">{{ fl }}</option>
+                        </select>
                     </div>
                 </div>
 

@@ -44,7 +44,7 @@
             </thead>
             <tbody>
                 <tr *ngFor="let item of listings">
-                    <td>
+                    <td data-label="Property">
                         <div class="property-info-cell">
                             <img [src]="imageService.resolveImageUrl(item.imageUrl, 'housing')" class="prop-thumb"
                                 alt="Property">
@@ -54,37 +54,37 @@
                             </div>
                         </div>
                     </td>
-                    <td>
+                    <td data-label="Neighborhood">
                         <span class="location-badge">
                             <i class="bi bi-geo-alt"></i> {{ item.neighborhood }}
                         </span>
                     </td>
-                    <td>
+                    <td data-label="Type">
                         <span class="type-badge">{{ item.houseType }}</span>
                     </td>
-                    <td>
+                    <td data-label="Price">
                         <span class="price-val">{{ formatPrice(item.price) }}</span>
                     </td>
-                    <td>
+                    <td data-label="Beds / Baths">
                         <div class="stats-cell">
                             <span>{{ item.bedrooms }} <i class="bi bi-door-open"></i></span>
                             <span class="mx-2 separator"></span>
                             <span>{{ item.bathrooms }} <i class="bi bi-droplet"></i></span>
                         </div>
                     </td>
-                    <td>
+                    <td data-label="Inquiries">
                         <div class="inquiry-count" [routerLink]="['/public/housing/agent/dashboard/requests']">
                             <i class="bi bi-chat-left-dots"></i>
                             <strong>{{ item.totalInquiries }}</strong>
                         </div>
                     </td>
-                    <td>
+                    <td data-label="Status">
                         <span class="status-pill" [class.published]="item.isPublished"
                             [class.draft]="!item.isPublished">
                             {{ item.isPublished ? 'Published' : 'Draft' }}
                         </span>
                     </td>
-                    <td>
+                    <td data-label="Actions">
                         <div class="action-buttons">
                             <button class="icon-btn edit" [routerLink]="['/public/housing/edit', item.id]" title="Edit">
                                 <i class="bi bi-pencil-square"></i>

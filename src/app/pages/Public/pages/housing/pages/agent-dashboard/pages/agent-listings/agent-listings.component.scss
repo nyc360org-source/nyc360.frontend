@@ -379,11 +379,126 @@ $shadow-md: 0 10px 30px rgba(0, 0, 0, 0.06);
 }
 
 @media (max-width: 1024px) {
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+        margin-bottom: 2rem;
 
-    .premium-table thead th:nth-child(2),
-    .premium-table tbody td:nth-child(2),
-    .premium-table thead th:nth-child(5),
-    .premium-table tbody td:nth-child(5) {
-        display: none;
+        .btn-create {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    .premium-table {
+        thead {
+            display: none;
+        }
+
+        tbody tr {
+            display: block;
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            border-radius: 20px;
+            background: #fff;
+            box-shadow: $shadow-sm;
+
+            &:hover {
+                background: #fff;
+                transform: translateY(-3px);
+                box-shadow: $shadow-md;
+            }
+
+            td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 12px 0;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+                text-align: right;
+
+                &:last-child {
+                    border-bottom: none;
+                }
+
+                &::before {
+                    content: attr(data-label);
+                    float: left;
+                    font-weight: 800;
+                    font-size: 0.75rem;
+                    color: #8e95a2;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                }
+
+                &[data-label="Property"] {
+                    display: block;
+                    text-align: left;
+                    padding-bottom: 15px;
+                    border-bottom: 2px solid rgba(0, 0, 0, 0.03);
+
+                    &::before {
+                        display: block;
+                        margin-bottom: 10px;
+                    }
+
+                    .property-info-cell {
+                        justify-content: flex-start;
+                    }
+                }
+
+                .property-info-cell {
+                    gap: 12px;
+                }
+
+                .action-buttons {
+                    justify-content: flex-end;
+                }
+            }
+        }
+    }
+
+    .listings-table-wrapper {
+        background: transparent;
+        box-shadow: none;
+        overflow: visible;
+        border: none;
+    }
+
+    .pagination-footer {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+        border-radius: 20px;
+        margin-top: 10px;
+
+        .page-controls {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+}
+
+@media (max-width: 480px) {
+    .page-header .page-title {
+        font-size: 1.8rem;
+    }
+
+    .premium-table tbody tr td {
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+        gap: 8px;
+
+        &::before {
+            margin-bottom: 4px;
+        }
+
+        .action-buttons {
+            width: 100%;
+            justify-content: flex-start;
+        }
     }
 }
