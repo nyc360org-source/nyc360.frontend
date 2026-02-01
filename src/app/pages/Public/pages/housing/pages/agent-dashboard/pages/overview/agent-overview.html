@@ -56,14 +56,54 @@
     <!-- Middle Row: Chart & Most Requested -->
     <div class="visual-row mb-4">
         <div class="chart-card">
-            <div class="chart-placeholder">
-                <div class="wave-shape"></div>
-                <div class="wave-overlay"></div>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h5 class="section-title-sm m-0">Inquiry Performance</h5>
+                    <p class="text-muted small m-0">Daily inquiry volume over time</p>
+                </div>
+                <div class="chart-legend">
+                    <span class="legend-item"><span class="dot gold"></span> Inquiries</span>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <svg viewBox="0 0 1000 300" preserveAspectRatio="none" class="chart-svg">
+                    <!-- Grid Lines -->
+                    <line x1="0" y1="50" x2="1000" y2="50" stroke="rgba(0,0,0,0.03)" stroke-width="1" />
+                    <line x1="0" y1="125" x2="1000" y2="125" stroke="rgba(0,0,0,0.03)" stroke-width="1" />
+                    <line x1="0" y1="200" x2="1000" y2="200" stroke="rgba(0,0,0,0.03)" stroke-width="1" />
+                    <line x1="0" y1="275" x2="1000" y2="275" stroke="rgba(0,0,0,0.03)" stroke-width="1" />
+
+                    <!-- Area Under Chart -->
+                    <path *ngIf="chartPoints" [attr.d]="chartPoints + ' V 300 H 0 Z'" fill="url(#chartGradient)" />
+
+                    <!-- Main Line -->
+                    <path *ngIf="chartPoints" [attr.d]="chartPoints" fill="none" class="chart-line shadow-sm" />
+
+                    <!-- Gradient Definition -->
+                    <defs>
+                        <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#BC9D5F" stop-opacity="0.2" />
+                            <stop offset="100%" stop-color="#BC9D5F" stop-opacity="0" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+
+                <div class="chart-labels" *ngIf="chartPoints">
+                    <div class="x-label" *ngFor="let label of chartLabels" [style.left.%]="label.x / 10">
+                        {{ label.label }}
+                    </div>
+                </div>
             </div>
         </div>
 
         <div class="requested-card">
-            <h5 class="section-title-sm mb-4">Most Requested</h5>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="section-title-sm m-0">Most Requested</h5>
+                <span class="badge bg-gold-soft text-gold small px-2 py-1 rounded-pill">Top {{ topNeighborhoods.length
+                    }}</span>
+            </div>
+
             <div class="neighborhood-list">
                 <div class="neighborhood-item" *ngFor="let item of topNeighborhoods">
                     <div class="n-icon-box">
@@ -71,11 +111,18 @@
                     </div>
                     <div class="item-info">
                         <span class="n-name">{{ item.name || 'Manhattan Area' }}</span>
-                        <span class="n-count text-muted small">{{ item.count }} Inquiries</span>
+                        <div class="progress mt-1" style="height: 4px; width: 80px;">
+                            <div class="progress-bar bg-gold"
+                                [style.width.%]="(item.count / (stats?.totalInquiries?.value || 1)) * 100"></div>
+                        </div>
                     </div>
-                    <i class="bi bi-chevron-right"></i>
+                    <div class="item-stats text-end">
+                        <span class="n-count fw-bold">{{ item.count }}</span>
+                        <span class="text-muted small d-block" style="font-size: 0.65rem;">REQ</span>
+                    </div>
                 </div>
             </div>
+
         </div>
     </div>
 
