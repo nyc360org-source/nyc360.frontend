@@ -311,11 +311,19 @@ $shadow-md: 0 10px 30px rgba(0, 0, 0, 0.06);
 
 .card-actions {
     display: grid;
-    grid-template-columns: 1fr 1fr 2fr;
-    gap: 10px;
+    grid-template-columns: 1fr 1fr 1.5fr;
+    gap: 12px;
     margin-top: auto;
 
+    .action-group {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        flex: 1;
+    }
+
     .action-btn {
+        flex: 1;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -358,6 +366,30 @@ $shadow-md: 0 10px 30px rgba(0, 0, 0, 0.06);
             &:hover {
                 background: darken($text-primary, 10%);
             }
+        }
+    }
+
+    .copy-small-btn {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        background: #fff;
+        color: $accent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+
+        &:hover {
+            background: $accent;
+            color: #fff;
+            border-color: $accent;
+        }
+
+        i {
+            font-size: 0.9rem;
         }
     }
 }
