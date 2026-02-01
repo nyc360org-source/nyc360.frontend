@@ -1,3 +1,5 @@
+@use 'sass:color';
+
 $primary: #00695C;
 $primary-light: #E0F2F1;
 $secondary: #455A64;
@@ -17,7 +19,7 @@ $border: #E0E6ED;
 }
 
 .hero-section {
-  background: linear-gradient(135deg, $primary 0%, darken($primary, 10%) 100%);
+  background: linear-gradient(135deg, $primary 0%, color.adjust($primary, $lightness: -10%) 100%);
   color: $white;
   padding: 80px 0 120px;
   position: relative;
@@ -340,7 +342,7 @@ $border: #E0E6ED;
     box-shadow: 0 4px 15px rgba(0, 105, 92, 0.3);
 
     &:hover:not(:disabled) {
-      background: darken($primary, 5%);
+      background: color.adjust($primary, $lightness: -5%);
       transform: translateY(-2px);
       box-shadow: 0 6px 20px rgba(0, 105, 92, 0.4);
     }

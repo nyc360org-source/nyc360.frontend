@@ -282,8 +282,7 @@
                         </div>
                     </div>
 
-                    <button *ngIf="!canEdit" class="btn-action gold" [routerLink]="['/public/housing/agent-request']"
-                        [queryParams]="{postId: property.id}">
+                    <button *ngIf="!canEdit" class="btn-action gold" (click)="openAgentRequest()">
                         Request Tour / Apply
                     </button>
 
@@ -363,4 +362,11 @@
 
 <div class="loading-overlay" *ngIf="isLoading">
     <div class="spinner-border text-gold" role="status"></div>
+</div>
+
+<!-- Agent Request Modal -->
+<div class="agent-request-modal-overlay" *ngIf="showAgentRequestModal" (click)="closeAgentRequest()">
+    <div class="modal-content-wrapper" (click)="$event.stopPropagation()">
+        <app-agent-request [postId]="property.id" (close)="closeAgentRequest()"></app-agent-request>
+    </div>
 </div>
