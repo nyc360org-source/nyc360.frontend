@@ -191,6 +191,60 @@
                 </div>
             </div>
 
+            <!-- Section 4: Advanced Options -->
+            <div class="form-section">
+                <div class="section-title">
+                    <i class="bi bi-gear-fill"></i>
+                    <span>Advanced Options</span>
+                </div>
+
+                <div class="input-group full-width mb-3">
+                    <label>Direct Apply Link</label>
+                    <div class="input-wrapper">
+                        <i class="bi bi-link-45deg"></i>
+                        <input type="text" formControlName="DirectApplyLink" placeholder="Add Direct Apply Link">
+                        <label class="switch-glass-sm ms-auto me-2">
+                            <input type="checkbox" formControlName="AddDirectApplyLink">
+                            <span class="slider-glass"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="grid-row">
+                    <div class="input-group">
+                        <label>Invite Co-Listing</label>
+                        <div class="input-wrapper">
+                            <i class="bi bi-person-plus"></i>
+                            <input type="text" formControlName="InviteCoListingEmail" placeholder="Co-Lister Email">
+                            <label class="switch-glass-sm ms-auto me-2">
+                                <input type="checkbox">
+                                <span class="slider-glass"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Allow Co-Listing editing</label>
+                        <div class="input-wrapper">
+                            <i class="bi bi-pencil"></i>
+                            <input type="text" value="Allow Editing" readonly>
+                            <label class="switch-glass-sm ms-auto me-2">
+                                <input type="checkbox" formControlName="AllowColisterEditing">
+                                <span class="slider-glass"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-group full-width mt-3">
+                    <label>Co-Listing Details</label>
+                    <div class="input-wrapper textarea-wrapper">
+                        <i class="bi bi-info-circle"></i>
+                        <textarea formControlName="CoListingDetails" rows="2"
+                            placeholder="Add Co-Listing edited details by Co-Listing"></textarea>
+                    </div>
+                </div>
+            </div>
+
             <!-- Actions -->
             <div class="form-actions">
                 <button type="button" class="btn-cancel" (click)="cancel()">

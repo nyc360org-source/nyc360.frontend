@@ -193,7 +193,11 @@ export class CreateHousingComponent implements OnInit {
             AboutCurrentResident: [''],
             UnitRulesAndPolicies: [''],
             RoommatesGroupChat: [''],
-            IsPublished: [true]
+            IsPublished: [true],
+            AddDirectApplyLink: [false],
+            DirectApplyLink: [''],
+            CoListing: [[]],
+            AllowColisterEditing: [true]
         });
 
         this.isOrganization = this.authService.hasRole('Organization');
@@ -357,7 +361,12 @@ export class CreateHousingComponent implements OnInit {
                 if (res?.isSuccess) {
                     const msg = isPublished ? 'Listing Published!' : 'Draft Saved Successfully!';
                     this.toastService.success(msg);
-                    this.router.navigate(['/public/housing/home']);
+                    const newId = res.data?.id || res.data?.housingId;
+                    if (newId) {
+                        this.router.navigate(['/public/housing/details', newId]);
+                    } else {
+                        this.router.navigate(['/public/housing/home']);
+                    }
                 } else {
                     this.toastService.error(res?.error?.message || 'Failed');
                 }

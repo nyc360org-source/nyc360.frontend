@@ -72,6 +72,7 @@ export class HousingService {
         appendString('AboutCurrentResident', data.AboutCurrentResident);
         appendString('UnitRulesAndPolicies', data.UnitRulesAndPolicies);
         appendString('RoommatesGroupChat', data.RoommatesGroupChat);
+        appendString('DirectApplyLink', data.DirectApplyLink);
 
         // CoListing Logic: Send only if it has real values to avoid 400 errors
         if (data.CoListing && Array.isArray(data.CoListing) && data.CoListing.length > 0) {
@@ -164,6 +165,7 @@ export class HousingService {
         appendString('UnitNumber', data.UnitNumber);
         appendString('GoogleMap', data.GoogleMap);
         appendString('Description', data.Description);
+        appendString('DirectApplyLink', data.DirectApplyLink);
 
         // 3. Dates
         if (data.OpeningDate) formData.append('OpeningDate', new Date(data.OpeningDate).toISOString());

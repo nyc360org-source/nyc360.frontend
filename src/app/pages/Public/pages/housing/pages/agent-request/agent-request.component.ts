@@ -54,7 +54,12 @@ export class AgentRequestComponent implements OnInit {
             ScheduleVirtual: [''],
             TimeWindow: [''],
             InPersonTour: [''],
-            Message: ['', [Validators.required, Validators.minLength(10)]]
+            Message: ['', [Validators.required, Validators.minLength(10)]],
+            AddDirectApplyLink: [false],
+            DirectApplyLink: [''],
+            InviteCoListingEmail: [''],
+            AllowColisterEditing: [true],
+            CoListingDetails: ['']
         });
     }
 
