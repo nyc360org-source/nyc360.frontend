@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PostsService } from '../../../../../posts/services/posts';
 import { Router } from '@angular/router';
+import { ToastService } from '../../../../../../shared/services/toast.service';
 
 @Component({
     selector: 'app-agent-requests',
@@ -15,6 +16,7 @@ export class AgentRequestsComponent implements OnInit {
 
     private postsService = inject(PostsService);
     private router = inject(Router);
+    private toastService = inject(ToastService);
 
     requests: any[] = [];
     filteredRequests: any[] = [];
@@ -78,5 +80,14 @@ export class AgentRequestsComponent implements OnInit {
         if (postId) {
             this.router.navigate(['/public/housing/details', postId]);
         }
+    }
+
+    copyToClipboard(text: string, label: string) {
+        if (!text) return;
+        navigator.clipboard.writeText(text).then(() => {
+            this.toastService.success(`${label} copied to clipboard!`);
+        }, () => {
+            this.toastService.error(`Failed to copy ${label}`);
+        });
     }
 }
