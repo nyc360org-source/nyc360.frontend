@@ -54,25 +54,51 @@ export class HousingDetailsComponent implements OnInit {
             next: (res: any) => {
                 console.log('[HousingDetails] API Response:', res);
                 if (res.isSuccess) {
-                    this.property = res.data.info;
+                    const data = res.data.info;
+                    // Map API fields to internal property structure
+                    this.property = {
+                        ...data,
+                        startingPrice: data.startingPrice ?? data.startingOrAskingPrice ?? data.monthlyCostRange,
+                        moveInDate: data.moveInDate ?? data.moveInOrOpeningDate,
+                        moveOutDate: data.moveOutDate,
+                        maxOccupants: data.maxOccupants ?? data.maxOrSuggestedOccupants,
+                        securityDeposit: data.securityDeposit ?? data.securityDepositOrDownPayment,
+                        yearBuilt: data.yearBuilt ?? data.builtIn,
+                        size: data.size ?? data.sqft,
+                        buildingType: data.buildingType ?? data.houseType, // Fallback for houseType
+                        heatingSystem: data.heatingSystem ?? data.heating,
+                        coolingSystem: data.coolingSystem ?? data.cooling,
+                        // Fix for transportation: map IDs to names
+                        nearbySubwayLines: (data.nearbySubwayLines ?? data.nearbyTransportation)?.map((id: number) => {
+                            const found = this.transportationOptions.find(o => o.id === id);
+                            return found ? found.name : String(id);
+                        }) || [],
+                        acceptedHousingPrograms: data.acceptedHousingPrograms ?? data.rentHousingPrograms,
+                        acceptedBuyerPrograms: data.acceptedBuyerPrograms ?? data.buyerHousingProgram,
+                        googleMapLink: data.googleMapLink ?? data.googleMap,
+                        // Handle laundry array vs single
+                        laundryType: data.laundryType ?? (Array.isArray(data.laundryTypes) ? data.laundryTypes[0] : (data.laundry || 0)),
+                        address: data.address || {
+                            buildingNumber: data.buildingNumber,
+                            street: data.fullAddress || '', // Fallback
+                            unitNumber: data.unitNumber,
+                            zipCode: data.zipCode,
+                            location: {
+                                neighborhood: data.neighborhood,
+                                borough: data.borough
+                            }
+                        }
+                    };
                     this.similarProperties = res.data.similar || [];
 
-                    console.log('[HousingDetails] Property data:', this.property);
-                    console.log('[HousingDetails] Property attachments:', this.property.attachments);
-                    console.log('[HousingDetails] Property imageUrl:', this.property.imageUrl);
-
                     if (this.property.attachments?.length > 0) {
-                        console.log('[HousingDetails] First attachment:', this.property.attachments[0]);
-                        // Handle both object {id, url} and string formats
                         const firstAttachment = this.property.attachments[0];
                         const imageUrl = typeof firstAttachment === 'string'
                             ? firstAttachment
                             : (firstAttachment.url || firstAttachment);
                         this.activeImage = this.imageService.resolveImageUrl(imageUrl, 'housing');
-                        console.log('[HousingDetails] Active image URL:', this.activeImage);
                     } else if (this.property.imageUrl) {
                         this.activeImage = this.imageService.resolveImageUrl(this.property.imageUrl, 'housing');
-                        console.log('[HousingDetails] Active image from imageUrl:', this.activeImage);
                     }
                 }
                 this.isLoading = false;
@@ -140,6 +166,19 @@ export class HousingDetailsComponent implements OnInit {
         { id: 0, name: 'In-Unit' },
         { id: 1, name: 'In-Building' },
         { id: 2, name: 'Nearby' }
+    ];
+
+    transportationOptions = [
+        { id: 1, name: '(1)/(2)/(3)' },
+        { id: 2, name: '(4)/(5)/(6)' },
+        { id: 4, name: '7' },
+        { id: 8, name: '(A)/(C)/(E)' },
+        { id: 16, name: 'B D F M' },
+        { id: 32, name: 'G' },
+        { id: 64, name: 'J Z' },
+        { id: 128, name: 'L' },
+        { id: 256, name: 'N Q R W' },
+        { id: 512, name: 'S' }
     ];
 
     leaseTypes = [
