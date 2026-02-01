@@ -1,6 +1,6 @@
 import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { BehaviorSubject, catchError, switchMap, throwError, filter, take } from 'rxjs';
+import { catchError, switchMap, throwError, filter, take } from 'rxjs';
 import { AuthService } from '../pages/Authentication/Service/auth';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
@@ -26,61 +26,27 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   }
 
   const authService = inject(AuthService);
-  let isRefreshing = false;
-  const refreshTokenSubject = new BehaviorSubject<string | null>(null);
 
   return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {
 
       // 🛑 Case 1: 401 Unauthorized (Token Expired or Invalid)
       if (error.status === 401 && !req.url.includes('/auth/login') && !req.url.includes('/auth/refresh-token')) {
-
-        const refreshToken = authService.getRefreshToken();
-
-        if (!refreshToken) {
-          authService.logout();
-          return throwError(() => error);
-        }
-
-        if (!isRefreshing) {
-          isRefreshing = true;
-          refreshTokenSubject.next(null);
-
-          return authService.refreshToken({ token: refreshToken }).pipe(
-            switchMap((res: any) => {
-              isRefreshing = false;
-              if (res.isSuccess && res.data) {
-                authService.saveTokens(res.data.accessToken, res.data.refreshToken);
-                refreshTokenSubject.next(res.data.accessToken);
-
-                const newReq = req.clone({
-                  setHeaders: { Authorization: `Bearer ${res.data.accessToken}` }
-                });
-                return next(newReq);
-              } else {
-                authService.logout();
-                return throwError(() => error);
-              }
-            }),
-            catchError((refreshErr) => {
-              isRefreshing = false;
-              authService.logout();
-              return throwError(() => refreshErr);
-            })
-          );
-        } else {
-          // Queue the request until refresh is done
-          return refreshTokenSubject.pipe(
-            filter(token => token !== null),
-            take(1),
-            switchMap(newToken => {
-              const retryReq = req.clone({
+        return authService.refreshAccessToken().pipe(
+          switchMap((newToken) => {
+            if (newToken) {
+              const newReq = req.clone({
                 setHeaders: { Authorization: `Bearer ${newToken}` }
               });
-              return next(retryReq);
-            })
-          );
-        }
+              return next(newReq);
+            }
+            // If No token returned, logout already happened in AuthService
+            return throwError(() => error);
+          }),
+          catchError((refreshErr) => {
+            return throwError(() => refreshErr);
+          })
+        );
       }
 
       // 🛑 Case 2: 403 Forbidden (Accessing unauthorized resource)
