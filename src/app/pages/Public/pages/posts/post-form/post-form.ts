@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, ElementRef, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, inject, ElementRef, ViewChild, ChangeDetectorRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -119,6 +119,12 @@ export class PostFormComponent implements OnInit {
       this.tagResults = res.data || [];
       this.showTagDropdown = this.tagResults.length > 0;
     });
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event) {
+    this.showLocationDropdown = false;
+    this.showTagDropdown = false;
   }
 
   // --- Location Handlers ---

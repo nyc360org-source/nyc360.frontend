@@ -115,7 +115,8 @@ export class AgentRequestComponent implements OnInit {
         this.showHouseholdDropdown = false;
     }
 
-    selectContactType(type: any) {
+    selectContactType(type: any, event: Event) {
+        event.stopPropagation();
         this.form.patchValue({ PreferredContactType: type.value });
         this.showContactDropdown = false;
     }
@@ -126,7 +127,8 @@ export class AgentRequestComponent implements OnInit {
         this.showContactDropdown = false;
     }
 
-    selectHouseholdType(type: any) {
+    selectHouseholdType(type: any, event?: Event) {
+        if (event) event.stopPropagation();
         this.form.patchValue({ HouseholdType: type.value });
         this.showHouseholdDropdown = false;
     }
@@ -203,12 +205,7 @@ export class AgentRequestComponent implements OnInit {
                 if (res.isSuccess) {
                     this.isSuccess = true;
                     this.toastService.success('Request submitted successfully!');
-                    this.form.reset();
-                    this.form.patchValue({
-                        PreferredContactType: 0,
-                        HouseholdType: 0,
-                        PostId: this.postId
-                    });
+                    this.cancel(); // Close modal immediately after success
                 } else {
                     this.errorMessage = res.error?.message || 'Something went wrong. Please try again.';
                     this.toastService.error(this.errorMessage || 'Error');

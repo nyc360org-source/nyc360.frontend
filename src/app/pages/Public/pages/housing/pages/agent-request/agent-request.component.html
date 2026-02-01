@@ -38,7 +38,7 @@
                     <i class="bi bi-chevron-down"></i>
                     <div class="dropdown-menu-premium" *ngIf="showContactDropdown">
                         <div class="dropdown-item-premium" *ngFor="let type of contactTypes"
-                            (click)="selectContactType(type)">
+                            (click)="selectContactType(type, $event)">
                             {{ type.label }}
                         </div>
                     </div>
@@ -75,7 +75,7 @@
                 <div class="toggle-group-premium">
                     <button type="button" *ngFor="let type of householdTypes"
                         [class.active]="form.get('HouseholdType')?.value === type.value"
-                        (click)="selectHouseholdType(type)">
+                        (click)="selectHouseholdType(type, $event)">
                         {{ type.label }}
                     </button>
                 </div>
