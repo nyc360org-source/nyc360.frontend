@@ -1,6 +1,6 @@
 import { Injectable, inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, map, tap } from 'rxjs';
+import { BehaviorSubject, Observable, map, tap, of, filter, take, catchError, switchMap } from 'rxjs';
 import { Router } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { jwtDecode } from 'jwt-decode';
@@ -32,6 +32,10 @@ export class AuthService {
   public currentUser$ = new BehaviorSubject<any>(null);
   private fullUserInfoSubject = new BehaviorSubject<UserInfo | null>(null);
   public fullUserInfo$ = this.fullUserInfoSubject.asObservable();
+
+  // Refresh Token State
+  private refreshTokenSubject = new BehaviorSubject<string | null>(null);
+  private isRefreshingToken = false;
 
   constructor() {
     // محاولة تحميل المستخدم عند بدء التطبيق
@@ -238,6 +242,55 @@ export class AuthService {
   // 4. STATE MANAGEMENT & HELPERS
   // ============================================================
 
+  public getIsRefreshingToken(): boolean {
+    return this.isRefreshingToken;
+  }
+
+  public getRefreshTokenSubject(): BehaviorSubject<string | null> {
+    return this.refreshTokenSubject;
+  }
+
+  /**
+   * ✅ Centralized Refresh Logic
+   * Handles synchronization: if a refresh is already in progress, it returns an observable that waits for it.
+   */
+  public refreshAccessToken(): Observable<string | null> {
+    if (this.isRefreshingToken) {
+      return this.refreshTokenSubject.pipe(
+        filter(token => token !== null),
+        take(1)
+      );
+    }
+
+    this.isRefreshingToken = true;
+    this.refreshTokenSubject.next(null);
+
+    const refreshTokenVal = this.getRefreshToken();
+    if (!refreshTokenVal) {
+      this.isRefreshingToken = false;
+      this.logout();
+      return of(null);
+    }
+
+    return this.refreshToken({ token: refreshTokenVal }).pipe(
+      map(res => {
+        this.isRefreshingToken = false;
+        if (res.isSuccess && res.data) {
+          this.saveTokens(res.data.accessToken, res.data.refreshToken);
+          this.refreshTokenSubject.next(res.data.accessToken);
+          return res.data.accessToken;
+        }
+        this.logout();
+        return null;
+      }),
+      catchError(err => {
+        this.isRefreshingToken = false;
+        this.logout();
+        return of(null);
+      })
+    );
+  }
+
   logout() {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem(this.tokenKey);
@@ -273,8 +326,6 @@ export class AuthService {
    * 🔥 Check Token Validity Periodically
    * يقوم بتشغيل فحص دوري للتأكد من أن التوكن لم ينتهي أثناء استخدام التطبيق
    */
-  private isRefreshing = false;
-
   private startTokenCheck() {
     if (!isPlatformBrowser(this.platformId)) return;
 
@@ -285,7 +336,7 @@ export class AuthService {
   }
 
   private checkTokenExpiration() {
-    if (this.isRefreshing) return;
+    if (this.isRefreshingToken) return;
 
     const token = this.getToken();
     if (!token) return;
@@ -300,32 +351,17 @@ export class AuthService {
 
       // If token will expire in less than 20 seconds, or it is already expired -> Refresh
       if (timeLeft < 20000) {
-        const refreshTokenVal = this.getRefreshToken();
-        if (refreshTokenVal) {
-          console.log('🔄 Proactive Token Refresh starting...');
-          this.isRefreshing = true;
-          this.refreshToken({ token: refreshTokenVal }).subscribe({
-            next: (res) => {
-              if (res.isSuccess && res.data) {
-                this.saveTokens(res.data.accessToken, res.data.refreshToken);
-                console.log('✅ Token refreshed successfully (Proactive)');
-              } else {
-                console.warn('❌ Refresh failed (Proactive response invalid). Logging out.');
-                this.logout();
-              }
-              this.isRefreshing = false;
-            },
-            error: (err) => {
-              console.error('❌ Proactive refresh error:', err);
-              this.isRefreshing = false;
-              this.logout();
+        console.log('🔄 Proactive Token Refresh starting...');
+        this.refreshAccessToken().subscribe({
+          next: (token) => {
+            if (token) {
+              console.log('✅ Token refreshed successfully (Proactive)');
             }
-          });
-        } else {
-          // No refresh token available and token is about to expire/expired
-          console.warn('⚠️ No refresh token available. Logging out.');
-          this.logout();
-        }
+          },
+          error: (err) => {
+            console.error('❌ Proactive refresh error:', err);
+          }
+        });
       }
     } catch (e) {
       console.error('Invalid token during check:', e);
