@@ -43,6 +43,15 @@
         <p class="top-meta">Welcome at NYC360</p>
         <h1 class="main-title">{{ activeTheme?.label || 'News' }}</h1>
         <p class="sub-meta">Where New Yorkers can share ideas, discussions, and local conversations</p>
+
+        <div class="header-nav-buttons" *ngIf="activeTheme">
+          <a [routerLink]="['/public/feed', activeTheme.path]" class="nav-btn">Feed</a>
+          <a [routerLink]="['/public/initiatives', activeTheme.path]" class="nav-btn">Initiatives</a>
+          <!-- <a [routerLink]="['/public', activeTheme.path, 'requests']" class="nav-btn">{{ activeTheme.label }}
+            Requests</a> -->
+          <!-- <a [routerLink]="['/public', activeTheme.path, 'my-requests']" class="nav-btn">My Requests</a> -->
+          <a routerLink="/public/posts/create" class="nav-btn">Create Post</a>
+        </div>
       </div>
     </header>
 

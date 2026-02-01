@@ -1,9 +1,18 @@
 <div class="community-page">
-  
+
   <header class="page-header">
     <small>Welcome at NYC360</small>
     <h1>Community</h1>
     <p>Where New Yorkers can share ideas, discussions, and local conversations</p>
+
+    <div class="header-nav-buttons">
+      <a routerLink="/public/feed/community" class="nav-btn">Feed</a>
+      <a routerLink="/public/initiatives/community" class="nav-btn">Initiatives</a>
+      <a routerLink="/public/discover" class="nav-btn">Explore </a>
+      <a routerLink="/public/my-communities" class="nav-btn">My Communities</a>
+      <a routerLink="/public/create-community" class="nav-btn">Create Community</a>
+      <a routerLink="/public/posts/create" class="nav-btn">Create Post</a>
+    </div>
   </header>
 
   <div class="content-wrapper">
@@ -11,10 +20,9 @@
     <section class="featured-section" *ngIf="featuredPost">
       <div class="featured-card">
         <div class="feat-img">
-          <img [src]="featuredPost.attachments.length ? resolvePostImage(featuredPost.attachments[0].url) : 'assets/images/nyc-city.jpg'" 
-               alt="Featured"
-               [routerLink]="['/public/post', featuredPost.id]" 
-               style="cursor: pointer;">
+          <img
+            [src]="featuredPost.attachments.length ? resolvePostImage(featuredPost.attachments[0].url) : 'assets/images/nyc-city.jpg'"
+            alt="Featured" [routerLink]="['/public/post', featuredPost.id]" style="cursor: pointer;">
         </div>
         <div class="feat-content">
           <div class="tags-row">
@@ -36,17 +44,17 @@
           <h2>Discover Communities</h2>
           <p>Connect with your neighbors and New Yorkers who match your interests</p>
         </div>
-        
+
         <button class="btn-see-more" routerLink="/public/discover">
           See All Communities <i class="bi bi-arrow-right"></i>
         </button>
       </div>
-      
+
       <div class="cards-scroller">
         <div class="comm-card" *ngFor="let comm of suggestions">
           <div class="card-top">
-            <img [src]="resolveCommunityAvatar(comm.avatarUrl)" class="comm-avatar" 
-                 [routerLink]="['/public/community', comm.slug]" style="cursor: pointer;">
+            <img [src]="resolveCommunityAvatar(comm.avatarUrl)" class="comm-avatar"
+              [routerLink]="['/public/community', comm.slug]" style="cursor: pointer;">
             <div class="comm-info">
               <h4 [routerLink]="['/public/community', comm.slug]" style="cursor: pointer;">
                 {{ comm.name }}
@@ -54,8 +62,9 @@
               <span>{{ comm.memberCount }} Members</span>
             </div>
           </div>
-          
-          <button class="btn-join" [class.joined]="comm.isJoined" (click)="joinCommunity(comm)" [disabled]="comm.isLoadingJoin || comm.isJoined">
+
+          <button class="btn-join" [class.joined]="comm.isJoined" (click)="joinCommunity(comm)"
+            [disabled]="comm.isLoadingJoin || comm.isJoined">
             <ng-container *ngIf="!comm.isJoined && !comm.isLoadingJoin">Join Community</ng-container>
             <ng-container *ngIf="comm.isLoadingJoin">Joining...</ng-container>
             <ng-container *ngIf="comm.isJoined"><i class="bi bi-check-lg"></i> Joined</ng-container>
@@ -72,7 +81,8 @@
 
     <section class="create-cta">
       <h2>Don’t find a community for your needs?</h2>
-      <p>Take the lead in your neighborhood. Start a new discussion group focused on the topics that matter most to you</p>
+      <p>Take the lead in your neighborhood. Start a new discussion group focused on the topics that matter most to you
+      </p>
       <button class="btn-create" routerLink="/public/create-community">Create a Community</button>
     </section>
 

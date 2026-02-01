@@ -51,26 +51,26 @@ export class CreateHousingComponent implements OnInit {
     ];
 
     heatingSystems = [
-        { id: 0, name: 'SteamRadiator' },
-        { id: 1, name: 'HotWaterCentral' },
-        { id: 2, name: 'ElectricBaseboard' },
-        { id: 3, name: 'ForcedAir' },
-        { id: 4, name: 'HeatPump' },
+        { id: 0, name: 'Steam / Radiator (Central)' },
+        { id: 1, name: 'Hot Water (Central)' },
+        { id: 2, name: 'Electric Baseboard' },
+        { id: 3, name: 'Forced Air (Heat)' },
+        { id: 4, name: 'Heat Pump / Mini-Split' },
         { id: 5, name: 'Other' }
     ];
 
     coolingSystems = [
-        { id: 0, name: 'CentralAc' },
-        { id: 1, name: 'DuctlessMiniSplit' },
-        { id: 2, name: 'WindowUnitsAllowed' },
-        { id: 3, name: 'ThroughWallUnits' },
-        { id: 4, name: 'NoAc' }
+        { id: 0, name: 'Central AC' },
+        { id: 1, name: 'Ductless Mini-Split' },
+        { id: 2, name: 'Window Units Allowed' },
+        { id: 3, name: 'Through-Wall Units' },
+        { id: 4, name: 'No AC' }
     ];
 
     tempControls = [
-        { id: 0, name: 'IndividualThermostat' },
-        { id: 1, name: 'BuildingSharedControl' },
-        { id: 2, name: 'SmartThermostat' }
+        { id: 0, name: 'Individual Thermostat' },
+        { id: 1, name: 'Building / Shared Control' },
+        { id: 2, name: 'Smart Thermostat' }
     ];
 
     laundryTypes = [

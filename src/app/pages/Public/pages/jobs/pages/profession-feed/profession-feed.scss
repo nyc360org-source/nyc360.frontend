@@ -36,6 +36,39 @@ $font-header: 'Merriweather', serif;
   }
 }
 
+.header-nav-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  flex-wrap: wrap;
+  margin-top: 30px;
+
+  .nav-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 24px;
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba($primary-green, 0.4);
+    border-radius: 50px;
+    color: $primary-green;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    backdrop-filter: blur(5px);
+
+    &:hover {
+      background: $primary-green;
+      color: #ffffff;
+      border-color: $primary-green;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba($primary-green, 0.2);
+    }
+  }
+}
+
 .btn-view-all {
   font-weight: 700;
   color: #5a8a7d;
