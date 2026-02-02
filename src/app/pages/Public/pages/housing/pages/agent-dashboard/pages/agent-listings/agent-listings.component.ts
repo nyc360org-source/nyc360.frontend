@@ -58,4 +58,10 @@ export class AgentListingsComponent implements OnInit {
             this.loadListings();
         }
     }
+
+    isVideo(url: string | null | undefined): boolean {
+        if (!url) return false;
+        const lower = url.toLowerCase();
+        return lower.endsWith('.mp4') || lower.endsWith('.webm') || lower.endsWith('.ogg') || lower.endsWith('.mov');
+    }
 }

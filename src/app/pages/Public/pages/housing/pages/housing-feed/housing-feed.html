@@ -56,7 +56,19 @@
             <div class="property-card" *ngFor="let item of listings"
                 [routerLink]="['/public/housing/details', item.id]">
                 <div class="card-image">
-                    <img [src]="imageService.resolveImageUrl(item.imageUrl, 'housing')" [appImgFallback]="'post'">
+                    <ng-container *ngIf="isVideo(item.imageUrl); else imgBlock">
+                        <video [src]="imageService.resolveImageUrl(item.imageUrl, 'housing')"
+                            class="w-100 h-100 object-fit-cover" muted loop onmouseover="this.play()"
+                            onmouseout="this.pause()"></video>
+                        <div class="play-icon-overlay position-absolute top-50 start-50 translate-middle text-white"
+                            style="z-index: 2; pointer-events: none;">
+                            <i class="bi bi-play-circle-fill fs-1 opacity-75"></i>
+                        </div>
+                    </ng-container>
+                    <ng-template #imgBlock>
+                        <img [src]="imageService.resolveImageUrl(item.imageUrl, 'housing')" [appImgFallback]="'post'">
+                    </ng-template>
+
                     <span class="type-tag"
                         [class.rent]="item.startingPrice < 50000 || item.imageUrl?.toLowerCase()?.includes('rent')">
                         {{ (item.startingPrice < 50000 || item.imageUrl?.toLowerCase()?.includes('rent')) ? 'For Rent'

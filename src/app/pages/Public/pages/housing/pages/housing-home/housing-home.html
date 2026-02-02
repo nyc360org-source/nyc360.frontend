@@ -29,8 +29,12 @@
 
         <div class="hero-premium-card">
             <div class="hero-visual">
-                <img [src]="imageService.resolveImageUrl(heroPost.attachments?.[0]?.url, 'housing')"
-                    [appImgFallback]="'post'" alt="Hero Featured">
+                <ng-container
+                    *ngIf="imageService.resolveImageUrl(heroPost.attachments?.[0]?.url, 'housing') as heroUrl">
+                    <video *ngIf="isVideo(heroUrl)" [src]="heroUrl" [muted]="true" [loop]="true" autoplay playsinline
+                        class="w-100 h-100 object-fit-cover"></video>
+                    <img *ngIf="!isVideo(heroUrl)" [src]="heroUrl" [appImgFallback]="'post'" alt="Hero Featured">
+                </ng-container>
             </div>
             <div class="hero-info">
                 <div class="meta-tags">
@@ -69,7 +73,14 @@
                 <div class="premium-card" *ngFor="let item of homesForSale"
                     [routerLink]="['/public/housing/details', item.id]">
                     <div class="card-thumb">
-                        <img [src]="imageService.resolveImageUrl(item.imageUrl, 'housing')" [appImgFallback]="'post'">
+                        <ng-container *ngIf="imageService.resolveImageUrl(item.imageUrl, 'housing') as thumbUrl">
+                            <video *ngIf="isVideo(thumbUrl)" [src]="thumbUrl" muted loop onmouseover="this.play()"
+                                onmouseout="this.pause()" class="w-100 h-100 object-fit-cover"></video>
+                            <img *ngIf="!isVideo(thumbUrl)" [src]="thumbUrl" [appImgFallback]="'post'">
+                            <div *ngIf="isVideo(thumbUrl)"
+                                class="position-absolute top-50 start-50 translate-middle text-white"
+                                style="pointer-events:none;"><i class="bi bi-play-circle-fill fs-3 shadow-lg"></i></div>
+                        </ng-container>
                         <span class="tag-price-badge">For Sale</span>
                     </div>
                     <div class="card-content">
@@ -96,7 +107,14 @@
                 <div class="premium-card" *ngFor="let item of (homesForRent | slice:0:4)"
                     [routerLink]="['/public/housing/details', item.id]">
                     <div class="card-thumb">
-                        <img [src]="imageService.resolveImageUrl(item.imageUrl, 'housing')" [appImgFallback]="'post'">
+                        <ng-container *ngIf="imageService.resolveImageUrl(item.imageUrl, 'housing') as thumbUrl">
+                            <video *ngIf="isVideo(thumbUrl)" [src]="thumbUrl" muted loop onmouseover="this.play()"
+                                onmouseout="this.pause()" class="w-100 h-100 object-fit-cover"></video>
+                            <img *ngIf="!isVideo(thumbUrl)" [src]="thumbUrl" [appImgFallback]="'post'">
+                            <div *ngIf="isVideo(thumbUrl)"
+                                class="position-absolute top-50 start-50 translate-middle text-white"
+                                style="pointer-events:none;"><i class="bi bi-play-circle-fill fs-3 shadow-lg"></i></div>
+                        </ng-container>
                         <span class="tag-price-badge">For Rent</span>
                     </div>
                     <div class="card-content">
@@ -121,7 +139,15 @@
                 <div class="premium-card" *ngFor="let post of (rssPosts | slice:0:3)"
                     [routerLink]="['/public/posts/details', post.id]">
                     <div class="card-thumb" style="height: 220px;">
-                        <img [src]="post.attachments?.[0]?.url" [appImgFallback]="'post'">
+                        <ng-container
+                            *ngIf="imageService.resolveImageUrl(post.attachments?.[0]?.url, 'post') as thumbUrl">
+                            <video *ngIf="isVideo(thumbUrl)" [src]="thumbUrl" muted loop onmouseover="this.play()"
+                                onmouseout="this.pause()" class="w-100 h-100 object-fit-cover"></video>
+                            <img *ngIf="!isVideo(thumbUrl)" [src]="thumbUrl" [appImgFallback]="'post'">
+                            <div *ngIf="isVideo(thumbUrl)"
+                                class="position-absolute top-50 start-50 translate-middle text-white"
+                                style="pointer-events:none;"><i class="bi bi-play-circle-fill fs-3 shadow-lg"></i></div>
+                        </ng-container>
                     </div>
                     <div class="card-content">
                         <h4 class="prop-title">{{ post.title }}</h4>
@@ -168,7 +194,14 @@
                     *ngFor="let item of (allPosts.length > 0 ? allPosts : (homesForRent | slice:0:4))"
                     [routerLink]="['/public/housing/details', item.id]">
                     <div class="card-thumb">
-                        <img [src]="imageService.resolveImageUrl(item.imageUrl, 'housing')" [appImgFallback]="'post'">
+                        <ng-container *ngIf="imageService.resolveImageUrl(item.imageUrl, 'housing') as thumbUrl">
+                            <video *ngIf="isVideo(thumbUrl)" [src]="thumbUrl" muted loop onmouseover="this.play()"
+                                onmouseout="this.pause()" class="w-100 h-100 object-fit-cover"></video>
+                            <img *ngIf="!isVideo(thumbUrl)" [src]="thumbUrl" [appImgFallback]="'post'">
+                            <div *ngIf="isVideo(thumbUrl)"
+                                class="position-absolute top-50 start-50 translate-middle text-white"
+                                style="pointer-events:none;"><i class="bi bi-play-circle-fill fs-3 shadow-lg"></i></div>
+                        </ng-container>
                     </div>
                     <div class="card-content">
                         <span class="loc-label">{{ item.location?.neighborhood || 'Manhattan' }}</span>

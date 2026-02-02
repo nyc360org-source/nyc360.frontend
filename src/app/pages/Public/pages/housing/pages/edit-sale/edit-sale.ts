@@ -1,4 +1,5 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
@@ -28,6 +29,7 @@ export class EditSaleComponent implements OnInit {
     protected imageService = inject(ImageService);
     private authService = inject(AuthService);
     private cdr = inject(ChangeDetectorRef);
+    private sanitizer = inject(DomSanitizer);
 
     today = formatDate(new Date(), 'yyyy-MM-dd', 'en-US');
     postId: number | null = null;
@@ -110,7 +112,7 @@ export class EditSaleComponent implements OnInit {
 
     // --- State ---
     selectedFiles: File[] = [];
-    imagePreviews: string[] = [];
+    imagePreviews: { url: SafeUrl | string, type: 'image' | 'video' | 'file', name?: string, isExisting?: boolean, id?: number }[] = [];
     existingAttachments: any[] = [];
     deletedPhotoIds: number[] = [];
     locationSearch$ = new Subject<string>();
@@ -261,9 +263,43 @@ export class EditSaleComponent implements OnInit {
             };
         });
 
+        // Initialize previews with existing attachments
+        this.imagePreviews = this.existingAttachments.map(att => {
+            let type: 'image' | 'video' | 'file' = 'image';
+            const lowerUrl = (att.url || '').toLowerCase();
+            if (lowerUrl.endsWith('.mp4') || lowerUrl.endsWith('.mov') || lowerUrl.endsWith('.webm')) {
+                type = 'video';
+            } else if (lowerUrl.endsWith('.pdf') || lowerUrl.endsWith('.doc') || lowerUrl.endsWith('.docx') || lowerUrl.endsWith('.txt')) {
+                type = 'file';
+            }
+
+            // Resolve URL immediately
+            const resolvedUrl = this.imageService.resolveImageUrl(att.url, 'housing');
+
+            return {
+                url: resolvedUrl,
+                type: type,
+                isExisting: true,
+                id: att.id || undefined
+            };
+        });
+
         // If there's a top-level imageUrl not in attachments, add it
         if (data.imageUrl && !this.existingAttachments.some(a => a.url === data.imageUrl)) {
-            this.existingAttachments.unshift({ url: data.imageUrl, id: null });
+            const lowerUrl = (data.imageUrl || '').toLowerCase();
+            let type: 'image' | 'video' | 'file' = 'image';
+            if (lowerUrl.endsWith('.mp4') || lowerUrl.endsWith('.mov') || lowerUrl.endsWith('.webm')) {
+                type = 'video';
+            }
+
+            const resolvedUrl = this.imageService.resolveImageUrl(data.imageUrl, 'housing');
+
+            this.imagePreviews.unshift({
+                url: resolvedUrl,
+                id: undefined,
+                type: type,
+                isExisting: true
+            });
         }
 
         this.cdr.detectChanges();
@@ -338,23 +374,39 @@ export class EditSaleComponent implements OnInit {
             const files = Array.from(event.target.files) as File[];
             this.selectedFiles = [...this.selectedFiles, ...files];
             files.forEach(file => {
-                const reader = new FileReader();
-                reader.onload = (e: any) => {
-                    this.imagePreviews.push(e.target.result);
-                    this.cdr.detectChanges();
-                };
-                reader.readAsDataURL(file);
+                let type: 'image' | 'video' | 'file' = 'image';
+                if (file.type.startsWith('video')) {
+                    type = 'video';
+                } else if (file.type.startsWith('image')) {
+                    type = 'image';
+                } else {
+                    type = 'file';
+                }
+
+                const url = this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(file));
+                this.imagePreviews.push({ url, type, name: file.name, isExisting: false });
             });
+            this.cdr.detectChanges();
         }
     }
 
     removeFile(index: number) {
-        this.selectedFiles.splice(index, 1);
+        const item = this.imagePreviews[index];
+        if (item.isExisting && item.id) {
+            this.removeExistingFile(index, item.id);
+        } else {
+            let newFileIndex = 0;
+            for (let i = 0; i < index; i++) {
+                if (!this.imagePreviews[i].isExisting) {
+                    newFileIndex++;
+                }
+            }
+            this.selectedFiles.splice(newFileIndex, 1);
+        }
         this.imagePreviews.splice(index, 1);
     }
 
     removeExistingFile(index: number, id: number) {
-        this.existingAttachments.splice(index, 1);
         this.deletedPhotoIds.push(id);
     }
 

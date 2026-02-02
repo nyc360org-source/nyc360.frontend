@@ -96,4 +96,10 @@ export class HousingHomeComponent implements OnInit {
             maximumFractionDigits: 0
         }).format(price || 0);
     }
+
+    isVideo(url: string): boolean {
+        if (!url) return false;
+        const lower = url.toLowerCase();
+        return lower.endsWith('.mp4') || lower.endsWith('.webm') || lower.endsWith('.ogg') || lower.endsWith('.mov');
+    }
 }

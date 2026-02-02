@@ -462,12 +462,32 @@ export class HousingService {
         append('PhoneNumber', data.PhoneNumber);
 
         // Dates & Times
-        if (data.PreferredContactDate) append('PreferredContactDate', data.PreferredContactDate);
-        if (data.PreferredContactTime) append('PreferredContactTime', data.PreferredContactTime);
-        if (data.PreferredVirtualTourDate) append('PreferredVirtualTourDate', data.PreferredVirtualTourDate);
-        if (data.PreferredVirtualTourTime) append('PreferredVirtualTourTime', data.PreferredVirtualTourTime);
-        if (data.PreferredInPersonTourDate) append('PreferredInPersonTourDate', data.PreferredInPersonTourDate);
-        if (data.PreferredInPersonTourTime) append('PreferredInPersonTourTime', data.PreferredInPersonTourTime);
+        const formatDate = (date: any) => {
+            if (!date) return '';
+            const d = new Date(date);
+            // Returns YYYY-MM-DD
+            return d.toISOString().split('T')[0];
+        };
+
+        // If time is coming as HH:mm string from input type="time", it's fine. 
+        // If it's a full Date object, we might need to extract time. 
+        // Assuming input type="time" gives user local time string 'HH:mm'.
+        // API expects string($time), likely 'HH:mm:ss' or similar. 
+        // Let's ensure we send something reasonable.
+        const formatTime = (time: any) => {
+            if (!time) return '';
+            if (time.length === 5) return time + ':00'; // HH:mm -> HH:mm:ss
+            return time;
+        };
+
+        if (data.PreferredContactDate) append('PreferredContactDate', formatDate(data.PreferredContactDate));
+        if (data.PreferredContactTime) append('PreferredContactTime', formatTime(data.PreferredContactTime));
+
+        if (data.PreferredVirtualTourDate) append('PreferredVirtualTourDate', formatDate(data.PreferredVirtualTourDate));
+        if (data.PreferredVirtualTourTime) append('PreferredVirtualTourTime', formatTime(data.PreferredVirtualTourTime));
+
+        if (data.PreferredInPersonTourDate) append('PreferredInPersonTourDate', formatDate(data.PreferredInPersonTourDate));
+        if (data.PreferredInPersonTourTime) append('PreferredInPersonTourTime', formatTime(data.PreferredInPersonTourTime));
 
         // Enums
         append('AuthorizationType', data.AuthorizationType || 0);

@@ -1,22 +1,42 @@
 <div class="details-page" *ngIf="!isLoading && property">
     <!-- Gallery Grid -->
+    <!-- Gallery Grid -->
     <div class="gallery-section">
         <div class="main-image" (click)="togglePhotos()">
-            <img [src]="activeImage" [appImgFallback]="'housing'" alt="Property Main Image">
+            <!-- Video Player -->
+            <video *ngIf="activeMedia?.type === 'video'" [src]="activeMedia.url" controls autoplay muted loop
+                class="media-content"></video>
+
+            <!-- Image Display -->
+            <img *ngIf="activeMedia?.type === 'image'" [src]="activeMedia.url" [appImgFallback]="'housing'"
+                alt="Property Main Media" class="media-content">
+
             <div class="image-counter" *ngIf="property.attachments?.length > 1">
-                <i class="bi bi-images"></i> {{ property.attachments.length }} Photos
+                <i class="bi bi-collection"></i> {{ property.attachments.length }} Media
             </div>
         </div>
+
         <div class="side-images" *ngIf="property.attachments?.length > 1">
-            <!-- Show first 2 additional images (index 1 and 2) -->
-            <div class="sub-img" *ngFor="let img of (property.attachments | slice:1:3)" (click)="setActiveImage(img)">
-                <img [src]="imageService.resolveImageUrl($any(img)?.url || img, 'housing')"
-                    [appImgFallback]="'housing'">
+            <!-- Show first 2 additional items (index 1 and 2) -->
+            <div class="sub-img" *ngFor="let item of (property.attachments | slice:1:3)"
+                (click)="setActiveMedia(item); $event.stopPropagation()">
+                <div class="media-preview-wrapper h-100 w-100 position-relative">
+                    <img *ngIf="$any(item).type === 'image'" [src]="$any(item).url" [appImgFallback]="'housing'"
+                        class="h-100 w-100 object-fit-cover">
+                    <div *ngIf="$any(item).type === 'video'"
+                        class="video-thumbnail h-100 w-100 d-flex align-items-center justify-content-center bg-dark text-white">
+                        <video [src]="$any(item).url"
+                            class="h-100 w-100 object-fit-cover position-absolute top-0 start-0"
+                            style="opacity: 0.6; pointer-events: none;"></video>
+                        <i class="bi bi-play-circle-fill fs-2 position-relative z-index-1"></i>
+                    </div>
+                </div>
             </div>
-            <!-- If more than 3 total images (1 main + 2 side = need 4+ for "view more") -->
+
+            <!-- If more than 3 total items -->
             <div class="view-more-btn" *ngIf="property.attachments?.length > 3" (click)="togglePhotos()">
                 <i class="bi bi-grid-3x3-gap"></i>
-                <span>View All {{ property.attachments.length }} Photos</span>
+                <span>View All {{ property.attachments.length }} Media</span>
             </div>
         </div>
     </div>
@@ -197,6 +217,25 @@
 
             <hr class="divider">
 
+            <!-- Documents Section -->
+            <div class="info-block" *ngIf="property.documents?.length > 0">
+                <h3>Documents & Files</h3>
+                <div class="documents-list">
+                    <a *ngFor="let doc of property.documents" [href]="doc.url" target="_blank"
+                        class="document-card d-flex align-items-center p-3 border rounded mb-2 text-decoration-none text-dark">
+                        <i class="bi bi-file-earmark-text fs-3 text-gold me-3"></i>
+                        <div class="doc-info">
+                            <h6 class="mb-0 text-truncate" style="max-width: 250px;">{{ doc.originalUrl || 'Document' }}
+                            </h6>
+                            <small class="text-muted">Click to view</small>
+                        </div>
+                        <i class="bi bi-download ms-auto text-muted"></i>
+                    </a>
+                </div>
+            </div>
+
+            <hr class="divider" *ngIf="property.documents?.length > 0">
+
             <!-- Rules & Policies (Show only if relevant) -->
             <div class="info-block"
                 *ngIf="property.isRenting && (property.rentingRulesAndPolicies || property.rentingAboutCurrentResident)">
@@ -232,7 +271,7 @@
 
         </div>
 
-        <!-- Right Sidebar -->
+        <!-- Right Sidebar (unchanged) -->
         <div class="sidebar">
             <div class="sidebar-wrapper">
                 <!-- Owner Actions (Visible only to Author) -->
@@ -343,18 +382,23 @@
         <div class="overlay-header">
             <div class="header-info">
                 <i class="bi bi-images"></i>
-                <h4>Property Photos</h4>
-                <span class="photo-count">{{ property.attachments?.length }} images</span>
+                <h4>Property Media</h4>
+                <span class="photo-count">{{ property.images?.length + property.videos?.length }} items</span>
             </div>
             <button class="close-btn" (click)="togglePhotos()" title="Close">
                 <i class="bi bi-x-lg"></i>
             </button>
         </div>
         <div class="overlay-grid">
-            <div class="photo-item" *ngFor="let img of property.attachments; let i = index">
-                <img [src]="imageService.resolveImageUrl($any(img)?.url || img, 'housing')" [appImgFallback]="'housing'"
-                    [alt]="'Property photo ' + (i + 1)" loading="lazy">
-                <div class="photo-number">{{ i + 1 }}</div>
+            <!-- Videos first -->
+            <div class="photo-item" *ngFor="let vid of property.videos; let i = index">
+                <video [src]="vid.url" controls class="w-100" style="max-height: 500px; background:black;"></video>
+                <div class="photo-number">Video {{ i + 1 }}</div>
+            </div>
+            <!-- Then Images -->
+            <div class="photo-item" *ngFor="let img of property.images; let i = index">
+                <img [src]="img.url" [appImgFallback]="'housing'" [alt]="'Property photo ' + (i + 1)" loading="lazy">
+                <div class="photo-number">Photo {{ i + 1 }}</div>
             </div>
         </div>
     </div>

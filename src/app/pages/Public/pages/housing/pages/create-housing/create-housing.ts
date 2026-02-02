@@ -124,7 +124,7 @@ export class CreateHousingComponent implements OnInit {
 
     // --- State ---
     selectedFiles: File[] = [];
-    imagePreviews: { url: SafeUrl, type: 'image' | 'video' }[] = [];
+    imagePreviews: { url: SafeUrl, type: 'image' | 'video' | 'file', name?: string }[] = [];
     locationSearch$ = new Subject<string>();
     locationResults: any[] = [];
     selectedLocation: any = null;
@@ -324,9 +324,17 @@ export class CreateHousingComponent implements OnInit {
             const files = Array.from(event.target.files) as File[];
             this.selectedFiles = [...this.selectedFiles, ...files];
             files.forEach(file => {
-                const type = file.type.startsWith('video') ? 'video' : 'image';
+                let type: 'image' | 'video' | 'file' = 'image';
+                if (file.type.startsWith('video')) {
+                    type = 'video';
+                } else if (file.type.startsWith('image')) {
+                    type = 'image';
+                } else {
+                    type = 'file';
+                }
+
                 const url = this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(file));
-                this.imagePreviews.push({ url, type });
+                this.imagePreviews.push({ url, type, name: file.name });
             });
             this.cdr.detectChanges();
         }
@@ -362,14 +370,25 @@ export class CreateHousingComponent implements OnInit {
             next: (res: any) => {
                 this.isSubmitting = false;
                 if (res?.isSuccess) {
-                    const msg = isPublished ? 'Listing Published!' : 'Draft Saved Successfully!';
-                    this.toastService.success(msg);
-                    const newId = res.data?.id || res.data?.housingId;
-                    if (newId) {
-                        this.router.navigate(['/public/housing/listing-authorization'], { queryParams: { id: newId } });
-                    } else {
-                        this.router.navigate(['/public/housing/home']);
+                    let newId = res.data;
+                    if (res.data && typeof res.data === 'object') {
+                        newId = res.data.id || res.data.housingId || res.data.Id || res.data.HousingId;
                     }
+                    console.log('Housing API Response:', res);
+                    console.log('Extracted New ID:', newId);
+
+                    if (newId) {
+                        if (isPublished) {
+                            this.router.navigate(['/public/housing/listing-authorization'], { queryParams: { id: newId } });
+                        } else {
+                            this.router.navigate(['/public/housing/details', newId]);
+                        }
+                    }
+                    // else {
+                    //     // Just in case, try to warn
+                    //     console.warn('Could not extract new listing ID', res);
+                    //     this.router.navigate(['/public/housing/home']);
+                    // }
                 } else {
                     this.toastService.error(res?.error?.message || 'Failed');
                 }
