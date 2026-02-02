@@ -409,8 +409,10 @@
                 </div>
 
                 <div class="photo-previews-grid mt-4" *ngIf="imagePreviews.length > 0">
-                    <div class="preview-card" *ngFor="let img of imagePreviews; let i = index">
-                        <img [src]="img" alt="Preview">
+                    <div class="preview-card" *ngFor="let item of imagePreviews; let i = index">
+                        <img *ngIf="item.type === 'image'" [src]="item.url" alt="Preview">
+                        <video *ngIf="item.type === 'video'" [src]="item.url" controls
+                            class="w-100 h-100 object-fit-cover"></video>
                         <button type="button" class="btn-remove-photo" (click)="removeFile(i)"><i
                                 class="bi bi-x"></i></button>
                     </div>

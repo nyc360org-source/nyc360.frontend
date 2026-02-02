@@ -1,4 +1,5 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -91,7 +92,9 @@ export class CreateSaleComponent implements OnInit {
         { id: 5, name: 'Indoor Lounges' },
         { id: 6, name: 'Bike Room' },
         { id: 7, name: 'Parking' },
-        { id: 8, name: 'Security Attendant' }
+        { id: 8, name: 'Security Attendant' },
+        { id: 9, name: 'Internet' },
+        { id: 10, name: 'Cable' }
     ];
 
     buyerPrograms = [
@@ -113,17 +116,20 @@ export class CreateSaleComponent implements OnInit {
 
     // --- State ---
     selectedFiles: File[] = [];
-    imagePreviews: string[] = [];
+    imagePreviews: { url: SafeUrl, type: 'image' | 'video' }[] = [];
     locationSearch$ = new Subject<string>();
     locationResults: any[] = [];
     selectedLocation: any = null;
     showLocationDropdown = false;
+
+    private sanitizer = inject(DomSanitizer);
 
     constructor() {
         const currentYear = new Date().getFullYear();
         for (let i = currentYear; i >= 1900; i--) {
             this.years.push(i);
         }
+        // ... constructor continues
 
         this.form = this.fb.group({
             HouseType: [0, Validators.required],
@@ -254,13 +260,11 @@ export class CreateSaleComponent implements OnInit {
             const files = Array.from(event.target.files) as File[];
             this.selectedFiles = [...this.selectedFiles, ...files];
             files.forEach(file => {
-                const reader = new FileReader();
-                reader.onload = (e: any) => {
-                    this.imagePreviews.push(e.target.result);
-                    this.cdr.detectChanges();
-                };
-                reader.readAsDataURL(file);
+                const type = file.type.startsWith('video') ? 'video' : 'image';
+                const url = this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(file));
+                this.imagePreviews.push({ url, type });
             });
+            this.cdr.detectChanges();
         }
     }
 
