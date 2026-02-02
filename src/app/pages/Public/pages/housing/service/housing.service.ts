@@ -443,4 +443,54 @@ export class HousingService {
             return this.updateSalePost(id, data);
         }
     }
+
+    createHousingAuthorization(data: any): Observable<any> {
+        const formData = new FormData();
+        const apiUrl = `${environment.apiBaseUrl}/housing/create/authoring`;
+
+        // Helper to append generic values
+        const append = (key: string, val: any) => {
+            if (val !== null && val !== undefined) {
+                formData.append(key, String(val));
+            }
+        };
+
+        append('HouseListingId', data.HouseListingId);
+        append('FullName', data.FullName);
+        append('OrganizationName', data.OrganizationName);
+        append('Email', data.Email);
+        append('PhoneNumber', data.PhoneNumber);
+
+        // Dates & Times
+        if (data.PreferredContactDate) append('PreferredContactDate', data.PreferredContactDate);
+        if (data.PreferredContactTime) append('PreferredContactTime', data.PreferredContactTime);
+        if (data.PreferredVirtualTourDate) append('PreferredVirtualTourDate', data.PreferredVirtualTourDate);
+        if (data.PreferredVirtualTourTime) append('PreferredVirtualTourTime', data.PreferredVirtualTourTime);
+        if (data.PreferredInPersonTourDate) append('PreferredInPersonTourDate', data.PreferredInPersonTourDate);
+        if (data.PreferredInPersonTourTime) append('PreferredInPersonTourTime', data.PreferredInPersonTourTime);
+
+        // Enums
+        append('AuthorizationType', data.AuthorizationType || 0);
+        append('ListingAuthorizationDocument', data.ListingAuthorizationDocument || 0);
+
+        if (data.AuthorizationValidationDate) append('AuthorizationValidationDate', data.AuthorizationValidationDate);
+
+        append('SaveThisAuthorizationForFutureListings', data.SaveThisAuthorizationForFutureListings ? 'true' : 'false');
+
+        // Open House Event (Extra fields from UI, mapping might happen in component but let's support them if API changes)
+        // For now, API spec doesn't explicitly list OpenHouse fields in basic non-multipart section, assuming they might be part of extended Data or just ignored if not in spec. 
+        // The user provided spec has "Open House Event" in UI but not explicitly in the curl parameters list provided for /create/authoring unless implicit.
+        // We will stick to the provided CURL parameters strictly for now.
+
+        // Attachments
+        if (data.Attachments && Array.isArray(data.Attachments)) {
+            data.Attachments.forEach((file: any) => {
+                if (file instanceof File) {
+                    formData.append('Attachments', file);
+                }
+            });
+        }
+
+        return this.http.post(apiUrl, formData);
+    }
 }

@@ -301,7 +301,7 @@ export class CreateSaleComponent implements OnInit {
                     this.toastService.success(isPublished ? 'Listing Published!' : 'Draft Saved Successfully!');
                     const newId = res.data?.id || res.data?.housingId;
                     if (newId) {
-                        this.router.navigate(['/public/housing/details', newId]);
+                        this.router.navigate(['/public/housing/listing-authorization'], { queryParams: { id: newId } });
                     } else {
                         this.router.navigate(['/public/housing/home']);
                     }

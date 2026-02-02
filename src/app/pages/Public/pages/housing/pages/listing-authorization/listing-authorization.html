@@ -1,0 +1,234 @@
+<div class="authorization-container">
+    <h2 class="page-title">Post Listing Authorization</h2>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <!-- Section 1: Your Information -->
+        <div class="auth-section bg-yellow">
+            <div class="section-header">
+                <div class="step-badge badge-yellow">1</div>
+                <h3>Your Information</h3>
+            </div>
+
+            <div class="row">
+                <div class="col-12 form-group-row">
+                    <label>Full Name *</label>
+                    <input type="text" class="form-control-custom" formControlName="FullName"
+                        [class.is-invalid]="form.get('FullName')?.invalid && form.get('FullName')?.touched"
+                        placeholder="Jane Doe">
+                </div>
+                <div class="col-12 form-group-row">
+                    <label>Business/Organization Name</label>
+                    <input type="text" class="form-control-custom" formControlName="OrganizationName"
+                        placeholder="Organization Name">
+                </div>
+                <div class="col-md-6 form-group-row">
+                    <label>Email Address *</label>
+                    <input type="email" class="form-control-custom" formControlName="Email"
+                        [class.is-invalid]="form.get('Email')?.invalid && form.get('Email')?.touched"
+                        placeholder="Jane@gmail.com">
+                </div>
+                <div class="col-md-6 form-group-row">
+                    <label>Phone Number *</label>
+                    <input type="tel" class="form-control-custom" formControlName="PhoneNumber"
+                        [class.is-invalid]="form.get('PhoneNumber')?.invalid && form.get('PhoneNumber')?.touched"
+                        placeholder="(555) 000 - 0000">
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Preferred Availability Details -->
+        <div class="auth-section bg-purple">
+            <div class="section-header">
+                <div class="step-badge badge-purple">2</div>
+                <h3>Preferred Availability Details <span
+                        style="font-size: 0.7em; font-weight: 400;">(Multi-Selects)</span></h3>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 form-group-row">
+                    <label>Preferred Contact Date/s *</label>
+                    <input type="date" class="form-control-custom" formControlName="PreferredContactDate"
+                        [class.is-invalid]="form.get('PreferredContactDate')?.invalid && form.get('PreferredContactDate')?.touched">
+                </div>
+                <div class="col-md-6 form-group-row">
+                    <label>Preferred Contact Time *</label>
+                    <input type="time" class="form-control-custom" formControlName="PreferredContactTime"
+                        [class.is-invalid]="form.get('PreferredContactTime')?.invalid && form.get('PreferredContactTime')?.touched">
+                </div>
+
+                <div class="col-md-6 form-group-row">
+                    <label>Preferred Virtual Tours</label>
+                    <input type="date" class="form-control-custom" formControlName="PreferredVirtualTourDate">
+                </div>
+                <div class="col-md-6 form-group-row">
+                    <label>Time Window</label>
+                    <input type="time" class="form-control-custom" formControlName="PreferredVirtualTourTime">
+                </div>
+
+                <div class="col-md-6 form-group-row">
+                    <label>Preferred In-Person Tours</label>
+                    <input type="date" class="form-control-custom" formControlName="PreferredInPersonTourDate">
+                </div>
+                <div class="col-md-6 form-group-row">
+                    <label>Time Window</label>
+                    <input type="time" class="form-control-custom" formControlName="PreferredInPersonTourTime">
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 3: Upload Documents -->
+        <div class="auth-section bg-blue">
+            <div class="section-header">
+                <div class="step-badge badge-blue">3</div>
+                <h3>Upload One-time Authorization Documents</h3>
+            </div>
+
+            <div
+                style="position: absolute; top: 20px; right: 20px; background: #fff; padding: 5px 15px; border-radius: 20px; font-size: 0.75rem; color: #AA8555; font-weight: 600; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                Max 5 Documents recommended
+            </div>
+
+            <div class="row">
+                <div class="col-md-7">
+                    <div class="form-group-row">
+                        <label>Authorization Type *</label>
+                        <select class="form-control-custom" formControlName="AuthorizationType"
+                            [class.is-invalid]="form.get('AuthorizationType')?.invalid && form.get('AuthorizationType')?.touched">
+                            <option [ngValue]="null">Select Authorization Type</option>
+                            <option *ngFor="let type of authorizationTypes" [value]="type.id">{{type.name}}</option>
+                        </select>
+                        <small class="text-muted d-block mt-1" style="font-size: 0.7rem;">*Required if not Uploaded
+                            before*</small>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 form-group-row">
+                            <label>Listing Authorization Document(s) *</label>
+                            <select class="form-control-custom" formControlName="ListingAuthorizationDocument"
+                                [class.is-invalid]="form.get('ListingAuthorizationDocument')?.invalid && form.get('ListingAuthorizationDocument')?.touched">
+                                <option [ngValue]="null">Select Document Type</option>
+                                <option *ngFor="let doc of documentTypes" [value]="doc.id">{{doc.name}}</option>
+                            </select>
+                            <small class="text-muted d-block mt-1" style="font-size: 0.7rem;">*Required if not Uploaded
+                                before*</small>
+                        </div>
+                        <div class="col-md-6 form-group-row">
+                            <label>Authorization Validation</label>
+                            <input type="date" class="form-control-custom"
+                                formControlName="AuthorizationValidationDate">
+                            <small class="text-muted d-block mt-1" style="font-size: 0.7rem;">Validation date</small>
+                        </div>
+                    </div>
+
+                    <div class="description-text mt-3">
+                        <div class="mb-3">
+                            <h4 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.25rem;">Individual
+                                Authorization</h4>
+                            <p style="font-size: 0.8rem; color: #555;">For people acting in their own name (property
+                                owners, individual agents, or lease holders).</p>
+                        </div>
+                        <div class="mb-3">
+                            <h4 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.25rem;">Business
+                                Authorization</h4>
+                            <p style="font-size: 0.8rem; color: #555;">For licensed real estate businesses such as
+                                agencies, brokerages, or property management companies.</p>
+                        </div>
+                        <div class="mb-3">
+                            <h4 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.25rem;">Organization
+                                Authorization</h4>
+                            <p style="font-size: 0.8rem; color: #555;">For housing organizations, nonprofits, or
+                                mission-driven entities.</p>
+                        </div>
+
+                        <div class="d-flex align-items-center justify-content-between mt-4">
+                            <div style="font-weight: 600; font-size: 0.9rem;">Save this authorization for future
+                                listings</div>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="authSwitch"
+                                    formControlName="SaveThisAuthorizationForFutureListings">
+                            </div>
+                        </div>
+                        <small style="font-size: 0.7rem; color: #777;">Recommended for agents, owners, and
+                            organizations</small>
+                    </div>
+                </div>
+
+                <div class="col-md-5">
+                    <!-- Dropzone -->
+                    <div class="upload-area mb-4" (click)="fileInput.click()">
+                        <div class="upload-icon">
+                            <i class="bi bi-cloud-arrow-up-fill"></i>
+                        </div>
+                        <h4 *ngIf="selectedFiles.length === 0">Drag and drop Documents</h4>
+                        <h4 *ngIf="selectedFiles.length > 0">{{selectedFiles.length}} Files Selected</h4>
+                        <p>Supports: Jpg, PDF, Doc. etc<br>size 10MB per doc.</p>
+                        <button type="button" class="btn-select-files">Select Files</button>
+                        <input type="file" #fileInput multiple (change)="onFileSelect($event)" style="display: none;">
+                    </div>
+
+                    <div *ngIf="selectedFiles.length > 0" class="mb-3">
+                        <div *ngFor="let file of selectedFiles; let i = index"
+                            class="d-flex justify-content-between align-items-center p-2 bg-light rounded mb-1">
+                            <span class="small text-truncate" style="max-width: 80%;">{{file.name}}</span>
+                            <i class="bi bi-x text-danger cursor-pointer" (click)="removeFile(i)"
+                                style="cursor: pointer;"></i>
+                        </div>
+                    </div>
+
+                    <!-- Accepted Docs -->
+                    <div class="accepted-docs">
+                        <h5>Accepted Documents</h5>
+                        <ul>
+                            <li *ngFor="let doc of documentTypes">{{doc.name}}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" class="add-btn">
+                3.1 + Add a additional Authorization Documents
+            </button>
+        </div>
+
+        <!-- Section 4: Open House Event -->
+        <div class="auth-section bg-pink">
+            <div class="section-header">
+                <div class="step-badge badge-pink">4</div>
+                <h3>Creating a successful [OPEN HOUSE] event</h3>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 form-group-row">
+                    <label>Open House Event</label>
+                    <input type="date" class="form-control-custom" formControlName="OpenHouseEventDate">
+                </div>
+                <div class="col-md-6 form-group-row">
+                    <label>Time Window</label>
+                    <input type="time" class="form-control-custom" formControlName="OpenHouseEventTime">
+                </div>
+                <div class="col-12 form-group-row">
+                    <label>Open House Event Delineates</label>
+                    <textarea class="form-control-custom" rows="3" formControlName="OpenHouseEventDescription"
+                        placeholder="Add Open House Event Delineates."></textarea>
+                </div>
+            </div>
+
+            <button type="button" class="add-btn" style="color: #880E4F;">
+                4.1 + Add a successful recoiling [OPEN HOUSE] event
+            </button>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer-action">
+            <div class="terms">
+                Terms and conditions<br>
+                <span style="font-weight: 400; color: #555;">By clicking 'Post Listing', you agree to our Terms and
+                    Conditions and all applicable Regulations.</span>
+            </div>
+            <button type="submit" class="btn-post-listing" [disabled]="isSubmitting">
+                <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2"></span>
+                Post Listing
+            </button>
+        </div>
+    </form>
+</div>

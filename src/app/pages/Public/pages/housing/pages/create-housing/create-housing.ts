@@ -366,7 +366,7 @@ export class CreateHousingComponent implements OnInit {
                     this.toastService.success(msg);
                     const newId = res.data?.id || res.data?.housingId;
                     if (newId) {
-                        this.router.navigate(['/public/housing/details', newId]);
+                        this.router.navigate(['/public/housing/listing-authorization'], { queryParams: { id: newId } });
                     } else {
                         this.router.navigate(['/public/housing/home']);
                     }
