@@ -10,10 +10,11 @@ export class ImageService {
     private readonly apiBaseUrl3 = environment.apiBaseUrl3;
 
     // Global Default Assets
-    readonly DEFAULT_POST = 'assets/images/default-post.jpg';
-    readonly DEFAULT_AVATAR = 'assets/images/default-avatar.png';
-    readonly DEFAULT_HOUSING = 'housing-placeholder.png'; // Professional housing fallback
-    readonly PLACEHOLDER = 'assets/images/default-post.jpg';
+    // Global Default Assets
+    readonly DEFAULT_POST = 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&w=800&q=80'; // Abstract Gradient
+    readonly DEFAULT_AVATAR = 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?auto=format&fit=crop&w=200&q=80'; // Generic User
+    readonly DEFAULT_HOUSING = 'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?auto=format&fit=crop&w=800&q=80'; // NYC Architecture
+    readonly PLACEHOLDER = 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&w=800&q=80';
 
     constructor() { }
 

@@ -24,6 +24,7 @@ export class HousingHomeComponent implements OnInit {
     heroPost: any = null;
     homesForSale: any[] = [];
     homesForRent: any[] = [];
+    textOnlyListings: any[] = [];
     rssPosts: any[] = [];
     discussionPosts: any[] = [];
     allPosts: any[] = [];
@@ -46,11 +47,41 @@ export class HousingHomeComponent implements OnInit {
                         this.heroPost = data.hero ? this.processPost(data.hero) : null;
 
                         // Process Lists
-                        this.homesForSale = data.forSale || [];
-                        this.homesForRent = data.forRenting || [];
+                        const rawSale = data.forSale || [];
+                        const rawRent = data.forRenting || [];
+                        const rawAll = data.all || [];
+
+                        // Helper: Strict Media Check
+                        const hasMedia = (item: any) => {
+                            if (!item) return false;
+                            const hasImg = item.imageUrl && item.imageUrl.trim() !== '';
+                            const hasAtt = item.attachments && item.attachments.length > 0 && item.attachments[0].url;
+                            return hasImg || hasAtt;
+                        };
+
+                        // 1. Process Hero
+                        let hero = data.hero ? this.processPost(data.hero) : null;
+                        if (hero && !hasMedia(hero)) {
+                            this.textOnlyListings.push(hero);
+                            this.heroPost = null;
+                        } else {
+                            this.heroPost = hero;
+                        }
+
+                        this.homesForSale = rawSale.filter(hasMedia);
+                        this.homesForRent = rawRent.filter(hasMedia);
+
+                        // Text-Only Strategy: Anything without media goes here
+                        const saleNoImg = rawSale.filter((item: any) => !hasMedia(item));
+                        const rentNoImg = rawRent.filter((item: any) => !hasMedia(item));
+                        // Note: We don't add rawAll no-media here to avoid duplicates if 'all' overlaps with sale/rent
+
+                        this.textOnlyListings = [...saleNoImg, ...rentNoImg];
                         this.rssPosts = (data.rss || []).map((p: any) => this.processPost(p));
                         this.discussionPosts = (data.discussions || []).map((p: any) => this.processPost(p));
-                        this.allPosts = (data.all || []).map((p: any) => this.processPost(p));
+
+                        // Filter 'All Posts' to only show media-rich content in the main grid
+                        this.allPosts = rawAll.filter(hasMedia).map((p: any) => this.processPost(p));
                     }
                 } catch (error) {
                     console.error('Error processing housing data:', error);
