@@ -141,10 +141,8 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label-premium">Floor Level</label>
-                        <select class="form-select-premium" formControlName="FloorLevel">
-                            <option [ngValue]="null">Select Floor</option>
-                            <option *ngFor="let fl of floors" [value]="fl">{{ fl }}</option>
-                        </select>
+                        <input type="text" class="form-control-premium" formControlName="FloorLevel"
+                            placeholder="Enter Floor (e.g. 5, Roof)">
                     </div>
                 </div>
                 <div class="row g-4 mb-4">

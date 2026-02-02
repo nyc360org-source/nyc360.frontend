@@ -108,7 +108,7 @@ export class CreateSaleComponent implements OnInit {
     ];
 
     years: number[] = [];
-    floors: string[] = ['Ground', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '10+'];
+
     boroughs = ['Manhattan', 'Brooklyn', 'Queens', 'The Bronx', 'Staten Island'];
 
     // --- State ---
