@@ -139,7 +139,16 @@
                         <input type="text" class="form-control-premium" formControlName="UnitNumber"
                             placeholder="Enter Unit Number">
                     </div>
-                    <div class="col-md-6" formGroupName="Address">
+                    <div class="col-md-6">
+                        <label class="form-label-premium">Floor Level</label>
+                        <select class="form-select-premium" formControlName="FloorLevel">
+                            <option [ngValue]="null">Select Floor</option>
+                            <option *ngFor="let fl of floors" [value]="fl">{{ fl }}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row g-4 mb-4">
+                    <div class="col-12" formGroupName="Address">
                         <label class="form-label-premium">Google Map (optional)</label>
                         <input type="text" class="form-control-premium" formControlName="GoogleMap"
                             placeholder="Add Google Map Share Link">
@@ -257,13 +266,7 @@
                         <label class="form-label-premium">Sqft</label>
                         <input type="number" class="form-control-premium" formControlName="Sqft" placeholder="1200">
                     </div>
-                    <div class="col-md-3">
-                        <label class="form-label-premium">Floor Level</label>
-                        <select class="form-select-premium" formControlName="FloorLevel">
-                            <option [ngValue]="null">Select Floor</option>
-                            <option *ngFor="let fl of floors" [value]="fl">{{ fl }}</option>
-                        </select>
-                    </div>
+
                 </div>
 
                 <div class="row g-4">
