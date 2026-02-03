@@ -684,7 +684,7 @@ $card-shadow: 0 10px 40px rgba(188, 157, 95, 0.08);
     &:hover .dropdown-menu-custom {
         opacity: 1;
         visibility: visible;
-        transform: translateY(10px);
+        transform: translate(-50%, 10px);
     }
 
     .dropdown-toggle-btn {
@@ -856,9 +856,10 @@ $card-shadow: 0 10px 40px rgba(188, 157, 95, 0.08);
 }
 
 // --- 🔒 Locked States ---
-.nav-btn.locked {
+.nav-btn.locked,
+.dropdown-item-custom.locked {
     opacity: 0.7;
-    cursor: pointer; // Still pointer because it triggers modal
+    cursor: pointer;
 
     i {
         color: #999 !important;

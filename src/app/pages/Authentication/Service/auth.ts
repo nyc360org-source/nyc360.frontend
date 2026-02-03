@@ -97,14 +97,25 @@ export class AuthService {
   }
 
   /**
-   * ✅ Check if user has specific 'housing' permission/tag in token
+   * ✅ Check if user has specific 'housing' permission/tag in token or full user info
    */
   hasHousingPermission(): boolean {
     const user = this.currentUser$.value;
     if (!user) return false;
     if (this.hasRole('SuperAdmin')) return true;
+
+    // 1. Check JWT permissions
     const perms = user.permissions || [];
-    return perms.includes('housing');
+    if (perms.includes('housing')) return true;
+
+    // 2. Check tags in full user info
+    const fullInfo = this.fullUserInfoSubject.value;
+    if (fullInfo && fullInfo.tags) {
+      const housingTagIds = [1854, 1855, 1856];
+      return fullInfo.tags.some(tag => housingTagIds.includes(tag.id));
+    }
+
+    return false;
   }
 
   // ============================================================

@@ -12,35 +12,34 @@
             <a routerLink="/public/housing/my-requests" class="nav-btn" routerLinkActive="active">
                 <i class="bi bi-chat-left-text me-2"></i> My Inquiries
             </a>
-            <a routerLink="/public/housing/agent/dashboard" class="nav-btn" routerLinkActive="active"
-                (click)="handleContributorAction($event)" [class.locked]="!authService.hasHousingPermission()">
-                <i class="bi" [ngClass]="!authService.hasHousingPermission() ? 'bi-lock-fill' : 'bi-speedometer2'"></i>
+            <a routerLink="/public/housing/agent/dashboard" class="nav-btn" routerLinkActive="active">
+                <i class="bi bi-speedometer2"></i>
                 Contributer Dashboard
             </a>
             <!-- Dropdown for Contributor Activity -->
-            <div class="nav-dropdown-wrapper" [class.is-locked]="!authService.hasHousingPermission()">
-                <button class="nav-btn dropdown-toggle-btn" (click)="handleContributorAction($event)">
-                    <i class="bi" [ngClass]="!authService.hasHousingPermission() ? 'bi-lock-fill' : 'bi-activity'"></i>
+            <div class="nav-dropdown-wrapper">
+                <button class="nav-btn dropdown-toggle-btn">
+                    <i class="bi bi-activity"></i>
                     Contributer Activity <i class="bi bi-chevron-down ms-2 small-arrow"></i>
                 </button>
-                <div class="dropdown-menu-custom" *ngIf="authService.hasHousingPermission()">
-
-
-
-                    <a routerLink="/public/housing/create/sale" class="dropdown-item-custom">
-                        <i class="bi bi-house-door"></i> Publish News Article
+                <div class="dropdown-menu-custom">
+                    <a routerLink="/public/housing/create/sale" class="dropdown-item-custom"
+                        (click)="handleContributorAction($event)" [class.locked]="!authService.hasHousingPermission()">
+                        <i class="bi"
+                            [ngClass]="!authService.hasHousingPermission() ? 'bi-lock-fill' : 'bi-house-door'"></i>
+                        Publish News Article
                     </a>
 
-                    <a routerLink="/public/housing/create/sale" class="dropdown-item-custom">
-                        <i class="bi bi-broadcast"></i> Connect RSS Feed
+                    <a routerLink="/public/housing/create/sale" class="dropdown-item-custom"
+                        (click)="handleContributorAction($event)" [class.locked]="!authService.hasHousingPermission()">
+                        <i class="bi"
+                            [ngClass]="!authService.hasHousingPermission() ? 'bi-lock-fill' : 'bi-broadcast'"></i>
+                        Connect RSS Feed
                     </a>
 
                     <a routerLink="/public/housing/create/renting" class="dropdown-item-custom">
                         <i class="bi bi-key"></i> House Listing
                     </a>
-
-
-
                 </div>
             </div>
             <a routerLink="/public/posts/create" class="nav-btn" routerLinkActive="active">

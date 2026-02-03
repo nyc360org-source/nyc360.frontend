@@ -1,4 +1,5 @@
-import { Component, OnInit, inject, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef, ChangeDetectionStrategy, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { HousingViewService } from '../../service/housing-view.service';
@@ -9,8 +10,6 @@ import { AuthService } from '../../../../../Authentication/Service/auth';
 import { VerificationService } from '../../../settings/services/verification.service';
 import { ToastService } from '../../../../../../shared/services/toast.service';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ImgFallbackDirective } from '../../../../../../shared/directives/img-fallback.directive';
-
 
 @Component({
     selector: 'app-housing-home',
@@ -29,6 +28,7 @@ export class HousingHomeComponent implements OnInit {
     private verificationService = inject(VerificationService);
     private toastService = inject(ToastService);
     private fb = inject(FormBuilder);
+    private destroyRef = inject(DestroyRef);
 
     // --- Data ---
     heroPost: any = null;
@@ -66,6 +66,15 @@ export class HousingHomeComponent implements OnInit {
     ngOnInit(): void {
         this.initVerificationForm();
         this.loadData();
+        this.setupAuthSubscription();
+    }
+
+    private setupAuthSubscription() {
+        this.authService.fullUserInfo$
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(() => {
+                this.cdr.markForCheck();
+            });
     }
 
     private initVerificationForm() {
