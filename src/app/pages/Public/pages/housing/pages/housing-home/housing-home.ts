@@ -4,7 +4,6 @@ import { RouterModule } from '@angular/router';
 import { HousingViewService } from '../../service/housing-view.service';
 import { environment } from '../../../../../../environments/environment';
 import { ImageService } from '../../../../../../shared/services/image.service';
-import { ImgFallbackDirective } from '../../../../../../shared/directives/img-fallback.directive';
 import { AuthService } from '../../../../../Authentication/Service/auth';
 import { VerificationService } from '../../../settings/services/verification.service';
 import { ToastService } from '../../../../../../shared/services/toast.service';
@@ -43,8 +42,13 @@ export class HousingHomeComponent implements OnInit {
     showVerificationModal = false;
     isSubmittingVerification = false;
     verificationForm!: FormGroup;
-    housingTagId: number = 4; // Found from category list, but will verify via search
     selectedDocFile: File | null = null;
+
+    occupations = [
+        { id: 1854, name: 'Housing Advisor' },
+        { id: 1855, name: 'Housing Organization' },
+        { id: 1856, name: 'Licensed Agent' }
+    ];
 
     documentTypes = [
         { id: 1, name: 'Government ID' },
@@ -59,25 +63,17 @@ export class HousingHomeComponent implements OnInit {
     ngOnInit(): void {
         this.initVerificationForm();
         this.loadData();
-        this.resolveHousingTagId();
     }
 
     private initVerificationForm() {
         this.verificationForm = this.fb.group({
+            occupationId: [1856, Validators.required], // Default to Licensed Agent
             reason: ['', [Validators.required, Validators.minLength(10)]],
             documentType: [1, Validators.required],
             file: [null, Validators.required]
         });
     }
 
-    private resolveHousingTagId() {
-        this.verificationService.searchTags('housing').subscribe({
-            next: (res: any) => {
-                const tag = (res.data || []).find((t: any) => t.name.toLowerCase() === 'housing');
-                if (tag) this.housingTagId = tag.id;
-            }
-        });
-    }
 
     handleContributorAction(event: Event) {
         if (!this.authService.hasHousingPermission()) {
@@ -103,7 +99,7 @@ export class HousingHomeComponent implements OnInit {
 
         this.isSubmittingVerification = true;
         const data = {
-            TagId: this.housingTagId,
+            TagId: this.verificationForm.value.occupationId,
             Reason: this.verificationForm.value.reason,
             DocumentType: this.verificationForm.value.documentType,
             File: this.selectedDocFile
@@ -115,10 +111,14 @@ export class HousingHomeComponent implements OnInit {
                 if (res.isSuccess || res.IsSuccess) {
                     this.toastService.success('Verification request submitted successfully!');
                     this.showVerificationModal = false;
-                    this.verificationForm.reset({ documentType: 1 });
+                    this.verificationForm.reset({
+                        occupationId: 1856,
+                        documentType: 1
+                    });
                     this.selectedDocFile = null;
                 } else {
-                    this.toastService.error(res.error?.message || 'Submission failed');
+                    const errorMessage = res.error?.message || res.Error?.Message || 'Submission failed';
+                    this.toastService.error(errorMessage);
                 }
                 this.cdr.markForCheck();
             },

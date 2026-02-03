@@ -308,6 +308,21 @@
 
             <div class="modal-body-premium">
                 <form [formGroup]="verificationForm" (ngSubmit)="submitVerification()">
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label-premium">Occupation / Role *</label>
+                            <select class="form-control-premium" formControlName="occupationId">
+                                <option *ngFor="let occ of occupations" [value]="occ.id">{{occ.name}}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label-premium">Document Type *</label>
+                            <select class="form-control-premium" formControlName="documentType">
+                                <option *ngFor="let type of documentTypes" [value]="type.id">{{type.name}}</option>
+                            </select>
+                        </div>
+                    </div>
+
                     <div class="form-group mb-4">
                         <label class="form-label-premium">Reason for Request *</label>
                         <textarea class="form-control-premium" formControlName="reason"
@@ -319,13 +334,7 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-md-6 mb-4">
-                            <label class="form-label-premium">Document Type *</label>
-                            <select class="form-control-premium" formControlName="documentType">
-                                <option *ngFor="let type of documentTypes" [value]="type.id">{{type.name}}</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6 mb-4">
+                        <div class="col-md-12 mb-4">
                             <label class="form-label-premium">Supporting Document *</label>
                             <div class="file-upload-wrapper">
                                 <input type="file" (change)="onFileSelected($event)" class="d-none" #docInput>

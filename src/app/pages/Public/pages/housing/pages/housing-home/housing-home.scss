@@ -896,10 +896,18 @@ $card-shadow: 0 10px 40px rgba(188, 157, 95, 0.08);
     background: #fff;
     width: 100%;
     max-width: 650px;
+    max-height: 90vh;
     border-radius: 24px;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
     box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
     animation: modal-slide-up 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    @media (max-width: 576px) {
+        max-height: 95vh;
+        border-radius: 20px;
+    }
 }
 
 @keyframes modal-slide-up {
@@ -916,10 +924,15 @@ $card-shadow: 0 10px 40px rgba(188, 157, 95, 0.08);
 
 .modal-header-premium {
     background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
-    padding: 40px 30px 30px;
+    padding: 35px 30px 25px;
     text-align: center;
     color: #fff;
     position: relative;
+    flex-shrink: 0;
+
+    @media (max-width: 576px) {
+        padding: 25px 20px 20px;
+    }
 
     .icon-badge {
         width: 64px;
@@ -976,6 +989,12 @@ $card-shadow: 0 10px 40px rgba(188, 157, 95, 0.08);
 .modal-body-premium {
     padding: 30px;
     background: #fff;
+    overflow-y: auto;
+    flex: 1;
+
+    @media (max-width: 576px) {
+        padding: 20px;
+    }
 }
 
 .form-label-premium {
@@ -1028,7 +1047,13 @@ $card-shadow: 0 10px 40px rgba(188, 157, 95, 0.08);
 .modal-footer-premium {
     display: flex;
     gap: 15px;
-    margin-top: 20px;
+    margin-top: 10px;
+    padding-bottom: 5px;
+
+    @media (max-width: 576px) {
+        flex-direction: column-reverse;
+        gap: 10px;
+    }
 
     .btn-cancel {
         flex: 1;

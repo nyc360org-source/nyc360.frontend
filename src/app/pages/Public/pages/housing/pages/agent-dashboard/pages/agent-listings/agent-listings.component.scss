@@ -1,3 +1,4 @@
+@use "sass:color";
 $accent: #BC9D5F;
 $text-primary: #1a1a1a;
 $text-secondary: #6c757d;
@@ -46,7 +47,7 @@ $shadow-md: 0 10px 30px rgba(0, 0, 0, 0.06);
         box-shadow: $shadow-sm;
 
         &:hover {
-            background: lighten($text-primary, 10%);
+            background: color.adjust($text-primary, $lightness: 10%);
             transform: translateY(-2px);
             box-shadow: $shadow-md;
         }
@@ -367,7 +368,7 @@ $shadow-md: 0 10px 30px rgba(0, 0, 0, 0.06);
     transition: all 0.3s;
 
     &:hover {
-        background: darken($accent, 10%);
+        background: color.adjust($accent, $lightness: -10%);
         transform: translateY(-2px);
     }
 }
