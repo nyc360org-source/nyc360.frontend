@@ -20,7 +20,11 @@ export class AgentRequestComponent implements OnInit {
     private toastService = inject(ToastService);
 
     @Input() postId: number = 0;
+    @Input() contentTitle: string | null = null;
+    @Input() contentImage: string | null = null;
     @Output() close = new EventEmitter<void>();
+
+    @Output() requestSubmitted = new EventEmitter<void>();
 
     form: FormGroup;
     isSubmitting = false;
@@ -72,9 +76,14 @@ export class AgentRequestComponent implements OnInit {
     postImage: string | null = null;
 
     ngOnInit() {
+        if (this.contentTitle) this.postTitle = this.contentTitle;
+        if (this.contentImage) this.postImage = this.contentImage;
+
         if (this.postId) {
             this.form.patchValue({ PostId: this.postId });
-            this.loadPostDetails(this.postId);
+            if (!this.postTitle) {
+                this.loadPostDetails(this.postId);
+            }
         } else {
             this.route.queryParams.subscribe(params => {
                 if (params['postId']) {
@@ -183,19 +192,39 @@ export class AgentRequestComponent implements OnInit {
         this.errorMessage = null;
         const rawData = this.form.value;
 
+        // Helpers for formatting
+        const toDateOnly = (dateStr: string): string | null => {
+            if (!dateStr) return null;
+            return dateStr; // Input type="date" returns yyyy-MM-dd
+        };
+
+        const toTimeOnly = (timeStr: string): string | null => {
+            if (!timeStr) return null;
+            if (timeStr.length === 5) return timeStr + ':00'; // Append seconds if missing
+            return timeStr;
+        };
+
         const payload = {
             PostId: Number(rawData.PostId) || 0,
             Name: rawData.Name,
             Email: rawData.Email,
             PhoneNumber: rawData.PhoneNumber,
+
             PreferredContactType: Number(rawData.PreferredContactType),
+            PreferredContactDate: toDateOnly(rawData.PrefContactDate)!, // Required field
+            PreferredContactTime: toTimeOnly(rawData.PrefContactTime)!, // Required field
+
             HouseholdType: Number(rawData.HouseholdType),
-            PreferredContactDate: this.mergeDateTime(rawData.PrefContactDate, rawData.PrefContactTime),
-            MoveInDate: this.formatDate(rawData.MoveInDate),
-            MoveOutDate: this.formatDate(rawData.MoveOutDate),
-            ScheduleVirtual: this.mergeDateTime(rawData.ScheduleVirtualDate, rawData.VirtualTime),
-            TimeWindow: this.mergeDateTime(rawData.InPersonTourDate || rawData.ScheduleVirtualDate || rawData.PrefContactDate, rawData.InPersonTime || rawData.VirtualTime),
-            InPersonTour: this.mergeDateTime(rawData.InPersonTourDate, rawData.InPersonTime),
+
+            MoveInDate: toDateOnly(rawData.MoveInDate)!, // Required
+            MoveOutDate: toDateOnly(rawData.MoveOutDate)!, // Required
+
+            ScheduleVirtualDate: toDateOnly(rawData.ScheduleVirtualDate),
+            ScheduleVirtualTimeWindow: toTimeOnly(rawData.VirtualTime),
+
+            InPersonTourDate: toDateOnly(rawData.InPersonTourDate),
+            InPersonTourTimeWindow: toTimeOnly(rawData.InPersonTime),
+
             Message: rawData.Message
         };
 
@@ -205,6 +234,7 @@ export class AgentRequestComponent implements OnInit {
                 if (res.isSuccess) {
                     this.isSuccess = true;
                     this.toastService.success('Request submitted successfully!');
+                    this.requestSubmitted.emit();
                     this.cancel(); // Close modal immediately after success
                 } else {
                     this.errorMessage = res.error?.message || 'Something went wrong. Please try again.';
@@ -217,30 +247,6 @@ export class AgentRequestComponent implements OnInit {
                 this.toastService.error(this.errorMessage);
             }
         });
-    }
-
-    private mergeDateTime(dateStr: any, timeStr: any): string | undefined {
-        if (!dateStr && !timeStr) return undefined;
-
-        // If we have time but no date, use today's date as a base to satisfy the DateTime requirement
-        const baseDate = dateStr ? new Date(dateStr) : new Date();
-        if (isNaN(baseDate.getTime())) return undefined;
-
-        if (!timeStr) return baseDate.toISOString();
-
-        try {
-            const [hours, minutes] = timeStr.split(':').map(Number);
-            baseDate.setHours(hours || 0, minutes || 0, 0, 0);
-            return baseDate.toISOString();
-        } catch (e) {
-            return baseDate.toISOString();
-        }
-    }
-
-    private formatDate(dateStr: any): string | undefined {
-        if (!dateStr) return undefined;
-        const date = new Date(dateStr);
-        return !isNaN(date.getTime()) ? date.toISOString() : undefined;
     }
 
     resetForm() {

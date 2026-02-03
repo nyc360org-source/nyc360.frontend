@@ -1,5 +1,5 @@
-import { Component, OnInit, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Component, OnInit, inject, ChangeDetectionStrategy, ChangeDetectorRef, PLATFORM_ID, Inject } from '@angular/core';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { HousingService } from '../../service/housing.service';
 import { ImageService } from '../../../../../../shared/services/image.service';
@@ -11,10 +11,12 @@ import { AuthService } from '../../../../../Authentication/Service/auth';
 import { HousingDetailsComponent as HousingDetailsType } from './housing-details';
 import { AgentRequestComponent } from '../agent-request/agent-request.component';
 
+import { HousingRequestStatusComponent } from '../request-status/request-status.component';
+
 @Component({
     selector: 'app-housing-details',
     standalone: true,
-    imports: [CommonModule, RouterModule, AgentRequestComponent],
+    imports: [CommonModule, RouterModule, ImgFallbackDirective, AgentRequestComponent, HousingRequestStatusComponent],
     templateUrl: './housing-details.html',
     styleUrls: ['./housing-details.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
@@ -26,6 +28,7 @@ export class HousingDetailsComponent implements OnInit {
     protected imageService = inject(ImageService);
     private router = inject(Router);
     private authService = inject(AuthService);
+    private platformId = inject(PLATFORM_ID);
 
     property: any = null;
     similarProperties: any[] = [];
@@ -65,7 +68,10 @@ export class HousingDetailsComponent implements OnInit {
     loadDetails(id: string) {
         this.isLoading = true;
         this.cdr.markForCheck();
-        window.scrollTo(0, 0);
+
+        if (isPlatformBrowser(this.platformId)) {
+            window.scrollTo(0, 0);
+        }
 
         this.housingService.getHousingDetails(id).subscribe({
             next: (res: any) => {
@@ -134,6 +140,7 @@ export class HousingDetailsComponent implements OnInit {
                         videos: processedAttachments.filter((a: any) => a.type === 'video'),
                         documents: processedAttachments.filter((a: any) => a.type === 'file')
                     };
+                    this.requestInfo = res.data.request;
                     this.similarProperties = res.data.similar || [];
 
                     // Set Initial Active Media
@@ -184,6 +191,12 @@ export class HousingDetailsComponent implements OnInit {
         { id: 1, name: 'Couple' },
         { id: 2, name: 'Single Family' },
         { id: 3, name: 'Multi Family' }
+    ];
+
+    contactTypes = [
+        { id: 0, name: 'Email' },
+        { id: 1, name: 'Phone' },
+        { id: 2, name: 'Text' }
     ];
 
     heatingSystems = [
@@ -309,6 +322,25 @@ export class HousingDetailsComponent implements OnInit {
 
     closeAgentRequest() {
         this.showAgentRequestModal = false;
+        this.cdr.markForCheck();
+    }
+
+    handleRequestSubmitted() {
+        if (isPlatformBrowser(this.platformId)) {
+            window.location.reload();
+        }
+    }
+
+    requestInfo: any = null;
+    showRequestInfoModal = false;
+
+    openRequestInfo() {
+        this.showRequestInfoModal = true;
+        this.cdr.markForCheck();
+    }
+
+    closeRequestInfo() {
+        this.showRequestInfoModal = false;
         this.cdr.markForCheck();
     }
 }
