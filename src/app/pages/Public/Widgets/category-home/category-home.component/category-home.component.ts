@@ -42,6 +42,9 @@ export class CategoryHomeComponent implements OnInit {
   homesForRent: CategoryPost[] = [];
   officialPosts: CategoryPost[] = [];
 
+  // --- Dynamic Buttons ---
+  headerButtons: { label: string, link: any[], queryParams?: any, icon?: string }[] = [];
+
   ngOnInit(): void {
     this.route.params.subscribe(params => {
       const path = params['categoryPath'];
@@ -57,11 +60,45 @@ export class CategoryHomeComponent implements OnInit {
       this.activeTheme = categoryEntry[1];
       const divisionId = Number(categoryEntry[0]);
       this.isHousingCategory = (divisionId === 4); // CategoryEnum.Housing
+
+      this.resolveHeaderButtons(divisionId, path);
       this.fetchData(divisionId);
     } else {
       this.activeTheme = { label: 'News', color: '#333' }; // Fallback
       this.isHousingCategory = false;
       this.isLoading = false;
+      this.resolveHeaderButtons(0, 'news');
+    }
+  }
+
+  resolveHeaderButtons(divisionId: number, path: string) {
+    // Default Buttons
+    const defaults = [
+      { label: 'Feed', link: ['/public/feed', path], icon: 'bi-rss' },
+      { label: 'Initiatives', link: ['/public/initiatives', path], icon: 'bi-lightbulb' },
+      { label: 'Create Post', link: ['/public/posts/create'], icon: 'bi-pencil-square' }
+    ];
+
+    // Custom Buttons per Category (Example: Housing = 4)
+    if (divisionId === 4) {
+      this.headerButtons = [
+        { label: 'Feed', link: ['/public/feed', path], icon: 'bi-rss' },
+        { label: 'Homes For Sale', link: ['/public/housing/sale'], icon: 'bi-house' },
+        { label: 'Homes For Rent', link: ['/public/housing/rent'], icon: 'bi-key' },
+        { label: 'Create Listing', link: ['/public/housing/create'], icon: 'bi-plus-circle' }
+      ];
+    }
+    // Example: Health = 2 (Assuming ID)
+    else if (divisionId === 3) { // Education example
+      this.headerButtons = [
+        { label: 'Feed', link: ['/public/feed', path], icon: 'bi-rss' },
+        { label: 'Schools', link: ['/public/education/schools'], icon: 'bi-building' },
+        { label: 'Tutors', link: ['/public/education/tutors'], icon: 'bi-person-video3' },
+        { label: 'Create Post', link: ['/public/posts/create'], icon: 'bi-pencil-square' }
+      ];
+    }
+    else {
+      this.headerButtons = defaults;
     }
   }
 

@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { environment } from '../../../../../../environments/environment';
 import { CommunityService } from '../../services/community';
@@ -17,6 +17,10 @@ export class CommunityComponent implements OnInit {
   private communityService = inject(CommunityService);
   private cdr = inject(ChangeDetectorRef);
   protected readonly environment = environment;
+
+  // UI State
+  isActivityDropdownOpen = false;
+  activeSubMenu: string | null = null;
 
   // Data Containers
   suggestions: CommunitySuggestion[] = [];
@@ -101,5 +105,24 @@ export class CommunityComponent implements OnInit {
 
     // لو صورة من السيرفر (posts)
     return `${this.environment.apiBaseUrl3}/${cleanUrl}`;
+  }
+
+  toggleActivityDropdown(event: Event) {
+    event.stopPropagation();
+    this.isActivityDropdownOpen = !this.isActivityDropdownOpen;
+    if (!this.isActivityDropdownOpen) {
+      this.activeSubMenu = null;
+    }
+  }
+
+  toggleSubMenu(menuName: string, event: Event) {
+    event.stopPropagation();
+    this.activeSubMenu = this.activeSubMenu === menuName ? null : menuName;
+  }
+
+  @HostListener('document:click')
+  closeDropdownHandler() {
+    this.isActivityDropdownOpen = false;
+    this.activeSubMenu = null;
   }
 }

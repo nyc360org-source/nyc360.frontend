@@ -96,6 +96,17 @@ export class AuthService {
     return userRoles.includes(targetRole);
   }
 
+  /**
+   * ✅ Check if user has specific 'housing' permission/tag in token
+   */
+  hasHousingPermission(): boolean {
+    const user = this.currentUser$.value;
+    if (!user) return false;
+    if (this.hasRole('SuperAdmin')) return true;
+    const perms = user.permissions || [];
+    return perms.includes('housing');
+  }
+
   // ============================================================
   // 3. API CALLS (ACCOUNT MANAGEMENT Only)
   // ============================================================
