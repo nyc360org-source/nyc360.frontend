@@ -8,6 +8,7 @@ import { environment } from '../../../../../environments/environment';
 import { PostsService } from '../services/posts';
 import { CATEGORY_LIST } from '../../../../../pages/models/category-list';
 import { ToastService } from '../../../../../shared/services/toast.service';
+import { CategoryContextService } from '../../../../../shared/services/category-context.service';
 
 @Component({
   selector: 'app-post-form',
@@ -24,6 +25,7 @@ export class PostFormComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private toastService = inject(ToastService);
   private cdr = inject(ChangeDetectorRef);
+  private categoryContext = inject(CategoryContextService);
   protected readonly environment = environment;
 
   form: FormGroup;
@@ -45,7 +47,8 @@ export class PostFormComponent implements OnInit {
   ];
 
   selectedFiles: File[] = [];
-  imagePreviews: string[] = [];
+  allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'video/mp4', 'video/webm', 'video/ogg'];
+  imagePreviews: { url: string, isVideo: boolean }[] = [];
   existingAttachments: any[] = [];
   removedAttachmentIds: number[] = [];
 
@@ -65,14 +68,38 @@ export class PostFormComponent implements OnInit {
     this.form = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(5)]],
       content: ['', [Validators.required, Validators.minLength(20)]],
-      category: [null, Validators.required],
+      category: [0, Validators.required], // Default to 0 (Community)
       type: [0, Validators.required],
-      locationSearch: [''] // Display only input
+      locationSearch: ['']
     });
   }
 
+  getCategoryName(id: any): string {
+    const cat = this.categories.find(c => c.id == id);
+    return cat ? cat.name : 'Unknown';
+  }
+
+  predefinedCategory: number | null = null;
+
   ngOnInit() {
     this.setupSearch();
+
+    this.route.queryParams.subscribe(queryParams => {
+      if (queryParams['category']) {
+        this.predefinedCategory = +queryParams['category'];
+      } else {
+        // Fallback to context
+        const contextCat = this.categoryContext.getCategory();
+        if (contextCat !== null) {
+          this.predefinedCategory = contextCat;
+        }
+      }
+
+      if (this.predefinedCategory !== null) {
+        this.form.patchValue({ category: this.predefinedCategory });
+      }
+    });
+
     this.route.params.subscribe(params => {
       if (params['id']) {
         this.isEditMode = true;
@@ -170,14 +197,27 @@ export class PostFormComponent implements OnInit {
   // --- Attachments ---
   onFileSelect(event: any) {
     if (event.target.files && event.target.files.length > 0) {
-      const files = Array.from(event.target.files) as File[];
-      this.selectedFiles = [...this.selectedFiles, ...files];
+      const allFiles = Array.from(event.target.files) as File[];
 
-      files.forEach(file => {
+      // Filter valid files
+      const validFiles = allFiles.filter(file => {
+        const isValid = file.type.startsWith('image/') || file.type.startsWith('video/');
+        if (!isValid) {
+          this.toastService.error(`File ${file.name} is not a valid image or video.`);
+        }
+        return isValid;
+      });
+
+      this.selectedFiles = [...this.selectedFiles, ...validFiles];
+
+      validFiles.forEach(file => {
         const reader = new FileReader();
         reader.onload = (e: any) => {
-          this.imagePreviews.push(e.target.result);
-          this.cdr.detectChanges(); // Use CDR if needed, adding import if not there
+          this.imagePreviews.push({
+            url: e.target.result,
+            isVideo: file.type.startsWith('video/')
+          });
+          this.cdr.detectChanges();
         };
         reader.readAsDataURL(file);
       });
@@ -259,7 +299,7 @@ export class PostFormComponent implements OnInit {
       category: this.form.value.category,
       type: this.form.value.type,
       locationId: this.selectedLocation ? this.selectedLocation.id : 0, // 0 or null if not selected but required?
-      tags: this.selectedTags.map(t => t.id) // Send IDs array
+      tags: this.selectedTags.map((t: any) => t.id) // Send IDs array
     };
 
     let request$: Observable<any>;

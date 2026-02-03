@@ -7,6 +7,7 @@ import { CATEGORY_THEMES } from '../../feeds/models/categories';
 import { environment } from '../../../../../environments/environment';
 import { ImageService } from '../../../../../shared/services/image.service';
 import { ImgFallbackDirective } from '../../../../../shared/directives/img-fallback.directive';
+import { CategoryContextService } from '../../../../../shared/services/category-context.service';
 
 @Component({
   selector: 'app-category-home',
@@ -20,6 +21,7 @@ export class CategoryHomeComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private homeService = inject(CategoryHomeService);
   private cdr = inject(ChangeDetectorRef);
+  private categoryContext = inject(CategoryContextService);
   protected readonly environment = environment;
   protected imageService = inject(ImageService);
 
@@ -61,6 +63,9 @@ export class CategoryHomeComponent implements OnInit {
       const divisionId = Number(categoryEntry[0]);
       this.isHousingCategory = (divisionId === 4); // CategoryEnum.Housing
 
+      // Update global context
+      this.categoryContext.setCategory(divisionId);
+
       this.resolveHeaderButtons(divisionId, path);
       this.fetchData(divisionId);
     } else {
@@ -77,7 +82,9 @@ export class CategoryHomeComponent implements OnInit {
       this.headerButtons = this.activeTheme.topLinks.map((link: any) => ({
         label: link.label,
         link: [link.route], // Wrap string route in array for routerLink
-        icon: link.icon
+        icon: link.icon,
+        // Inject category ID if it's the create post route
+        queryParams: link.route.includes('/posts/create') ? { category: divisionId } : (link.queryParams || undefined)
       }));
       return;
     }
@@ -86,7 +93,7 @@ export class CategoryHomeComponent implements OnInit {
     const defaults = [
       { label: 'Feed', link: ['/public/feed', path], icon: 'bi-rss' },
       { label: 'Initiatives', link: ['/public/initiatives', path], icon: 'bi-lightbulb' },
-      { label: 'Create Post', link: ['/public/posts/create'], icon: 'bi-pencil-square' }
+      { label: 'Create Post', link: ['/public/posts/create'], icon: 'bi-pencil-square', queryParams: { category: divisionId } }
     ];
 
     if (divisionId === 4) { // Housing
@@ -94,14 +101,14 @@ export class CategoryHomeComponent implements OnInit {
         { label: 'Feed', link: ['/public/feed', path], icon: 'bi-rss' },
         { label: 'Homes For Sale', link: ['/public/housing/sale'], icon: 'bi-house' },
         { label: 'Homes For Rent', link: ['/public/housing/rent'], icon: 'bi-key' },
-        { label: 'Create Listing', link: ['/public/housing/create'], icon: 'bi-plus-circle' }
+        { label: 'Create Listing', link: ['/public/housing/create'], icon: 'bi-plus-circle' } // Housing create might be different
       ];
     } else if (divisionId === 3) { // Education (Example)
       this.headerButtons = [
         { label: 'Feed', link: ['/public/feed', path], icon: 'bi-rss' },
         { label: 'Schools', link: ['/public/education/schools'], icon: 'bi-building' },
         { label: 'Tutors', link: ['/public/education/tutors'], icon: 'bi-person-video3' },
-        { label: 'Create Post', link: ['/public/posts/create'], icon: 'bi-pencil-square' }
+        { label: 'Create Post', link: ['/public/posts/create'], icon: 'bi-pencil-square', queryParams: { category: divisionId } }
       ];
     } else {
       this.headerButtons = defaults;

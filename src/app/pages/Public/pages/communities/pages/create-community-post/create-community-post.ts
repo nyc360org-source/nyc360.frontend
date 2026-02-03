@@ -7,6 +7,7 @@ import { CommunityPostService } from '../../services/community-post';
 import { CreateCommunityService } from '../../services/createcommunty'; // Use this for tag search
 import { Tag } from '../../models/createcommunty';
 import { ToastService } from '../../../../../../shared/services/toast.service';
+import { CategoryContextService } from '../../../../../../shared/services/category-context.service';
 
 @Component({
   selector: 'app-create-community-post',
@@ -23,6 +24,7 @@ export class CreateCommunityPostComponent implements OnInit {
   private communityService = inject(CreateCommunityService); // For searching tags
   private cdr = inject(ChangeDetectorRef);
   private toastService = inject(ToastService);
+  private categoryContext = inject(CategoryContextService);
 
   // Data
   communityId: number = 0;
@@ -43,7 +45,16 @@ export class CreateCommunityPostComponent implements OnInit {
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
-    if (id) this.communityId = +id;
+    if (id) {
+      this.communityId = +id;
+    } else {
+      // Fallback: Check Category Context
+      // If coming from Housing (Category 4), default to Community ID 15
+      const currentCategory = this.categoryContext.getCategory();
+      if (currentCategory === 4) {
+        this.communityId = 15;
+      }
+    }
 
     // Tag Search Setup
     this.tagSearchControl.valueChanges.pipe(

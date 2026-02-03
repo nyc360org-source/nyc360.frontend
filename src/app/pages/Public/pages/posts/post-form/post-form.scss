@@ -167,6 +167,30 @@ $shadow-elegant: 0 20px 40px -15px rgba(0, 0, 0, 0.08);
     }
   }
 
+  .predefined-category-badge {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    background: #f0fdf4;
+    border: 1.5px solid #bcf0da;
+    border-radius: $radius-md;
+    color: #166534;
+    font-size: 1rem;
+
+    i {
+      font-size: 1.25rem;
+      color: #22c55e;
+    }
+
+    strong {
+      color: #1a1a1a;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+  }
+
   .error-msg {
     color: #ef4444;
     font-size: 0.8rem;
