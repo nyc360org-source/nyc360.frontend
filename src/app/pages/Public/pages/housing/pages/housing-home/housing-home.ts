@@ -10,6 +10,7 @@ import { AuthService } from '../../../../../Authentication/Service/auth';
 import { VerificationService } from '../../../settings/services/verification.service';
 import { ToastService } from '../../../../../../shared/services/toast.service';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CategoryContextService } from '../../../../../../shared/services/category-context.service';
 
 
 @Component({
@@ -64,7 +65,10 @@ export class HousingHomeComponent implements OnInit {
         { id: 99, name: 'Other' }
     ];
 
+    private categoryContext = inject(CategoryContextService);
+
     ngOnInit(): void {
+        this.categoryContext.setCategory(4); // 4 = Housing
         this.initVerificationForm();
         this.loadData();
         this.setupAuthSubscription();
