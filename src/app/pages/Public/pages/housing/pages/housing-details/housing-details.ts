@@ -135,9 +135,30 @@ export class HousingDetailsComponent implements OnInit {
                                 borough: data.borough || ''
                             }
                         },
+                        // Additional Booleans
+                        familyAndKidsFriendly: data.familyAndKidsFriendly,
+                        shortStayEligible: data.shortStayEligible,
+                        addDirectApplyLink: data.addDirectApplyLink,
+                        isFurnished: data.furnished,
+                        isPetsFriendly: data.petsFriendly,
+                        isShortTermStayAllowed: data.shortTermStayAllowed,
+                        isAcceptsHousingVouchers: data.acceptsHousingVouchers,
+                        accessibilityFriendly: data.accessibilityFriendly,
+                        smokingAllowed: data.smokingAllowed,
+
                         utilitiesIncluded: (data.utilitiesIncluded ?? data.amenities)?.map((id: number) => {
                             return this.getLabel(id, this.amenitiesOptions) || `Amenity ${id}`;
                         }) || [],
+                        // New Fields
+                        coListers: data.coListers, // Can be array or null
+                        authorization: data.authorization, // Can be object or null
+                        rentingLeaseType: data.rentingLeaseType,
+                        rentPrivacyType: data.rentPrivacyType,
+                        rentBathroomType: data.rentBathroomType,
+                        rentKitchenType: data.rentKitchenType,
+                        rentingAboutCurrentResident: data.rentingAboutCurrentResident,
+                        rentingRulesAndPolicies: data.rentingRulesAndPolicies,
+                        rentingRoommateGroupChat: data.rentingRoommateGroupChat,
                         // Media
                         attachments: processedAttachments,
                         images: processedAttachments.filter((a: any) => a.type === 'image'),
