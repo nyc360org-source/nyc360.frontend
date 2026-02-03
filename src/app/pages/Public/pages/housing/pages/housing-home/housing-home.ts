@@ -153,23 +153,23 @@ export class HousingHomeComponent implements OnInit {
                         const processedRss = (data.rss || []).map((p: any) => this.processHousingItem(p, 'rss'));
                         this.discussionPosts = (data.discussions || []).map((p: any) => this.processHousingItem(p, 'discussion'));
 
-                        // 2. Distribute to Buckets (Only items WITH media)
+                        // 2. Distribute to Buckets (Only items WITH media for grid sections)
                         this.homesForSale = processedSale.filter(hasMedia);
                         this.homesForRent = processedRent.filter(hasMedia);
-                        this.allPosts = processedAll.filter(hasMedia);
                         this.rssPosts = processedRss.filter(hasMedia);
+                        this.allPosts = processedAll.filter(hasMedia);
 
-                        // 3. Text-Only Collective: Items that failed media check from ALL sources
-                        const combinedTextOnly = [
-                            ...processedSale.filter((item: any) => !hasMedia(item)),
-                            ...processedRent.filter((item: any) => !hasMedia(item)),
-                            ...processedAll.filter((item: any) => !hasMedia(item)),
-                            ...processedRss.filter((item: any) => !hasMedia(item))
+                        // 3. Collect Text-Only Items (Items that failed media check from ALL sources)
+                        this.textOnlyListings = [
+                            ...processedSale.filter((p: any) => !hasMedia(p)),
+                            ...processedRent.filter((p: any) => !hasMedia(p)),
+                            ...processedAll.filter((p: any) => !hasMedia(p)),
+                            ...processedRss.filter((p: any) => !hasMedia(p))
                         ];
 
                         // Deduplicate by ID just in case
                         const uniqueMap = new Map();
-                        combinedTextOnly.forEach(item => uniqueMap.set(item.id, item));
+                        this.textOnlyListings.forEach(item => uniqueMap.set(item.id, item));
                         this.textOnlyListings = Array.from(uniqueMap.values());
 
                         // 4. Hero Logic

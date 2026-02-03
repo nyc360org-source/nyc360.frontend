@@ -28,18 +28,12 @@
 
 
                     <a routerLink="/public/housing/create/sale" class="dropdown-item-custom">
-                        <i class="bi bi-house-door"></i>Publish News Article
+                        <i class="bi bi-house-door"></i> Publish News Article
                     </a>
 
                     <a routerLink="/public/housing/create/sale" class="dropdown-item-custom">
                         <i class="bi bi-broadcast"></i> Connect RSS Feed
                     </a>
-
-                    <a routerLink="/public/housing/create/renting" class="dropdown-item-custom">
-                        <i class="bi bi-geo-alt"></i> List a Housing Location
-                    </a>
-
-
 
                     <a routerLink="/public/housing/create/renting" class="dropdown-item-custom">
                         <i class="bi bi-key"></i> House Listing
@@ -103,10 +97,13 @@
                 <div class="premium-card" *ngFor="let item of homesForSale"
                     [routerLink]="['/public/housing/details', item.id]">
 
-                    <div class="card-thumb" *ngIf="item.mediaUrl">
-                        <video *ngIf="isVideo(item.mediaUrl)" [src]="item.mediaUrl" muted loop onmouseover="this.play()"
-                            onmouseout="this.pause()" class="w-100 h-100 object-fit-cover"></video>
-                        <img *ngIf="!isVideo(item.mediaUrl)" [src]="item.mediaUrl" appImgFallback="housing">
+                    <div class="card-thumb">
+                        <ng-container *ngIf="item.mediaUrl">
+                            <video *ngIf="isVideo(item.mediaUrl)" [src]="item.mediaUrl" muted loop
+                                onmouseover="this.play()" onmouseout="this.pause()"
+                                class="w-100 h-100 object-fit-cover"></video>
+                            <img *ngIf="!isVideo(item.mediaUrl)" [src]="item.mediaUrl" appImgFallback="housing">
+                        </ng-container>
                         <div *ngIf="isVideo(item.mediaUrl)"
                             class="position-absolute top-50 start-50 translate-middle text-white"
                             style="pointer-events:none;"><i class="bi bi-play-circle-fill fs-3 shadow-lg"></i>
@@ -136,13 +133,16 @@
                 <a [routerLink]="['/public/housing/feed']" [queryParams]="{type: 'rent'}" class="view-all">View All</a>
             </div>
             <div class="housing-grid four-cols">
-                <div class="premium-card" *ngFor="let item of (homesForRent | slice:0:4)"
+                <div class="premium-card" *ngFor="let item of (homesForRent | slice:0:8)"
                     [routerLink]="['/public/housing/details', item.id]">
 
-                    <div class="card-thumb" *ngIf="item.mediaUrl">
-                        <video *ngIf="isVideo(item.mediaUrl)" [src]="item.mediaUrl" muted loop onmouseover="this.play()"
-                            onmouseout="this.pause()" class="w-100 h-100 object-fit-cover"></video>
-                        <img *ngIf="!isVideo(item.mediaUrl)" [src]="item.mediaUrl" appImgFallback="housing">
+                    <div class="card-thumb">
+                        <ng-container *ngIf="item.mediaUrl">
+                            <video *ngIf="isVideo(item.mediaUrl)" [src]="item.mediaUrl" muted loop
+                                onmouseover="this.play()" onmouseout="this.pause()"
+                                class="w-100 h-100 object-fit-cover"></video>
+                            <img *ngIf="!isVideo(item.mediaUrl)" [src]="item.mediaUrl" appImgFallback="housing">
+                        </ng-container>
                         <div *ngIf="isVideo(item.mediaUrl)"
                             class="position-absolute top-50 start-50 translate-middle text-white"
                             style="pointer-events:none;"><i class="bi bi-play-circle-fill fs-3 shadow-lg"></i>
@@ -171,13 +171,16 @@
                 <h3 class="section-title">NYC Housing Programs Official Posts</h3>
             </div>
             <div class="housing-grid">
-                <div class="premium-card" *ngFor="let post of (rssPosts | slice:0:3)"
+                <div class="premium-card" *ngFor="let post of (rssPosts | slice:0:6)"
                     [routerLink]="['/public/posts/details', post.id]">
 
                     <div class="card-thumb" style="height: 220px;">
-                        <video *ngIf="isVideo(post.mediaUrl)" [src]="post.mediaUrl" muted loop onmouseover="this.play()"
-                            onmouseout="this.pause()" class="w-100 h-100 object-fit-cover"></video>
-                        <img *ngIf="!isVideo(post.mediaUrl)" [src]="post.mediaUrl" appImgFallback="housing">
+                        <ng-container *ngIf="post.mediaUrl">
+                            <video *ngIf="isVideo(post.mediaUrl)" [src]="post.mediaUrl" muted loop
+                                onmouseover="this.play()" onmouseout="this.pause()"
+                                class="w-100 h-100 object-fit-cover"></video>
+                            <img *ngIf="!isVideo(post.mediaUrl)" [src]="post.mediaUrl" appImgFallback="post">
+                        </ng-container>
                         <div *ngIf="isVideo(post.mediaUrl)"
                             class="position-absolute top-50 start-50 translate-middle text-white"
                             style="pointer-events:none;"><i class="bi bi-play-circle-fill fs-3 shadow-lg"></i>
@@ -209,8 +212,6 @@
                     <h3 class="disc-title">{{ post.title }}</h3>
                     <p class="disc-body">"{{ post.displayDescription || post.content | slice:0:250 }}..."</p>
                     <div class="disc-footer">
-                        <div class="replies"><i class="bi bi-chat-left-text"></i> {{ post.stats?.comments }} replies
-                        </div>
                         <button class="btn-join-disc" [routerLink]="['/public/posts/details', post.id]">Read
                             More</button>
                     </div>
@@ -224,15 +225,17 @@
                 <h3 class="section-title">All Posts</h3>
             </div>
             <div class="housing-grid four-cols">
-                <!-- Fallback to Renting if 'all' is empty for demonstration, or use allPosts if populated -->
                 <div class="premium-card"
-                    *ngFor="let item of (allPosts.length > 0 ? allPosts : (homesForRent | slice:0:4))"
+                    *ngFor="let item of (allPosts.length > 0 ? (allPosts | slice:0:8) : (homesForRent | slice:4:12))"
                     [routerLink]="['/public/housing/details', item.id]">
 
-                    <div class="card-thumb" *ngIf="item.mediaUrl">
-                        <video *ngIf="isVideo(item.mediaUrl)" [src]="item.mediaUrl" muted loop onmouseover="this.play()"
-                            onmouseout="this.pause()" class="w-100 h-100 object-fit-cover"></video>
-                        <img *ngIf="!isVideo(item.mediaUrl)" [src]="item.mediaUrl" appImgFallback="housing">
+                    <div class="card-thumb">
+                        <ng-container *ngIf="item.mediaUrl">
+                            <video *ngIf="isVideo(item.mediaUrl)" [src]="item.mediaUrl" muted loop
+                                onmouseover="this.play()" onmouseout="this.pause()"
+                                class="w-100 h-100 object-fit-cover"></video>
+                            <img *ngIf="!isVideo(item.mediaUrl)" [src]="item.mediaUrl" appImgFallback="housing">
+                        </ng-container>
                         <div *ngIf="isVideo(item.mediaUrl)"
                             class="position-absolute top-50 start-50 translate-middle text-white"
                             style="pointer-events:none;"><i class="bi bi-play-circle-fill fs-3 shadow-lg"></i>
@@ -286,7 +289,6 @@
         </section>
     </main>
 
-    <!-- Loading State -->
     <!-- Loading State -->
     <div class="loading-overlay" *ngIf="isLoading">
         <div class="spinner-border text-gold" role="status"></div>

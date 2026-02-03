@@ -367,10 +367,14 @@
             <div class="similar-card" *ngFor="let item of similarProperties"
                 [routerLink]="['/public/housing/details', item.id]">
                 <div class="sim-img" *ngIf="item.mediaUrl">
-                    <img [src]="item.mediaUrl" appImgFallback="housing">
-                </div>
-                <div class="sim-img no-image-box" *ngIf="!item.mediaUrl">
-                    <i class="bi bi-image"></i>
+                    <video *ngIf="item.mediaType === 'video'" [src]="item.mediaUrl" muted loop autoplay playsinline
+                        onmouseover="this.play()" onmouseout="this.pause()"
+                        class="w-100 h-100 object-fit-cover"></video>
+                    <img *ngIf="item.mediaType !== 'video'" [src]="item.mediaUrl" appImgFallback="housing">
+                    <div *ngIf="item.mediaType === 'video'"
+                        class="position-absolute top-50 start-50 translate-middle text-white"
+                        style="pointer-events:none;"><i class="bi bi-play-circle-fill fs-4 shadow-lg"></i>
+                    </div>
                 </div>
                 <div class="sim-info">
                     <h4>{{ item.title }}</h4>

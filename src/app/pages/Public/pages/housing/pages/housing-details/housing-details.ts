@@ -39,7 +39,7 @@ export class HousingDetailsComponent implements OnInit {
     showAgentRequestModal = false;
 
     // Helper to determine media type
-    getMediaType(url: string): 'image' | 'video' | 'file' {
+    public getMediaType(url: string): 'image' | 'video' | 'file' {
         if (!url) return 'image';
         const lower = url.toLowerCase();
         if (lower.endsWith('.mp4') || lower.endsWith('.webm') || lower.endsWith('.ogg') || lower.endsWith('.mov')) {
@@ -48,7 +48,11 @@ export class HousingDetailsComponent implements OnInit {
         if (lower.endsWith('.pdf') || lower.endsWith('.doc') || lower.endsWith('.docx') || lower.endsWith('.txt')) {
             return 'file';
         }
-        return 'image'; // Default to image for safety
+        return 'image';
+    }
+
+    public isVideo(url: string): boolean {
+        return this.getMediaType(url) === 'video';
     }
 
     ngOnInit(): void {
@@ -141,10 +145,14 @@ export class HousingDetailsComponent implements OnInit {
                         documents: processedAttachments.filter((a: any) => a.type === 'file')
                     };
                     this.requestInfo = res.data.request;
-                    this.similarProperties = (res.data.similar || []).map((p: any) => ({
-                        ...p,
-                        mediaUrl: this.imageService.resolveImageUrl(p.imageUrl || (p.attachments?.[0]?.url || p.attachments?.[0]), 'housing')
-                    }));
+                    this.similarProperties = (res.data.similar || []).map((p: any) => {
+                        const rawMedia = p.imageUrl || (p.attachments?.[0]?.url || p.attachments?.[0]);
+                        return {
+                            ...p,
+                            mediaUrl: this.imageService.resolveImageUrl(rawMedia, 'housing'),
+                            mediaType: this.getMediaType(String(rawMedia || ''))
+                        };
+                    });
 
                     // Set Initial Active Media
                     // Prefer Image, then Video
