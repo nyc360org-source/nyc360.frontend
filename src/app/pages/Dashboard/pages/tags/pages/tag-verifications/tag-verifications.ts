@@ -26,6 +26,7 @@ export class TagVerificationsComponent implements OnInit {
     pageSize = 20;
     totalCount = 0;
     totalPages = 0;
+    hasInitialized = false;
 
     // Search & Filter
     searchTerm = '';
@@ -52,11 +53,13 @@ export class TagVerificationsComponent implements OnInit {
                     this.totalPages = res.totalPages ?? res.TotalPages ?? 0;
                 }
                 this.isLoading = false;
+                this.hasInitialized = true;
                 this.cdr.detectChanges();
             },
             error: () => {
                 this.toastService.error('Failed to load verification requests');
                 this.isLoading = false;
+                this.hasInitialized = true;
                 this.cdr.detectChanges();
             }
         });
@@ -85,19 +88,27 @@ export class TagVerificationsComponent implements OnInit {
     handleResolve(approved: boolean) {
         if (!this.selectedRequest) return;
 
+        const requestId = this.selectedRequest.requestId || (this.selectedRequest as any).RequestId;
+        if (!requestId) {
+            this.toastService.error('Invalid Request ID');
+            return;
+        }
+
         this.isProcessingAction = true;
         this.verificationService.resolveRequest({
-            RequestId: this.selectedRequest.requestId,
+            RequestId: requestId,
             Approved: approved,
             AdminComment: this.adminComment
         }).subscribe({
             next: (res: any) => {
-                if (res.isSuccess) {
+                const isSuccess = res.isSuccess || res.IsSuccess;
+                if (isSuccess) {
                     this.toastService.success(approved ? 'Request approved successfully' : 'Request rejected successfully');
                     this.closeResolveModal();
                     this.loadRequests(this.currentPage);
                 } else {
-                    this.toastService.error(res.error?.message || 'Action failed');
+                    const errorMsg = res.error?.message || res.Error?.Message || 'Action failed';
+                    this.toastService.error(errorMsg);
                 }
                 this.isProcessingAction = false;
                 this.cdr.detectChanges();
