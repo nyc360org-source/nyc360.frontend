@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { HousingAgentService } from '../../../../service/housing-agent.service';
 import { ImageService } from '../../../../../../../../shared/services/image.service';
+import { ImgFallbackDirective } from '../../../../../../../../shared/directives/img-fallback.directive';
 
 @Component({
     selector: 'app-agent-overview',
     standalone: true,
-    imports: [CommonModule, RouterModule],
+    imports: [CommonModule, RouterModule, ImgFallbackDirective],
     templateUrl: './agent-overview.html',
     styleUrls: ['../../agent-dashboard.scss'] // Use the same styles for now
 })

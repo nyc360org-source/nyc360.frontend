@@ -42,7 +42,7 @@
                     </ng-container>
                     <ng-template #imgThumb>
                         <img [src]="imageService.resolveImageUrl(item.imageUrl, 'housing')" class="media-content"
-                            alt="Property">
+                            alt="Property" appImgFallback="housing">
                     </ng-template>
                 </ng-container>
                 <ng-template #noMedia>

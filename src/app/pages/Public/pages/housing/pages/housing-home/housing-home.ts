@@ -10,7 +10,6 @@ import { AuthService } from '../../../../../Authentication/Service/auth';
 import { VerificationService } from '../../../settings/services/verification.service';
 import { ToastService } from '../../../../../../shared/services/toast.service';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ImgFallbackDirective } from '../../../../../../shared/directives/img-fallback.directive';
 
 
 @Component({
