@@ -319,4 +319,11 @@ export class HousingDetailsComponent implements OnInit {
         this.showRequestInfoModal = false;
         this.cdr.markForCheck();
     }
+
+    handleStatusUpdated(newStatus: number) {
+        if (this.requestInfo) {
+            this.requestInfo.status = newStatus;
+            this.cdr.markForCheck();
+        }
+    }
 }

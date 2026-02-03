@@ -420,5 +420,6 @@
 </div>
 
 <!-- Request Info View Modal -->
-<app-housing-request-status *ngIf="showRequestInfoModal" [requestInfo]="requestInfo" (close)="closeRequestInfo()">
+<app-housing-request-status *ngIf="showRequestInfoModal" [requestInfo]="requestInfo" (close)="closeRequestInfo()"
+    (statusUpdated)="handleStatusUpdated($event)">
 </app-housing-request-status>

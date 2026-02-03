@@ -1,5 +1,8 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
+import { HousingService } from '../../service/housing.service';
+import { ConfirmationService } from '../../../../../../shared/services/confirmation.service';
+import { ToastService } from '../../../../../../shared/services/toast.service';
 
 @Component({
     selector: 'app-housing-request-status',
@@ -12,6 +15,14 @@ import { CommonModule, DatePipe } from '@angular/common';
 export class HousingRequestStatusComponent {
     @Input() requestInfo: any;
     @Output() close = new EventEmitter<void>();
+    @Output() statusUpdated = new EventEmitter<number>();
+
+    private housingService = inject(HousingService);
+    private confirmationService = inject(ConfirmationService);
+    private toastService = inject(ToastService);
+    private cdr = inject(ChangeDetectorRef);
+
+    isCancelling = false;
 
     contactTypes = [
         { id: 0, name: 'Email' },
@@ -30,7 +41,8 @@ export class HousingRequestStatusComponent {
         { id: 0, name: 'Pending', class: 'bg-warning text-dark', icon: 'bi-hourglass-split' },
         { id: 1, name: 'Contacted', class: 'bg-info text-white', icon: 'bi-telephone-outbound' },
         { id: 2, name: 'In Progress', class: 'bg-primary text-white', icon: 'bi-arrow-repeat' },
-        { id: 3, name: 'Closed', class: 'bg-secondary text-white', icon: 'bi-archive' }
+        { id: 3, name: 'Closed', class: 'bg-secondary text-white', icon: 'bi-archive' },
+        { id: 4, name: 'Cancelled', class: 'bg-danger text-white', icon: 'bi-x-circle' }
     ];
 
     getLabel(value: number, options: any[]): string {
@@ -40,6 +52,43 @@ export class HousingRequestStatusComponent {
 
     getStatus(value: number): any {
         return this.statusOptions.find(o => o.id === value) || this.statusOptions[0];
+    }
+
+    async onCancel() {
+        if (this.isCancelling) return;
+
+        const confirmed = await this.confirmationService.confirm({
+            title: 'Cancel Request',
+            message: 'Are you sure you want to cancel your housing request? This action cannot be undone.',
+            confirmText: 'Yes, Cancel',
+            cancelText: 'No, Keep it',
+            type: 'danger'
+        });
+
+        if (confirmed) {
+            this.isCancelling = true;
+            this.cdr.markForCheck();
+            this.housingService.cancelHousingRequest(this.requestInfo.id).subscribe({
+                next: (response) => {
+                    const isSuccess = response.IsSuccess || response.isSuccess;
+                    if (isSuccess) {
+                        this.toastService.success('Request cancelled successfully');
+                        this.requestInfo.status = 4; // Update to Cancelled status locally
+                        this.statusUpdated.emit(4);   // Notify parent
+                    } else {
+                        const errorMsg = response.Error?.Message || response.error?.message || 'Failed to cancel request';
+                        this.toastService.error(errorMsg);
+                    }
+                    this.isCancelling = false;
+                    this.cdr.markForCheck();
+                },
+                error: (error) => {
+                    this.toastService.error('An error occurred while cancelling the request');
+                    this.isCancelling = false;
+                    this.cdr.markForCheck();
+                }
+            });
+        }
     }
 
     onClose(event?: Event) {

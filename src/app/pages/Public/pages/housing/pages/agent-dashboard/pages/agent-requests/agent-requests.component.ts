@@ -22,6 +22,16 @@ export class AgentRequestsComponent implements OnInit {
     filteredRequests: any[] = [];
     isLoading = false;
     searchQuery = '';
+    updatingStatus: { [key: number]: boolean } = {};
+    expandedRequestId: number | null = null;
+
+    statusOptions = [
+        { id: 0, name: 'Pending', class: 'status-new', icon: 'bi-dot' },
+        { id: 1, name: 'Contacted', class: 'status-replied', icon: 'bi-check' },
+        { id: 2, name: 'In Progress', class: 'status-progress', icon: 'bi-hourglass' },
+        { id: 3, name: 'Completed', class: 'status-completed', icon: 'bi-check-all' },
+        { id: 4, name: 'Cancelled', class: 'status-cancelled', icon: 'bi-x-circle' }
+    ];
 
     // Pagination
     currentPage = 1;
@@ -76,6 +86,34 @@ export class AgentRequestsComponent implements OnInit {
         return types[type] || 'Email';
     }
 
+    getStatusClass(statusId: number): string {
+        const option = this.statusOptions.find(o => o.id === statusId);
+        return option ? option.class : 'status-new';
+    }
+
+    getNeighborhood(req: any): string {
+        if (!req.housingInfo) return 'N/A';
+        return req.housingInfo.neighborhood || req.housingInfo.borough || 'New York';
+    }
+
+    toggleExpand(requestId: number) {
+        this.expandedRequestId = this.expandedRequestId === requestId ? null : requestId;
+    }
+
+    getContactTypeLabel(type: number): string {
+        const labels = ['Email', 'Phone', 'Text'];
+        return labels[type] || 'Email';
+    }
+
+    getHouseholdLabel(type: number): string {
+        const labels = ['Individual', 'Couple', 'Single Family', 'Multi Family'];
+        return labels[type] || 'Individual';
+    }
+
+    formatCurrency(value: number): string {
+        return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(value);
+    }
+
     viewPost(postId: number) {
         if (postId) {
             this.router.navigate(['/public/housing/details', postId]);
@@ -88,6 +126,27 @@ export class AgentRequestsComponent implements OnInit {
             this.toastService.success(`${label} copied to clipboard!`);
         }, () => {
             this.toastService.error(`Failed to copy ${label}`);
+        });
+    }
+
+    onStatusChange(request: any, newStatus: string | number) {
+        const statusId = Number(newStatus);
+        this.updatingStatus[request.id] = true;
+
+        this.postsService.updateHousingRequestStatus(request.id, statusId).subscribe({
+            next: (res: any) => {
+                this.updatingStatus[request.id] = false;
+                if (res.isSuccess) {
+                    this.toastService.success('Status updated successfully');
+                    request.status = statusId;
+                } else {
+                    this.toastService.error(res.error?.message || 'Failed to update status');
+                }
+            },
+            error: () => {
+                this.updatingStatus[request.id] = false;
+                this.toastService.error('An error occurred while updating status');
+            }
         });
     }
 }

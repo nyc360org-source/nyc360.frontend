@@ -160,4 +160,8 @@ export class PostsService {
     const params = new HttpParams().set('Page', page).set('PageSize', pageSize);
     return this.http.get<ApiResponse<any>>(`${environment.apiBaseUrl}/housing/requests/my-requests`, { params });
   }
+
+  updateHousingRequestStatus(requestId: number | string, status: number): Observable<ApiResponse<any>> {
+    return this.http.put<ApiResponse<any>>(`${environment.apiBaseUrl}/housing/agent/request/${requestId}/status`, { Status: status });
+  }
 }

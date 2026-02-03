@@ -8,7 +8,6 @@
         </div>
 
         <div class="header-actions">
-            <!-- Search Bar -->
             <div class="search-wrapper">
                 <i class="bi bi-search search-icon"></i>
                 <input type="text" placeholder="Search applicant or property..." [(ngModel)]="searchQuery"
@@ -21,108 +20,171 @@
         </div>
     </div>
 
-    <!-- Loading State -->
-    <div class="loading-state" *ngIf="isLoading">
-        <div class="spinner-premium"></div>
-        <p>Fetching your latest inquiries...</p>
-    </div>
+    <!-- Table Container -->
+    <div class="table-card-premium">
+        <div class="table-responsive-wrapper">
+            <table class="premium-data-table">
+                <thead>
+                    <tr>
+                        <th class="col-expand"></th>
+                        <th class="col-username">USERNAME</th>
+                        <th class="col-type">TYPE</th>
+                        <th class="col-prop">PROPERTY NAME</th>
+                        <th class="col-loc">NEIGHBORHOOD</th>
+                        <th class="col-date">DATE</th>
+                        <th class="col-status">STATUS</th>
+                    </tr>
+                </thead>
+                <tbody *ngIf="!isLoading">
+                    <ng-container *ngFor="let req of filteredRequests">
+                        <tr [class.is-expanded]="expandedRequestId === req.id">
+                            <td>
+                                <button class="btn-expand" (click)="toggleExpand(req.id)">
+                                    <i class="bi"
+                                        [ngClass]="expandedRequestId === req.id ? 'bi-chevron-down' : 'bi-chevron-right'"></i>
+                                </button>
+                            </td>
+                            <td>
+                                <div class="user-cell">
+                                    <div class="user-name">{{ req.name }}</div>
+                                    <div class="user-email text-muted">{{ req.email }}</div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="type-badge" [ngClass]="req.housingInfo?.isRenting ? 'rent' : 'sale'">
+                                    {{ req.housingInfo?.isRenting ? 'Rent' : 'Sale' }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="property-cell" (click)="viewPost(req.housingInfo?.id)">
+                                    {{ req.housingInfo?.title || 'Property #' + req.housingInfo?.id }}
+                                </div>
+                            </td>
+                            <td>{{ getNeighborhood(req) }}</td>
+                            <td>{{ req.createdAt | date:'M/d/yyyy' }}</td>
+                            <td>
+                                <div class="status-cell">
+                                    <select [ngModel]="req.status" (ngModelChange)="onStatusChange(req, $event)"
+                                        [disabled]="updatingStatus[req.id] || req.status === 4"
+                                        [ngClass]="getStatusClass(req.status)" class="status-inline-select">
+                                        <option *ngFor="let opt of statusOptions" [value]="opt.id"
+                                            [disabled]="opt.id === 4">
+                                            {{ opt.name }}
+                                        </option>
+                                    </select>
+                                    <div class="spinner-border spinner-border-sm ms-1" *ngIf="updatingStatus[req.id]">
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
 
-    <!-- Empty State -->
-    <div class="empty-state-premium" *ngIf="!isLoading && filteredRequests.length === 0">
-        <div class="empty-illustration">
-            <i class="bi bi-mailbox-flag"></i>
+                        <!-- Expanded Detailed Row -->
+                        <tr *ngIf="expandedRequestId === req.id" class="detail-row">
+                            <td colspan="7">
+                                <div class="detail-panel">
+                                    <div class="row g-4">
+                                        <!-- Contact & Profile -->
+                                        <div class="col-md-3">
+                                            <h6 class="detail-section-title">Contact Information</h6>
+                                            <div class="detail-item">
+                                                <span class="label">Phone Number</span>
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <span class="value">{{ req.phoneNumber || 'N/A' }}</span>
+                                                    <button class="btn-icon-tiny"
+                                                        (click)="copyToClipboard(req.phoneNumber, 'Phone')">
+                                                        <i class="bi bi-copy"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="detail-item mt-2">
+                                                <span class="label">Pref. Contact Method</span>
+                                                <span class="value">{{ getContactTypeLabel(req.preferredContactType)
+                                                    }}</span>
+                                            </div>
+                                            <div class="detail-item mt-2" *ngIf="req.preferredContactDate">
+                                                <span class="label">Pref. Contact Time</span>
+                                                <span class="value">{{ req.preferredContactDate | date:'mediumDate' }}
+                                                    at {{ req.preferredContactTime }}</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Household & Timeline -->
+                                        <div class="col-md-3">
+                                            <h6 class="detail-section-title">Inquiry Background</h6>
+                                            <div class="detail-item">
+                                                <span class="label">Household Type</span>
+                                                <span class="value">{{ getHouseholdLabel(req.householdType) }}</span>
+                                            </div>
+                                            <div class="detail-item mt-2">
+                                                <span class="label">Exp. Move-in</span>
+                                                <span class="value">{{ req.moveInDate | date:'mediumDate' }}</span>
+                                            </div>
+                                            <div class="detail-item mt-2" *ngIf="req.moveOutDate">
+                                                <span class="label">Exp. Move-out</span>
+                                                <span class="value">{{ req.moveOutDate | date:'mediumDate' }}</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Tour Requests -->
+                                        <div class="col-md-3">
+                                            <h6 class="detail-section-title">Tour Requests</h6>
+                                            <div class="detail-item tour-item" *ngIf="req.scheduleVirtualDate">
+                                                <span class="label"><i class="bi bi-camera-video me-1"></i> Virtual
+                                                    Tour</span>
+                                                <span class="value">{{ req.scheduleVirtualDate | date:'mediumDate' }}
+                                                    ({{ req.scheduleVirtualTimeWindow }})</span>
+                                            </div>
+                                            <div class="detail-item tour-item mt-2" *ngIf="req.inPersonTourDate">
+                                                <span class="label"><i class="bi bi-person-walking me-1"></i> In-Person
+                                                    Tour</span>
+                                                <span class="value">{{ req.inPersonTourDate | date:'mediumDate' }} ({{
+                                                    req.inPersonTourTimeWindow }})</span>
+                                            </div>
+                                            <div *ngIf="!req.scheduleVirtualDate && !req.inPersonTourDate"
+                                                class="text-muted small">
+                                                No specific tours requested.
+                                            </div>
+                                        </div>
+
+                                        <!-- Message -->
+                                        <div class="col-md-3">
+                                            <h6 class="detail-section-title">Inquiry Message</h6>
+                                            <div class="message-display">
+                                                {{ req.message || 'No message provided.' }}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Property Summary Footer -->
+                                    <div class="detail-footer mt-4 pt-3 border-top">
+                                        <div class="d-flex gap-4">
+                                            <div class="small text-muted"><i class="bi bi-tag me-1"></i> {{
+                                                formatCurrency(req.housingInfo?.startingPrice) }}/mo</div>
+                                            <div class="small text-muted"><i class="bi bi-fullscreen me-1"></i> {{
+                                                req.housingInfo?.size }} Sq Ft</div>
+                                            <div class="small text-muted"><i class="bi bi-door-open me-1"></i> {{
+                                                req.housingInfo?.numberOfRooms }} Rooms / {{
+                                                req.housingInfo?.numberOfBathrooms }} Bath</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </ng-container>
+                </tbody>
+            </table>
         </div>
-        <h3>No Inquiries Yet</h3>
-        <p>When users express interest in your listings, they'll appear here.</p>
-    </div>
 
-    <!-- Requests Grid -->
-    <div class="requests-grid" *ngIf="!isLoading && filteredRequests.length > 0">
+        <!-- Loading / Empty States -->
+        <div class="loading-state-overlay" *ngIf="isLoading">
+            <div class="spinner-premium"></div>
+            <p>Syncing inquiries...</p>
+        </div>
 
-        <div class="request-premium-card" *ngFor="let req of filteredRequests">
-            <div class="card-status-strip" [class.new]="!req.isReviewed"></div>
-
-            <div class="card-inner">
-                <div class="card-top">
-                    <div class="applicant-profile">
-                        <div class="avatar-gradient">
-                            {{ req.name ? req.name.charAt(0).toUpperCase() : 'U' }}
-                        </div>
-                        <div class="applicant-meta">
-                            <h3 class="applicant-name">{{ req.name }}</h3>
-                            <span class="applicant-email">{{ req.email }}</span>
-                        </div>
-                    </div>
-                    <div class="request-time">
-                        {{ req.createdAt | date:'MMM d, h:mm a' }}
-                    </div>
-                </div>
-
-                <div class="property-link-box" (click)="viewPost(req.housingInfo?.id)">
-                    <div class="prop-icon">
-                        <i class="bi bi-house-heart"></i>
-                    </div>
-                    <div class="prop-details">
-                        <span class="prop-label">Interested in Property</span>
-                        <h4 class="prop-title text-truncate">{{ req.housingInfo?.title || 'Property Details' }}</h4>
-                    </div>
-                    <i class="bi bi-chevron-right arrow-icon"></i>
-                </div>
-
-                <div class="inquiry-stats">
-                    <div class="stat-item">
-                        <div class="s-icon"><i class="bi bi-people"></i></div>
-                        <div class="s-info">
-                            <span class="s-label">Household</span>
-                            <span class="s-val">{{ getHouseholdType(req.householdType) }}</span>
-                        </div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="s-icon"><i class="bi bi-calendar-check"></i></div>
-                        <div class="s-info">
-                            <span class="s-label">Move-in Date</span>
-                            <span class="s-val">{{ req.moveInDate | date:'mediumDate' }}</span>
-                        </div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="s-icon"><i class="bi bi-chat-dots"></i></div>
-                        <div class="s-info">
-                            <span class="s-label">Pref. Contact</span>
-                            <span class="s-val">{{ getContactType(req.preferredContactType) }}</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="message-container" *ngIf="req.message">
-                    <p class="message-bubble">
-                        {{ req.message }}
-                    </p>
-                </div>
-
-                <div class="card-actions">
-                    <div class="action-group">
-                        <a [href]="'tel:' + req.phoneNumber" class="action-btn call">
-                            <i class="bi bi-telephone"></i> Call
-                        </a>
-                        <button class="copy-small-btn"
-                            (click)="$event.stopPropagation(); copyToClipboard(req.phoneNumber, 'Phone')"
-                            title="Copy Phone">
-                            <i class="bi bi-copy"></i>
-                        </button>
-                    </div>
-
-                    <div class="action-group">
-                        <a [href]="'mailto:' + req.email" class="action-btn email">
-                            <i class="bi bi-envelope"></i> Email
-                        </a>
-                        <button class="copy-small-btn"
-                            (click)="$event.stopPropagation(); copyToClipboard(req.email, 'Email')" title="Copy Email">
-                            <i class="bi bi-copy"></i>
-                        </button>
-                    </div>
-
-                </div>
-            </div>
+        <div class="empty-state-premium" *ngIf="!isLoading && filteredRequests.length === 0">
+            <i class="bi bi-mailbox-flag empty-icon"></i>
+            <h3>No Inquiries Found</h3>
+            <p>Try adjusting your search or check back later.</p>
         </div>
     </div>
 </div>

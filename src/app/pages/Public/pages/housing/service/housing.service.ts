@@ -513,4 +513,7 @@ export class HousingService {
 
         return this.http.post(apiUrl, formData);
     }
+    cancelHousingRequest(requestId: number | string): Observable<any> {
+        return this.http.put(`${environment.apiBaseUrl}/housing/agent/request/${requestId}/cancel`, {});
+    }
 }
