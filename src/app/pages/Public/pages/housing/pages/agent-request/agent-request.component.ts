@@ -34,6 +34,15 @@ export class AgentRequestComponent implements OnInit {
     showContactDropdown = false;
     showHouseholdDropdown = false;
 
+    // Date Constraints
+    minContactDate: string = '';
+    maxContactDate: string = '';
+    minVirtualDate: string = '';
+    maxVirtualDate: string = '';
+    minInPersonDate: string = '';
+    maxInPersonDate: string = '';
+    todayDate: string = '';
+
     contactTypes = [
         { value: 0, label: 'Email' },
         { value: 1, label: 'Phone' },
@@ -94,6 +103,69 @@ export class AgentRequestComponent implements OnInit {
                 }
             });
         }
+
+        this.setupDateConstraints();
+    }
+
+    private setupDateConstraints() {
+        const now = new Date();
+        this.todayDate = this.formatDateForInput(now);
+
+        if (this.authorization) {
+            // Apply preferences if they exist
+            if (this.authorization.preferredContactDate) {
+                const date = this.formatDateForInput(this.authorization.preferredContactDate);
+                this.minContactDate = date;
+                this.maxContactDate = date;
+                this.form.patchValue({ PrefContactDate: date });
+                if (this.authorization.preferredContactTime) {
+                    this.form.patchValue({ PrefContactTime: this.authorization.preferredContactTime });
+                }
+            } else {
+                this.minContactDate = this.todayDate;
+            }
+
+            if (this.authorization.preferredVirtualTourDate) {
+                const date = this.formatDateForInput(this.authorization.preferredVirtualTourDate);
+                this.minVirtualDate = date;
+                this.maxVirtualDate = date;
+                this.form.patchValue({ ScheduleVirtualDate: date });
+                if (this.authorization.preferredVirtualTourTime) {
+                    this.form.patchValue({ VirtualTime: this.authorization.preferredVirtualTourTime });
+                }
+            } else {
+                this.minVirtualDate = this.todayDate;
+            }
+
+            if (this.authorization.preferredInPersonTourDate) {
+                const date = this.formatDateForInput(this.authorization.preferredInPersonTourDate);
+                this.minInPersonDate = date;
+                this.maxInPersonDate = date;
+                this.form.patchValue({ InPersonTourDate: date });
+                if (this.authorization.preferredInPersonTourTime) {
+                    this.form.patchValue({ InPersonTime: this.authorization.preferredInPersonTourTime });
+                }
+            } else {
+                this.minInPersonDate = this.todayDate;
+            }
+        } else {
+            // Fallback: No authorization info, just prevent past dates
+            this.minContactDate = this.todayDate;
+            this.minVirtualDate = this.todayDate;
+            this.minInPersonDate = this.todayDate;
+        }
+
+        this.form.patchValue({ MoveInDate: this.todayDate });
+    }
+
+    private formatDateForInput(dateInput: any): string {
+        if (!dateInput) return '';
+        const d = new Date(dateInput);
+        if (isNaN(d.getTime())) return '';
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
     }
 
     loadPostDetails(id: number) {
