@@ -24,6 +24,7 @@ export class CreateCommunityComponent implements OnInit {
   // Data
   typesList = COMMUNITY_TYPES_LIST;
   isSubmitting = false;
+  errorSummary: string | null = null;
 
   // Files
   avatarFile: File | null = null;
@@ -44,7 +45,7 @@ export class CreateCommunityComponent implements OnInit {
     slug: ['', [Validators.required, Validators.pattern('^[a-z0-9-]+$')]],
     description: ['', [Validators.required, Validators.maxLength(500)]],
     type: [1, Validators.required],
-    locationId: [null, Validators.required], // Stores the ID
+    locationId: [null], // Stores the ID
     isPrivate: [false] // ✅ New Field: Default is Public (false)
   });
 
@@ -93,7 +94,11 @@ export class CreateCommunityComponent implements OnInit {
   onNameChange() {
     const name = this.form.get('name')?.value;
     if (name) {
-      const slug = name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
+      // Improved slug: lowercase, trim, replace spaces with hyphens, remove all non-alphanumeric (except hyphens)
+      const slug = name.toLowerCase()
+        .trim()
+        .replace(/\s+/g, '-')
+        .replace(/[^a-z0-9-]/g, '');
       this.form.get('slug')?.setValue(slug);
     }
   }
@@ -120,15 +125,25 @@ export class CreateCommunityComponent implements OnInit {
   }
 
   submit() {
+    console.log('Submit attempt triggered');
+    console.log('Form valid:', this.form.valid);
+    console.log('Form values:', this.form.value);
+
     if (this.form.invalid) {
+      this.errorSummary = 'Please fix the errors highlighted above.';
+      console.warn('Form is invalid. Errors:', this.getFormErrors());
       this.form.markAllAsTouched();
-      // If location is missing but typed
+
+      // Detailed feedback
       if (!this.selectedLocation && this.locationSearchControl.value) {
         this.toastService.error('Please select a valid location from the list.');
+      } else {
+        this.toastService.error('Please fix the errors in the form before submitting.');
       }
       return;
     }
 
+    this.errorSummary = null;
     this.isSubmitting = true;
 
     const formData = this.form.value;
@@ -146,9 +161,21 @@ export class CreateCommunityComponent implements OnInit {
         },
         error: (err) => {
           this.isSubmitting = false;
-          console.error(err);
+          console.error('Submit error:', err);
           this.toastService.error('Failed to connect to server.');
         }
       });
+  }
+
+  // Helper to extract form errors for debugging
+  private getFormErrors() {
+    const errors: any = {};
+    Object.keys(this.form.controls).forEach(key => {
+      const controlErrors = this.form.get(key)?.errors;
+      if (controlErrors != null) {
+        errors[key] = controlErrors;
+      }
+    });
+    return errors;
   }
 }

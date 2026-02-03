@@ -457,6 +457,40 @@ $radius: 12px;
   }
 }
 
+.error-summary {
+  background: #fff5f5;
+  border: 1px solid #feb2b2;
+  color: #c53030;
+  padding: 12px 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 500;
+  animation: shake 0.4s ease-in-out;
+
+  i {
+    font-size: 1.2rem;
+  }
+}
+
+@keyframes shake {
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(-5px);
+  }
+
+  75% {
+    transform: translateX(5px);
+  }
+}
+
 /* Tags Search Styles (Extends Location) */
 .tags-card {
   .search-wrapper {

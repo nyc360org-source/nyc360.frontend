@@ -46,16 +46,22 @@ export class CreateCommunityService {
 
     formData.append('Name', data.name);
     formData.append('Description', data.description);
-    formData.append('Slug', data.slug);
+    formData.append('Slug', data.slug || '');
     formData.append('Type', data.type.toString());
+    formData.append('IsPrivate', data.isPrivate ? 'true' : 'false');
 
-    // ✅ Updated: Send LocationId
     if (data.locationId) {
       formData.append('LocationId', data.locationId.toString());
     }
 
     if (avatar) formData.append('AvatarImage', avatar);
     if (cover) formData.append('CoverImage', cover);
+
+    console.log('Submitting community create request:', {
+      name: data.name,
+      type: data.type,
+      locationId: data.locationId
+    });
 
     return this.http.post<ApiResponse<string>>(`${this.baseUrl}/communities/create`, formData);
   }
