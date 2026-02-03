@@ -104,17 +104,29 @@ export class ListingAuthorizationComponent implements OnInit {
     }
 
     onSubmit() {
+        console.log('ListingAuthorization: onSubmit called');
+
         if (!this.listingId) {
+            console.error('ListingAuthorization: No listing ID found');
             this.toastService.error('No listing ID found');
             return;
         }
 
         if (this.form.invalid) {
+            console.log('ListingAuthorization: Form is invalid', this.form.errors);
+            // Log individual controls
+            Object.keys(this.form.controls).forEach(key => {
+                const control = this.form.get(key);
+                if (control?.invalid) {
+                    console.log(`Control ${key} is invalid:`, control.errors);
+                }
+            });
             this.form.markAllAsTouched();
             this.toastService.error('Please fill required fields');
             return;
         }
 
+        console.log('ListingAuthorization: Form valid, submitting...');
         this.isSubmitting = true;
         const formVal = this.form.value;
 

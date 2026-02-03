@@ -414,7 +414,7 @@
 <!-- Agent Request Modal -->
 <div class="agent-request-modal-overlay" *ngIf="showAgentRequestModal" (click)="closeAgentRequest()">
     <div class="modal-content-wrapper" (click)="$event.stopPropagation()">
-        <app-agent-request [postId]="property.id" [contentTitle]="property.title" [contentImage]="activeImage"
+        <app-agent-request [postId]="property.id" [contentTitle]="property.title" [contentImage]="activeMedia?.url"
             (close)="closeAgentRequest()" (requestSubmitted)="handleRequestSubmitted()"></app-agent-request>
     </div>
 </div>

@@ -98,7 +98,8 @@
                 <div class="col-md-7 pe-md-4">
                     <div class="form-group-row">
                         <label>Authorization Type</label>
-                        <select class="form-control-custom" formControlName="AuthorizationType">
+                        <select class="form-control-custom" formControlName="AuthorizationType"
+                            [class.is-invalid]="form.get('AuthorizationType')?.invalid && form.get('AuthorizationType')?.touched">
                             <option [ngValue]="null">Select Authorization Type</option>
                             <option *ngFor="let type of authorizationTypes" [value]="type.id">{{type.name}}</option>
                         </select>
@@ -108,7 +109,8 @@
                     <div class="row">
                         <div class="col-md-7 form-group-row">
                             <label>Listing Authorization Document(s)</label>
-                            <select class="form-control-custom" formControlName="ListingAuthorizationDocument">
+                            <select class="form-control-custom" formControlName="ListingAuthorizationDocument"
+                                [class.is-invalid]="form.get('ListingAuthorizationDocument')?.invalid && form.get('ListingAuthorizationDocument')?.touched">
                                 <option [ngValue]="null">Select Authorization Type</option>
                                 <option *ngFor="let doc of documentTypes" [value]="doc.id">{{doc.name}}</option>
                             </select>
