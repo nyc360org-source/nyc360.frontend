@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { PostsService } from '../../../posts/services/posts';
+import { ImageService } from '../../../../../../shared/services/image.service';
 
 @Component({
     selector: 'app-my-requests',
@@ -15,9 +16,12 @@ export class MyRequestsComponent implements OnInit {
 
     private postsService = inject(PostsService);
     private router = inject(Router);
+    protected imageService = inject(ImageService);
 
     requests: any[] = [];
     isLoading = false;
+    selectedRequest: any = null;
+    showDetailsModal = false;
 
     // Pagination
     currentPage = 1;
@@ -56,6 +60,29 @@ export class MyRequestsComponent implements OnInit {
     viewPost(postId: number) {
         if (postId) {
             this.router.navigate(['/public/housing/details', postId]);
+        }
+    }
+
+    openDetails(req: any) {
+        this.selectedRequest = req;
+        this.showDetailsModal = true;
+        // Prevent body scroll
+        document.body.style.overflow = 'hidden';
+    }
+
+    closeDetails() {
+        this.showDetailsModal = false;
+        this.selectedRequest = null;
+        document.body.style.overflow = 'auto';
+    }
+
+    getStatusLabel(status: number): string {
+        switch (status) {
+            case 0: return 'Sent';
+            case 1: return 'Under Review';
+            case 2: return 'Accepted';
+            case 3: return 'Rejected';
+            default: return 'Sent';
         }
     }
 }
