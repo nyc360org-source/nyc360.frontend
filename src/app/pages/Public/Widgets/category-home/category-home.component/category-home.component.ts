@@ -72,32 +72,38 @@ export class CategoryHomeComponent implements OnInit {
   }
 
   resolveHeaderButtons(divisionId: number, path: string) {
-    // Default Buttons
+    // 1. Check if the active theme has custom topLinks defined in categories.ts
+    if (this.activeTheme && this.activeTheme.topLinks && this.activeTheme.topLinks.length > 0) {
+      this.headerButtons = this.activeTheme.topLinks.map((link: any) => ({
+        label: link.label,
+        link: [link.route], // Wrap string route in array for routerLink
+        icon: link.icon
+      }));
+      return;
+    }
+
+    // 2. Fallbacks if no topLinks are defined
     const defaults = [
       { label: 'Feed', link: ['/public/feed', path], icon: 'bi-rss' },
       { label: 'Initiatives', link: ['/public/initiatives', path], icon: 'bi-lightbulb' },
       { label: 'Create Post', link: ['/public/posts/create'], icon: 'bi-pencil-square' }
     ];
 
-    // Custom Buttons per Category (Example: Housing = 4)
-    if (divisionId === 4) {
+    if (divisionId === 4) { // Housing
       this.headerButtons = [
         { label: 'Feed', link: ['/public/feed', path], icon: 'bi-rss' },
         { label: 'Homes For Sale', link: ['/public/housing/sale'], icon: 'bi-house' },
         { label: 'Homes For Rent', link: ['/public/housing/rent'], icon: 'bi-key' },
         { label: 'Create Listing', link: ['/public/housing/create'], icon: 'bi-plus-circle' }
       ];
-    }
-    // Example: Health = 2 (Assuming ID)
-    else if (divisionId === 3) { // Education example
+    } else if (divisionId === 3) { // Education (Example)
       this.headerButtons = [
         { label: 'Feed', link: ['/public/feed', path], icon: 'bi-rss' },
         { label: 'Schools', link: ['/public/education/schools'], icon: 'bi-building' },
         { label: 'Tutors', link: ['/public/education/tutors'], icon: 'bi-person-video3' },
         { label: 'Create Post', link: ['/public/posts/create'], icon: 'bi-pencil-square' }
       ];
-    }
-    else {
+    } else {
       this.headerButtons = defaults;
     }
   }

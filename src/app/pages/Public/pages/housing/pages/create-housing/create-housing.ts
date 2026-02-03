@@ -6,7 +6,7 @@ import { Router, RouterModule } from '@angular/router';
 import { Subject, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, catchError } from 'rxjs/operators';
 import { PostsService } from '../../../../pages/posts/services/posts';
-import { HousingService } from '../../service/housing.service';
+import { HousingSubmissionService } from '../../service/housing-submission.service';
 import { ToastService } from '../../../../../../shared/services/toast.service';
 import { ImageService } from '../../../../../../shared/services/image.service';
 import { AuthService } from '../../../../../Authentication/Service/auth';
@@ -22,7 +22,7 @@ import { formatDate } from '@angular/common';
 export class CreateHousingComponent implements OnInit {
     private fb = inject(FormBuilder);
     private postsService = inject(PostsService);
-    private housingService = inject(HousingService);
+    private housingService = inject(HousingSubmissionService);
     private router = inject(Router);
     private toastService = inject(ToastService);
     protected imageService = inject(ImageService);
@@ -34,6 +34,7 @@ export class CreateHousingComponent implements OnInit {
 
     form: FormGroup;
     isSubmitting = false;
+    triedToSubmit = false; // Flag to show validation errors globally
 
     // --- Options ---
     houseTypes = [
@@ -346,6 +347,9 @@ export class CreateHousingComponent implements OnInit {
     }
 
     onSubmit(isPublished: boolean = true) {
+        this.triedToSubmit = true;
+        this.cdr.markForCheck();
+
         if (this.form.invalid) {
             this.form.markAllAsTouched();
             this.scrollToFirstInvalidControl();

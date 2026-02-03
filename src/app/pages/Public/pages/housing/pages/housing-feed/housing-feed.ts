@@ -2,7 +2,7 @@ import { Component, OnInit, inject, ChangeDetectorRef, ChangeDetectionStrategy }
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { HousingService } from '../../service/housing.service';
+import { HousingViewService } from '../../service/housing-view.service';
 import { ImageService } from '../../../../../../shared/services/image.service';
 import { ImgFallbackDirective } from '../../../../../../shared/directives/img-fallback.directive';
 
@@ -15,7 +15,7 @@ import { ImgFallbackDirective } from '../../../../../../shared/directives/img-fa
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HousingFeedComponent implements OnInit {
-    private housingService = inject(HousingService);
+    private housingService = inject(HousingViewService);
     private route = inject(ActivatedRoute);
     private cdr = inject(ChangeDetectorRef);
     protected imageService = inject(ImageService);
@@ -53,7 +53,10 @@ export class HousingFeedComponent implements OnInit {
         this.housingService.getHousingFeed(this.filters).subscribe({
             next: (res: any) => {
                 if (res.isSuccess) {
-                    this.listings = res.data || [];
+                    this.listings = (res.data || []).map((item: any) => {
+                        const mediaUrl = this.imageService.resolveImageUrl(item.imageUrl || (item.attachments?.[0]?.url || item.attachments?.[0]), 'housing');
+                        return { ...item, mediaUrl };
+                    });
                     this.totalCount = res.totalCount;
                     this.totalPages = res.totalPages;
                 }

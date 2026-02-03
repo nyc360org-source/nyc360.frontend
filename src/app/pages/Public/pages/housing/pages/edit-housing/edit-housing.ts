@@ -5,7 +5,7 @@ import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { Subject, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, catchError } from 'rxjs/operators';
 import { PostsService } from '../../../../pages/posts/services/posts';
-import { HousingService } from '../../service/housing.service';
+import { HousingViewService } from '../../service/housing-view.service';
 import { ToastService } from '../../../../../../shared/services/toast.service';
 import { ImageService } from '../../../../../../shared/services/image.service';
 import { ImgFallbackDirective } from '../../../../../../shared/directives/img-fallback.directive';
@@ -24,7 +24,7 @@ import { ImgFallbackDirective } from '../../../../../../shared/directives/img-fa
     `
 })
 export class EditHousingComponent implements OnInit {
-    private housingService = inject(HousingService);
+    private housingService = inject(HousingViewService);
     private router = inject(Router);
     private route = inject(ActivatedRoute);
     private toastService = inject(ToastService);

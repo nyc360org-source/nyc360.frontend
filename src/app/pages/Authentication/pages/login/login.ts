@@ -195,8 +195,8 @@ export class LoginComponent implements OnInit, AfterViewInit {
 
         // Handle different types of errors
         if (err.status === 0) {
-          this.loginError = 'Unable to connect to server. Please check your internet connection.';
-          this.toastService.error('Unable to connect to server. Please check your internet connection.');
+          this.loginError = 'Unable to connect to the backend server. Please ensure the local API is running.';
+          this.toastService.error('Unable to connect to the backend server. Please ensure the local API is running.');
         } else if (err.status === 400) {
           this.loginError = err.error?.message || 'Invalid login credentials. Please try again.';
           this.toastService.error(this.loginError);

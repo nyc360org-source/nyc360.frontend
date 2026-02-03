@@ -2,7 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
-import { HousingService } from '../../service/housing.service';
+import { HousingAuthService } from '../../service/housing-auth.service';
 import { ToastService } from '../../../../../../shared/services/toast.service';
 import { AuthService } from '../../../../../Authentication/Service/auth';
 
@@ -15,7 +15,7 @@ import { AuthService } from '../../../../../Authentication/Service/auth';
 })
 export class ListingAuthorizationComponent implements OnInit {
     private fb = inject(FormBuilder);
-    private housingService = inject(HousingService);
+    private housingService = inject(HousingAuthService);
     private router = inject(Router);
     private route = inject(ActivatedRoute);
     private toastService = inject(ToastService);
@@ -24,6 +24,7 @@ export class ListingAuthorizationComponent implements OnInit {
     selectedFiles: File[] = [];
     listingId: number | null = null;
     isSubmitting = false;
+    triedToSubmit = false;
 
     // Options for dropdowns
     authorizationTypes = [
@@ -76,8 +77,7 @@ export class ListingAuthorizationComponent implements OnInit {
             if (params['id']) {
                 this.listingId = Number(params['id']);
             } else {
-                // Validation only warns now, allowing page view for testing
-                console.warn('Missing listing ID - Page in view-only mode');
+                console.warn('Missing listing ID');
             }
         });
 
@@ -104,25 +104,34 @@ export class ListingAuthorizationComponent implements OnInit {
     }
 
     onSubmit() {
+        this.triedToSubmit = true;
         console.log('ListingAuthorization: onSubmit called');
 
         if (!this.listingId) {
-            console.error('ListingAuthorization: No listing ID found');
-            this.toastService.error('No listing ID found');
+            this.toastService.error('Missing listing ID. Please go back to detail page and try again.');
             return;
         }
 
         if (this.form.invalid) {
             console.log('ListingAuthorization: Form is invalid', this.form.errors);
-            // Log individual controls
-            Object.keys(this.form.controls).forEach(key => {
-                const control = this.form.get(key);
-                if (control?.invalid) {
-                    console.log(`Control ${key} is invalid:`, control.errors);
-                }
-            });
             this.form.markAllAsTouched();
-            this.toastService.error('Please fill required fields');
+            this.toastService.error('Please fill all required fields correctly.');
+
+            // Scroll to the first invalid element
+            const firstInvalid = document.querySelector('.is-invalid, .ng-invalid');
+            if (firstInvalid) {
+                firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            return;
+        }
+
+        // Enforce document upload
+        if (this.selectedFiles.length === 0) {
+            this.toastService.error('Please upload at least one authorization document.');
+            const uploadZone = document.querySelector('.upload-wrapper');
+            if (uploadZone) {
+                uploadZone.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
             return;
         }
 

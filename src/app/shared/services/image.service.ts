@@ -6,15 +6,18 @@ import { environment } from '../../environments/environment';
 })
 export class ImageService {
 
-    private readonly apiBaseUrl2 = environment.apiBaseUrl2;
-    private readonly apiBaseUrl3 = environment.apiBaseUrl3;
+    private get baseApiUrl(): string {
+        return (environment.apiBaseUrl2 || '').endsWith('/')
+            ? environment.apiBaseUrl2.slice(0, -1)
+            : environment.apiBaseUrl2;
+    }
 
     // Global Default Assets
     // Global Default Assets
-    readonly DEFAULT_POST = 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&w=800&q=80'; // Abstract Gradient
-    readonly DEFAULT_AVATAR = 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?auto=format&fit=crop&w=200&q=80'; // Generic User
-    readonly DEFAULT_HOUSING = 'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?auto=format&fit=crop&w=800&q=80'; // NYC Architecture
-    readonly PLACEHOLDER = 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&w=800&q=80';
+    readonly DEFAULT_POST = '';
+    readonly DEFAULT_AVATAR = ''; // We can keep a generic avatar if preferred, but user said "remove all"
+    readonly DEFAULT_HOUSING = '';
+    readonly PLACEHOLDER = '';
 
     constructor() { }
 
@@ -72,8 +75,7 @@ export class ImageService {
                 this.DEFAULT_POST;
 
         if (!url || url.trim() === '') {
-            console.warn('[ImageService] No URL provided, using fallback:', fallback);
-            return fallback;
+            return '';
         }
 
         if (type === 'avatar') {
@@ -83,72 +85,87 @@ export class ImageService {
         return this.cleanAndResolve(url, fallback, type);
     }
 
+    /**
+     * Generates an alternative URI by switching between 'posts' and 'housing' folders.
+     * Useful for fallback searching.
+     */
+    getAlternativeUrl(currentUrl: string): string | null {
+        if (!currentUrl || !currentUrl.startsWith('http')) return null;
+
+        const baseUrl = this.baseApiUrl;
+        if (currentUrl.includes(`${baseUrl}/posts/`)) {
+            return currentUrl.replace(`${baseUrl}/posts/`, `${baseUrl}/housing/`);
+        }
+        if (currentUrl.includes(`${baseUrl}/housing/`)) {
+            return currentUrl.replace(`${baseUrl}/housing/`, `${baseUrl}/posts/`);
+        }
+
+        return null;
+    }
+
     private cleanAndResolve(url: string, fallback: string, context: 'post' | 'housing' = 'post'): string {
         if (!url) return fallback;
 
-        let cleanUrl = url.replace('@local://', '').trim();
+        // 1. If already absolute or data URL, return as is
+        if (url.startsWith('http') || url.startsWith('https') || url.startsWith('data:')) {
+            return url;
+        }
+
+        // 2. Clean up the URL
+        let cleanUrl = url.replace(/^@local:\/+/i, '') // Handle @local:// and @local:/
+            .replace(/^@local:/i, '')    // Handle @local:
+            .trim();
 
         // Remove any leading/trailing slashes
         cleanUrl = cleanUrl.replace(/^\/+|\/+$/g, '');
 
-        // 1. If absolute or data URL, return as is
-        if (cleanUrl.startsWith('http') || cleanUrl.startsWith('https') || cleanUrl.startsWith('data:')) {
-            console.log('[ImageService] Using absolute URL:', cleanUrl);
-            return cleanUrl;
-        }
+        if (!cleanUrl) return fallback;
 
         const lowerUrl = cleanUrl.toLowerCase();
 
-        // 2. If it already has a known folder prefix, resolve to base URL
+        // 3. If it already has a known folder prefix, resolve to base URL
         if (lowerUrl.startsWith('posts/') || lowerUrl.startsWith('housing/') || lowerUrl.startsWith('avatars/')) {
-            const finalUrl = `${this.apiBaseUrl2}/${cleanUrl}`;
-            console.log('[ImageService] Resolved with folder prefix:', { originalUrl: url, finalUrl });
-            return finalUrl;
+            return `${this.baseApiUrl}/${cleanUrl}`;
         }
 
-        // 3. For housing context, try multiple common patterns
+        // 4. Context-specific defaults
         if (context === 'housing') {
-            // Common patterns: "filename.jpg", "housing/filename.jpg", "uploads/housing/filename.jpg"
-            const possiblePaths = [
-                `${this.apiBaseUrl2}/housing/${cleanUrl}`,
-                `${this.apiBaseUrl2}/uploads/housing/${cleanUrl}`,
-                `${this.apiBaseUrl2}/${cleanUrl}`,
-            ];
-
-            // For now, use the first one (can be enhanced with retry logic)
-            const finalUrl = possiblePaths[0];
-            console.log('[ImageService] Resolved housing context:', {
-                originalUrl: url,
-                finalUrl,
-                note: 'If this fails, image will fallback to placeholder'
-            });
-            return finalUrl;
+            // For housing, we check if it's a direct filename
+            if (!cleanUrl.includes('/')) {
+                // User explicitly said housing media are in 'housing' folder
+                return `${this.baseApiUrl}/housing/${cleanUrl}`;
+            }
+            return `${this.baseApiUrl}/housing/${cleanUrl}`;
         }
 
-        // 4. Default to posts folder
-        const finalUrl = `${this.apiBaseUrl2}/posts/${cleanUrl}`;
-        console.log('[ImageService] Resolved default posts:', { originalUrl: url, finalUrl });
-        return finalUrl;
+        // 5. Default to posts folder for everything else
+        return `${this.baseApiUrl}/posts/${cleanUrl}`;
     }
 
     private cleanAndResolveAvatar(url: string, fallback: string): string {
         if (!url) return fallback;
 
-        let cleanUrl = url.replace('@local://', '');
-
-        if (cleanUrl.startsWith('http') || cleanUrl.startsWith('https') || cleanUrl.startsWith('data:')) {
-            return cleanUrl;
+        if (url.startsWith('http') || url.startsWith('https') || url.startsWith('data:')) {
+            return url;
         }
 
-        // Usually avatars are in /avatars/
-        if (cleanUrl.toLowerCase().startsWith('avatars/')) {
-            return `${this.apiBaseUrl2}/${cleanUrl}`;
+        let cleanUrl = url.replace(/^@local:\/+/i, '')
+            .replace(/^@local:/i, '')
+            .trim();
+        cleanUrl = cleanUrl.replace(/^\/+|\/+$/g, '');
+
+        if (!cleanUrl) return fallback;
+
+        const lowerUrl = cleanUrl.toLowerCase();
+
+        if (lowerUrl.startsWith('avatars/')) {
+            return `${this.baseApiUrl}/${cleanUrl}`;
         }
 
-        if (cleanUrl.includes('/') || cleanUrl.includes('\\')) {
-            return `${this.apiBaseUrl2}/${cleanUrl}`;
+        if (cleanUrl.includes('/')) {
+            return `${this.baseApiUrl}/${cleanUrl}`;
         }
 
-        return `${this.apiBaseUrl2}/avatars/${cleanUrl}`;
+        return `${this.baseApiUrl}/avatars/${cleanUrl}`;
     }
 }

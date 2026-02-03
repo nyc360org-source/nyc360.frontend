@@ -8,8 +8,15 @@
                 class="media-content"></video>
 
             <!-- Image Display -->
-            <img *ngIf="activeMedia?.type === 'image' && activeMedia.url !== imageService.DEFAULT_HOUSING"
-                [src]="activeMedia.url" alt="Property Main Media" class="media-content">
+            <img *ngIf="activeMedia?.type === 'image' && activeMedia.url" [src]="activeMedia.url"
+                alt="Property Main Media" class="media-content">
+
+            <!-- No Media Placeholder -->
+            <div *ngIf="!activeMedia?.url"
+                class="no-media-placeholder d-flex flex-column align-items-center justify-content-center h-100 bg-light text-muted">
+                <i class="bi bi-image fs-1 mb-2"></i>
+                <span>No Media Available</span>
+            </div>
 
             <div class="image-counter" *ngIf="property.attachments?.length > 1">
                 <i class="bi bi-collection"></i> {{ property.attachments.length }} Media
@@ -21,8 +28,8 @@
             <div class="sub-img" *ngFor="let item of (property.attachments | slice:1:3)"
                 (click)="setActiveMedia(item); $event.stopPropagation()">
                 <div class="media-preview-wrapper h-100 w-100 position-relative">
-                    <img *ngIf="$any(item).type === 'image' && $any(item).url !== imageService.DEFAULT_HOUSING"
-                        [src]="$any(item).url" class="h-100 w-100 object-fit-cover">
+                    <img *ngIf="$any(item).type === 'image' && $any(item).url" [src]="$any(item).url"
+                        class="h-100 w-100 object-fit-cover">
                     <div *ngIf="$any(item).type === 'video'"
                         class="video-thumbnail h-100 w-100 d-flex align-items-center justify-content-center bg-dark text-white">
                         <video [src]="$any(item).url"
@@ -359,11 +366,12 @@
         <div class="similar-grid">
             <div class="similar-card" *ngFor="let item of similarProperties"
                 [routerLink]="['/public/housing/details', item.id]">
-                <ng-container *ngIf="imageService.resolveImageUrl(item.imageUrl, 'housing') as simUrl">
-                    <div class="sim-img" *ngIf="simUrl && simUrl !== imageService.DEFAULT_HOUSING">
-                        <img [src]="simUrl">
-                    </div>
-                </ng-container>
+                <div class="sim-img" *ngIf="item.mediaUrl">
+                    <img [src]="item.mediaUrl" appImgFallback="housing">
+                </div>
+                <div class="sim-img no-image-box" *ngIf="!item.mediaUrl">
+                    <i class="bi bi-image"></i>
+                </div>
                 <div class="sim-info">
                     <h4>{{ item.title }}</h4>
                     <div class="sim-stats" *ngIf="item.numberOfRooms > 0 || item.numberOfBathrooms > 0">
@@ -401,8 +409,7 @@
             </div>
             <!-- Then Images -->
             <div class="photo-item" *ngFor="let img of property.images; let i = index">
-                <img *ngIf="img.url !== imageService.DEFAULT_HOUSING" [src]="img.url"
-                    [alt]="'Property photo ' + (i + 1)" loading="lazy">
+                <img *ngIf="img.url" [src]="img.url" [alt]="'Property photo ' + (i + 1)" loading="lazy">
                 <div class="photo-number">Photo {{ i + 1 }}</div>
             </div>
         </div>

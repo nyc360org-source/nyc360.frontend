@@ -12,25 +12,39 @@ export class ImgFallbackDirective {
     private imageService = inject(ImageService);
     private isFallbackApplied = false;
 
+    private isAlternativeTried = false;
+
     @HostListener('error')
     onError() {
-        if (this.isFallbackApplied) return; // Prevent infinite loop
-
         const img: HTMLImageElement = this.el.nativeElement;
-        console.warn('[ImgFallback] Image failed to load:', img.src, 'Using fallback for type:', this.appImgFallback);
+
+        // Stage 1: Try alternative path (housing/posts toggle)
+        if (!this.isAlternativeTried) {
+            this.isAlternativeTried = true;
+            const alt = this.imageService.getAlternativeUrl(img.src);
+            if (alt) {
+                img.src = alt;
+                return;
+            }
+        }
+
+        // Stage 2: Final fallback or hide
+        if (this.isFallbackApplied) return;
         this.isFallbackApplied = true;
 
-        if (this.appImgFallback === 'avatar') {
-            img.src = this.imageService.DEFAULT_AVATAR;
-        } else if (this.appImgFallback === 'housing') {
-            img.src = this.imageService.DEFAULT_HOUSING;
-        } else if (this.appImgFallback === 'post') {
-            img.src = this.imageService.DEFAULT_POST;
-        } else if (this.appImgFallback && typeof this.appImgFallback === 'string') {
-            // If a specific string path is provided, use it
-            img.src = this.appImgFallback;
+        const fallback = this.getFallbackUrl();
+        if (!fallback) {
+            img.style.display = 'none';
         } else {
-            img.src = this.imageService.PLACEHOLDER;
+            img.src = fallback;
         }
+    }
+
+    private getFallbackUrl(): string {
+        if (this.appImgFallback === 'avatar') return this.imageService.DEFAULT_AVATAR;
+        if (this.appImgFallback === 'housing') return this.imageService.DEFAULT_HOUSING;
+        if (this.appImgFallback === 'post') return this.imageService.DEFAULT_POST;
+        if (this.appImgFallback && typeof this.appImgFallback === 'string') return this.appImgFallback;
+        return this.imageService.PLACEHOLDER;
     }
 }

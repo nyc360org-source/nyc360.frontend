@@ -435,6 +435,37 @@ $card-shadow: 0 10px 40px rgba(188, 157, 95, 0.08);
             font-weight: 700;
             color: $housing-accent;
             text-transform: uppercase;
+            z-index: 2;
+        }
+
+        &.no-image-box {
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            color: #999;
+            border-bottom: 1px solid #eee;
+
+            .no-image-content {
+                text-align: center;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 8px;
+
+                i {
+                    font-size: 3rem;
+                    opacity: 0.3;
+                }
+
+                span {
+                    font-size: 0.8rem;
+                    font-weight: 600;
+                    letter-spacing: 0.5px;
+                    text-transform: uppercase;
+                }
+            }
         }
     }
 
@@ -773,6 +804,12 @@ $card-shadow: 0 10px 40px rgba(188, 157, 95, 0.08);
         &.rent {
             background: #e3f2fd;
             color: #1565c0;
+        }
+
+        &.official {
+            background: #fdf5e6;
+            color: #b08d44;
+            border: 1px solid rgba(176, 141, 68, 0.2);
         }
     }
 

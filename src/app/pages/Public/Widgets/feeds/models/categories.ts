@@ -26,24 +26,27 @@ export const CATEGORY_THEMES: { [key: number]: any } = {
     color: '#dc3545', label: 'Culture', path: 'culture', icon: '/icon-category/culture.png', biIcon: 'bi-palette-fill',
     route: '/public/category/culture',
     topLinks: [
-      // { label: 'Feed', route: '/public/feed/culture' },
-      // { label: 'initiatives', route: '/public/initiatives/culture' }
+      { label: 'Feed', route: '/public/feed/culture' },
+      { label: 'initiatives', route: '/public/initiatives/culture' }
     ]
   },
   [CategoryEnum.Education]: {
     color: '#0056b3', label: 'Education', path: 'education', icon: '/icon-category/education.png', biIcon: 'bi-mortarboard-fill',
     route: '/public/category/education',
     topLinks: [
-      // { label: 'Feed', route: '/public/feed/education' },
-      // { label: 'initiatives', route: '/public/initiatives/education' }
+      { label: 'Feed', route: '/public/feed/education' },
+      { label: 'initiatives', route: '/public/initiatives/education' },
+      { label: 'create post', route: '/public/posts/create' }
     ]
   },
   [CategoryEnum.Health]: {
     color: '#00c3ff', label: 'Health', path: 'health', icon: '/icon-category/health.png', biIcon: 'bi-heart-pulse-fill',
     route: '/public/category/health',
     topLinks: [
-      // { label: 'Feed', route: '/public/feed/health' },
-      // { label: 'Initiatives', route: '/public/initiatives/health' }
+      { label: 'Feed', route: '/public/feed/health' },
+      { label: 'Initiatives', route: '/public/initiatives/health' },
+      { label: 'create post', route: '/public/posts/create' }
+
     ]
   },
   [CategoryEnum.Housing]: {

@@ -23,14 +23,7 @@
 
     <div class="nav-end">
 
-      <div class="dynamic-nav-links d-none d-lg-flex" *ngIf="currentActiveCat" [ngClass]="currentActiveCat.path">
 
-        <a *ngFor="let link of currentActiveCat.topLinks" [routerLink]="[link.route]" routerLinkActive="active-link"
-          class="nav-text-link">
-          {{ link.label }}
-        </a>
-
-      </div>
       <ng-container *ngIf="isLoggedIn; else loginTemplate">
         <!-- <button class="notification-btn">
           <i class="bi bi-bell-fill"></i>

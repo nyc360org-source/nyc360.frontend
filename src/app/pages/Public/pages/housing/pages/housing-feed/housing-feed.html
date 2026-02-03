@@ -51,43 +51,76 @@
             </div>
         </div>
 
-        <!-- Property Grid -->
         <div class="property-grid" *ngIf="!isLoading && listings.length > 0">
-            <div class="property-card" *ngFor="let item of listings"
-                [routerLink]="['/public/housing/details', item.id]">
-                <div class="card-image">
-                    <ng-container *ngIf="isVideo(item.imageUrl); else imgBlock">
-                        <video [src]="imageService.resolveImageUrl(item.imageUrl, 'housing')"
-                            class="w-100 h-100 object-fit-cover" muted loop onmouseover="this.play()"
-                            onmouseout="this.pause()"></video>
-                        <div class="play-icon-overlay position-absolute top-50 start-50 translate-middle text-white"
-                            style="z-index: 2; pointer-events: none;">
-                            <i class="bi bi-play-circle-fill fs-1 opacity-75"></i>
-                        </div>
-                    </ng-container>
-                    <ng-template #imgBlock>
-                        <img [src]="imageService.resolveImageUrl(item.imageUrl, 'housing')" [appImgFallback]="'post'">
-                    </ng-template>
+            <ng-container *ngFor="let item of listings">
+                <!-- 1. Standard Card (With Media) -->
+                <div class="property-card" *ngIf="item.mediaUrl" [routerLink]="['/public/housing/details', item.id]">
+                    <div class="card-image">
+                        <ng-container *ngIf="isVideo(item.mediaUrl); else imgBlock">
+                            <video [src]="item.mediaUrl" class="w-100 h-100 object-fit-cover" muted loop
+                                onmouseover="this.play()" onmouseout="this.pause()"></video>
+                            <div class="play-icon-overlay position-absolute top-50 start-50 translate-middle text-white"
+                                style="z-index: 2; pointer-events: none;">
+                                <i class="bi bi-play-circle-fill fs-1 opacity-75"></i>
+                            </div>
+                        </ng-container>
+                        <ng-template #imgBlock>
+                            <img [src]="item.mediaUrl" appImgFallback="housing">
+                        </ng-template>
 
-                    <span class="type-tag"
-                        [class.rent]="item.startingPrice < 50000 || item.imageUrl?.toLowerCase()?.includes('rent')">
-                        {{ (item.startingPrice < 50000 || item.imageUrl?.toLowerCase()?.includes('rent')) ? 'For Rent'
-                            : 'For Sale' }} </span>
-                </div>
-                <div class="card-details">
-                    <h3 class="title text-truncate">{{ item.title || 'NYC Property' }}</h3>
-                    <div class="stats">
-                        <span><i class="bi bi-door-open"></i> {{ item.numberOfRooms }} Rooms</span>
-                        <span><i class="bi bi-droplet"></i> {{ item.numberOfBathrooms }} Baths</span>
-                        <span><i class="bi bi-rulers"></i> {{ item.size }} sqft</span>
+                        <span class="type-tag" [class.rent]="item.isRenting">
+                            {{ item.isRenting ? 'For Rent' : 'For Sale' }}
+                        </span>
                     </div>
-                    <div class="footer">
-                        <span class="price">{{ formatPrice(item.startingPrice) }}{{ item.startingPrice < 50000 ? '/mo'
-                                : '' }}</span>
-                                <button class="btn-more">Details</button>
+                    <div class="card-details">
+                        <h3 class="title text-truncate">{{ item.title || 'NYC Property' }}</h3>
+                        <div class="stats">
+                            <span><i class="bi bi-door-open"></i> {{ item.numberOfRooms }} Rooms</span>
+                            <span><i class="bi bi-droplet"></i> {{ item.numberOfBathrooms }} Baths</span>
+                            <span><i class="bi bi-rulers"></i> {{ item.size }} sqft</span>
+                        </div>
+                        <div class="footer">
+                            <span class="price">{{ formatPrice(item.startingPrice) }}{{ item.isRenting ? '/mo' : ''
+                                }}</span>
+                            <button class="btn-more">Details</button>
+                        </div>
                     </div>
                 </div>
-            </div>
+
+                <!-- 2. Text-Only Card (Different Design) -->
+                <div class="property-card text-only-card" *ngIf="!item.mediaUrl"
+                    [routerLink]="['/public/housing/details', item.id]">
+                    <div class="card-header-minimal">
+                        <span class="type-badge" [class.rent]="item.isRenting">
+                            {{ item.isRenting ? 'For Rent' : 'For Sale' }}
+                        </span>
+                        <span class="location-mini"><i class="bi bi-geo-alt"></i> NYC Area</span>
+                    </div>
+                    <div class="card-body-text">
+                        <h2 class="text-title">{{ item.title }}</h2>
+                        <p class="text-excerpt">{{ item.description || item.content | slice:0:150 }}...</p>
+
+                        <div class="luxury-divider"></div>
+
+                        <div class="stats-row">
+                            <div class="stat"><span class="val">{{ item.numberOfRooms }}</span> <span
+                                    class="lab">Beds</span></div>
+                            <div class="stat"><span class="val">{{ item.numberOfBathrooms }}</span> <span
+                                    class="lab">Baths</span></div>
+                            <div class="stat"><span class="val">{{ item.size }}</span> <span class="lab">Sqft</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer-luxury">
+                        <div class="price-container">
+                            <span class="label">Starting at</span>
+                            <span class="val">{{ formatPrice(item.startingPrice) }}{{ item.isRenting ? '/mo' : ''
+                                }}</span>
+                        </div>
+                        <i class="bi bi-arrow-right-circle-fill go-icon"></i>
+                    </div>
+                </div>
+            </ng-container>
         </div>
 
         <!-- No Results -->
