@@ -74,7 +74,9 @@ export class ListingAuthorizationComponent implements OnInit {
 
     ngOnInit() {
         this.route.queryParams.subscribe(params => {
-            if (params['id']) {
+            if (params['listingId']) {
+                this.listingId = Number(params['listingId']);
+            } else if (params['id']) {
                 this.listingId = Number(params['id']);
             } else {
                 console.warn('Missing listing ID');
@@ -117,21 +119,26 @@ export class ListingAuthorizationComponent implements OnInit {
             this.form.markAllAsTouched();
             this.toastService.error('Please fill all required fields correctly.');
 
-            // Scroll to the first invalid element
-            const firstInvalid = document.querySelector('.is-invalid, .ng-invalid');
-            if (firstInvalid) {
-                firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
+            // Scroll to the first invalid element after DOM update
+            setTimeout(() => {
+                const firstInvalid = document.querySelector('.is-invalid');
+                if (firstInvalid) {
+                    firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    firstInvalid.classList.add('pulse-error'); // Optional: Add a pulse animation if you have one
+                }
+            }, 100);
             return;
         }
 
         // Enforce document upload
         if (this.selectedFiles.length === 0) {
             this.toastService.error('Please upload at least one authorization document.');
-            const uploadZone = document.querySelector('.upload-wrapper');
-            if (uploadZone) {
-                uploadZone.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
+            setTimeout(() => {
+                const uploadZone = document.querySelector('.upload-wrapper');
+                if (uploadZone) {
+                    uploadZone.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 100);
             return;
         }
 
