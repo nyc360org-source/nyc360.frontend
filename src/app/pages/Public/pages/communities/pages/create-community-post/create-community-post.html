@@ -30,15 +30,14 @@
       <div class="tags-section">
         <div class="selected-tags mb-2" *ngIf="tags.length > 0">
           <span class="tag-chip" *ngFor="let tag of tags">
-            <i class="bi bi-hash"></i> {{ tag.name }}
+            {{ tag.name }}
             <button (click)="removeTag(tag)">&times;</button>
           </span>
         </div>
 
         <div class="search-wrapper" style="position: relative;">
           <div class="input-box">
-            <i class="bi bi-hash text-primary"></i>
-            <input type="text" [formControl]="tagSearchControl" placeholder="Search tags... (e.g. news, events)"
+            <input type="text" [formControl]="tagSearchControl" placeholder="add tags (e.g. news, events)..."
               (blur)="onTagBlur()" (focus)="showTagResults = true">
 
             <div class="spinner-sm" *ngIf="isSearchingTags" style="position: absolute; right: 10px; top: 10px;"></div>
