@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
-import { HousingService } from '../../service/housing.service';
+import { HousingAgentService } from '../../service/housing-agent.service';
 import { ConfirmationService } from '../../../../../../shared/services/confirmation.service';
 import { ToastService } from '../../../../../../shared/services/toast.service';
 
@@ -17,7 +17,7 @@ export class HousingRequestStatusComponent {
     @Output() close = new EventEmitter<void>();
     @Output() statusUpdated = new EventEmitter<number>();
 
-    private housingService = inject(HousingService);
+    private housingService = inject(HousingAgentService);
     private confirmationService = inject(ConfirmationService);
     private toastService = inject(ToastService);
     private cdr = inject(ChangeDetectorRef);

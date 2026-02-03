@@ -6,7 +6,8 @@ import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { Subject, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, catchError } from 'rxjs/operators';
 import { PostsService } from '../../../../pages/posts/services/posts';
-import { HousingService } from '../../service/housing.service';
+import { HousingViewService } from '../../service/housing-view.service';
+import { HousingSubmissionService } from '../../service/housing-submission.service';
 import { ToastService } from '../../../../../../shared/services/toast.service';
 import { ImageService } from '../../../../../../shared/services/image.service';
 import { AuthService } from '../../../../../Authentication/Service/auth';
@@ -22,7 +23,8 @@ import { formatDate } from '@angular/common';
 export class EditRentingComponent implements OnInit {
     private fb = inject(FormBuilder);
     private postsService = inject(PostsService);
-    private housingService = inject(HousingService);
+    private housingViewService = inject(HousingViewService);
+    private housingSubmissionService = inject(HousingSubmissionService);
     private router = inject(Router);
     private route = inject(ActivatedRoute);
     private toastService = inject(ToastService);
@@ -223,7 +225,7 @@ export class EditRentingComponent implements OnInit {
 
     loadListingData(id: number) {
         this.isLoading = true;
-        this.housingService.getHousingDetails(id).subscribe({
+        this.housingViewService.getHousingDetails(id).subscribe({
             next: (res: any) => {
                 if (res.isSuccess) {
                     const data = res.data.info || res.data;
@@ -505,7 +507,7 @@ export class EditRentingComponent implements OnInit {
         };
 
         if (this.postId) {
-            this.housingService.updateRentingPost(this.postId, payload).subscribe({
+            this.housingSubmissionService.updateRentingPost(this.postId, payload).subscribe({
                 next: (res: any) => {
                     this.isSubmitting = false;
                     if (res?.isSuccess) {

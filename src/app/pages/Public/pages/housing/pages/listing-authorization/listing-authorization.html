@@ -13,7 +13,7 @@
                 <div class="col-12 form-group-row">
                     <label>Full Name *</label>
                     <input type="text" class="form-control-custom" formControlName="FullName"
-                        [class.is-invalid]="form.get('FullName')?.invalid && form.get('FullName')?.touched"
+                        [class.is-invalid]="(form.get('FullName')?.invalid && form.get('FullName')?.touched) || (triedToSubmit && form.get('FullName')?.invalid)"
                         placeholder="Jane Doe">
                 </div>
                 <div class="col-12 form-group-row">
@@ -24,13 +24,13 @@
                 <div class="col-md-6 form-group-row">
                     <label>Email Address *</label>
                     <input type="email" class="form-control-custom" formControlName="Email"
-                        [class.is-invalid]="form.get('Email')?.invalid && form.get('Email')?.touched"
+                        [class.is-invalid]="(form.get('Email')?.invalid && form.get('Email')?.touched) || (triedToSubmit && form.get('Email')?.invalid)"
                         placeholder="Jane@gmail.com">
                 </div>
                 <div class="col-md-6 form-group-row">
-                    <label>Phone Number</label>
+                    <label>Phone Number *</label>
                     <input type="tel" class="form-control-custom" formControlName="PhoneNumber"
-                        [class.is-invalid]="form.get('PhoneNumber')?.invalid && form.get('PhoneNumber')?.touched"
+                        [class.is-invalid]="(form.get('PhoneNumber')?.invalid && form.get('PhoneNumber')?.touched) || (triedToSubmit && form.get('PhoneNumber')?.invalid)"
                         placeholder="(555) 000 - 0000">
                 </div>
             </div>
@@ -48,13 +48,13 @@
                 <div class="col-md-6 form-group-row">
                     <label>Preferred Contact Date/s *</label>
                     <input type="date" class="form-control-custom" formControlName="PreferredContactDate"
-                        [class.is-invalid]="form.get('PreferredContactDate')?.invalid && form.get('PreferredContactDate')?.touched"
+                        [class.is-invalid]="(form.get('PreferredContactDate')?.invalid && form.get('PreferredContactDate')?.touched) || (triedToSubmit && form.get('PreferredContactDate')?.invalid)"
                         placeholder="mm/dd/yyyy">
                 </div>
                 <div class="col-md-6 form-group-row">
                     <label>Preferred Contact Time *</label>
                     <input type="time" class="form-control-custom" formControlName="PreferredContactTime"
-                        [class.is-invalid]="form.get('PreferredContactTime')?.invalid && form.get('PreferredContactTime')?.touched"
+                        [class.is-invalid]="(form.get('PreferredContactTime')?.invalid && form.get('PreferredContactTime')?.touched) || (triedToSubmit && form.get('PreferredContactTime')?.invalid)"
                         placeholder="Time">
                 </div>
 
@@ -97,22 +97,22 @@
                 <!-- Left Column -->
                 <div class="col-md-7 pe-md-4">
                     <div class="form-group-row">
-                        <label>Authorization Type</label>
+                        <label>Authorization Type *</label>
                         <select class="form-control-custom" formControlName="AuthorizationType"
-                            [class.is-invalid]="form.get('AuthorizationType')?.invalid && form.get('AuthorizationType')?.touched">
+                            [class.is-invalid]="(form.get('AuthorizationType')?.invalid && form.get('AuthorizationType')?.touched) || (triedToSubmit && form.get('AuthorizationType')?.invalid)">
                             <option [ngValue]="null">Select Authorization Type</option>
-                            <option *ngFor="let type of authorizationTypes" [value]="type.id">{{type.name}}</option>
+                            <option *ngFor="let type of authorizationTypes" [ngValue]="type.id">{{type.name}}</option>
                         </select>
                         <div class="helper-text">Who is authorized to post this listing?</div>
                     </div>
 
                     <div class="row">
                         <div class="col-md-7 form-group-row">
-                            <label>Listing Authorization Document(s)</label>
+                            <label>Listing Authorization Document Type *</label>
                             <select class="form-control-custom" formControlName="ListingAuthorizationDocument"
-                                [class.is-invalid]="form.get('ListingAuthorizationDocument')?.invalid && form.get('ListingAuthorizationDocument')?.touched">
-                                <option [ngValue]="null">Select Authorization Type</option>
-                                <option *ngFor="let doc of documentTypes" [value]="doc.id">{{doc.name}}</option>
+                                [class.is-invalid]="(form.get('ListingAuthorizationDocument')?.invalid && form.get('ListingAuthorizationDocument')?.touched) || (triedToSubmit && form.get('ListingAuthorizationDocument')?.invalid)">
+                                <option [ngValue]="null">Select Document Type</option>
+                                <option *ngFor="let doc of documentTypes" [ngValue]="doc.id">{{doc.name}}</option>
                             </select>
                             <div class="helper-text">Who is authorized to post this listing?</div>
                         </div>
@@ -156,7 +156,8 @@
                 <!-- Right Column (Upload & Docs) -->
                 <div class="col-md-5">
                     <!-- Dropzone -->
-                    <div class="upload-wrapper" (click)="fileInput.click()">
+                    <div class="upload-wrapper" (click)="fileInput.click()"
+                        [class.is-invalid]="triedToSubmit && selectedFiles.length === 0">
                         <div class="upload-icon-circle">
                             <i class="bi bi-file-earmark-plus"></i>
                         </div>
@@ -167,6 +168,10 @@
 
                         <button type="button" class="btn-select-files">Select Files</button>
                         <input type="file" #fileInput multiple (change)="onFileSelect($event)" style="display: none;">
+                    </div>
+                    <div *ngIf="triedToSubmit && selectedFiles.length === 0" class="text-danger small mt-2">
+                        <i class="bi bi-exclamation-circle me-1"></i> At least one document is required for
+                        authorization.
                     </div>
 
                     <div *ngIf="selectedFiles.length > 0" class="mb-3">

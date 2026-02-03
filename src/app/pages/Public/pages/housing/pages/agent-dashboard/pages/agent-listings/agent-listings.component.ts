@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { HousingService } from '../../../../service/housing.service';
+import { HousingAgentService } from '../../../../service/housing-agent.service';
 import { ImageService } from '../../../../../../../../shared/services/image.service';
 
 @Component({
@@ -12,7 +12,7 @@ import { ImageService } from '../../../../../../../../shared/services/image.serv
     styleUrls: ['./agent-listings.component.scss']
 })
 export class AgentListingsComponent implements OnInit {
-    private housingService = inject(HousingService);
+    private housingService = inject(HousingAgentService);
     public imageService = inject(ImageService);
 
     listings: any[] = [];

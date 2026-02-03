@@ -150,6 +150,25 @@ $border-color: #e9ecef;
             background: rgba(188, 157, 95, 0.95);
             transform: translateY(-2px);
         }
+
+        .no-media-placeholder {
+            background: #f8f9fa;
+            border: 2px dashed #eee;
+            border-radius: 12px;
+
+            i {
+                font-size: 4rem;
+                opacity: 0.2;
+            }
+
+            span {
+                font-weight: 600;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                font-size: 0.9rem;
+                opacity: 0.5;
+            }
+        }
     }
 
     .side-images {
@@ -675,10 +694,23 @@ $border-color: #e9ecef;
                 position: relative;
                 font-size: 0;
 
-                img {
+                img,
+                video {
                     width: 100%;
                     height: 100%;
                     object-fit: cover;
+                }
+
+                &.no-image-box {
+                    background: #f0f0f0;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    color: #ccc;
+
+                    i {
+                        font-size: 2.5rem;
+                    }
                 }
             }
 

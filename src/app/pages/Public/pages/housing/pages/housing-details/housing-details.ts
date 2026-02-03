@@ -1,7 +1,7 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, OnInit, inject, ChangeDetectionStrategy, ChangeDetectorRef, PLATFORM_ID, Inject } from '@angular/core';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
-import { HousingService } from '../../service/housing.service';
+import { HousingViewService } from '../../service/housing-view.service';
 import { ImageService } from '../../../../../../shared/services/image.service';
 import { ImgFallbackDirective } from '../../../../../../shared/directives/img-fallback.directive';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
@@ -23,7 +23,7 @@ import { HousingRequestStatusComponent } from '../request-status/request-status.
 })
 export class HousingDetailsComponent implements OnInit {
     private route = inject(ActivatedRoute);
-    private housingService = inject(HousingService);
+    private housingService = inject(HousingViewService);
     private cdr = inject(ChangeDetectorRef);
     protected imageService = inject(ImageService);
     private router = inject(Router);
@@ -39,7 +39,7 @@ export class HousingDetailsComponent implements OnInit {
     showAgentRequestModal = false;
 
     // Helper to determine media type
-    getMediaType(url: string): 'image' | 'video' | 'file' {
+    public getMediaType(url: string): 'image' | 'video' | 'file' {
         if (!url) return 'image';
         const lower = url.toLowerCase();
         if (lower.endsWith('.mp4') || lower.endsWith('.webm') || lower.endsWith('.ogg') || lower.endsWith('.mov')) {
@@ -48,7 +48,11 @@ export class HousingDetailsComponent implements OnInit {
         if (lower.endsWith('.pdf') || lower.endsWith('.doc') || lower.endsWith('.docx') || lower.endsWith('.txt')) {
             return 'file';
         }
-        return 'image'; // Default to image for safety
+        return 'image';
+    }
+
+    public isVideo(url: string): boolean {
+        return this.getMediaType(url) === 'video';
     }
 
     ngOnInit(): void {
@@ -99,7 +103,7 @@ export class HousingDetailsComponent implements OnInit {
                     // Map API fields
                     this.property = {
                         ...data,
-                        title: data.title || (data.fullAddress ? data.fullAddress : `${data.bedrooms || 0} Bed ${data.bathrooms || 0} Bath in ${data.neighborhood || 'NYC'}`),
+                        title: data.title || (data.fullAddress ? data.fullAddress : `${data.bedrooms ?? 0} Bed ${data.bathrooms ?? 0} Bath in ${data.neighborhood || 'NYC'}`),
                         startingPrice: data.startingPrice ?? data.startingOrAskingPrice ?? data.monthlyCostRange,
                         numberOfRooms: data.numberOfRooms ?? data.bedrooms,
                         numberOfBathrooms: data.numberOfBathrooms ?? data.bathrooms,
@@ -112,6 +116,7 @@ export class HousingDetailsComponent implements OnInit {
                         buildingType: data.buildingType ?? data.houseType,
                         heatingSystem: data.heatingSystem ?? data.heating,
                         coolingSystem: data.coolingSystem ?? data.cooling,
+                        temperatureControl: data.temperatureControl ?? data.temperatureControl,
                         nearbySubwayLines: (data.nearbySubwayLines ?? data.nearbyTransportation)?.map((id: number) => {
                             const found = this.transportationOptions.find(o => o.id === id);
                             return found ? found.name : String(id);
@@ -119,29 +124,35 @@ export class HousingDetailsComponent implements OnInit {
                         acceptedHousingPrograms: data.acceptedHousingPrograms ?? data.rentHousingPrograms,
                         acceptedBuyerPrograms: data.acceptedBuyerPrograms ?? data.buyerHousingProgram,
                         googleMapLink: data.googleMapLink ?? data.googleMap,
-                        laundryType: data.laundryType ?? (Array.isArray(data.laundryTypes) ? data.laundryTypes[0] : (data.laundry || 0)),
+                        laundryType: (data.laundryType !== undefined) ? data.laundryType : (Array.isArray(data.laundryTypes) ? data.laundryTypes[0] : (data.laundry || 0)),
                         address: data.address || {
-                            buildingNumber: data.buildingNumber,
+                            buildingNumber: data.buildingNumber || '',
                             street: data.fullAddress || '',
-                            unitNumber: data.unitNumber,
-                            zipCode: data.zipCode,
+                            unitNumber: data.unitNumber || '',
+                            zipCode: data.zipCode || '',
                             location: {
-                                neighborhood: data.neighborhood,
-                                borough: data.borough
+                                neighborhood: data.neighborhood || '',
+                                borough: data.borough || ''
                             }
                         },
                         utilitiesIncluded: (data.utilitiesIncluded ?? data.amenities)?.map((id: number) => {
-                            // Simple mapping if amenities options aren't available, or pass ID for now
                             return this.getLabel(id, this.amenitiesOptions) || `Amenity ${id}`;
                         }) || [],
-                        // New Media Lists
+                        // Media
                         attachments: processedAttachments,
                         images: processedAttachments.filter((a: any) => a.type === 'image'),
                         videos: processedAttachments.filter((a: any) => a.type === 'video'),
                         documents: processedAttachments.filter((a: any) => a.type === 'file')
                     };
                     this.requestInfo = res.data.request;
-                    this.similarProperties = res.data.similar || [];
+                    this.similarProperties = (res.data.similar || []).map((p: any) => {
+                        const rawMedia = p.imageUrl || (p.attachments?.[0]?.url || p.attachments?.[0]);
+                        return {
+                            ...p,
+                            mediaUrl: this.imageService.resolveImageUrl(rawMedia, 'housing'),
+                            mediaType: this.getMediaType(String(rawMedia || ''))
+                        };
+                    });
 
                     // Set Initial Active Media
                     // Prefer Image, then Video
