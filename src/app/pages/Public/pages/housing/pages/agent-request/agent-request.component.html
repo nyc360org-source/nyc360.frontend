@@ -4,6 +4,66 @@
         <button class="close-x" (click)="cancel()"><i class="bi bi-x-lg"></i></button>
     </div>
 
+    <!-- Agent Availability & Welcome Note -->
+    <div class="agent-welcome-card" *ngIf="authorization">
+        <div class="card-importance-tag">
+            <i class="bi bi-exclamation-octagon-fill"></i>
+            <span>ACTION REQUIRED: AGENT PREFERENCES</span>
+        </div>
+
+        <div class="agent-profile-mini">
+            <div class="agent-avatar-ring">
+                <i class="bi bi-person-badge-fill"></i>
+            </div>
+            <div class="agent-identity">
+                <h4>{{ authorization.fullName }}</h4>
+                <div class="id-row">
+                    <span class="org-tag" *ngIf="authorization.organizationName">{{ authorization.organizationName
+                        }}</span>
+                    <span class="verified-badge"><i class="bi bi-patch-check-fill"></i> Verified</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="welcome-message text-center">
+            <h3>Optimize Your Request</h3>
+            <p>To ensure a prioritized response, please select from the <strong>exclusive availability windows</strong>
+                specified by the agent below:</p>
+
+            <div class="availability-grid">
+                <div class="avail-item" *ngIf="authorization.preferredContactDate">
+                    <span class="a-label">Preferred Contact</span>
+                    <span class="a-value">
+                        <i class="bi bi-chat-dots-fill"></i>
+                        {{ authorization.preferredContactDate | date:'MMM d' }} at {{ authorization.preferredContactTime
+                        }}
+                    </span>
+                </div>
+                <div class="avail-item" *ngIf="authorization.preferredVirtualTourDate">
+                    <span class="a-label">Virtual Tours</span>
+                    <span class="a-value">
+                        <i class="bi bi-camera-video-fill"></i>
+                        {{ authorization.preferredVirtualTourDate | date:'MMM d' }} at {{
+                        authorization.preferredVirtualTourTime }}
+                    </span>
+                </div>
+                <div class="avail-item" *ngIf="authorization.preferredInPersonTourDate">
+                    <span class="a-label">In-Person Tours</span>
+                    <span class="a-value">
+                        <i class="bi bi-geo-alt-fill"></i>
+                        {{ authorization.preferredInPersonTourDate | date:'MMM d' }} at {{
+                        authorization.preferredInPersonTourTime }}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="banner-footer-note">
+            <i class="bi bi-lightning-charge-fill"></i>
+            Tip: Requests aligned with these hours are usually answered within 1-2 hours.
+        </div>
+    </div>
+
     <form [formGroup]="form" (ngSubmit)="onSubmit()" class="premium-form">
         <!-- Section 1: Your Information -->
         <div class="form-section-premium">
@@ -45,16 +105,19 @@
                 </div>
             </div>
 
-            <div class="form-row-premium">
+            <div class="form-row-premium date-time-row">
                 <div class="form-group-premium">
                     <label>Preferred Contact Date *</label>
                     <div class="date-input-wrapper">
-                        <input type="date" formControlName="PrefContactDate">
+                        <i class="bi bi-calendar3"></i>
+                        <input type="date" formControlName="PrefContactDate" [min]="minContactDate"
+                            [max]="maxContactDate">
                     </div>
                 </div>
                 <div class="form-group-premium">
                     <label>Preferred Contact Time *</label>
                     <div class="date-input-wrapper">
+                        <i class="bi bi-clock"></i>
                         <input type="time" formControlName="PrefContactTime">
                     </div>
                 </div>
@@ -83,42 +146,50 @@
                 <div class="form-group-premium">
                     <label>Select Move-in Date *</label>
                     <div class="date-input-wrapper">
-                        <input type="date" formControlName="MoveInDate">
+                        <i class="bi bi-calendar-event"></i>
+                        <input type="date" formControlName="MoveInDate" [min]="todayDate">
                     </div>
                 </div>
                 <div class="form-group-premium">
                     <label>Select Move-out Date</label>
                     <div class="date-input-wrapper">
+                        <i class="bi bi-calendar-x"></i>
                         <input type="date" formControlName="MoveOutDate">
                     </div>
                 </div>
             </div>
 
-            <div class="form-row-premium">
+            <div class="form-row-premium date-time-row">
                 <div class="form-group-premium">
                     <label>Schedule Virtual Tour</label>
                     <div class="date-input-wrapper">
-                        <input type="date" formControlName="ScheduleVirtualDate">
+                        <i class="bi bi-camera-video"></i>
+                        <input type="date" formControlName="ScheduleVirtualDate" [min]="minVirtualDate"
+                            [max]="maxVirtualDate">
                     </div>
                 </div>
                 <div class="form-group-premium">
                     <label>Time Window</label>
                     <div class="date-input-wrapper">
+                        <i class="bi bi-clock-history"></i>
                         <input type="time" formControlName="VirtualTime">
                     </div>
                 </div>
             </div>
 
-            <div class="form-row-premium">
+            <div class="form-row-premium date-time-row">
                 <div class="form-group-premium">
                     <label>Schedule In-Person Tour</label>
                     <div class="date-input-wrapper">
-                        <input type="date" formControlName="InPersonTourDate">
+                        <i class="bi bi-geo-alt"></i>
+                        <input type="date" formControlName="InPersonTourDate" [min]="minInPersonDate"
+                            [max]="maxInPersonDate">
                     </div>
                 </div>
                 <div class="form-group-premium">
                     <label>Time Window</label>
                     <div class="date-input-wrapper">
+                        <i class="bi bi-alarm"></i>
                         <input type="time" formControlName="InPersonTime">
                     </div>
                 </div>

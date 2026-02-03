@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { HousingViewService } from '../../service/housing-view.service';
 import { environment } from '../../../../../../environments/environment';
 import { ImageService } from '../../../../../../shared/services/image.service';
+import { ImgFallbackDirective } from '../../../../../../shared/directives/img-fallback.directive';
 import { AuthService } from '../../../../../Authentication/Service/auth';
 import { VerificationService } from '../../../settings/services/verification.service';
 import { ToastService } from '../../../../../../shared/services/toast.service';
