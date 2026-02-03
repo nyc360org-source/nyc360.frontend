@@ -92,6 +92,7 @@ export class HousingHomeComponent implements OnInit {
         if (!this.authService.hasHousingPermission()) {
             event.preventDefault();
             event.stopPropagation();
+            event.stopImmediatePropagation();
             this.showVerificationModal = true;
             this.cdr.markForCheck();
         }
