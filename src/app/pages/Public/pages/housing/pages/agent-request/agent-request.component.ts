@@ -22,6 +22,7 @@ export class AgentRequestComponent implements OnInit {
     @Input() postId: number = 0;
     @Input() contentTitle: string | null = null;
     @Input() contentImage: string | null = null;
+    @Input() authorization: any = null;
     @Output() close = new EventEmitter<void>();
 
     @Output() requestSubmitted = new EventEmitter<void>();

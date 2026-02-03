@@ -4,6 +4,34 @@
         <button class="close-x" (click)="cancel()"><i class="bi bi-x-lg"></i></button>
     </div>
 
+    <!-- Agent Availability Tip -->
+    <div class="agent-availability-banner" *ngIf="authorization">
+        <div class="banner-icon">
+            <i class="bi bi-info-circle-fill"></i>
+        </div>
+        <div class="banner-text">
+            <strong>{{ authorization.fullName }}'s Availability</strong>
+            <p *ngIf="authorization.organizationName" class="small text-muted mb-2">Representing: {{
+                authorization.organizationName }}</p>
+            <p>To ensure a faster response, the agent has specified their preferred availability:</p>
+            <div class="availability-chips">
+                <span class="a-chip" *ngIf="authorization.preferredContactDate">
+                    <i class="bi bi-chat-text"></i> Contact: {{ authorization.preferredContactDate | date:'mediumDate'
+                    }} at {{ authorization.preferredContactTime }}
+                </span>
+                <span class="a-chip" *ngIf="authorization.preferredVirtualTourDate">
+                    <i class="bi bi-camera-video"></i> Virtual: {{ authorization.preferredVirtualTourDate |
+                    date:'mediumDate' }} at {{ authorization.preferredVirtualTourTime }}
+                </span>
+                <span class="a-chip" *ngIf="authorization.preferredInPersonTourDate">
+                    <i class="bi bi-geo-alt"></i> In-Person: {{ authorization.preferredInPersonTourDate |
+                    date:'mediumDate' }} at {{ authorization.preferredInPersonTourTime }}
+                </span>
+            </div>
+            <p class="small mt-2 mb-0 opacity-75">Please try to align your request with these times if possible.</p>
+        </div>
+    </div>
+
     <form [formGroup]="form" (ngSubmit)="onSubmit()" class="premium-form">
         <!-- Section 1: Your Information -->
         <div class="form-section-premium">
