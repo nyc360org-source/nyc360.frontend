@@ -116,7 +116,7 @@ export class CreateSaleComponent implements OnInit {
 
     // --- State ---
     selectedFiles: File[] = [];
-    imagePreviews: { url: SafeUrl, type: 'image' | 'video' }[] = [];
+    imagePreviews: { url: SafeUrl, type: 'image' | 'video' | 'file', name?: string }[] = [];
     locationSearch$ = new Subject<string>();
     locationResults: any[] = [];
     selectedLocation: any = null;
@@ -260,9 +260,17 @@ export class CreateSaleComponent implements OnInit {
             const files = Array.from(event.target.files) as File[];
             this.selectedFiles = [...this.selectedFiles, ...files];
             files.forEach(file => {
-                const type = file.type.startsWith('video') ? 'video' : 'image';
+                let type: 'image' | 'video' | 'file' = 'image';
+                if (file.type.startsWith('video')) {
+                    type = 'video';
+                } else if (file.type.startsWith('image')) {
+                    type = 'image';
+                } else {
+                    type = 'file';
+                }
+
                 const url = this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(file));
-                this.imagePreviews.push({ url, type });
+                this.imagePreviews.push({ url, type, name: file.name });
             });
             this.cdr.detectChanges();
         }
@@ -298,11 +306,21 @@ export class CreateSaleComponent implements OnInit {
             next: (res: any) => {
                 this.isSubmitting = false;
                 if (res?.isSuccess) {
-                    this.toastService.success(isPublished ? 'Listing Published!' : 'Draft Saved Successfully!');
-                    const newId = res.data?.id || res.data?.housingId;
+                    let newId = res.data;
+                    if (res.data && typeof res.data === 'object') {
+                        newId = res.data.id || res.data.housingId || res.data.Id || res.data.HousingId;
+                    }
+                    console.log('Sale API Response:', res);
+                    console.log('Extracted New ID:', newId);
+
                     if (newId) {
-                        this.router.navigate(['/public/housing/listing-authorization'], { queryParams: { id: newId } });
+                        if (isPublished) {
+                            this.router.navigate(['/public/housing/listing-authorization'], { queryParams: { id: newId } });
+                        } else {
+                            this.router.navigate(['/public/housing/details', newId]);
+                        }
                     } else {
+                        console.warn('Could not extract new listing ID', res);
                         this.router.navigate(['/public/housing/home']);
                     }
                 } else {

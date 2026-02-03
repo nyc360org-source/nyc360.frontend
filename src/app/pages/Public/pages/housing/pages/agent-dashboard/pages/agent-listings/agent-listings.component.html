@@ -46,8 +46,16 @@
                 <tr *ngFor="let item of listings">
                     <td data-label="Property">
                         <div class="property-info-cell">
-                            <img [src]="imageService.resolveImageUrl(item.imageUrl, 'housing')" class="prop-thumb"
-                                alt="Property">
+                            <ng-container *ngIf="isVideo(item.imageUrl); else imgThumb">
+                                <video [src]="imageService.resolveImageUrl(item.imageUrl, 'housing')"
+                                    class="prop-thumb object-fit-cover" muted loop onmouseover="this.play()"
+                                    onmouseout="this.pause()"></video>
+                            </ng-container>
+                            <ng-template #imgThumb>
+                                <img [src]="imageService.resolveImageUrl(item.imageUrl, 'housing')" class="prop-thumb"
+                                    alt="Property">
+                            </ng-template>
+
                             <div class="prop-meta">
                                 <span class="prop-id">#{{ item.id }}</span>
                                 <span class="prop-date">{{ item.createdAt | date:'MMM d, y' }}</span>

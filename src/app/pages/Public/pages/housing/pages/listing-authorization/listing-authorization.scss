@@ -1,79 +1,93 @@
+// Variables
+$font-family: 'Inter', sans-serif;
+$color-text: #333;
+$color-label: #000;
+$color-placeholder: #999;
+$color-gold: #C5A065; // Approximate gold color from image
+$color-gold-hover: #b08d55;
+$color-bg-yellow: #FAF3E0;
+$color-bg-purple: #F3E5F5;
+$color-bg-blue: #C5D6E8; // Muted blue from image
+$border-radius-card: 16px;
+$border-radius-input: 10px;
+
 .authorization-container {
-    max-width: 800px;
+    max-width: 900px;
     margin: 0 auto;
-    padding: 2rem 1rem;
-    font-family: 'Inter', sans-serif;
+    padding: 3rem 1rem;
+    font-family: $font-family;
+    color: $color-text;
 
     h2.page-title {
-        font-size: 1.75rem;
-        font-weight: 700;
-        margin-bottom: 1.5rem;
+        font-size: 2rem;
+        font-weight: 800;
+        margin-bottom: 2rem;
         color: #000;
+        letter-spacing: -0.5px;
     }
 }
 
 .auth-section {
-    border-radius: 16px;
-    padding: 2rem;
-    margin-bottom: 2rem;
+    border-radius: $border-radius-card;
+    padding: 2.5rem;
+    margin-bottom: 2.5rem;
     position: relative;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
 
     &.bg-yellow {
-        background-color: #FFF8E1;
+        background-color: $color-bg-yellow;
     }
 
     &.bg-purple {
-        background-color: #F3E5F5;
+        background-color: $color-bg-purple;
     }
 
     &.bg-blue {
-        background-color: #E3F2FD;
-    }
-
-    &.bg-pink {
-        background-color: #FCE4EC;
+        background-color: $color-bg-blue;
     }
 
     .section-header {
         display: flex;
         align-items: center;
-        margin-bottom: 1.5rem;
+        margin-bottom: 2rem;
 
         .step-badge {
-            width: 32px;
-            height: 32px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 600;
-            margin-right: 12px;
-            font-size: 1rem;
+            font-weight: 700;
+            margin-right: 14px;
+            font-size: 1.1rem;
 
+            // Customize badge colors to match section but slightly darker/different
             &.badge-yellow {
-                background-color: #FFECB3;
-                color: #5D4037;
+                background-color: rgba(255, 236, 179, 0.8);
+                color: #8D6E63;
             }
 
             &.badge-purple {
-                background-color: #E1BEE7;
-                color: #4A148C;
+                background-color: rgba(225, 190, 231, 0.8);
+                color: #6A1B9A;
             }
 
             &.badge-blue {
-                background-color: #BBDEFB;
-                color: #0D47A1;
+                background-color: rgba(255, 255, 255, 0.5);
+                color: #78909C;
             }
 
-            &.badge-pink {
-                background-color: #F8BBD0;
-                color: #880E4F;
-            }
+            /* Example */
+
+            // Actually image uses text color gold/brown for numbers inside badge
+            background-color: rgba(255, 255, 255, 0.6) !important;
+            color: $color-gold !important;
         }
 
         h3 {
-            font-size: 1.25rem;
-            font-weight: 600;
+            font-size: 1.35rem;
+            font-weight: 700;
             margin: 0;
             color: #000;
         }
@@ -84,107 +98,165 @@
 
         label {
             display: block;
-            font-size: 0.875rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: #333;
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 0.6rem;
+            color: $color-label;
         }
 
         .form-control-custom {
             width: 100%;
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            background: rgba(255, 255, 255, 0.6);
-            border-radius: 8px;
-            padding: 0.75rem 1rem;
-            font-size: 0.95rem;
+            border: 1px solid rgba(0, 0, 0, 0.08); // Very subtle border
+            background: transparent;
+            border: 1px solid #aaa; // Slightly visible border as in design
+            border-radius: $border-radius-input;
+            padding: 0.9rem 1rem;
+            font-size: 1rem;
+            color: #333;
             transition: all 0.2s;
+            background-color: transparent; // As in image, seems transparent or matching bg
+            border: 1px solid rgba(0, 0, 0, 0.2);
+
+            &::placeholder {
+                color: #777;
+                font-weight: 400;
+            }
 
             &:focus {
                 outline: none;
                 background: #fff;
-                border-color: #AA8555;
-                box-shadow: 0 0 0 3px rgba(170, 133, 85, 0.1);
+                border-color: $color-gold;
+                box-shadow: 0 0 0 3px rgba(197, 160, 101, 0.15);
+            }
+        }
+
+        .helper-text {
+            font-size: 0.7rem;
+            color: #555; // Slightly dark for visibility on blue
+            margin-top: 4px;
+            font-style: italic;
+            opacity: 0.8;
+        }
+
+        .helper-text-bold {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #444;
+            margin-top: 4px;
+        }
+    }
+}
+
+// Upload Area Styling (Drag & Drop)
+.upload-wrapper {
+    background: #fff;
+    border: 2px dashed #ccc;
+    border-radius: 12px;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+
+    &:hover {
+        border-color: $color-gold;
+        background: #FFFEFA;
+    }
+
+    .upload-icon-circle {
+        width: 50px;
+        height: 50px;
+        background: $color-gold; // Gold circle? In image it's gold icon
+        background: #FDF4E3;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+
+        i {
+            font-size: 1.5rem;
+            color: $color-gold;
+        }
+    }
+
+    h4 {
+        font-size: 1rem;
+        font-weight: 700;
+        margin-bottom: 0.25rem;
+        color: #000;
+    }
+
+    p {
+        font-size: 0.7rem;
+        color: #666;
+        margin-bottom: 1.25rem;
+        line-height: 1.4;
+    }
+
+    .btn-select-files {
+        background: #F5E8D0; // Light beige/gold
+        border: none;
+        padding: 0.6rem 2rem;
+        border-radius: 8px;
+        font-weight: 700;
+        color: #6D4C41; // Brownish text
+        font-size: 0.85rem;
+        cursor: pointer;
+
+        &:hover {
+            background: darken(#F5E8D0, 5%);
+        }
+    }
+}
+
+.accepted-docs {
+    h5 {
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+        font-size: 1rem;
+        color: #000;
+    }
+
+    ul {
+        list-style: none;
+        padding: 0;
+        columns: 1;
+
+        li {
+            margin-bottom: 0.35rem;
+            font-size: 0.8rem;
+            color: #444;
+            position: relative;
+            padding-left: 12px;
+
+            &::before {
+                content: "•";
+                position: absolute;
+                left: 0;
+                color: #555;
             }
         }
     }
 }
 
-// Specific Styles for Upload Section
-.upload-area {
-    background: #fff;
-    border: 2px dashed #90CAF9;
-    border-radius: 12px;
-    padding: 2rem;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-
-    &:hover {
-        background: #F5FBFD;
-        border-color: #64B5F6;
-    }
-
-    .upload-icon {
-        font-size: 2rem;
-        color: #AA8555;
-        margin-bottom: 1rem;
-    }
-
-    h4 {
-        font-size: 1rem;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-    }
-
-    p {
-        font-size: 0.75rem;
-        color: #666;
-        margin-bottom: 1rem;
-    }
-
-    .btn-select-files {
-        background: #FFF8E1;
-        border: none;
-        padding: 0.5rem 1.5rem;
-        border-radius: 20px;
-        font-weight: 600;
-        color: #5D4037;
-        font-size: 0.85rem;
-    }
-}
-
-.accepted-docs {
-    font-size: 0.8rem;
-    color: #555;
-
-    h5 {
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-    }
-
-    ul {
-        padding-left: 1.25rem;
-
-        li {
-            margin-bottom: 0.25rem;
-        }
-    }
-}
-
-.add-btn {
+.add-section-btn {
     border: none;
     background: none;
-    color: #AA8555; // Gold/Brown
-    font-weight: 600;
+    color: $color-gold;
+    font-weight: 700;
     font-size: 1.1rem;
     padding: 0;
-    margin-top: 1rem;
+    margin-top: 1.5rem;
     cursor: pointer;
+    display: inline-flex;
+    align-items: center;
 
     &:hover {
         text-decoration: underline;
@@ -196,41 +268,88 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-top: 1px solid #eee;
-    padding-top: 2rem;
+
+    // Line separator above footer? Image doesn't show one, just spacing.
 
     .terms {
         font-size: 0.75rem;
-        color: #666;
-        color: #AA8555;
-        font-weight: bold;
+        color: $color-gold;
+        font-weight: 700;
+        line-height: 1.4;
+        max-width: 60%;
+
+        span {
+            font-weight: 400;
+            color: #666;
+        }
     }
 
     .btn-post-listing {
-        background-color: #A18858; // Color from image button
+        background-color: #9C8252; // Muted gold/brown from image
         color: white;
         border: none;
-        padding: 12px 32px;
+        padding: 14px 48px;
         border-radius: 8px;
-        font-weight: 600;
+        font-weight: 700;
         font-size: 1rem;
         cursor: pointer;
         transition: background 0.2s;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 
         &:hover {
-            background-color: #8d764d;
+            background-color: #8a7346;
+        }
+
+        &:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
         }
     }
 }
 
-// Date/Time Input Styling Fix
-input[type="date"],
-input[type="time"] {
-    appearance: none;
-    position: relative;
+// Custom Switch Styling
+.form-switch .form-check-input {
+    width: 3em;
+    height: 1.5em;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e");
 
-    &::-webkit-calendar-picker-indicator {
-        opacity: 0.6;
-        cursor: pointer;
+    &:checked {
+        background-color: $color-gold;
+        border-color: $color-gold;
     }
+}
+
+// Description text blocks in Section 3
+.description-block {
+    margin-bottom: 1.5rem;
+
+    h4 {
+        font-size: 1rem;
+        font-weight: 800;
+        margin-bottom: 0.25rem;
+        color: #000;
+    }
+
+    p {
+        font-size: 0.85rem;
+        color: #555;
+        line-height: 1.4;
+        margin: 0;
+    }
+}
+
+// Max Docs Badge
+.max-docs-badge {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    background: #fff;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    color: $color-gold;
+    font-weight: 700;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    z-index: 2;
 }

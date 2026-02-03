@@ -33,10 +33,23 @@ export class HousingDetailsComponent implements OnInit {
     property: any = null;
     similarProperties: any[] = [];
     isLoading = true;
-    activeImage: string | null = null;
+    activeMedia: any = null;
     currentUserId: number | null = null;
     showAllPhotos = false;
     showAgentRequestModal = false;
+
+    // Helper to determine media type
+    getMediaType(url: string): 'image' | 'video' | 'file' {
+        if (!url) return 'image';
+        const lower = url.toLowerCase();
+        if (lower.endsWith('.mp4') || lower.endsWith('.webm') || lower.endsWith('.ogg') || lower.endsWith('.mov')) {
+            return 'video';
+        }
+        if (lower.endsWith('.pdf') || lower.endsWith('.doc') || lower.endsWith('.docx') || lower.endsWith('.txt')) {
+            return 'file';
+        }
+        return 'image'; // Default to image for safety
+    }
 
     ngOnInit(): void {
         this.currentUserId = this.authService.getUserId();
@@ -65,7 +78,24 @@ export class HousingDetailsComponent implements OnInit {
                 console.log('[HousingDetails] API Response:', res);
                 if (res.isSuccess) {
                     const data = res.data.info;
-                    // Map API fields to internal property structure
+
+                    // Process Attachments
+                    const rawAttachments = data.attachments || [];
+                    const processedAttachments = rawAttachments.map((att: any) => {
+                        const rawUrl = typeof att === 'string' ? att : att.url;
+                        const id = typeof att === 'string' ? 0 : att.id;
+                        // Use imageService to resolve the full URL (handling @local://)
+                        // passing 'housing' or 'post' as category usually works similarly for resolving
+                        const resolvedUrl = this.imageService.resolveImageUrl(rawUrl, 'housing');
+                        return {
+                            id: id,
+                            url: resolvedUrl,
+                            type: this.getMediaType(rawUrl),
+                            originalUrl: rawUrl
+                        };
+                    });
+
+                    // Map API fields
                     this.property = {
                         ...data,
                         startingPrice: data.startingPrice ?? data.startingOrAskingPrice ?? data.monthlyCostRange,
@@ -75,10 +105,9 @@ export class HousingDetailsComponent implements OnInit {
                         securityDeposit: data.securityDeposit ?? data.securityDepositOrDownPayment,
                         yearBuilt: data.yearBuilt ?? data.builtIn,
                         size: data.size ?? data.sqft,
-                        buildingType: data.buildingType ?? data.houseType, // Fallback for houseType
+                        buildingType: data.buildingType ?? data.houseType,
                         heatingSystem: data.heatingSystem ?? data.heating,
                         coolingSystem: data.coolingSystem ?? data.cooling,
-                        // Fix for transportation: map IDs to names
                         nearbySubwayLines: (data.nearbySubwayLines ?? data.nearbyTransportation)?.map((id: number) => {
                             const found = this.transportationOptions.find(o => o.id === id);
                             return found ? found.name : String(id);
@@ -86,30 +115,38 @@ export class HousingDetailsComponent implements OnInit {
                         acceptedHousingPrograms: data.acceptedHousingPrograms ?? data.rentHousingPrograms,
                         acceptedBuyerPrograms: data.acceptedBuyerPrograms ?? data.buyerHousingProgram,
                         googleMapLink: data.googleMapLink ?? data.googleMap,
-                        // Handle laundry array vs single
                         laundryType: data.laundryType ?? (Array.isArray(data.laundryTypes) ? data.laundryTypes[0] : (data.laundry || 0)),
                         address: data.address || {
                             buildingNumber: data.buildingNumber,
-                            street: data.fullAddress || '', // Fallback
+                            street: data.fullAddress || '',
                             unitNumber: data.unitNumber,
                             zipCode: data.zipCode,
                             location: {
                                 neighborhood: data.neighborhood,
                                 borough: data.borough
                             }
-                        }
+                        },
+                        // New Media Lists
+                        attachments: processedAttachments,
+                        images: processedAttachments.filter((a: any) => a.type === 'image'),
+                        videos: processedAttachments.filter((a: any) => a.type === 'video'),
+                        documents: processedAttachments.filter((a: any) => a.type === 'file')
                     };
                     this.requestInfo = res.data.request;
                     this.similarProperties = res.data.similar || [];
 
-                    if (this.property.attachments?.length > 0) {
-                        const firstAttachment = this.property.attachments[0];
-                        const imageUrl = typeof firstAttachment === 'string'
-                            ? firstAttachment
-                            : (firstAttachment.url || firstAttachment);
-                        this.activeImage = this.imageService.resolveImageUrl(imageUrl, 'housing');
+                    // Set Initial Active Media
+                    // Prefer Image, then Video
+                    if (this.property.images.length > 0) {
+                        this.activeMedia = this.property.images[0];
+                    } else if (this.property.videos.length > 0) {
+                        this.activeMedia = this.property.videos[0];
                     } else if (this.property.imageUrl) {
-                        this.activeImage = this.imageService.resolveImageUrl(this.property.imageUrl, 'housing');
+                        // Fallback property image
+                        this.activeMedia = {
+                            url: this.imageService.resolveImageUrl(this.property.imageUrl, 'housing'),
+                            type: 'image'
+                        };
                     }
                 }
                 this.isLoading = false;
@@ -123,12 +160,8 @@ export class HousingDetailsComponent implements OnInit {
         });
     }
 
-    setActiveImage(attachment: any) {
-        // Handle both object {id, url} and string formats
-        const imageUrl = typeof attachment === 'string'
-            ? attachment
-            : (attachment.url || attachment);
-        this.activeImage = this.imageService.resolveImageUrl(imageUrl, 'housing');
+    setActiveMedia(media: any) {
+        this.activeMedia = media;
     }
 
     togglePhotos() {

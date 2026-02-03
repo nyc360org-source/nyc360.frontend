@@ -19,7 +19,7 @@
                 <div class="col-12 form-group-row">
                     <label>Business/Organization Name</label>
                     <input type="text" class="form-control-custom" formControlName="OrganizationName"
-                        placeholder="Organization Name">
+                        placeholder="Jane Doe">
                 </div>
                 <div class="col-md-6 form-group-row">
                     <label>Email Address *</label>
@@ -28,7 +28,7 @@
                         placeholder="Jane@gmail.com">
                 </div>
                 <div class="col-md-6 form-group-row">
-                    <label>Phone Number *</label>
+                    <label>Phone Number</label>
                     <input type="tel" class="form-control-custom" formControlName="PhoneNumber"
                         [class.is-invalid]="form.get('PhoneNumber')?.invalid && form.get('PhoneNumber')?.touched"
                         placeholder="(555) 000 - 0000">
@@ -41,37 +41,43 @@
             <div class="section-header">
                 <div class="step-badge badge-purple">2</div>
                 <h3>Preferred Availability Details <span
-                        style="font-size: 0.7em; font-weight: 400;">(Multi-Selects)</span></h3>
+                        style="font-size: 0.6em; font-weight: 500; margin-left: 5px;">(Multi-Selects)</span></h3>
             </div>
 
             <div class="row">
                 <div class="col-md-6 form-group-row">
                     <label>Preferred Contact Date/s *</label>
                     <input type="date" class="form-control-custom" formControlName="PreferredContactDate"
-                        [class.is-invalid]="form.get('PreferredContactDate')?.invalid && form.get('PreferredContactDate')?.touched">
+                        [class.is-invalid]="form.get('PreferredContactDate')?.invalid && form.get('PreferredContactDate')?.touched"
+                        placeholder="mm/dd/yyyy">
                 </div>
                 <div class="col-md-6 form-group-row">
                     <label>Preferred Contact Time *</label>
                     <input type="time" class="form-control-custom" formControlName="PreferredContactTime"
-                        [class.is-invalid]="form.get('PreferredContactTime')?.invalid && form.get('PreferredContactTime')?.touched">
+                        [class.is-invalid]="form.get('PreferredContactTime')?.invalid && form.get('PreferredContactTime')?.touched"
+                        placeholder="Time">
                 </div>
 
                 <div class="col-md-6 form-group-row">
                     <label>Preferred Virtual Tours</label>
-                    <input type="date" class="form-control-custom" formControlName="PreferredVirtualTourDate">
+                    <input type="date" class="form-control-custom" formControlName="PreferredVirtualTourDate"
+                        placeholder="mm/dd/yyyy">
                 </div>
                 <div class="col-md-6 form-group-row">
                     <label>Time Window</label>
-                    <input type="time" class="form-control-custom" formControlName="PreferredVirtualTourTime">
+                    <input type="time" class="form-control-custom" formControlName="PreferredVirtualTourTime"
+                        placeholder="Time">
                 </div>
 
                 <div class="col-md-6 form-group-row">
                     <label>Preferred In-Person Tours</label>
-                    <input type="date" class="form-control-custom" formControlName="PreferredInPersonTourDate">
+                    <input type="date" class="form-control-custom" formControlName="PreferredInPersonTourDate"
+                        placeholder="mm/dd/yyyy">
                 </div>
                 <div class="col-md-6 form-group-row">
                     <label>Time Window</label>
-                    <input type="time" class="form-control-custom" formControlName="PreferredInPersonTourTime">
+                    <input type="time" class="form-control-custom" formControlName="PreferredInPersonTourTime"
+                        placeholder="Time Window">
                 </div>
             </div>
         </div>
@@ -83,100 +89,95 @@
                 <h3>Upload One-time Authorization Documents</h3>
             </div>
 
-            <div
-                style="position: absolute; top: 20px; right: 20px; background: #fff; padding: 5px 15px; border-radius: 20px; font-size: 0.75rem; color: #AA8555; font-weight: 600; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                Max 5 Documents recommended
+            <div class="max-docs-badge">
+                Max 1 Documents recommended
             </div>
 
             <div class="row">
-                <div class="col-md-7">
+                <!-- Left Column -->
+                <div class="col-md-7 pe-md-4">
                     <div class="form-group-row">
-                        <label>Authorization Type *</label>
-                        <select class="form-control-custom" formControlName="AuthorizationType"
-                            [class.is-invalid]="form.get('AuthorizationType')?.invalid && form.get('AuthorizationType')?.touched">
+                        <label>Authorization Type</label>
+                        <select class="form-control-custom" formControlName="AuthorizationType">
                             <option [ngValue]="null">Select Authorization Type</option>
                             <option *ngFor="let type of authorizationTypes" [value]="type.id">{{type.name}}</option>
                         </select>
-                        <small class="text-muted d-block mt-1" style="font-size: 0.7rem;">*Required if not Uploaded
-                            before*</small>
+                        <div class="helper-text">Who is authorized to post this listing?</div>
                     </div>
 
                     <div class="row">
-                        <div class="col-md-6 form-group-row">
-                            <label>Listing Authorization Document(s) *</label>
-                            <select class="form-control-custom" formControlName="ListingAuthorizationDocument"
-                                [class.is-invalid]="form.get('ListingAuthorizationDocument')?.invalid && form.get('ListingAuthorizationDocument')?.touched">
-                                <option [ngValue]="null">Select Document Type</option>
+                        <div class="col-md-7 form-group-row">
+                            <label>Listing Authorization Document(s)</label>
+                            <select class="form-control-custom" formControlName="ListingAuthorizationDocument">
+                                <option [ngValue]="null">Select Authorization Type</option>
                                 <option *ngFor="let doc of documentTypes" [value]="doc.id">{{doc.name}}</option>
                             </select>
-                            <small class="text-muted d-block mt-1" style="font-size: 0.7rem;">*Required if not Uploaded
-                                before*</small>
+                            <div class="helper-text">Who is authorized to post this listing?</div>
                         </div>
-                        <div class="col-md-6 form-group-row">
+                        <div class="col-md-5 form-group-row">
                             <label>Authorization Validation</label>
-                            <input type="date" class="form-control-custom"
-                                formControlName="AuthorizationValidationDate">
-                            <small class="text-muted d-block mt-1" style="font-size: 0.7rem;">Validation date</small>
+                            <input type="date" class="form-control-custom" formControlName="AuthorizationValidationDate"
+                                placeholder="mm/dd/yyyy">
+                            <div class="helper-text">Validation until</div>
                         </div>
                     </div>
 
-                    <div class="description-text mt-3">
-                        <div class="mb-3">
-                            <h4 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.25rem;">Individual
-                                Authorization</h4>
-                            <p style="font-size: 0.8rem; color: #555;">For people acting in their own name (property
-                                owners, individual agents, or lease holders).</p>
+                    <div class="mt-4">
+                        <div class="description-block">
+                            <h4>Individual Authorization</h4>
+                            <p>For people acting in their own name (property owners, individual agents, or lease
+                                holders).</p>
                         </div>
-                        <div class="mb-3">
-                            <h4 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.25rem;">Business
-                                Authorization</h4>
-                            <p style="font-size: 0.8rem; color: #555;">For licensed real estate businesses such as
-                                agencies, brokerages, or property management companies.</p>
+                        <div class="description-block">
+                            <h4>Business Authorization</h4>
+                            <p>For licensed real estate businesses such as agencies, brokerages, or property management
+                                companies.</p>
                         </div>
-                        <div class="mb-3">
-                            <h4 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.25rem;">Organization
-                                Authorization</h4>
-                            <p style="font-size: 0.8rem; color: #555;">For housing organizations, nonprofits, or
-                                mission-driven entities.</p>
+                        <div class="description-block">
+                            <h4>Organization Authorization</h4>
+                            <p>For housing organizations, nonprofits, or mission-driven entities.</p>
                         </div>
 
                         <div class="d-flex align-items-center justify-content-between mt-4">
-                            <div style="font-weight: 600; font-size: 0.9rem;">Save this authorization for future
-                                listings</div>
-                            <div class="form-check form-switch">
+                            <div style="font-weight: 700; font-size: 0.95rem; color: #000;">Save this authorization for
+                                future listings</div>
+                            <div class="form-check form-switch ms-3">
                                 <input class="form-check-input" type="checkbox" role="switch" id="authSwitch"
                                     formControlName="SaveThisAuthorizationForFutureListings">
                             </div>
                         </div>
-                        <small style="font-size: 0.7rem; color: #777;">Recommended for agents, owners, and
-                            organizations</small>
+                        <div class="helper-text-bold" style="margin-top: -5px;">Recommended for agents, brokers, and
+                            organizations</div>
                     </div>
                 </div>
 
+                <!-- Right Column (Upload & Docs) -->
                 <div class="col-md-5">
                     <!-- Dropzone -->
-                    <div class="upload-area mb-4" (click)="fileInput.click()">
-                        <div class="upload-icon">
-                            <i class="bi bi-cloud-arrow-up-fill"></i>
+                    <div class="upload-wrapper" (click)="fileInput.click()">
+                        <div class="upload-icon-circle">
+                            <i class="bi bi-file-earmark-plus"></i>
                         </div>
                         <h4 *ngIf="selectedFiles.length === 0">Drag and drop Documents</h4>
                         <h4 *ngIf="selectedFiles.length > 0">{{selectedFiles.length}} Files Selected</h4>
-                        <p>Supports: Jpg, PDF, Doc. etc<br>size 10MB per doc.</p>
+
+                        <p>Supports Doc, Pdf, Max file<br>size 10MB per doc.</p>
+
                         <button type="button" class="btn-select-files">Select Files</button>
                         <input type="file" #fileInput multiple (change)="onFileSelect($event)" style="display: none;">
                     </div>
 
                     <div *ngIf="selectedFiles.length > 0" class="mb-3">
                         <div *ngFor="let file of selectedFiles; let i = index"
-                            class="d-flex justify-content-between align-items-center p-2 bg-light rounded mb-1">
-                            <span class="small text-truncate" style="max-width: 80%;">{{file.name}}</span>
-                            <i class="bi bi-x text-danger cursor-pointer" (click)="removeFile(i)"
+                            class="d-flex justify-content-between align-items-center p-2 bg-white rounded mb-1 shadow-sm">
+                            <span class="small text-truncate text-dark" style="max-width: 85%;">{{file.name}}</span>
+                            <i class="bi bi-x text-danger" (click)="removeFile(i); $event.stopPropagation()"
                                 style="cursor: pointer;"></i>
                         </div>
                     </div>
 
-                    <!-- Accepted Docs -->
-                    <div class="accepted-docs">
+                    <!-- Accepted Docs List -->
+                    <div class="accepted-docs mt-3">
                         <h5>Accepted Documents</h5>
                         <ul>
                             <li *ngFor="let doc of documentTypes">{{doc.name}}</li>
@@ -185,45 +186,20 @@
                 </div>
             </div>
 
-            <button type="button" class="add-btn">
-                3.1 + Add a additional Authorization Documents
+            <button type="button" class="add-section-btn">
+                <span class="badge-number me-2" style="background:none; color:inherit; font-weight:800;">3.1</span>
+                + Add a additional Authorization Documents
             </button>
         </div>
 
-        <!-- Section 4: Open House Event -->
-        <div class="auth-section bg-pink">
-            <div class="section-header">
-                <div class="step-badge badge-pink">4</div>
-                <h3>Creating a successful [OPEN HOUSE] event</h3>
-            </div>
-
-            <div class="row">
-                <div class="col-md-6 form-group-row">
-                    <label>Open House Event</label>
-                    <input type="date" class="form-control-custom" formControlName="OpenHouseEventDate">
-                </div>
-                <div class="col-md-6 form-group-row">
-                    <label>Time Window</label>
-                    <input type="time" class="form-control-custom" formControlName="OpenHouseEventTime">
-                </div>
-                <div class="col-12 form-group-row">
-                    <label>Open House Event Delineates</label>
-                    <textarea class="form-control-custom" rows="3" formControlName="OpenHouseEventDescription"
-                        placeholder="Add Open House Event Delineates."></textarea>
-                </div>
-            </div>
-
-            <button type="button" class="add-btn" style="color: #880E4F;">
-                4.1 + Add a successful recoiling [OPEN HOUSE] event
-            </button>
-        </div>
+        <!-- Section 4 (Event) REMOVED as requested -->
 
         <!-- Footer -->
         <div class="footer-action">
             <div class="terms">
                 Terms and conditions<br>
-                <span style="font-weight: 400; color: #555;">By clicking 'Post Listing', you agree to our Terms and
-                    Conditions and all applicable Regulations.</span>
+                <span>By clicking 'Post Listing', you agree to our Terms and Conditions and all applicable
+                    Regulations.</span>
             </div>
             <button type="submit" class="btn-post-listing" [disabled]="isSubmitting">
                 <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2"></span>

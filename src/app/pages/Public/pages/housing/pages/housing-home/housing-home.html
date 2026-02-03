@@ -15,9 +15,38 @@
             <a routerLink="/public/housing/agent/dashboard" class="nav-btn" routerLinkActive="active">
                 <i class="bi bi-speedometer2 me-2"></i> Contributer Dashboard
             </a>
-            <a routerLink="/public/housing/create/renting" class="nav-btn" routerLinkActive="active">
-                <i class="bi bi-activity me-2"></i> Contributer Activity
-            </a>
+            <!-- Dropdown for Contributor Activity -->
+            <div class="nav-dropdown-wrapper">
+                <button class="nav-btn dropdown-toggle-btn">
+                    <i class="bi bi-activity me-2"></i> Contributer Activity <i
+                        class="bi bi-chevron-down ms-2 small-arrow"></i>
+                </button>
+                <div class="dropdown-menu-custom">
+
+
+
+                    <a routerLink="/public/housing/create/sale" class="dropdown-item-custom">
+                        <i class="bi bi-house-door"></i>Publish News Article
+                    </a>  
+
+                    <a routerLink="/public/housing/create/sale" class="dropdown-item-custom">
+                        <i class="bi bi-house-door"></i> Connect RSS Feed
+                    </a>
+
+                    <a routerLink="/public/housing/create/renting" class="dropdown-item-custom">
+                        <i class="bi bi-key"></i> List a Housing Location
+                    </a>                    
+                    
+                    
+                    
+                    <a routerLink="/public/housing/create/renting" class="dropdown-item-custom">
+                        <i class="bi bi-key"></i> House Listing
+                    </a>
+                    
+
+
+                </div>
+            </div>
             <a routerLink="/public/posts/create" class="nav-btn" routerLinkActive="active">
                 <i class="bi bi-patch-question me-2"></i> Ask a Question
             </a>
@@ -29,8 +58,12 @@
 
         <div class="hero-premium-card">
             <div class="hero-visual">
-                <img [src]="imageService.resolveImageUrl(heroPost.attachments?.[0]?.url, 'housing')"
-                    [appImgFallback]="'post'" alt="Hero Featured">
+                <ng-container
+                    *ngIf="imageService.resolveImageUrl(heroPost.attachments?.[0]?.url, 'housing') as heroUrl">
+                    <video *ngIf="isVideo(heroUrl)" [src]="heroUrl" [muted]="true" [loop]="true" autoplay playsinline
+                        class="w-100 h-100 object-fit-cover"></video>
+                    <img *ngIf="!isVideo(heroUrl)" [src]="heroUrl" [appImgFallback]="'housing'" alt="Hero Featured">
+                </ng-container>
             </div>
             <div class="hero-info">
                 <div class="meta-tags">
@@ -68,10 +101,21 @@
             <div class="housing-grid">
                 <div class="premium-card" *ngFor="let item of homesForSale"
                     [routerLink]="['/public/housing/details', item.id]">
-                    <div class="card-thumb">
-                        <img [src]="imageService.resolveImageUrl(item.imageUrl, 'housing')" [appImgFallback]="'post'">
-                        <span class="tag-price-badge">For Sale</span>
-                    </div>
+
+                    <ng-container
+                        *ngIf="imageService.resolveImageUrl(item.imageUrl || item.attachments?.[0]?.url, 'housing') as thumbUrl">
+                        <div class="card-thumb" *ngIf="thumbUrl && thumbUrl !== imageService.DEFAULT_HOUSING">
+                            <video *ngIf="isVideo(thumbUrl)" [src]="thumbUrl" muted loop onmouseover="this.play()"
+                                onmouseout="this.pause()" class="w-100 h-100 object-fit-cover"></video>
+                            <img *ngIf="!isVideo(thumbUrl)" [src]="thumbUrl">
+                            <div *ngIf="isVideo(thumbUrl)"
+                                class="position-absolute top-50 start-50 translate-middle text-white"
+                                style="pointer-events:none;"><i class="bi bi-play-circle-fill fs-3 shadow-lg"></i>
+                            </div>
+                            <span class="tag-price-badge">For Sale</span>
+                        </div>
+                    </ng-container>
+
                     <div class="card-content">
                         <span class="loc-label">{{ item.location?.neighborhood || 'NYC Area' }}</span>
                         <h4 class="prop-title">{{ item.title }}</h4>
@@ -95,10 +139,21 @@
             <div class="housing-grid four-cols">
                 <div class="premium-card" *ngFor="let item of (homesForRent | slice:0:4)"
                     [routerLink]="['/public/housing/details', item.id]">
-                    <div class="card-thumb">
-                        <img [src]="imageService.resolveImageUrl(item.imageUrl, 'housing')" [appImgFallback]="'post'">
-                        <span class="tag-price-badge">For Rent</span>
-                    </div>
+
+                    <ng-container
+                        *ngIf="imageService.resolveImageUrl(item.imageUrl || item.attachments?.[0]?.url, 'housing') as thumbUrl">
+                        <div class="card-thumb" *ngIf="thumbUrl && thumbUrl !== imageService.DEFAULT_HOUSING">
+                            <video *ngIf="isVideo(thumbUrl)" [src]="thumbUrl" muted loop onmouseover="this.play()"
+                                onmouseout="this.pause()" class="w-100 h-100 object-fit-cover"></video>
+                            <img *ngIf="!isVideo(thumbUrl)" [src]="thumbUrl">
+                            <div *ngIf="isVideo(thumbUrl)"
+                                class="position-absolute top-50 start-50 translate-middle text-white"
+                                style="pointer-events:none;"><i class="bi bi-play-circle-fill fs-3 shadow-lg"></i>
+                            </div>
+                            <span class="tag-price-badge">For Rent</span>
+                        </div>
+                    </ng-container>
+
                     <div class="card-content">
                         <span class="loc-label">{{ item.location?.neighborhood || 'Upper West Side' }}</span>
                         <h4 class="prop-title">{{ item.title }}</h4>
@@ -112,6 +167,35 @@
             </div>
         </section>
 
+        <!-- 5.1 More Opportunities (Text Only) -->
+        <section class="section-wrapper" *ngIf="textOnlyListings.length > 0">
+            <div class="section-head">
+                <h3 class="section-title">More Housing Opportunities</h3>
+            </div>
+            <div class="text-only-grid">
+                <div class="text-listing-card" *ngFor="let item of textOnlyListings"
+                    [routerLink]="['/public/housing/details', item.id]">
+                    <div class="card-header-row">
+                        <span class="type-badge-mini"
+                            [class.rent]="item.startingPrice < 50000 || item.title?.toLowerCase()?.includes('rent')">
+                            {{ (item.startingPrice < 50000 || item.title?.toLowerCase()?.includes('rent')) ? 'For Rent'
+                                : 'For Sale' }} </span>
+                                <span class="price-text">{{ formatPrice(item.startingPrice) }}{{ (item.startingPrice <
+                                        50000 || item.title?.toLowerCase()?.includes('rent')) ? '/mo' : '' }}</span>
+                    </div>
+                    <h4 class="text-card-title">{{ item.title }}</h4>
+                    <div class="text-card-meta">
+                        <span><i class="bi bi-geo-alt"></i> {{ item.location?.neighborhood || 'NYC' }}</span>
+                        <span class="separator">•</span>
+                        <span>{{ item.numberOfRooms }} Beds</span>
+                        <span class="separator">•</span>
+                        <span>{{ item.numberOfBathrooms }} Baths</span>
+                    </div>
+                    <div class="hover-indicator">View Details <i class="bi bi-arrow-right"></i></div>
+                </div>
+            </div>
+        </section>
+
         <!-- 6. Official Posts (RSS) Section -->
         <section class="section-wrapper" *ngIf="rssPosts.length > 0">
             <div class="section-head">
@@ -120,9 +204,20 @@
             <div class="housing-grid">
                 <div class="premium-card" *ngFor="let post of (rssPosts | slice:0:3)"
                     [routerLink]="['/public/posts/details', post.id]">
-                    <div class="card-thumb" style="height: 220px;">
-                        <img [src]="post.attachments?.[0]?.url" [appImgFallback]="'post'">
-                    </div>
+
+                    <ng-container *ngIf="imageService.resolveImageUrl(post.attachments?.[0]?.url, 'post') as thumbUrl">
+                        <div class="card-thumb" style="height: 220px;"
+                            *ngIf="thumbUrl && thumbUrl !== imageService.DEFAULT_HOUSING && thumbUrl !== imageService.DEFAULT_POST">
+                            <video *ngIf="isVideo(thumbUrl)" [src]="thumbUrl" muted loop onmouseover="this.play()"
+                                onmouseout="this.pause()" class="w-100 h-100 object-fit-cover"></video>
+                            <img *ngIf="!isVideo(thumbUrl)" [src]="thumbUrl">
+                            <div *ngIf="isVideo(thumbUrl)"
+                                class="position-absolute top-50 start-50 translate-middle text-white"
+                                style="pointer-events:none;"><i class="bi bi-play-circle-fill fs-3 shadow-lg"></i>
+                            </div>
+                        </div>
+                    </ng-container>
+
                     <div class="card-content">
                         <h4 class="prop-title">{{ post.title }}</h4>
                         <div class="prop-stats">
@@ -167,9 +262,19 @@
                 <div class="premium-card"
                     *ngFor="let item of (allPosts.length > 0 ? allPosts : (homesForRent | slice:0:4))"
                     [routerLink]="['/public/housing/details', item.id]">
-                    <div class="card-thumb">
-                        <img [src]="imageService.resolveImageUrl(item.imageUrl, 'housing')" [appImgFallback]="'post'">
-                    </div>
+
+                    <ng-container
+                        *ngIf="imageService.resolveImageUrl(item.imageUrl || item.attachments?.[0]?.url, 'housing') as thumbUrl">
+                        <div class="card-thumb" *ngIf="thumbUrl && thumbUrl !== imageService.DEFAULT_HOUSING">
+                            <video *ngIf="isVideo(thumbUrl)" [src]="thumbUrl" muted loop onmouseover="this.play()"
+                                onmouseout="this.pause()" class="w-100 h-100 object-fit-cover"></video>
+                            <img *ngIf="!isVideo(thumbUrl)" [src]="thumbUrl">
+                            <div *ngIf="isVideo(thumbUrl)"
+                                class="position-absolute top-50 start-50 translate-middle text-white"
+                                style="pointer-events:none;"><i class="bi bi-play-circle-fill fs-3 shadow-lg"></i>
+                            </div>
+                        </div>
+                    </ng-container>
                     <div class="card-content">
                         <span class="loc-label">{{ item.location?.neighborhood || 'Manhattan' }}</span>
                         <h4 class="prop-title">{{ item.title }}</h4>

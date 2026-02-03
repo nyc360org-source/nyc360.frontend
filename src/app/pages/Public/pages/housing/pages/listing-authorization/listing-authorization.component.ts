@@ -65,12 +65,7 @@ export class ListingAuthorizationComponent implements OnInit {
             AuthorizationType: [null, Validators.required],
             ListingAuthorizationDocument: [null, Validators.required],
             AuthorizationValidationDate: [null],
-            SaveThisAuthorizationForFutureListings: [true],
-
-            // Extra UI fields not in main API object but kept for completing the form visually
-            OpenHouseEventDate: [null],
-            OpenHouseEventTime: [null],
-            OpenHouseEventDescription: ['']
+            SaveThisAuthorizationForFutureListings: [true]
         });
     }
 
@@ -81,8 +76,8 @@ export class ListingAuthorizationComponent implements OnInit {
             if (params['id']) {
                 this.listingId = Number(params['id']);
             } else {
-                this.toastService.error('Missing listing ID');
-                this.router.navigate(['/public/housing/home']);
+                // Validation only warns now, allowing page view for testing
+                console.warn('Missing listing ID - Page in view-only mode');
             }
         });
 
