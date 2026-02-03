@@ -445,10 +445,10 @@ export class CreateHousingComponent implements OnInit {
             category: 'Subway Lines',
             icon: 'bi-train-front',
             options: [
-                { id: 1, name: '(1)/(2)/(3)' },
-                { id: 2, name: '(4)/(5)/(6)' },
+                { id: 1, name: '1/2/3' },
+                { id: 2, name: '4/5/6' },
                 { id: 4, name: '7' },
-                { id: 8, name: '(A)/(C)/(E)' },
+                { id: 8, name: 'A/C/E' },
                 { id: 16, name: 'B D F M' },
                 { id: 32, name: 'G' },
                 { id: 64, name: 'J Z' },

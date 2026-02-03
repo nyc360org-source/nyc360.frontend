@@ -193,14 +193,30 @@ export class AgentRequestComponent implements OnInit {
         const rawData = this.form.value;
 
         // Helpers for formatting
-        const toDateOnly = (dateStr: string): string | null => {
-            if (!dateStr) return null;
-            return dateStr; // Input type="date" returns yyyy-MM-dd
+        const toDateOnly = (val: string | Date | null | undefined): string | null => {
+            if (!val) return null;
+
+            let dateStr = '';
+            if (val instanceof Date) {
+                const year = val.getFullYear();
+                const month = String(val.getMonth() + 1).padStart(2, '0');
+                const day = String(val.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            } else {
+                dateStr = String(val);
+            }
+
+            // Handle ISO string or other formats if necessary
+            if (dateStr.includes('T')) {
+                return dateStr.split('T')[0];
+            }
+            return dateStr;
         };
 
-        const toTimeOnly = (timeStr: string): string | null => {
-            if (!timeStr) return null;
-            if (timeStr.length === 5) return timeStr + ':00'; // Append seconds if missing
+        const toTimeOnly = (val: string | null | undefined): string | null => {
+            if (!val) return null;
+            const timeStr = String(val);
+            if (timeStr.length === 5) return timeStr + ':00'; // Append seconds HH:mm -> HH:mm:ss
             return timeStr;
         };
 
@@ -227,6 +243,8 @@ export class AgentRequestComponent implements OnInit {
 
             Message: rawData.Message
         };
+
+        console.log('Final Payload:', payload);
 
         this.postsService.submitHousingApplication(payload).subscribe({
             next: (res) => {
