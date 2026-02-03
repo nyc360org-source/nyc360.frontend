@@ -6,9 +6,11 @@ import { BackToTopComponent } from './shared/components/back-to-top/back-to-top'
 import { GlobalLoaderService } from './shared/components/global-loader/global-loader.service';
 import { filter } from 'rxjs';
 
+import { ToastComponent } from './shared/components/toast/toast.component';
+
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, ConfirmationModalComponent, GlobalLoaderComponent, BackToTopComponent],
+  imports: [RouterOutlet, ConfirmationModalComponent, GlobalLoaderComponent, BackToTopComponent, ToastComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
