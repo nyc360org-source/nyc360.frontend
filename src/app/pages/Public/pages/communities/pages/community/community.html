@@ -62,7 +62,7 @@
 
   <div class="content-wrapper">
 
-    <section class="featured-section" *ngIf="featuredPost">
+    <section class="featured-section" *ngIf="featuredPost && featuredPost.attachments.length > 0">
       <div class="featured-card">
         <div class="feat-img">
           <img
@@ -118,6 +118,26 @@
 
         <div class="empty-msg" *ngIf="suggestions.length === 0 && !isLoading">
           No suggested communities at the moment.
+        </div>
+      </div>
+    </section>
+
+    <!-- Text-Only Featured Post (Moved Down) -->
+    <section class="featured-section text-only-mode" *ngIf="featuredPost && featuredPost.attachments.length === 0">
+      <div class="featured-card">
+        <div class="feat-content w-100" style="padding: 40px; text-align: left;">
+          <div class="tags-row">
+            <span class="badge-orange" style="background: #e3f2fd; color: #1976d2;">LATEST UPDATE</span>
+            <span class="read-time">Text Post</span>
+          </div>
+          <h2 [routerLink]="['/public/post', featuredPost.id]" style="cursor: pointer; font-size: 2rem;">
+            {{ featuredPost.title }}
+          </h2>
+          <p style="font-size: 1.1rem; color: #444;">{{ featuredPost.content | slice:0:300 }}...</p>
+          <button class="btn-read-full" [routerLink]="['/public/post', featuredPost.id]"
+            style="background: transparent; border: 2px solid #BC5E3D; color: #BC5E3D; box-shadow: none;">
+            Read Full Article <i class="bi bi-arrow-right ms-2"></i>
+          </button>
         </div>
       </div>
     </section>

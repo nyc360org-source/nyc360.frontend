@@ -103,15 +103,22 @@
         </div>
 
         <ng-container *ngIf="posts.length > 0; else emptyState">
-          <div class="feed-card" *ngFor="let post of posts">
+          <div class="feed-card" *ngFor="let post of posts"
+            [style.border-left]="(!post.attachments || post.attachments.length === 0) ? '4px solid #BC5E3D' : 'none'"
+            [style.background]="(!post.attachments || post.attachments.length === 0) ? '#fffbf7' : 'white'">
             <div class="card-head">
               <div class="u-info">
                 <h5>{{ getAuthorName(post.author) }}</h5>
                 <small>{{ post.createdAt | date:'mediumDate' }}</small>
               </div>
+              <span *ngIf="!post.attachments || post.attachments.length === 0"
+                class="badge bg-light text-dark border ms-auto">Discussion</span>
             </div>
             <div class="card-body" [routerLink]="['/public/post', post.id]" style="cursor: pointer;">
-              <p>{{ post.content }}</p>
+              <p [style.font-size]="(!post.attachments || post.attachments.length === 0) ? '1.1rem' : '1rem'"
+                [style.font-family]="(!post.attachments || post.attachments.length === 0) ? '\'Merriweather\', serif' : 'inherit'">
+                {{ post.content }}
+              </p>
               <div class="media-preview" *ngIf="post.attachments && post.attachments.length > 0">
                 <img [src]="resolvePostImage(post.attachments[0].url)">
               </div>

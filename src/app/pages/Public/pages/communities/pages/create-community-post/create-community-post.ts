@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule, ReactiveFormsModule, FormControl } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, switchMap, filter } from 'rxjs/operators';
 import { CommunityPostService } from '../../services/community-post';
@@ -19,6 +19,7 @@ import { CategoryContextService } from '../../../../../../shared/services/catego
 export class CreateCommunityPostComponent implements OnInit {
 
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private locationService = inject(Location);
   private postService = inject(CommunityPostService);
   private communityService = inject(CreateCommunityService); // For searching tags
@@ -153,7 +154,12 @@ export class CreateCommunityPostComponent implements OnInit {
         this.isPosting = false;
         if (res.isSuccess) {
           this.toastService.success('Post created successfully!');
-          this.locationService.back();
+          const postId = res.data?.id || res.data;
+          if (postId) {
+            this.router.navigate(['/public/posts/details', postId]);
+          } else {
+            this.locationService.back();
+          }
         } else {
           this.toastService.error(res.error?.message || 'Failed to create post');
         }
