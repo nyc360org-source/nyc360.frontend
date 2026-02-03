@@ -289,6 +289,18 @@ export class CreateSaleComponent implements OnInit {
             return;
         }
 
+        // --- ENFORCE MEDIA CHECK ---
+        if (this.selectedFiles.length === 0) {
+            this.toastService.error('Please upload at least one photo or video of the property.');
+            const uploadZone = document.querySelector('.photo-upload-zone-premium');
+            if (uploadZone) {
+                uploadZone.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                uploadZone.classList.add('error-pulse');
+                setTimeout(() => uploadZone.classList.remove('error-pulse'), 2000);
+            }
+            return;
+        }
+
         this.isSubmitting = true;
         this.form.patchValue({ IsPublished: isPublished });
 

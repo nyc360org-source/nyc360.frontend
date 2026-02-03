@@ -9,6 +9,51 @@
       <!-- <a routerLink="/public/feed/community" class="nav-btn">Feed</a> -->
       <a routerLink="/public/discover" class="nav-btn">Explore </a>
       <a routerLink="/public/initiatives/community" class="nav-btn">Initiatives</a>
+
+      <!-- Nested Dropdown -->
+      <div class="nav-dropdown-complex">
+        <button class="nav-btn dropdown-toggle-btn" (click)="toggleActivityDropdown($event)"
+          [class.active]="isActivityDropdownOpen">
+          <i class="bi bi-person-fill-gear me-2"></i> Contributor Activity <i class="bi bi-chevron-down ms-2"
+            style="font-size: 0.8em;"></i>
+        </button>
+        <div class="dropdown-menu-main" [class.show]="isActivityDropdownOpen" (click)="$event.stopPropagation()">
+
+          <!-- Nested Group 1 -->
+          <div class="dropdown-nested-item">
+            <div class="item-trigger" (click)="toggleSubMenu('publish', $event)"
+              [class.active-sub]="activeSubMenu === 'publish'">
+              <span><i class="bi bi-newspaper me-2"></i>Publish News Article</span>
+              <i class="bi bi-chevron-right small-arrow"></i>
+            </div>
+            <div class="dropdown-submenu" [class.show]="activeSubMenu === 'publish'">
+              <a routerLink="/public/posts/create" [queryParams]="{type: 'announcement'}" class="sub-item">Create
+                Community Announcement</a>
+              <a routerLink="/public/posts/create" [queryParams]="{type: 'initiative'}" class="sub-item">Create Local
+                Initiative</a>
+            </div>
+          </div>
+
+          <!-- Simple Item -->
+          <a routerLink="/public/rss/connect" class="simple-item">
+            <i class="bi bi-rss me-2"></i> Connect RSS Feed
+          </a>
+
+          <!-- Nested Group 2 -->
+          <div class="dropdown-nested-item">
+            <div class="item-trigger" (click)="toggleSubMenu('community', $event)"
+              [class.active-sub]="activeSubMenu === 'community'">
+              <span><i class="bi bi-people me-2"></i>Create Community</span>
+              <i class="bi bi-chevron-right small-arrow"></i>
+            </div>
+            <div class="dropdown-submenu" [class.show]="activeSubMenu === 'community'">
+              <a routerLink="/public/community/moderate" class="sub-item">Moderate Community Threads</a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
       <a routerLink="/public/my-communities" class="nav-btn">My Communities</a>
       <a routerLink="/public/create-community" class="nav-btn">Create Community</a>
       <a routerLink="/public/posts/create" class="nav-btn">Create Post</a>

@@ -96,9 +96,13 @@ export class HousingDetailsComponent implements OnInit {
                     });
 
                     // Map API fields
+                    // Map API fields
                     this.property = {
                         ...data,
+                        title: data.title || (data.fullAddress ? data.fullAddress : `${data.bedrooms || 0} Bed ${data.bathrooms || 0} Bath in ${data.neighborhood || 'NYC'}`),
                         startingPrice: data.startingPrice ?? data.startingOrAskingPrice ?? data.monthlyCostRange,
+                        numberOfRooms: data.numberOfRooms ?? data.bedrooms,
+                        numberOfBathrooms: data.numberOfBathrooms ?? data.bathrooms,
                         moveInDate: data.moveInDate ?? data.moveInOrOpeningDate,
                         moveOutDate: data.moveOutDate,
                         maxOccupants: data.maxOccupants ?? data.maxOrSuggestedOccupants,
@@ -126,6 +130,10 @@ export class HousingDetailsComponent implements OnInit {
                                 borough: data.borough
                             }
                         },
+                        utilitiesIncluded: (data.utilitiesIncluded ?? data.amenities)?.map((id: number) => {
+                            // Simple mapping if amenities options aren't available, or pass ID for now
+                            return this.getLabel(id, this.amenitiesOptions) || `Amenity ${id}`;
+                        }) || [],
                         // New Media Lists
                         attachments: processedAttachments,
                         images: processedAttachments.filter((a: any) => a.type === 'image'),
@@ -147,6 +155,8 @@ export class HousingDetailsComponent implements OnInit {
                             url: this.imageService.resolveImageUrl(this.property.imageUrl, 'housing'),
                             type: 'image'
                         };
+                    } else if (processedAttachments.length > 0) {
+                        this.activeMedia = processedAttachments[0];
                     }
                 }
                 this.isLoading = false;
@@ -261,6 +271,20 @@ export class HousingDetailsComponent implements OnInit {
         { id: 7, name: 'Buyer Assistance' },
         { id: 8, name: 'Other Assistance Programs' },
         { id: 9, name: 'Cash-Only' }
+    ];
+
+    amenitiesOptions = [
+        { id: 0, name: 'Fitness Center' },
+        { id: 1, name: 'Wellness Spa' },
+        { id: 2, name: 'Outdoor Spaces' },
+        { id: 3, name: 'Co-working Space' },
+        { id: 4, name: 'Lobby' },
+        { id: 5, name: 'Indoor Lounges' },
+        { id: 6, name: 'Bike Room' },
+        { id: 7, name: 'Parking' },
+        { id: 8, name: 'Security Attendant' },
+        { id: 9, name: 'Internet' },
+        { id: 10, name: 'Cable' }
     ];
 
     getLabel(value: number, options: any[]): string {

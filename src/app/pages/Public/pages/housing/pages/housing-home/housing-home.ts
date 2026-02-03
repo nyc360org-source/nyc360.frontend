@@ -5,11 +5,15 @@ import { HousingService } from '../../service/housing.service';
 import { environment } from '../../../../../../environments/environment';
 import { ImageService } from '../../../../../../shared/services/image.service';
 import { ImgFallbackDirective } from '../../../../../../shared/directives/img-fallback.directive';
+import { AuthService } from '../../../../../Authentication/Service/auth';
+import { VerificationService } from '../../../settings/services/verification.service';
+import { ToastService } from '../../../../../../shared/services/toast.service';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
     selector: 'app-housing-home',
     standalone: true,
-    imports: [CommonModule, RouterModule, ImgFallbackDirective],
+    imports: [CommonModule, RouterModule, ReactiveFormsModule],
     templateUrl: './housing-home.html',
     styleUrls: ['./housing-home.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
@@ -19,6 +23,10 @@ export class HousingHomeComponent implements OnInit {
     private cdr = inject(ChangeDetectorRef);
     protected readonly environment = environment;
     protected imageService = inject(ImageService);
+    protected authService = inject(AuthService);
+    private verificationService = inject(VerificationService);
+    private toastService = inject(ToastService);
+    private fb = inject(FormBuilder);
 
     // --- Data ---
     heroPost: any = null;
@@ -31,8 +39,100 @@ export class HousingHomeComponent implements OnInit {
     isLoading = true;
     selectedTab: string = 'explore';
 
+    // --- Permissions & Verification ---
+    showVerificationModal = false;
+    isSubmittingVerification = false;
+    verificationForm!: FormGroup;
+    housingTagId: number = 4; // Found from category list, but will verify via search
+    selectedDocFile: File | null = null;
+
+    documentTypes = [
+        { id: 1, name: 'Government ID' },
+        { id: 2, name: 'Utility Bill' },
+        { id: 5, name: 'Professional License' },
+        { id: 6, name: 'Employee ID Card' },
+        { id: 11, name: 'Contract Agreement' },
+        { id: 12, name: 'Letter of Recommendation' },
+        { id: 99, name: 'Other' }
+    ];
+
     ngOnInit(): void {
+        this.initVerificationForm();
         this.loadData();
+        this.resolveHousingTagId();
+    }
+
+    private initVerificationForm() {
+        this.verificationForm = this.fb.group({
+            reason: ['', [Validators.required, Validators.minLength(10)]],
+            documentType: [1, Validators.required],
+            file: [null, Validators.required]
+        });
+    }
+
+    private resolveHousingTagId() {
+        this.verificationService.searchTags('housing').subscribe({
+            next: (res: any) => {
+                const tag = (res.data || []).find((t: any) => t.name.toLowerCase() === 'housing');
+                if (tag) this.housingTagId = tag.id;
+            }
+        });
+    }
+
+    handleContributorAction(event: Event) {
+        if (!this.authService.hasHousingPermission()) {
+            event.preventDefault();
+            event.stopPropagation();
+            this.showVerificationModal = true;
+            this.cdr.markForCheck();
+        }
+    }
+
+    onFileSelected(event: any) {
+        if (event.target.files.length > 0) {
+            this.selectedDocFile = event.target.files[0];
+            this.verificationForm.patchValue({ file: this.selectedDocFile });
+        }
+    }
+
+    submitVerification() {
+        if (this.verificationForm.invalid || !this.selectedDocFile) {
+            this.verificationForm.markAllAsTouched();
+            return;
+        }
+
+        this.isSubmittingVerification = true;
+        const data = {
+            TagId: this.housingTagId,
+            Reason: this.verificationForm.value.reason,
+            DocumentType: this.verificationForm.value.documentType,
+            File: this.selectedDocFile
+        };
+
+        this.verificationService.submitVerification(data).subscribe({
+            next: (res: any) => {
+                this.isSubmittingVerification = false;
+                if (res.isSuccess || res.IsSuccess) {
+                    this.toastService.success('Verification request submitted successfully!');
+                    this.showVerificationModal = false;
+                    this.verificationForm.reset({ documentType: 1 });
+                    this.selectedDocFile = null;
+                } else {
+                    this.toastService.error(res.error?.message || 'Submission failed');
+                }
+                this.cdr.markForCheck();
+            },
+            error: () => {
+                this.isSubmittingVerification = false;
+                this.toastService.error('Network error. Please try again.');
+                this.cdr.markForCheck();
+            }
+        });
+    }
+
+    closeModal() {
+        this.showVerificationModal = false;
+        this.cdr.markForCheck();
     }
 
     loadData(): void {
@@ -54,26 +154,53 @@ export class HousingHomeComponent implements OnInit {
                         // Helper: Strict Media Check
                         const hasMedia = (item: any) => {
                             if (!item) return false;
-                            const hasImg = item.imageUrl && item.imageUrl.trim() !== '';
-                            const hasAtt = item.attachments && item.attachments.length > 0 && item.attachments[0].url;
-                            return hasImg || hasAtt;
+                            // Use pre-calcuated mediaUrl if available
+                            if (item.mediaUrl) return true;
+
+                            // Check ImageUrl
+                            if (item.imageUrl) {
+                                const resolved = this.imageService.resolveImageUrl(item.imageUrl, 'housing');
+                                if (resolved && resolved !== this.imageService.DEFAULT_HOUSING) return true;
+                            }
+
+                            // Check Attachments
+                            if (item.attachments?.length > 0) {
+                                for (const att of item.attachments) {
+                                    const url = att.url || att;
+                                    const resolved = this.imageService.resolveImageUrl(url, 'housing');
+                                    if (resolved && resolved !== this.imageService.DEFAULT_HOUSING) return true;
+                                }
+                            }
+                            return false;
                         };
 
                         // 1. Process Hero
                         let hero = data.hero ? this.processPost(data.hero) : null;
-                        if (hero && !hasMedia(hero)) {
+
+                        // Check if hero has valid mediaUrl (calculated in processPost)
+                        if (hero && !hero.mediaUrl) {
+                            // If no media, demote to text-only list
                             this.textOnlyListings.push(hero);
                             this.heroPost = null;
                         } else {
                             this.heroPost = hero;
                         }
 
-                        this.homesForSale = rawSale.filter(hasMedia);
-                        this.homesForRent = rawRent.filter(hasMedia);
+                        // Helper: Ensure Title
+                        const processItem = (item: any) => {
+                            if (!item) return item;
+                            return {
+                                ...item,
+                                title: item.title || `${item.numberOfRooms || 0} Bed ${item.numberOfBathrooms || 0} Bath Property`
+                            };
+                        };
+
+                        this.homesForSale = rawSale.map(processItem).filter(hasMedia);
+                        this.homesForRent = rawRent.map(processItem).filter(hasMedia);
 
                         // Text-Only Strategy: Anything without media goes here
-                        const saleNoImg = rawSale.filter((item: any) => !hasMedia(item));
-                        const rentNoImg = rawRent.filter((item: any) => !hasMedia(item));
+                        const saleNoImg = rawSale.map(processItem).filter((item: any) => !hasMedia(item));
+                        const rentNoImg = rawRent.map(processItem).filter((item: any) => !hasMedia(item));
                         // Note: We don't add rawAll no-media here to avoid duplicates if 'all' overlaps with sale/rent
 
                         this.textOnlyListings = [...saleNoImg, ...rentNoImg];
@@ -81,7 +208,7 @@ export class HousingHomeComponent implements OnInit {
                         this.discussionPosts = (data.discussions || []).map((p: any) => this.processPost(p));
 
                         // Filter 'All Posts' to only show media-rich content in the main grid
-                        this.allPosts = rawAll.filter(hasMedia).map((p: any) => this.processPost(p));
+                        this.allPosts = rawAll.map((p: any) => this.processPost(p));
                     }
                 } catch (error) {
                     console.error('Error processing housing data:', error);
@@ -102,10 +229,35 @@ export class HousingHomeComponent implements OnInit {
         if (!post || !post.content) return post;
 
         const metadata = this.getPostMetadata(post.content);
+
+        // Resolve Best Media URL
+        let mediaUrl: string | null = null;
+
+        // 1. Check imageUrl
+        if (post.imageUrl) {
+            const resolved = this.imageService.resolveImageUrl(post.imageUrl, 'housing');
+            if (resolved && resolved !== this.imageService.DEFAULT_HOUSING) {
+                mediaUrl = resolved;
+            }
+        }
+
+        // 2. If no valid imageUrl, check attachments
+        if (!mediaUrl && post.attachments && post.attachments.length > 0) {
+            for (const att of post.attachments) {
+                const url = att.url || att; // Handle object or string
+                const resolved = this.imageService.resolveImageUrl(url, 'housing');
+                if (resolved && resolved !== this.imageService.DEFAULT_HOUSING) {
+                    mediaUrl = resolved;
+                    break; // Found a valid one, stop
+                }
+            }
+        }
+
         return {
             ...post,
             metadata: metadata,
-            displayDescription: post.content.split('\n\n\n')[0]
+            displayDescription: post.content.split('\n\n\n')[0],
+            mediaUrl: mediaUrl
         };
     }
 
