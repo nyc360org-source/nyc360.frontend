@@ -43,106 +43,98 @@
         <!-- Requests List -->
         <!-- Subtle Loading Indicator -->
         <div *ngIf="isLoading" class="position-fixed top-0 start-0 w-100" style="z-index: 9999; height: 3px;">
-            <div class="progress" style="height: 3px; border-radius: 0;">
-                <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" style="width: 100%;">
+            <div class="progress" style="height: 3px; border-radius: 0; background: transparent;">
+                <div class="progress-bar progress-bar-striped progress-bar-animated bg-gold"
+                    style="width: 100%; background-color: #c5a059;">
                 </div>
             </div>
         </div>
 
-        <div *ngIf="!isLoading && filteredRequests.length === 0" class="empty-state glass-panel text-center py-5">
+        <div *ngIf="hasInitialized && filteredRequests.length === 0 && !isLoading"
+            class="empty-state glass-panel text-center py-5 animate__animated animate__fadeIn">
             <div class="icon-box mb-4">
                 <div class="empty-icon-wrapper">
-                    <i class="bi bi-shield-lock text-gold"></i>
+                    <i class="bi bi-shield-lock text-gold" style="font-size: 3rem;"></i>
                 </div>
             </div>
             <h3 class="text-dark merriweather-font">Clear Skies</h3>
             <p class="text-muted">No pending verification requests match your criteria.</p>
-            <button class="btn-luxury-gold mt-3 px-4" routerLink="..">RETURN TO TAGS</button>
+            <button class="btn-luxury-gold mt-3 px-4" (click)="loadRequests()">Check for New Requests</button>
         </div>
 
-        <div class="requests-grid row row-cols-1 row-cols-xl-2 g-4" *ngIf="filteredRequests.length > 0">
-            <div class="col" *ngFor="let req of filteredRequests; let i = index">
-                <div class="request-card glass-panel">
-
-                    <div class="card-top d-flex justify-content-between border-bottom p-4">
-                        <div class="user-info d-flex align-items-center gap-3">
-                            <div class="avatar-wrapper">
-                                <img [src]="getRequesterImage(req.requester.imageUrl)" class="avatar-img" alt="User"
-                                    onerror="this.src='/assets/images/default-avatar.png'">
-                                <div class="online-indicator"></div>
-                            </div>
-                            <div class="user-details">
-                                <h5 class="mb-0 text-dark fw-bold">{{ req.requester.fullName || req.requester.username
-                                    }}</h5>
-                                <div class="d-flex align-items-center gap-2">
-                                    <span class="text-gold small">@{{ req.requester.username }}</span>
-                                    <span class="dot-separator"></span>
-                                    <span class="text-muted small">ID: #{{req.requester.id}}</span>
+        <div class="table-responsive glass-panel animate__animated animate__fadeIn" *ngIf="filteredRequests.length > 0">
+            <table class="luxury-table">
+                <thead>
+                    <tr>
+                        <th>Requester</th>
+                        <th>Requested Tag</th>
+                        <th>Reason</th>
+                        <th>Evidence</th>
+                        <th>Submitted At</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let req of filteredRequests">
+                        <td>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="avatar-wrapper">
+                                    <img [src]="getRequesterImage(req.requester.imageUrl)" class="avatar-img"
+                                        style="width: 40px; height: 40px; border-radius: 10px;" alt="User"
+                                        onerror="this.src='/assets/images/default-avatar.png'">
+                                </div>
+                                <div class="user-details">
+                                    <div class="fw-bold text-dark">{{ req.requester.fullName || req.requester.username
+                                        }}</div>
+                                    <div class="text-gold small">@{{ req.requester.username }}</div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="tag-badge-container text-end">
-                            <span class="req-date text-muted block small mb-1">{{ req.submittedAt | date:'MMM d, y, h:mm
-                                a' }}</span>
-                            <div class="tag-target-luxury">
-                                <span class="tag-label">REQUESTING</span>
-                                <div class="tag-value">
-                                    <i class="bi bi-patch-check-fill text-primary"></i>
-                                    {{ req.tag.name }}
-                                </div>
+                        </td>
+                        <td>
+                            <div class="tag-value fw-bold">
+                                <i class="bi bi-patch-check-fill text-primary small me-1"></i>
+                                {{ req.tag.name }}
                             </div>
-                        </div>
-                    </div>
-
-                    <div class="card-body p-4">
-                        <div class="reason-section mb-4">
-                            <div class="section-title d-flex align-items-center gap-2 mb-2">
-                                <i class="bi bi-chat-left-quote text-gold"></i>
-                                <label class="label-muted small uppercase fw-bold">Statement of Interest</label>
+                        </td>
+                        <td>
+                            <div class="reason-text-truncated" [title]="req.reason">
+                                "{{ req.reason }}"
                             </div>
-                            <p class="reason-text p-3 bg-light rounded italic-text">"{{ req.reason }}"</p>
-                        </div>
-
-                        <div class="docs-section" *ngIf="req.documents && req.documents.length > 0">
-                            <div class="section-title d-flex align-items-center gap-2 mb-2">
-                                <i class="bi bi-file-earmark-lock text-gold"></i>
-                                <label class="label-muted small uppercase fw-bold">Verification Evidence</label>
-                            </div>
-                            <div class="docs-list d-flex flex-wrap gap-3">
-                                <div *ngFor="let doc of req.documents" class="doc-wrapper">
-                                    <a [href]="getDocUrl(doc.fileUrl)" target="_blank"
-                                        class="doc-item-luxury glass-card">
-                                        <div class="doc-preview">
-                                            <i class="bi bi-file-earmark-pdf" *ngIf="doc.type === 9"></i>
-                                            <i class="bi bi-image" *ngIf="doc.type !== 9"></i>
-                                            <img *ngIf="doc.type !== 9" [src]="getDocUrl(doc.fileUrl)"
-                                                class="preview-img" onerror="this.style.display='none'">
-                                        </div>
-                                        <div class="doc-info">
-                                            <span class="doc-type">{{ doc.type === 9 ? 'PDF' : 'Image' }}</span>
-                                            <i class="bi bi-eye ms-auto"></i>
-                                        </div>
+                        </td>
+                        <td>
+                            <div class="docs-list d-flex gap-2">
+                                <div *ngFor="let doc of req.documents | slice:0:2">
+                                    <a [href]="getDocUrl(doc.fileUrl)" target="_blank" class="doc-pill">
+                                        <i class="bi"
+                                            [ngClass]="doc.type === 9 ? 'bi-file-earmark-pdf' : 'bi-image'"></i>
+                                        <span>{{ doc.type === 9 ? 'PDF' : 'IMG' }}</span>
                                     </a>
                                 </div>
+                                <span class="text-muted small" *ngIf="req.documents.length > 2">+{{req.documents.length
+                                    - 2}} more</span>
                             </div>
-                        </div>
-                    </div>
-
-                    <div class="card-footer p-4 border-top d-flex justify-content-end gap-3 bg-soft-gold">
-                        <button class="btn-luxury-outline-danger" (click)="openResolveModal(req)">
-                            <i class="bi bi-x-circle me-1"></i> REJECT
-                        </button>
-                        <button class="btn-luxury-gold" (click)="openResolveModal(req)">
-                            <i class="bi bi-check-circle me-1"></i> APPROVE
-                        </button>
-                    </div>
-                </div>
-            </div>
+                        </td>
+                        <td>
+                            <span class="text-muted small">{{ req.submittedAt | date:'MMM d, y, h:mm a' }}</span>
+                        </td>
+                        <td class="text-end">
+                            <div class="d-flex justify-content-end gap-2">
+                                <button class="btn-luxury-outline-danger" (click)="openResolveModal(req)">
+                                    <i class="bi bi-x-circle me-1"></i> REJECT
+                                </button>
+                                <button class="btn-luxury-gold" (click)="openResolveModal(req)">
+                                    <i class="bi bi-check-circle me-1"></i> APPROVE
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
 
         <!-- Pagination -->
-        <div class="pagination-footer-luxury mt-5" *ngIf="totalPages > 1">
-            <div class="pagination-controls d-flex align-items-center gap-4 bg-white p-2 rounded-pill shadow-sm">
+        <div class="pagination-footer-luxury mt-5 d-flex justify-content-center" *ngIf="totalPages > 1">
+            <div class="pagination-controls d-flex align-items-center gap-4 bg-white p-2 px-3 rounded-pill shadow-sm">
                 <button class="btn-circle luxury" [disabled]="currentPage === 1"
                     (click)="loadRequests(currentPage - 1)">
                     <i class="bi bi-arrow-left"></i>
@@ -164,20 +156,21 @@
     <!-- Resolve Modal -->
     <div class="resolve-overlay animate__animated animate__fadeIn" *ngIf="selectedRequest"
         (click)="closeResolveModal()">
-        <div class="resolve-modal glass-panel-modal" (click)="$event.stopPropagation()">
+        <div class="resolve-modal shadow-lg" (click)="$event.stopPropagation()">
             <div class="modal-header-luxury border-bottom p-4 d-flex justify-content-between align-items-center">
                 <div class="d-flex align-items-center gap-3">
                     <div class="modal-icon"><i class="bi bi-shield-shaded"></i></div>
                     <h3 class="mb-0 gold-text merriweather-font">Verification Final Decision</h3>
                 </div>
-                <button class="btn-close-custom" (click)="closeResolveModal()"><i class="bi bi-x-lg"></i></button>
+                <button class="btn-close-custom bg-transparent border-0" (click)="closeResolveModal()"><i
+                        class="bi bi-x-lg"></i></button>
             </div>
 
             <div class="modal-body p-4">
-                <div class="target-info-card mb-4">
+                <div class="target-info-card mb-4 bg-light p-3 rounded-3">
                     <div class="row align-items-center">
                         <div class="col-5 text-end">
-                            <strong class="d-block">{{ selectedRequest.requester.username }}</strong>
+                            <strong class="d-block text-dark">{{ selectedRequest.requester.username }}</strong>
                             <small class="text-muted">User Requester</small>
                         </div>
                         <div class="col-2 text-center">
@@ -190,33 +183,44 @@
                     </div>
                 </div>
 
+                <!-- Full Reason in Modal -->
+                <div class="mb-4">
+                    <label class="label-muted small uppercase fw-bold mb-2 d-block">Statement of Interest</label>
+                    <div class="p-3 bg-light rounded italic-text text-muted border-start border-gold border-4">
+                        "{{ selectedRequest.reason }}"
+                    </div>
+                </div>
+
                 <div class="form-group mb-4">
                     <label class="mb-2 fw-bold text-dark d-flex justify-content-between">
                         <span>Internal Audit Comment</span>
                         <span class="text-muted small fw-normal">(Optional)</span>
                     </label>
-                    <textarea class="luxury-textarea w-100" rows="4" [(ngModel)]="adminComment"
-                        placeholder="Provide details about your decision findings..."></textarea>
+                    <textarea class="form-control luxury-textarea w-100" rows="4" [(ngModel)]="adminComment"
+                        placeholder="Provide details about your decision findings..."
+                        style="border-radius: 12px; border: 1px solid rgba(197, 160, 89, 0.2);"></textarea>
                 </div>
 
-                <div class="audit-warning p-3 rounded d-flex gap-3 align-items-center">
-                    <div class="warning-icon"><i class="bi bi-info-circle"></i></div>
+                <div class="audit-warning p-3 rounded d-flex gap-3 align-items-center"
+                    style="background: #fff9eb; border: 1px solid #ffeeba;">
+                    <div class="warning-icon text-warning"><i class="bi bi-info-circle-fill"></i></div>
                     <p class="mb-0 x-small text-muted">A notification and an email will be dispatched to the user upon
                         submission of this decision.</p>
                 </div>
             </div>
 
             <div class="modal-footer-luxury p-4 border-top d-flex gap-3">
-                <button class="btn-flat-luxury" (click)="closeResolveModal()"
+                <button class="btn btn-link text-muted text-decoration-none fw-bold" (click)="closeResolveModal()"
                     [disabled]="isProcessingAction">ABORT</button>
                 <div class="ms-auto d-flex gap-3">
-                    <button class="btn-luxury-danger-solid shadow-sm" [disabled]="isProcessingAction"
-                        (click)="handleResolve(false)">
+                    <button class="btn btn-danger px-4 rounded-3" [disabled]="isProcessingAction"
+                        (click)="handleResolve(false)" style="border-radius: 10px;">
                         <span *ngIf="!isProcessingAction">DENY VERIFICATION</span>
                         <span *ngIf="isProcessingAction" class="spinner-border spinner-border-sm"></span>
                     </button>
-                    <button class="btn-luxury-gold-solid shadow-sm" [disabled]="isProcessingAction"
-                        (click)="handleResolve(true)">
+                    <button class="btn btn-luxury-gold px-4 rounded-3" [disabled]="isProcessingAction"
+                        (click)="handleResolve(true)"
+                        style="background: #c5a059; color: white; border: none; border-radius: 10px; font-weight: 700;">
                         <span *ngIf="!isProcessingAction">GRANT ACCESS</span>
                         <span *ngIf="isProcessingAction" class="spinner-border spinner-border-sm"></span>
                     </button>
