@@ -282,8 +282,11 @@
                         </div>
                     </div>
 
-                    <button *ngIf="!canEdit" class="btn-action gold" (click)="openAgentRequest()">
+                    <button *ngIf="!canEdit && !requestInfo" class="btn-action gold" (click)="openAgentRequest()">
                         Request Tour / Apply
+                    </button>
+                    <button *ngIf="!canEdit && requestInfo" class="btn-action gold" (click)="openRequestInfo()">
+                        View Request
                     </button>
 
                 </div>
@@ -367,6 +370,11 @@
 <!-- Agent Request Modal -->
 <div class="agent-request-modal-overlay" *ngIf="showAgentRequestModal" (click)="closeAgentRequest()">
     <div class="modal-content-wrapper" (click)="$event.stopPropagation()">
-        <app-agent-request [postId]="property.id" (close)="closeAgentRequest()"></app-agent-request>
+        <app-agent-request [postId]="property.id" [contentTitle]="property.title" [contentImage]="activeImage"
+            (close)="closeAgentRequest()" (requestSubmitted)="handleRequestSubmitted()"></app-agent-request>
     </div>
 </div>
+
+<!-- Request Info View Modal -->
+<app-housing-request-status *ngIf="showRequestInfoModal" [requestInfo]="requestInfo" (close)="closeRequestInfo()">
+</app-housing-request-status>
