@@ -107,7 +107,9 @@
             <div class="neighborhood-list">
                 <div class="neighborhood-item" *ngFor="let item of topNeighborhoods">
                     <div class="n-icon-box">
-                        <i class="bi bi-geo-alt-fill"></i>
+                        <img *ngIf="item.imageUrl" [src]="imageService.resolveImageUrl(item.imageUrl, 'housing')"
+                            class="media-content" alt="Property" appImgFallback="housing">
+                        <i *ngIf="!item.imageUrl" class="bi bi-geo-alt-fill"></i>
                     </div>
                     <div class="item-info">
                         <span class="n-name">{{ item.name || 'Manhattan Area' }}</span>
@@ -126,51 +128,52 @@
         </div>
     </div>
 
-    <!-- Recent Inquiries Table -->
+    <!-- Recent Inquiries Cards -->
     <div class="recent-card">
         <div class="d-flex justify-content-between align-items-center mb-4 p-3">
             <h3 class="section-title m-0">Recent Inquiries</h3>
+            <button class="btn-export" [routerLink]="['/public/housing/agent/dashboard/requests']">View All
+                Requests</button>
         </div>
 
-        <div class="table-container shadow-sm">
-            <table class="premium-table">
-                <thead>
-                    <tr>
-                        <th>USERNAME</th>
-                        <th>TYPE</th>
-                        <th>NEIGHBORHOOD</th>
-                        <th>PROPERTY TYPE</th>
-                        <th>STATUS</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let inquiry of recentInquiries">
-                        <td>
-                            <div class="user-info">
-                                <img [src]="imageService.resolveAvatar(inquiry.user)" class="u-avatar shadow-sm"
-                                    alt="User">
-                                <div class="u-details">
-                                    <span class="u-name">{{ inquiry.user?.name || 'Anonymous User' }}</span>
-                                    <span class="u-email text-muted small">{{ inquiry.user?.email || 'No email
-                                        provided' }}</span>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <span class="type-badge" [ngClass]="inquiry.type === 0 ? 'rent' : 'sale'">
-                                {{ getTypeLabel(inquiry.type) }}
-                            </span>
-                        </td>
-                        <td>{{ inquiry.neighborhood || 'Chelsea' }}</td>
-                        <td>{{ inquiry.propertyType || 'Apartment' }}</td>
-                        <td>
-                            <span class="status-pill" [ngClass]="getStatusClass(inquiry.status)">
-                                {{ inquiry.status }}
-                            </span>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="inquiries-card-grid">
+            <div class="inquiry-card-premium" *ngFor="let inquiry of recentInquiries">
+                <div class="card-top">
+                    <div class="u-avatar-wrapper">
+                        <img *ngIf="inquiry.user?.imageUrl" [src]="imageService.resolveAvatar(inquiry.user)"
+                            class="u-avatar" [alt]="inquiry.user?.name" appImgFallback="avatar">
+                        <div *ngIf="!inquiry.user?.imageUrl" class="no-avatar-placeholder">
+                            {{ getInitials(inquiry.user?.name || inquiry.user?.email || 'U') }}
+                        </div>
+                    </div>
+                    <div class="u-info">
+                        <span class="u-name">{{ inquiry.user?.name || 'Anonymous User' }}</span>
+                        <span class="u-email">{{ inquiry.user?.email || 'No email provided' }}</span>
+                    </div>
+                </div>
+
+                <div class="card-mid">
+                    <span class="info-tag" [ngClass]="inquiry.type === 0 ? 'tag-rent' : 'tag-sale'">
+                        <i class="bi" [ngClass]="inquiry.type === 0 ? 'bi-key' : 'bi-house-door'"></i>
+                        {{ getTypeLabel(inquiry.type) }}
+                    </span>
+                    <span class="info-tag">
+                        <i class="bi bi-geo-alt"></i> {{ inquiry.neighborhood || 'Manhattan' }}
+                    </span>
+                    <span class="info-tag">
+                        <i class="bi bi-building"></i> {{ inquiry.propertyType || 'Apartment' }}
+                    </span>
+                </div>
+
+                <div class="card-bottom">
+                    <span class="status-pill" [ngClass]="getStatusClass(inquiry.status)">
+                        {{ inquiry.status }}
+                    </span>
+                    <button class="btn-view-req" [routerLink]="['/public/housing/agent/dashboard/requests']">
+                        View Full Request
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </div>

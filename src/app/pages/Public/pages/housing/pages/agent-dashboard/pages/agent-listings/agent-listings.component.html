@@ -27,105 +27,97 @@
         <button class="btn-primary-gold mt-4" routerLink="/public/housing/create">Create My First Listing</button>
     </div>
 
-    <!-- Listings Table -->
-    <div class="listings-table-wrapper" *ngIf="!isLoading && listings.length > 0">
-        <table class="premium-table">
-            <thead>
-                <tr>
-                    <th>PROPERTY</th>
-                    <th>NEIGHBORHOOD</th>
-                    <th>TYPE</th>
-                    <th>PRICE</th>
-                    <th>BEDS / BATHS</th>
-                    <th>INQUIRIES</th>
-                    <th>STATUS</th>
-                    <th>ACTIONS</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let item of listings">
-                    <td data-label="Property">
-                        <div class="property-info-cell">
-                            <ng-container *ngIf="isVideo(item.imageUrl); else imgThumb">
-                                <video [src]="imageService.resolveImageUrl(item.imageUrl, 'housing')"
-                                    class="prop-thumb object-fit-cover" muted loop onmouseover="this.play()"
-                                    onmouseout="this.pause()"></video>
-                            </ng-container>
-                            <ng-template #imgThumb>
-                                <img [src]="imageService.resolveImageUrl(item.imageUrl, 'housing')" class="prop-thumb"
-                                    alt="Property">
-                            </ng-template>
+    <!-- Listings Grid (Replaced Table with Cards) -->
+    <div class="listings-grid" *ngIf="!isLoading && listings.length > 0">
+        <div class="listing-card-premium" *ngFor="let item of listings" [class.no-media]="!item.imageUrl">
+            <!-- Media Section -->
+            <div class="card-media">
+                <ng-container *ngIf="item.imageUrl; else noMedia">
+                    <ng-container *ngIf="isVideo(item.imageUrl); else imgThumb">
+                        <video [src]="imageService.resolveImageUrl(item.imageUrl, 'housing')" class="media-content"
+                            muted loop onmouseover="this.play()" onmouseout="this.pause()"></video>
+                        <div class="media-overlay">
+                            <i class="bi bi-play-circle-fill"></i>
+                        </div>
+                    </ng-container>
+                    <ng-template #imgThumb>
+                        <img [src]="imageService.resolveImageUrl(item.imageUrl, 'housing')" class="media-content"
+                            alt="Property" appImgFallback="housing">
+                    </ng-template>
+                </ng-container>
+                <ng-template #noMedia>
+                    <div class="no-media-placeholder">
+                        <i class="bi bi-image-alt"></i>
+                        <span>No Image Provided</span>
+                    </div>
+                </ng-template>
 
-                            <div class="prop-meta">
-                                <span class="prop-id">#{{ item.id }}</span>
-                                <span class="prop-date">{{ item.createdAt | date:'MMM d, y' }}</span>
-                            </div>
-                        </div>
-                    </td>
-                    <td data-label="Neighborhood">
-                        <span class="location-badge">
-                            <i class="bi bi-geo-alt"></i> {{ item.neighborhood }}
-                        </span>
-                    </td>
-                    <td data-label="Type">
-                        <span class="type-badge">{{ item.houseType }}</span>
-                    </td>
-                    <td data-label="Price">
-                        <span class="price-val">{{ formatPrice(item.price) }}</span>
-                    </td>
-                    <td data-label="Beds / Baths">
-                        <div class="stats-cell">
-                            <span>{{ item.bedrooms }} <i class="bi bi-door-open"></i></span>
-                            <span class="mx-2 separator"></span>
-                            <span>{{ item.bathrooms }} <i class="bi bi-droplet"></i></span>
-                        </div>
-                    </td>
-                    <td data-label="Inquiries">
-                        <div class="inquiry-count" [routerLink]="['/public/housing/agent/dashboard/requests']">
-                            <i class="bi bi-chat-left-dots"></i>
-                            <strong>{{ item.totalInquiries }}</strong>
-                        </div>
-                    </td>
-                    <td data-label="Status">
-                        <span class="status-pill" [class.published]="item.isPublished"
-                            [class.draft]="!item.isPublished">
-                            {{ item.isPublished ? 'Published' : 'Draft' }}
-                        </span>
-                    </td>
-                    <td data-label="Actions">
-                        <div class="action-buttons">
-                            <button class="icon-btn edit" [routerLink]="['/public/housing/edit', item.id]" title="Edit">
-                                <i class="bi bi-pencil-square"></i>
-                            </button>
-                            <button class="icon-btn view" [routerLink]="['/public/housing/details', item.id]"
-                                title="View">
-                                <i class="bi bi-eye"></i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-
-        <!-- Pagination -->
-        <div class="pagination-footer" *ngIf="totalPages > 1">
-            <span class="total-info">Showing {{ listings.length }} of {{ totalCount }} properties</span>
-            <div class="page-controls">
-                <button class="page-btn" [disabled]="currentPage === 1" (click)="onPageChange(currentPage - 1)">
-                    <i class="bi bi-chevron-left"></i>
-                </button>
-                <div class="page-numbers">
-                    <!-- Simple array for simulation of numbers -->
-                    <span *ngFor="let p of [].constructor(totalPages); let i = index" class="page-num"
-                        [class.active]="currentPage === i + 1" (click)="onPageChange(i + 1)">
-                        {{ i + 1 }}
-                    </span>
+                <!-- Status Badge Overlay -->
+                <div class="status-badge-overlay" [class.published]="item.isPublished"
+                    [class.draft]="!item.isPublished">
+                    {{ item.isPublished ? 'Published' : 'Draft' }}
                 </div>
-                <button class="page-btn" [disabled]="currentPage === totalPages"
-                    (click)="onPageChange(currentPage + 1)">
-                    <i class="bi bi-chevron-right"></i>
-                </button>
             </div>
+
+            <!-- Content Section -->
+            <div class="card-content">
+                <div class="content-header">
+                    <div class="type-loc">
+                        <span class="type">{{ item.houseType }}</span>
+                        <span class="dot"></span>
+                        <span class="loc"><i class="bi bi-geo-alt"></i> {{ item.neighborhood }}</span>
+                    </div>
+                    <h3 class="price">{{ formatPrice(item.price) }}</h3>
+                </div>
+
+                <div class="property-id-date">
+                    <span class="id">Listing #{{ item.id }}</span>
+                    <span class="date">{{ item.createdAt | date:'MMM d, y' }}</span>
+                </div>
+
+                <div class="specs-grid">
+                    <div class="spec-item">
+                        <i class="bi bi-door-open"></i>
+                        <span>{{ item.bedrooms }} Beds</span>
+                    </div>
+                    <div class="spec-item">
+                        <i class="bi bi-droplet"></i>
+                        <span>{{ item.bathrooms }} Baths</span>
+                    </div>
+                    <div class="spec-item inquiry-link" [routerLink]="['/public/housing/agent/dashboard/requests']">
+                        <i class="bi bi-chat-left-dots"></i>
+                        <span>{{ item.totalInquiries }} Inquiries</span>
+                    </div>
+                </div>
+
+                <div class="card-footer-actions">
+                    <button class="btn-action edit" [routerLink]="['/public/housing/edit', item.id]">
+                        <i class="bi bi-pencil-square"></i> Edit
+                    </button>
+                    <button class="btn-action view" [routerLink]="['/public/housing/details', item.id]">
+                        <i class="bi bi-eye"></i> View
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination (remains outside grid) -->
+    <div class="pagination-footer" *ngIf="totalPages > 1 && !isLoading && listings.length > 0">
+        <span class="total-info">Showing {{ listings.length }} of {{ totalCount }} properties</span>
+        <div class="page-controls">
+            <button class="page-btn" [disabled]="currentPage === 1" (click)="onPageChange(currentPage - 1)">
+                <i class="bi bi-chevron-left"></i>
+            </button>
+            <div class="page-numbers">
+                <span *ngFor="let p of [].constructor(totalPages); let i = index" class="page-num"
+                    [class.active]="currentPage === i + 1" (click)="onPageChange(i + 1)">
+                    {{ i + 1 }}
+                </span>
+            </div>
+            <button class="page-btn" [disabled]="currentPage === totalPages" (click)="onPageChange(currentPage + 1)">
+                <i class="bi bi-chevron-right"></i>
+            </button>
         </div>
     </div>
 </div>
