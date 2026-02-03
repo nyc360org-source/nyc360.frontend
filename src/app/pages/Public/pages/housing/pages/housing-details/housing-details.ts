@@ -16,7 +16,7 @@ import { HousingRequestStatusComponent } from '../request-status/request-status.
 @Component({
     selector: 'app-housing-details',
     standalone: true,
-    imports: [CommonModule, RouterModule, AgentRequestComponent, HousingRequestStatusComponent],
+    imports: [CommonModule, RouterModule, AgentRequestComponent, HousingRequestStatusComponent, ImgFallbackDirective],
     templateUrl: './housing-details.html',
     styleUrls: ['./housing-details.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
