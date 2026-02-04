@@ -1,13 +1,13 @@
-// Main Entity (Frontend uses camelCase, Backend returns PascalCase - converted by Angular)
+// Main Entity - Backend returns ALL properties in PascalCase
 export interface RssSource {
-  id: number;
-  name: string;
-  rssUrl: string;
-  category: number;
-  description: string;
-  imageUrl: string | null;
-  isActive: boolean;
-  lastChecked: string;
+  Id: number;
+  Name: string;
+  RssUrl: string;
+  Category: number;
+  Description: string;
+  ImageUrl: string | null;
+  IsActive: boolean;
+  LastChecked: string;
 }
 
 // Create Request (Frontend uses camelCase, Service converts to PascalCase for Backend)
@@ -35,20 +35,20 @@ export interface RssSingleResponse {
   Error: { Code: string; Message: string } | null;
 }
 
-// RSS Request Entity
+// RSS Request Entity - Backend returns ALL properties in PascalCase
 export interface RssRequest {
-  id: number;
-  url: string;
-  category: number;
-  name: string;
-  description: string;
-  imageUrl: string;
-  status: number; // 0 = Pending, 1 = Approved, 2 = Rejected etc.
-  adminNote: string;
-  requesterId: number;
-  requesterName: string;
-  createdAt: string;
-  processedAt: string;
+  Id: number;
+  Url: string;
+  Category: number;
+  Name: string;
+  Description: string;
+  ImageUrl: string;
+  Status: number; // 0 = Pending, 1 = Approved, 2 = Rejected etc.
+  AdminNote: string;
+  RequesterId: number;
+  RequesterName: string;
+  CreatedAt: string;
+  ProcessedAt: string;
 }
 
 // Paginated Response for Requests (Backend returns PascalCase)
@@ -69,5 +69,4 @@ export interface RssRequestUpdate {
   status: number;
   adminNote: string;
 }
-
 
