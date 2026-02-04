@@ -38,11 +38,11 @@ export class RssFormComponent implements OnInit {
   selectedFile: File | null = null;
 
   ngOnInit() {
-    const state = history.state.data as RssSource;
+    const state = (history.state as any).data as RssSource;
 
-    if (state && state.Id) {
+    if (state && state.id) {
       this.isEditMode = true;
-      this.editId = state.Id;
+      this.editId = state.id;
       this.initEditForm(state);
     } else {
       this.initCreateForm();
@@ -63,11 +63,11 @@ export class RssFormComponent implements OnInit {
   // --- Form for EDIT ---
   initEditForm(data: RssSource) {
     this.form = this.fb.group({
-      name: [data.Name, Validators.required],
-      rssUrl: [data.RssUrl, Validators.required],
-      category: [data.Category, Validators.required],
-      description: [data.Description],
-      isActive: [data.IsActive]
+      name: [data.name, Validators.required],
+      rssUrl: [data.rssUrl, Validators.required],
+      category: [data.category, Validators.required],
+      description: [data.description],
+      isActive: [data.isActive]
     });
   }
 

@@ -102,14 +102,14 @@
                 <div class="d-flex align-items-center gap-3">
                   <div class="source-logo-wrapper">
                     <img
-                      [src]="item.ImageUrl?.startsWith('http') ? item.ImageUrl : (environment.apiBaseUrl2 + '/rss-sources/' + item.ImageUrl)"
+                      [src]="item.imageUrl?.startsWith('http') ? item.imageUrl : (environment.apiBaseUrl2 + '/rss-sources/' + item.imageUrl)"
                       (error)="$event.target['src'] = 'assets/images/rss-placeholder.png'" class="source-logo">
                   </div>
                   <div class="source-details">
-                    <h5 class="source-name">{{ item.Name }}</h5>
-                    <a [href]="item.RssUrl" target="_blank" class="source-link text-truncate d-block"
+                    <h5 class="source-name">{{ item.name }}</h5>
+                    <a [href]="item.rssUrl" target="_blank" class="source-link text-truncate d-block"
                       style="max-width: 250px;">
-                      <i class="bi bi-link-45deg"></i> {{ item.RssUrl }}
+                      <i class="bi bi-link-45deg"></i> {{ item.rssUrl }}
                     </a>
                   </div>
                 </div>
@@ -117,16 +117,16 @@
 
               <!-- Category -->
               <td>
-                <span class="category-pill text-white" [style.background-color]="getCategoryTheme(item.Category).color"
+                <span class="category-pill text-white" [style.background-color]="getCategoryTheme(item.category).color"
                   style="padding: 5px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">
-                  {{ getCategoryTheme(item.Category).label }}
+                  {{ getCategoryTheme(item.category).label }}
                 </span>
               </td>
 
               <!-- Status -->
               <td>
-                <span class="status-badge" [class.active]="item.IsActive">
-                  <span class="dot"></span> {{ item.IsActive ? 'Active' : 'Paused' }}
+                <span class="status-badge" [class.active]="item.isActive">
+                  <span class="dot"></span> {{ item.isActive ? 'Active' : 'Paused' }}
                 </span>
               </td>
 
@@ -134,12 +134,12 @@
               <td>
                 <div class="text-muted small">
                   <i class="bi bi-clock-history me-1"></i>
-                  <ng-container *ngIf="!item.LastChecked || item.LastChecked.startsWith('0001')">Pending</ng-container>
-                  <ng-container *ngIf="item.LastChecked && !item.LastChecked.startsWith('0001')">{{ item.LastChecked |
+                  <ng-container *ngIf="!item.lastChecked || item.lastChecked.startsWith('0001')">Pending</ng-container>
+                  <ng-container *ngIf="item.lastChecked && !item.lastChecked.startsWith('0001')">{{ item.lastChecked |
                     date:'shortTime' }}</ng-container>
                 </div>
-                <div class="text-muted smaller" *ngIf="item.LastChecked && !item.LastChecked.startsWith('0001')">
-                  {{ item.LastChecked | date:'mediumDate' }}
+                <div class="text-muted smaller" *ngIf="item.lastChecked && !item.lastChecked.startsWith('0001')">
+                  {{ item.lastChecked | date:'mediumDate' }}
                 </div>
               </td>
 
@@ -149,7 +149,7 @@
                   <button class="btn-icon edit" (click)="onEdit(item)" title="Edit Configuration">
                     <i class="bi bi-gear-fill"></i>
                   </button>
-                  <button class="btn-icon delete" (click)="onDelete(item.Id)" title="Remove Source">
+                  <button class="btn-icon delete" (click)="onDelete(item.id)" title="Remove Source">
                     <i class="bi bi-trash-fill"></i>
                   </button>
                 </div>
@@ -165,36 +165,36 @@
           <div class="d-flex align-items-center gap-3 mb-3 border-bottom pb-3">
             <div class="source-logo-wrapper">
               <img
-                [src]="item.ImageUrl?.startsWith('http') ? item.ImageUrl : (environment.apiBaseUrl2 + '/rss-sources/' + item.ImageUrl)"
+                [src]="item.imageUrl?.startsWith('http') ? item.imageUrl : (environment.apiBaseUrl2 + '/rss-sources/' + item.imageUrl)"
                 (error)="$event.target['src'] = 'assets/images/rss-placeholder.png'" class="source-logo">
             </div>
             <div class="flex-grow-1 overflow-hidden">
-              <h5 class="source-name mb-1">{{ item.Name }}</h5>
-              <span class="status-badge small" [class.active]="item.IsActive">
-                <span class="dot"></span> {{ item.IsActive ? 'Active' : 'Paused' }}
+              <h5 class="source-name mb-1">{{ item.name }}</h5>
+              <span class="status-badge small" [class.active]="item.isActive">
+                <span class="dot"></span> {{ item.isActive ? 'Active' : 'Paused' }}
               </span>
             </div>
           </div>
 
           <div class="d-flex justify-content-between align-items-center mb-3">
-            <span class="category-pill text-white" [style.background-color]="getCategoryTheme(item.Category).color"
+            <span class="category-pill text-white" [style.background-color]="getCategoryTheme(item.category).color"
               style="padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">
-              {{ getCategoryTheme(item.Category).label }}
+              {{ getCategoryTheme(item.category).label }}
             </span>
 
             <div class="text-end">
               <div class="text-muted small">
                 <i class="bi bi-clock-history me-1"></i>
-                <ng-container *ngIf="!item.LastChecked || item.LastChecked.startsWith('0001')">Pending</ng-container>
-                <ng-container *ngIf="item.LastChecked && !item.LastChecked.startsWith('0001')">{{ item.LastChecked |
+                <ng-container *ngIf="!item.lastChecked || item.lastChecked.startsWith('0001')">Pending</ng-container>
+                <ng-container *ngIf="item.lastChecked && !item.lastChecked.startsWith('0001')">{{ item.lastChecked |
                   date:'shortTime' }}</ng-container>
               </div>
             </div>
           </div>
 
           <div class="mb-3">
-            <a [href]="item.RssUrl" target="_blank" class="source-link text-truncate d-block">
-              <i class="bi bi-link-45deg me-1"></i> {{ item.RssUrl }}
+            <a [href]="item.rssUrl" target="_blank" class="source-link text-truncate d-block">
+              <i class="bi bi-link-45deg me-1"></i> {{ item.rssUrl }}
             </a>
           </div>
 
@@ -202,7 +202,7 @@
             <button class="btn btn-outline-primary btn-sm flex-grow-1" (click)="onEdit(item)">
               <i class="bi bi-gear-fill me-1"></i> Settings
             </button>
-            <button class="btn btn-outline-danger btn-sm flex-grow-1" (click)="onDelete(item.Id)">
+            <button class="btn btn-outline-danger btn-sm flex-grow-1" (click)="onDelete(item.id)">
               <i class="bi bi-trash-fill me-1"></i> Remove
             </button>
           </div>

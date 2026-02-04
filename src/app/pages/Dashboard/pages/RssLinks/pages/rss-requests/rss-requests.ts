@@ -87,7 +87,7 @@ export class RssRequestsComponent implements OnInit {
         if (!this.selectedRequest) return;
 
         const updateData: RssRequestUpdate = {
-            id: this.selectedRequest.Id,
+            id: this.selectedRequest.id,
             status: this.actionStatus,
             adminNote: this.adminNote
         };

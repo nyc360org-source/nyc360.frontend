@@ -348,14 +348,48 @@
                 }
             }
 
-            // Card Footer
+            // Card Details Toggle Button
+            .card-details-toggle {
+                padding: 1rem 1.5rem;
+                display: flex;
+                justify-content: center;
+                border-top: 1px solid rgba(0, 0, 0, 0.05);
+
+                .toggle-btn {
+                    background: transparent;
+                    border: 1px solid rgba(59, 130, 246, 0.3);
+                    color: #3b82f6;
+                    padding: 0.5rem 1.5rem;
+                    border-radius: 30px;
+                    font-size: 0.85rem;
+                    font-weight: 600;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    gap: 0.6rem;
+                    transition: all 0.3s ease;
+
+                    &:hover {
+                        background: rgba(59, 130, 246, 0.1);
+                        border-color: #3b82f6;
+                        padding: 0.5rem 2rem;
+                    }
+
+                    i {
+                        font-size: 0.8rem;
+                    }
+                }
+            }
+
+            // Card Footer (Expanding Area)
             .card-footer {
                 padding: 1.5rem;
                 background: rgba(59, 130, 246, 0.02);
-                border-top: 1px solid rgba(0, 0, 0, 0.05);
+                border-top: 1px dashed rgba(59, 130, 246, 0.2);
                 display: flex;
                 flex-direction: column;
-                gap: 1.25rem;
+                gap: 1.5rem;
+                animation: slideDown 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 
                 .detail-section {
                     .detail-header {
@@ -377,16 +411,18 @@
 
                     .detail-content {
                         margin: 0;
-                        padding: 1rem;
-                        background: rgba(0, 0, 0, 0.03);
-                        border-left: 3px solid #3b82f6;
-                        border-radius: 8px;
-                        font-size: 0.9rem;
-                        color: rgba(0, 0, 0, 0.8);
+                        padding: 1.25rem;
+                        background: #ffffff;
+                        border: 1px solid rgba(0, 0, 0, 0.05);
+                        border-left: 4px solid #3b82f6;
+                        border-radius: 12px;
+                        font-size: 0.95rem;
+                        color: #374151;
                         white-space: pre-wrap;
                         word-break: break-word;
-                        font-family: inherit;
-                        line-height: 1.6;
+                        font-family: 'Inter', sans-serif;
+                        line-height: 1.7;
+                        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
                     }
 
                     &.admin-note-section {
@@ -396,7 +432,7 @@
 
                         .detail-content {
                             border-left-color: #a855f7;
-                            background: rgba(168, 85, 247, 0.05);
+                            background: rgba(168, 85, 247, 0.02);
                         }
                     }
                 }
