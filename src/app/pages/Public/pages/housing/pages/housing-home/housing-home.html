@@ -31,7 +31,7 @@
                         Publish News Article
                     </a>
 
-                    <a [routerLink]="authService.hasHousingPermission() ? '/public/housing/create/sale' : null"
+                    <a [routerLink]="authService.hasHousingPermission() ? '/public/rss/connect' : null"
                         class="dropdown-item-custom" (click)="handleContributorAction($event)"
                         [class.locked]="!authService.hasHousingPermission()">
                         <i class="bi"
@@ -44,9 +44,11 @@
                     </a>
                 </div>
             </div>
+
             <a routerLink="/public/community/15/create-post" class="nav-btn" routerLinkActive="active">
                 <i class="bi bi-patch-question me-2"></i> Ask a Question
             </a>
+
         </div>
     </header>
 

@@ -90,16 +90,16 @@ export class RssFormComponent implements OnInit {
       next: (res: any) => {
         this.isTesting = false;
         // Create/Test check
-        if (res.isSuccess) {
+        if (res.IsSuccess) {
           this.feedVerified = true;
-          const data = res.data;
+          const data = res.Data;
 
           this.form.patchValue({
-            name: data.name,
-            description: data.description,
-            imageUrl: data.imageUrl,
+            name: data.Name,
+            description: data.Description,
+            imageUrl: data.ImageUrl,
             // If Category is valid (not 0), use it
-            category: (data.category && data.category !== 0) ? data.category : this.form.get('category')?.value
+            category: (data.Category && data.Category !== 0) ? data.Category : this.form.get('category')?.value
           });
 
           // Show success message or auto-focus?
@@ -107,6 +107,8 @@ export class RssFormComponent implements OnInit {
           this.handleError({ error: res.Error });
         }
       },
+
+
       error: (err: any) => {
         this.isTesting = false;
         this.handleError(err);
@@ -128,10 +130,10 @@ export class RssFormComponent implements OnInit {
       this.rssService.updateRssSource(this.editId, this.form.value, this.selectedFile || undefined)
         .subscribe({
           next: (res: any) => {
-            if (res.isSuccess) {
+            if (res.IsSuccess) {
               this.handleSuccess('Updated');
             } else {
-              this.handleError({ error: res.error });
+              this.handleError({ error: res.Error });
             }
           },
           error: (err: any) => this.handleError(err)
@@ -143,17 +145,19 @@ export class RssFormComponent implements OnInit {
         category: Number(this.form.value.category),
         name: this.form.value.name,
         description: this.form.value.description,
-        imageUrl: this.form.value.imageUrl
+        imageUrl: this.form.value.imageUrl,
+        image: this.selectedFile || undefined
       };
 
       this.rssService.createRssSource(payload)
+
         .subscribe({
           next: (res: any) => {
-            if (res.isSuccess) {
+            if (res.IsSuccess) {
               this.handleSuccess('Created');
             } else {
               // Handle error
-              const errorObj = res.error || res.Error;
+              const errorObj = res.Error || res.error;
               this.handleError({ error: errorObj });
             }
           },

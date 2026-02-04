@@ -24,6 +24,8 @@ export const ADMIN_ROUTES: Routes = [
       { path: 'rss', loadComponent: () => import('../pages/Dashboard/pages/RssLinks/pages/rss-list/rss-list').then(m => m.RssListComponent) },
       { path: 'rss/create', loadComponent: () => import('../pages/Dashboard/pages/RssLinks/pages/rss-form/rss-form').then(m => m.RssFormComponent) },
       { path: 'rss/edit', loadComponent: () => import('../pages/Dashboard/pages/RssLinks/pages/rss-form/rss-form').then(m => m.RssFormComponent) },
+      { path: 'rss/requests', loadComponent: () => import('../pages/Dashboard/pages/RssLinks/pages/rss-requests/rss-requests').then(m => m.RssRequestsComponent) },
+
 
       // Posts Management
       { path: 'posts', loadComponent: () => import('../pages/Dashboard/pages/posts/post-list/post-list').then(m => m.PostListComponent) },

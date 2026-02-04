@@ -47,11 +47,11 @@ export class RssListComponent implements OnInit {
 
     this.rssService.getAllRssSources().subscribe({
       next: (res) => {
-        if (res.isSuccess) {
-          this.rssList = res.data || [];
+        if (res.IsSuccess) {
+          this.rssList = res.Data || [];
           this.calculateStats();
         } else {
-          this.errorMessage = res.error?.message || 'Failed to load RSS feeds.';
+          this.errorMessage = res.Error?.Message || 'Failed to load RSS feeds.';
         }
 
         this.isLoading = false;

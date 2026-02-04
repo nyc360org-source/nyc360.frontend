@@ -91,7 +91,9 @@ export const PUBLIC_ROUTES: Routes = [
       // Profile & Misc
       { path: 'coming-soon', loadComponent: () => import('../pages/Public/Widgets/coming-soon/coming-soon').then(m => m.ComingSoonComponent) },
       { path: 'profile/settings', loadComponent: () => import('../pages/Public/pages/settings/settings').then(m => m.SettingsComponent) },
-      { path: 'profile/:username', loadComponent: () => import('../pages/Public/pages/profile/profile/profile').then(m => m.ProfileComponent) }
+      { path: 'profile/:username', loadComponent: () => import('../pages/Public/pages/profile/profile/profile').then(m => m.ProfileComponent) },
+      // RSS
+      { path: 'rss/connect', loadComponent: () => import('../pages/Public/pages/rss/connect-rss/connect-rss.component').then(m => m.ConnectRssComponent) }
     ]
   }
 ];
