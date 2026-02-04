@@ -93,7 +93,15 @@ export const PUBLIC_ROUTES: Routes = [
       { path: 'profile/settings', loadComponent: () => import('../pages/Public/pages/settings/settings').then(m => m.SettingsComponent) },
       { path: 'profile/:username', loadComponent: () => import('../pages/Public/pages/profile/profile/profile').then(m => m.ProfileComponent) },
       // RSS
-      { path: 'rss/connect', loadComponent: () => import('../pages/Public/pages/rss/connect-rss/connect-rss.component').then(m => m.ConnectRssComponent) }
+      { path: 'rss/connect', loadComponent: () => import('../pages/Public/pages/rss/connect-rss/connect-rss.component').then(m => m.ConnectRssComponent) },
+
+      // forums
+      {
+        path: 'forums',
+        children: [
+          { path: '', loadComponent: () => import('../pages/Public/pages/forums/pages/forums-list/forums-list').then(m => m.ForumsListComponent) },
+        ]
+      }
     ]
   }
 ];

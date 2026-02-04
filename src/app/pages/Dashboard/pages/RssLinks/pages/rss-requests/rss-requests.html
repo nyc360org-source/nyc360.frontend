@@ -24,6 +24,7 @@
       {{ errorMessage }}
     </div>
 
+<<<<<<< HEAD
     <!-- Cards Layout -->
     <div class="cards-container" *ngIf="requests.length > 0; else emptyState">
       <div class="request-card" *ngFor="let req of requests">
@@ -81,6 +82,44 @@
               <label><i class="fas fa-info-circle"></i> Status</label>
               <span class="status-badge" [ngClass]="getStatusClass(req.status)">
                 {{ getStatusLabel(req.status) }}
+=======
+    <div class="table-wrapper d-none d-md-block">
+      <table *ngIf="requests.length > 0; else emptyState">
+        <thead>
+          <tr>
+            <th>Name / Source</th>
+            <th>Category</th>
+            <th>Requester</th>
+            <th>Submitted</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let req of requests">
+            <td>
+              <div class="source-info">
+                <img [src]="req.ImageUrl || 'assets/images/rss-placeholder.png'" alt="" class="source-icon">
+                <div class="details">
+                  <span class="name">{{ req.Name }}</span>
+                  <a [href]="req.Url" target="_blank" class="url">{{ req.Url }}</a>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="category-badge">{{ getCategoryLabel(req.Category) }}</span>
+            </td>
+            <td>
+              <div class="requester">
+                <span class="uname">{{ req.requester.fullName }}</span>
+                <span class="uid">ID: {{ req.requester.id }}</span>
+              </div>
+            </td>
+            <td>{{ req.CreatedAt | date:'short' }}</td>
+            <td>
+              <span class="status-badge" [ngClass]="getStatusClass(req.Status)">
+                {{ getStatusLabel(req.Status) }}
+>>>>>>> b6c40220bc917a71cfd5a56c48ce6d8ef015e319
               </span>
             </div>
 
@@ -135,8 +174,8 @@
     </div>
     <div class="modal-body">
       <div class="req-preview">
-        <strong>Source:</strong> {{ selectedRequest?.name }}<br>
-        <strong>URL:</strong> {{ selectedRequest?.url }}
+        <strong>Source:</strong> {{ selectedRequest?.Name }}<br>
+        <strong>URL:</strong> {{ selectedRequest?.Url }}
       </div>
 
 
