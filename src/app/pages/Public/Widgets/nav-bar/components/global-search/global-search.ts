@@ -4,13 +4,16 @@ import { RouterLink, Router, NavigationEnd, Event as RouterEvent } from '@angula
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Subscription, debounceTime, distinctUntilChanged, tap, filter, switchMap, catchError, of, finalize } from 'rxjs';
 import { SearchService, SearchResult } from '../../../services/search.service';
+import { ImageService } from '../../../../../../shared/services/image.service';
 import { CategoryEnum } from '../../../feeds/models/categories';
 import { AuthService } from '../../../../../Authentication/Service/auth';
+
+import { ImgFallbackDirective } from '../../../../../../shared/directives/img-fallback.directive';
 
 @Component({
   selector: 'app-global-search',
   standalone: true,
-  imports: [CommonModule, RouterLink, ReactiveFormsModule],
+  imports: [CommonModule, RouterLink, ReactiveFormsModule, ImgFallbackDirective],
   templateUrl: './global-search.component.html',
   styleUrls: ['./global-search.component.scss']
 })
@@ -23,10 +26,11 @@ export class GlobalSearchComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
   private elementRef = inject(ElementRef);
+  public imageService = inject(ImageService);
 
   searchControl = new FormControl('');
   searchResults: SearchResult | null = null;
-  activeSearchTab: 'all' | 'posts' | 'users' | 'communities' | 'tags' = 'all';
+  activeSearchTab: 'all' | 'posts' | 'users' | 'communities' | 'tags' | 'housing' = 'all';
   isSearching = false;
   showSearchResults = false;
   searchError = false;
@@ -108,7 +112,7 @@ export class GlobalSearchComponent implements OnInit, OnDestroy {
     this.cdr.detectChanges();
   }
 
-  switchSearchTab(tab: 'all' | 'posts' | 'users' | 'communities' | 'tags') {
+  switchSearchTab(tab: 'all' | 'posts' | 'users' | 'communities' | 'tags' | 'housing') {
     this.activeSearchTab = tab;
   }
 
