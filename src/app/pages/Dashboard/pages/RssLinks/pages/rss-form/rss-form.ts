@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { RssService } from '../../services/rss';
 import { RssSource } from '../../models/rss';
 import { CATEGORY_THEMES, CategoryEnum } from '../../../../../Public/Widgets/feeds/models/categories';
+import { ToastService } from '../../../../../../shared/services/toast.service';
 
 @Component({
   selector: 'app-rss-form',
@@ -19,6 +20,7 @@ export class RssFormComponent implements OnInit {
   private rssService = inject(RssService);
   private router = inject(Router);
   private location = inject(Location);
+  private toast = inject(ToastService);
 
   form!: FormGroup;
   isEditMode = false;
@@ -31,6 +33,8 @@ export class RssFormComponent implements OnInit {
   }));
 
   isLoading = false;
+  isTesting = false;
+  feedVerified = false;
   selectedFile: File | null = null;
 
   ngOnInit() {
@@ -49,8 +53,10 @@ export class RssFormComponent implements OnInit {
   initCreateForm() {
     this.form = this.fb.group({
       url: ['', [Validators.required, Validators.pattern('https?://.+')]],
-      // Validators.required يقبل الصفر كقيمة صحيحة، لكن يجب أن تكون القيمة المبدئية null
-      category: [null, Validators.required]
+      category: [null, Validators.required],
+      name: ['', Validators.required],
+      description: [''],
+      imageUrl: ['']
     });
   }
 
@@ -70,6 +76,42 @@ export class RssFormComponent implements OnInit {
     if (event.target.files.length > 0) {
       this.selectedFile = event.target.files[0];
     }
+  }
+
+  // --- Test Logic ---
+  onTest() {
+    const url = this.form.get('url')?.value;
+    if (!url) return;
+
+    this.isTesting = true;
+    this.feedVerified = false; // Reset verification
+
+    this.rssService.testRssSource(url).subscribe({
+      next: (res: any) => {
+        this.isTesting = false;
+        // Create/Test check
+        if (res.isSuccess) {
+          this.feedVerified = true;
+          const data = res.data;
+
+          this.form.patchValue({
+            name: data.name,
+            description: data.description,
+            imageUrl: data.imageUrl,
+            // If Category is valid (not 0), use it
+            category: (data.category && data.category !== 0) ? data.category : this.form.get('category')?.value
+          });
+
+          // Show success message or auto-focus?
+        } else {
+          this.handleError({ error: res.Error });
+        }
+      },
+      error: (err: any) => {
+        this.isTesting = false;
+        this.handleError(err);
+      }
+    });
   }
 
   // --- Submit Logic ---
@@ -98,8 +140,10 @@ export class RssFormComponent implements OnInit {
       // CREATE Logic
       const payload = {
         url: this.form.value.url,
-        // تأكد من تحويلها لرقم، حتى لو كانت 0
-        category: Number(this.form.value.category)
+        category: Number(this.form.value.category),
+        name: this.form.value.name,
+        description: this.form.value.description,
+        imageUrl: this.form.value.imageUrl
       };
 
       this.rssService.createRssSource(payload)
@@ -108,8 +152,9 @@ export class RssFormComponent implements OnInit {
             if (res.isSuccess) {
               this.handleSuccess('Created');
             } else {
-              // إرسال الخطأ القادم من الباك إند
-              this.handleError({ error: res.error });
+              // Handle error
+              const errorObj = res.error || res.Error;
+              this.handleError({ error: errorObj });
             }
           },
           error: (err: any) => this.handleError(err)
@@ -118,7 +163,7 @@ export class RssFormComponent implements OnInit {
   }
 
   handleSuccess(action: string) {
-    alert(`RSS Feed ${action} Successfully!`);
+    this.toast.success(`RSS Feed ${action} Successfully!`);
     this.isLoading = false;
     this.router.navigate(['/admin/rss']);
   }
@@ -130,14 +175,17 @@ export class RssFormComponent implements OnInit {
 
     let msg = 'Operation failed. Please try again.';
 
-    // محاولة استخراج الرسالة من الباك إند
-    if (err.error && err.error.message) {
-      msg = err.error.message;
+    // Try to extract message from backend error
+    const backendError = err.error || err.Error;
+
+    if (backendError) {
+      if (backendError.message) msg = backendError.message;
+      else if (backendError.Message) msg = backendError.Message;
     } else if (err.message) {
       msg = err.message;
     }
 
-    alert(`Error: ${msg}`);
+    this.toast.error(msg);
   }
 
   goBack() {
