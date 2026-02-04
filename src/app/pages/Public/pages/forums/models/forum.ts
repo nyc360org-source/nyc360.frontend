@@ -11,8 +11,39 @@ export interface Forum {
 export interface ApiResponse<T> {
     isSuccess: boolean;
     data: T;
-    error: {
-        code: string;
-        message: string;
-    } | null;
+    error: any | null;
+}
+
+export interface PagedResponse<T> {
+    isSuccess: boolean;
+    data: T[];
+    page: number;
+    pageSize: number;
+    totalCount: number;
+    totalPages: number;
+    error: any | null;
+}
+
+export interface Question {
+    id: number;
+    forumId: number;
+    title: string;
+    content: string;
+    slug: string;
+    isLocked: boolean;
+    isPinned: boolean;
+    createdAt: string;
+    author: {
+        id: number;
+        username: string;
+        fullName: string;
+        imageUrl: string;
+        type: number;
+    };
+    answersCount: number;
+}
+
+export interface ForumDetailsData {
+    forum: Forum;
+    questions: PagedResponse<Question>;
 }

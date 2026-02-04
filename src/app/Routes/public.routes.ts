@@ -100,6 +100,7 @@ export const PUBLIC_ROUTES: Routes = [
         path: 'forums',
         children: [
           { path: '', loadComponent: () => import('../pages/Public/pages/forums/pages/forums-list/forums-list').then(m => m.ForumsListComponent) },
+          { path: ':slug', loadComponent: () => import('../pages/Public/pages/forums/pages/forum-questions/forum-questions').then(m => m.ForumQuestionsComponent) },
         ]
       }
     ]
