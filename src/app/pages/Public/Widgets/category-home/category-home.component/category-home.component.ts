@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef, ChangeDetectionStrategy, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { CategoryPost } from '../models/category-home.models';
@@ -8,22 +8,50 @@ import { environment } from '../../../../../environments/environment';
 import { ImageService } from '../../../../../shared/services/image.service';
 import { ImgFallbackDirective } from '../../../../../shared/directives/img-fallback.directive';
 import { CategoryContextService } from '../../../../../shared/services/category-context.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AuthService } from '../../../../Authentication/Service/auth';
+import { VerificationService } from '../../../pages/settings/services/verification.service';
+import { ToastService } from '../../../../../shared/services/toast.service';
+
+export interface HeaderButtonChild {
+  label: string;
+  link: any[];
+  icon?: string;
+  isAction?: boolean;
+  queryParams?: any;
+}
+
+export interface HeaderButton {
+  label: string;
+  link?: any[];
+  icon?: string;
+  queryParams?: any;
+  isDropdown?: boolean;
+  children?: HeaderButtonChild[];
+}
 
 @Component({
   selector: 'app-category-home',
   standalone: true,
-  imports: [CommonModule, RouterModule, ImgFallbackDirective],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, ImgFallbackDirective],
   templateUrl: './category-home.component.html',
   styleUrls: ['./category-home.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CategoryHomeComponent implements OnInit {
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private homeService = inject(CategoryHomeService);
   private cdr = inject(ChangeDetectorRef);
   private categoryContext = inject(CategoryContextService);
   protected readonly environment = environment;
   protected imageService = inject(ImageService);
+  protected authService = inject(AuthService);
+  private verificationService = inject(VerificationService);
+  private toastService = inject(ToastService);
+  private fb = inject(FormBuilder);
+  private destroyRef = inject(DestroyRef);
 
   // --- Data Buckets ---
   heroPost: CategoryPost | null = null;       // 1. الصورة الكبيرة (Hero)
@@ -37,6 +65,7 @@ export class CategoryHomeComponent implements OnInit {
   activeTheme: any = null;
   isLoading = true;
   isHousingCategory = false;
+  activeCategoryId: number = 0;
 
   // Data Buckets
   structuredPosts: CategoryPost[] = []; // JSON metadata posts
@@ -45,9 +74,33 @@ export class CategoryHomeComponent implements OnInit {
   officialPosts: CategoryPost[] = [];
 
   // --- Dynamic Buttons ---
-  headerButtons: { label: string, link: any[], queryParams?: any, icon?: string }[] = [];
+  headerButtons: HeaderButton[] = [];
+
+  // --- Permissions & Verification ---
+  showVerificationModal = false;
+  isSubmittingVerification = false;
+  verificationForm!: FormGroup;
+  selectedDocFile: File | null = null;
+
+  occupations = [
+    { id: 1854, name: 'Housing Advisor' },
+    { id: 1855, name: 'Housing Organization' },
+    { id: 1856, name: 'Licensed Agent' }
+  ];
+
+  documentTypes = [
+    { id: 1, name: 'Government ID' },
+    { id: 2, name: 'Utility Bill' },
+    { id: 5, name: 'Professional License' },
+    { id: 6, name: 'Employee ID Card' },
+    { id: 11, name: 'Contract Agreement' },
+    { id: 12, name: 'Letter of Recommendation' },
+    { id: 99, name: 'Other' }
+  ];
 
   ngOnInit(): void {
+    this.initVerificationForm();
+    this.setupAuthSubscription();
     this.route.params.subscribe(params => {
       const path = params['categoryPath'];
       this.resolveCategory(path);
@@ -61,6 +114,7 @@ export class CategoryHomeComponent implements OnInit {
     if (categoryEntry) {
       this.activeTheme = categoryEntry[1];
       const divisionId = Number(categoryEntry[0]);
+      this.activeCategoryId = divisionId;
       this.isHousingCategory = (divisionId === 4); // CategoryEnum.Housing
 
       // Update global context
@@ -77,61 +131,59 @@ export class CategoryHomeComponent implements OnInit {
   }
 
   resolveHeaderButtons(divisionId: number, path: string) {
-    // 1. Check if the active theme has custom topLinks defined in categories.ts
     if (this.activeTheme && this.activeTheme.topLinks && this.activeTheme.topLinks.length > 0) {
-      this.headerButtons = this.activeTheme.topLinks.map((link: any) => ({
-        label: link.label,
-        link: [link.route], // Wrap string route in array for routerLink
-        icon: link.icon,
-        // Inject category ID if it's the create post route
-        queryParams: link.route.includes('/posts/create') ? { category: divisionId } : (link.queryParams || undefined)
-      }));
+      this.headerButtons = this.activeTheme.topLinks.map((link: any): HeaderButton => {
+        const btn: HeaderButton = {
+          label: link.label,
+          icon: link.icon,
+          isDropdown: link.isDropdown || false
+        };
+
+        if (link.isDropdown && link.children) {
+          btn.children = link.children.map((child: any): HeaderButtonChild => ({
+            label: child.label,
+            link: [child.route],
+            icon: child.icon,
+            isAction: child.isAction || false,
+            queryParams: (child.route?.includes('/posts/create') || child.route?.includes('/rss/connect'))
+              ? { category: divisionId }
+              : (child.queryParams || undefined)
+          }));
+        } else {
+          btn.link = [link.route];
+          btn.queryParams = link.route?.includes('/posts/create') ? { category: divisionId } : (link.queryParams || undefined);
+        }
+
+        return btn;
+      });
       return;
     }
 
-    // 2. Fallbacks if no topLinks are defined
-    const defaults = [
+    // Default fallbacks
+    this.headerButtons = [
       { label: 'Feed', link: ['/public/feed', path], icon: 'bi-rss' },
       { label: 'Initiatives', link: ['/public/initiatives', path], icon: 'bi-lightbulb' },
       { label: 'Create Post', link: ['/public/posts/create'], icon: 'bi-pencil-square', queryParams: { category: divisionId } }
     ];
-
-    if (divisionId === 4) { // Housing
-      this.headerButtons = [
-        { label: 'Feed', link: ['/public/feed', path], icon: 'bi-rss' },
-        { label: 'Homes For Sale', link: ['/public/housing/sale'], icon: 'bi-house' },
-        { label: 'Homes For Rent', link: ['/public/housing/rent'], icon: 'bi-key' },
-        { label: 'Create Listing', link: ['/public/housing/create'], icon: 'bi-plus-circle' } // Housing create might be different
-      ];
-    } else if (divisionId === 3) { // Education (Example)
-      this.headerButtons = [
-        { label: 'Feed', link: ['/public/feed', path], icon: 'bi-rss' },
-        { label: 'Schools', link: ['/public/education/schools'], icon: 'bi-building' },
-        { label: 'Tutors', link: ['/public/education/tutors'], icon: 'bi-person-video3' },
-        { label: 'Create Post', link: ['/public/posts/create'], icon: 'bi-pencil-square', queryParams: { category: divisionId } }
-      ];
-    } else {
-      this.headerButtons = defaults;
-    }
   }
 
   fetchData(divisionId: number) {
     // نطلب عدد أكبر قليلاً لملء الصفحة
     this.homeService.getCategoryHomeData(divisionId, 25).subscribe({
-      next: (res) => {
+      next: (res: any) => {
         if (res.isSuccess && res.data) {
           // دمج المصادر لعمل الفرز اليدوي
           const allIncoming = [...(res.data.featured || []), ...(res.data.latest || [])];
 
           // 1. فصل البوستات: "بصور" vs "بدون صور"
-          let allPosts = allIncoming.map(p => this.parsePostData(p));
+          let allPosts: any[] = allIncoming.map(p => this.parsePostData(p));
 
           // Separate structured posts (those with JSON metadata)
-          this.structuredPosts = allPosts.filter(p => p.housingMetadata);
-          const remainingPosts = allPosts.filter(p => !p.housingMetadata);
+          this.structuredPosts = allPosts.filter((p: any) => p.housingMetadata);
+          const remainingPosts = allPosts.filter((p: any) => !p.housingMetadata);
 
-          const withImages = remainingPosts.filter(p => this.hasImage(p));
-          const noImages = remainingPosts.filter(p => !this.hasImage(p));
+          const withImages = remainingPosts.filter((p: any) => this.hasImage(p));
+          const noImages = remainingPosts.filter((p: any) => !this.hasImage(p));
 
           if (this.isHousingCategory) {
             this.heroPost = withImages[0] || this.structuredPosts[0] || null;
@@ -150,7 +202,7 @@ export class CategoryHomeComponent implements OnInit {
           this.textOnlyPosts = noImages;
 
           // 4. التريند
-          this.trendingPosts = res.data.trending?.map(p => this.parsePostData(p)) || [];
+          this.trendingPosts = res.data.trending?.map((p: any) => this.parsePostData(p)) || [];
         }
         this.isLoading = false;
         this.cdr.detectChanges();
@@ -176,7 +228,7 @@ export class CategoryHomeComponent implements OnInit {
     return this.imageService.resolvePostImage(post);
   }
 
-  private router = inject(Router);
+
 
   // ... existing methods ...
 
@@ -231,5 +283,83 @@ export class CategoryHomeComponent implements OnInit {
       }
     }
     return post;
+  }
+
+  private setupAuthSubscription() {
+    this.authService.fullUserInfo$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.cdr.markForCheck();
+      });
+  }
+
+  private initVerificationForm() {
+    this.verificationForm = this.fb.group({
+      occupationId: [1856, Validators.required], // Default to Licensed Agent
+      reason: ['', [Validators.required, Validators.minLength(10)]],
+      documentType: [1, Validators.required],
+      file: [null, Validators.required]
+    });
+  }
+
+  handleContributorAction(event: Event) {
+    if (!this.authService.hasHousingPermission()) {
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+      this.showVerificationModal = true;
+      this.cdr.markForCheck();
+    }
+  }
+
+  onFileSelected(event: any) {
+    if (event.target.files.length > 0) {
+      this.selectedDocFile = event.target.files[0];
+      this.verificationForm.patchValue({ file: this.selectedDocFile });
+    }
+  }
+
+  submitVerification() {
+    if (this.verificationForm.invalid || !this.selectedDocFile) {
+      this.verificationForm.markAllAsTouched();
+      return;
+    }
+
+    this.isSubmittingVerification = true;
+    const data = {
+      TagId: this.verificationForm.value.occupationId,
+      Reason: this.verificationForm.value.reason,
+      DocumentType: this.verificationForm.value.documentType,
+      File: this.selectedDocFile
+    };
+
+    this.verificationService.submitVerification(data).subscribe({
+      next: (res: any) => {
+        this.isSubmittingVerification = false;
+        if (res.isSuccess || res.IsSuccess) {
+          this.toastService.success('Verification request submitted successfully!');
+          this.showVerificationModal = false;
+          this.verificationForm.reset({
+            occupationId: 1856,
+            documentType: 1
+          });
+          this.selectedDocFile = null;
+        } else {
+          const errorMessage = res.error?.message || res.Error?.Message || 'Submission failed';
+          this.toastService.error(errorMessage);
+        }
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.isSubmittingVerification = false;
+        this.toastService.error('Network error. Please try again.');
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+  closeModal() {
+    this.showVerificationModal = false;
+    this.cdr.markForCheck();
   }
 }

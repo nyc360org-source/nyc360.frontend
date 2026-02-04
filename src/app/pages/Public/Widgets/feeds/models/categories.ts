@@ -18,104 +18,196 @@ export const CATEGORY_THEMES: { [key: number]: any } = {
     color: '#BC5E3D', label: 'Community', path: 'community', icon: '/icon-category/commumity.png', biIcon: 'bi-people-fill',
     route: '/public/community',
     topLinks: [
-      // { label: 'Explore', route: '/public/discover' },
-      // { label: 'My Communities', route: '/public/my-communities' }
+      { label: 'Feed', route: '/public/feed/community', icon: 'bi-rss' },
+      {
+        label: 'Contributor Activity',
+        icon: 'bi-activity',
+        isDropdown: true,
+        children: [
+          { label: 'Publish News Article', route: '/public/posts/create', icon: 'bi-pencil-square', isAction: true },
+          { label: 'Connect RSS Feed', route: '/public/rss/connect', icon: 'bi-broadcast', isAction: true }
+        ]
+      }
     ]
   },
   [CategoryEnum.Culture]: {
     color: '#dc3545', label: 'Culture', path: 'culture', icon: '/icon-category/culture.png', biIcon: 'bi-palette-fill',
     route: '/public/category/culture',
     topLinks: [
-      { label: 'Feed', route: '/public/feed/culture' },
-      { label: 'initiatives', route: '/public/initiatives/culture' }
+      { label: 'Feed', route: '/public/feed/culture', icon: 'bi-rss' },
+      { label: 'initiatives', route: '/public/initiatives/culture', icon: 'bi-lightbulb' },
+      {
+        label: 'Contributor Activity',
+        icon: 'bi-activity',
+        isDropdown: true,
+        children: [
+          { label: 'Publish News Article', route: '/public/posts/create', icon: 'bi-pencil-square', isAction: true },
+          { label: 'Connect RSS Feed', route: '/public/rss/connect', icon: 'bi-broadcast', isAction: true }
+        ]
+      }
     ]
   },
   [CategoryEnum.Education]: {
     color: '#0056b3', label: 'Education', path: 'education', icon: '/icon-category/education.png', biIcon: 'bi-mortarboard-fill',
     route: '/public/category/education',
     topLinks: [
-      { label: 'Feed', route: '/public/feed/education' },
-      { label: 'initiatives', route: '/public/initiatives/education' },
-      { label: 'create post', route: '/public/posts/create' }
+      { label: 'Feed', route: '/public/feed/education', icon: 'bi-rss' },
+      { label: 'initiatives', route: '/public/initiatives/education', icon: 'bi-lightbulb' },
+      {
+        label: 'Contributor Activity',
+        icon: 'bi-activity',
+        isDropdown: true,
+        children: [
+          { label: 'Publish News Article', route: '/public/posts/create', icon: 'bi-pencil-square', isAction: true },
+          { label: 'Connect RSS Feed', route: '/public/rss/connect', icon: 'bi-broadcast', isAction: true }
+        ]
+      }
     ]
   },
   [CategoryEnum.Health]: {
     color: '#00c3ff', label: 'Health', path: 'health', icon: '/icon-category/health.png', biIcon: 'bi-heart-pulse-fill',
     route: '/public/category/health',
     topLinks: [
-      { label: 'Feed', route: '/public/feed/health' },
-      { label: 'Initiatives', route: '/public/initiatives/health' },
-      { label: 'create post', route: '/public/posts/create' }
-
+      { label: 'Feed', route: '/public/feed/health', icon: 'bi-rss' },
+      { label: 'Initiatives', route: '/public/initiatives/health', icon: 'bi-lightbulb' },
+      {
+        label: 'Contributor Activity',
+        icon: 'bi-activity',
+        isDropdown: true,
+        children: [
+          { label: 'Publish News Article', route: '/public/posts/create', icon: 'bi-pencil-square', isAction: true },
+          { label: 'Connect RSS Feed', route: '/public/rss/connect', icon: 'bi-broadcast', isAction: true }
+        ]
+      }
     ]
   },
   [CategoryEnum.Housing]: {
     color: '#B59B62', label: 'Housing', path: 'housing', icon: '/icon-category/housing.png', biIcon: 'bi-house-heart-fill',
     route: '/public/housing/home',
     topLinks: [
-      // { label: 'Feed', route: '/public/housing/feed' },
-      // { label: 'Initiatives', route: '/public/initiatives/housing' },
-      // { label: 'Housing Requests', route: '/public/housing/requests' },
-      // { label: 'post listing', route: '/public/housing/create' },
-      // { label: 'create post', route: '/public/posts/create' }
+      { label: 'Feed', route: '/public/housing/feed', icon: 'bi-rss' },
+      {
+        label: 'Contributor Activity',
+        icon: 'bi-activity',
+        isDropdown: true,
+        children: [
+          { label: 'Publish News Article', route: '/public/posts/create', icon: 'bi-pencil-square', isAction: true },
+          { label: 'Connect RSS Feed', route: '/public/rss/connect', icon: 'bi-broadcast', isAction: true },
+          { label: 'House Listing', route: '/public/housing/create/renting', icon: 'bi-key' }
+        ]
+      }
     ]
   },
   [CategoryEnum.Lifestyle]: {
     color: '#28a745', label: 'Lifestyle', path: 'lifestyle', icon: '/icon-category/lifestyle.png', biIcon: 'bi-cup-hot-fill',
     route: '/public/category/lifestyle',
     topLinks: [
-      // { label: 'Feed', route: '/public/feed/lifestyle' },
-      // { label: 'Initiatives', route: '/public/initiatives/lifestyle' }
+      { label: 'Feed', route: '/public/feed/lifestyle', icon: 'bi-rss' },
+      {
+        label: 'Contributor Activity',
+        icon: 'bi-activity',
+        isDropdown: true,
+        children: [
+          { label: 'Publish News Article', route: '/public/posts/create', icon: 'bi-pencil-square', isAction: true },
+          { label: 'Connect RSS Feed', route: '/public/rss/connect', icon: 'bi-broadcast', isAction: true }
+        ]
+      }
     ]
   },
   [CategoryEnum.Legal]: {
     color: '#6610f2', label: 'Legal', path: 'legal', icon: '/icon-category/legal.png', biIcon: 'bi-hammer',
     route: '/public/category/legal',
     topLinks: [
-      // { label: 'Feed', route: '/public/feed/legal' },
-      // { label: 'Initiatives', route: '/public/initiatives/legal' }
+      { label: 'Feed', route: '/public/feed/legal', icon: 'bi-rss' },
+      {
+        label: 'Contributor Activity',
+        icon: 'bi-activity',
+        isDropdown: true,
+        children: [
+          { label: 'Publish News Article', route: '/public/posts/create', icon: 'bi-pencil-square', isAction: true },
+          { label: 'Connect RSS Feed', route: '/public/rss/connect', icon: 'bi-broadcast', isAction: true }
+        ]
+      }
     ]
   },
   [CategoryEnum.News]: {
     color: '#6c757d', label: 'News', path: 'news', icon: '/icon-category/newspaper.png', biIcon: 'bi-newspaper',
     route: '/public/category/news',
     topLinks: [
-      // { label: 'Feed', route: '/public/feed/news' },
-      // { label: 'Initiatives', route: '/public/initiatives/news' }
+      { label: 'Feed', route: '/public/feed/news', icon: 'bi-rss' },
+      {
+        label: 'Contributor Activity',
+        icon: 'bi-activity',
+        isDropdown: true,
+        children: [
+          { label: 'Publish News Article', route: '/public/posts/create', icon: 'bi-pencil-square', isAction: true },
+          { label: 'Connect RSS Feed', route: '/public/rss/connect', icon: 'bi-broadcast', isAction: true }
+        ]
+      }
     ]
   },
   [CategoryEnum.Professions]: {
     color: '#fd7e14', label: 'Professions', path: 'professions', icon: '/icon-category/professions.png', biIcon: 'bi-briefcase-fill',
     route: '/public/profession/feed',
     topLinks: [
-      // { label: 'Jobs', route: '/public/profession/jobs' },
-      // { label: 'my offers', route: '/public/profession/my-offers' },
-      // { label: 'my applications', route: '/public/profession/my-applications' },
-
+      { label: 'Jobs', route: '/public/profession/jobs', icon: 'bi-briefcase' },
+      {
+        label: 'Contributor Activity',
+        icon: 'bi-activity',
+        isDropdown: true,
+        children: [
+          { label: 'Publish News Article', route: '/public/posts/create', icon: 'bi-pencil-square', isAction: true },
+          { label: 'Connect RSS Feed', route: '/public/rss/connect', icon: 'bi-broadcast', isAction: true }
+        ]
+      }
     ]
   },
   [CategoryEnum.Social]: {
     color: '#e83e8c', label: 'Social', path: 'social', icon: '/icon-category/social.png', biIcon: 'bi-chat-heart-fill',
     route: '/public/category/social',
     topLinks: [
-      // { label: 'Feed', route: '/public/feed/social' },
-      // { label: 'Initiatives', route: '/public/initiatives/social' }
+      { label: 'Feed', route: '/public/feed/social', icon: 'bi-rss' },
+      {
+        label: 'Contributor Activity',
+        icon: 'bi-activity',
+        isDropdown: true,
+        children: [
+          { label: 'Publish News Article', route: '/public/posts/create', icon: 'bi-pencil-square', isAction: true },
+          { label: 'Connect RSS Feed', route: '/public/rss/connect', icon: 'bi-broadcast', isAction: true }
+        ]
+      }
     ]
   },
   [CategoryEnum.Transportation]: {
     color: '#17a2b8', label: 'Transportation', path: 'transportation', icon: '/icon-category/transportation.png', biIcon: 'bi-bus-front-fill',
     route: '/public/category/transportation',
     topLinks: [
-      // { label: 'Feed', route: '/public/feed/transportation' },
-      // { label: 'Alerts', route: '/public/transport-alerts' }
+      { label: 'Feed', route: '/public/feed/transportation', icon: 'bi-rss' },
+      {
+        label: 'Contributor Activity',
+        icon: 'bi-activity',
+        isDropdown: true,
+        children: [
+          { label: 'Publish News Article', route: '/public/posts/create', icon: 'bi-pencil-square', isAction: true },
+          { label: 'Connect RSS Feed', route: '/public/rss/connect', icon: 'bi-broadcast', isAction: true }
+        ]
+      }
     ]
   },
   [CategoryEnum.Tv]: {
     color: '#343a40', label: 'TV', path: 'tv', icon: '/icon-category/tv.png', biIcon: 'bi-tv-fill',
     route: '/public/category/tv',
     topLinks: [
-      // { label: 'Feed', route: '/public/feed/tv' },
-      // { label: 'initiatives', route: '/public/initiatives/tv' }
+      { label: 'Feed', route: '/public/feed/tv', icon: 'bi-rss' },
+      {
+        label: 'Contributor Activity',
+        icon: 'bi-activity',
+        isDropdown: true,
+        children: [
+          { label: 'Publish News Article', route: '/public/posts/create', icon: 'bi-pencil-square', isAction: true },
+          { label: 'Connect RSS Feed', route: '/public/rss/connect', icon: 'bi-broadcast', isAction: true }
+        ]
+      }
     ]
   }
 };
