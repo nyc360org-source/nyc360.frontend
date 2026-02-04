@@ -32,8 +32,8 @@
                     </a>
 
                     <a [routerLink]="authService.hasHousingPermission() ? '/public/rss/connect' : null"
-                        class="dropdown-item-custom" (click)="handleContributorAction($event)"
-                        [class.locked]="!authService.hasHousingPermission()">
+                        [queryParams]="{ category: 4 }" class="dropdown-item-custom"
+                        (click)="handleContributorAction($event)" [class.locked]="!authService.hasHousingPermission()">
                         <i class="bi"
                             [ngClass]="!authService.hasHousingPermission() ? 'bi-lock-fill' : 'bi-broadcast'"></i>
                         Connect RSS Feed

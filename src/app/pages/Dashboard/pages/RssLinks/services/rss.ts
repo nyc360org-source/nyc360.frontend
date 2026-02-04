@@ -41,7 +41,7 @@ export class RssService {
     formData.append('RssUrl', data.rssUrl);
     formData.append('Category', data.category.toString());
     formData.append('Name', data.name);
-    formData.append('Description', data.description || '');
+    if (data.description) formData.append('Description', data.description);
     formData.append('IsActive', data.isActive.toString());
 
     if (file) {

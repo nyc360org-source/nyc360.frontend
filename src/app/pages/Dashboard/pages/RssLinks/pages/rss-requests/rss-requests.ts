@@ -29,6 +29,7 @@ export class RssRequestsComponent implements OnInit {
 
     // Modals / Action states
     showActionModal = false;
+    showReplyModal = false;
     selectedRequest: RssRequest | null = null;
     adminNote = '';
     actionStatus = 1; // 1 = Approve, 2 = Reject (example)
@@ -43,12 +44,12 @@ export class RssRequestsComponent implements OnInit {
         this.isLoading = true;
         this.rssService.getRssRequests(this.page, this.pageSize, this.statusFilter).subscribe({
             next: (res) => {
-                if (res.IsSuccess) {
-                    this.requests = res.Data;
-                    this.totalCount = res.TotalCount;
-                    this.totalPages = res.TotalPages;
+                if (res.isSuccess) {
+                    this.requests = res.data;
+                    this.totalCount = res.totalCount;
+                    this.totalPages = res.totalPages;
                 } else {
-                    this.errorMessage = res.Error?.Message || 'Failed to load requests';
+                    this.errorMessage = res.error?.message || 'Failed to load requests';
                 }
                 this.isLoading = false;
                 this.cdr.detectChanges();
@@ -93,11 +94,39 @@ export class RssRequestsComponent implements OnInit {
 
         this.rssService.updateRssRequestStatus(updateData).subscribe({
             next: (res) => {
-                if (res.IsSuccess) {
+                if (res.isSuccess) {
                     this.showActionModal = false;
                     this.loadRequests();
                 } else {
-                    alert('Error: ' + (res.Error?.Message || 'Update failed'));
+                    alert('Error: ' + (res.error?.message || 'Update failed'));
+                }
+            },
+            error: () => alert('Network error')
+        });
+    }
+
+    openReplyModal(request: RssRequest) {
+        this.selectedRequest = request;
+        this.adminNote = request.adminNote || '';
+        this.showReplyModal = true;
+    }
+
+    submitReply() {
+        if (!this.selectedRequest) return;
+
+        const updateData: RssRequestUpdate = {
+            id: this.selectedRequest.id,
+            status: this.selectedRequest.status, // Keep current status
+            adminNote: this.adminNote
+        };
+
+        this.rssService.updateRssRequestStatus(updateData).subscribe({
+            next: (res) => {
+                if (res.isSuccess) {
+                    this.showReplyModal = false;
+                    this.loadRequests();
+                } else {
+                    alert('Error: ' + (res.error?.message || 'Update failed'));
                 }
             },
             error: () => alert('Network error')
@@ -121,5 +150,10 @@ export class RssRequestsComponent implements OnInit {
             case 2: return 'status-rejected';
             default: return '';
         }
+    }
+
+    getCategoryLabel(categoryId: number): string {
+        const category = this.categories.find(c => c.id === categoryId);
+        return category ? category.name : 'Unknown';
     }
 }

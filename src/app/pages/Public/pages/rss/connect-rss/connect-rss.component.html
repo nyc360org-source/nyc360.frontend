@@ -3,6 +3,13 @@
         <div class="header">
             <h2><i class="fa fa-rss"></i> Connect RSS Feed</h2>
             <p>Integrate your favorite content sources seamlessly into NYC360</p>
+
+            <!-- Category Badge -->
+            <div class="category-badge" *ngIf="categoryInfo()"
+                [style.background]="'linear-gradient(135deg, ' + categoryInfo().color + ' 0%, ' + categoryInfo().color + 'dd 100%)'">
+                <i [class]="categoryInfo().biIcon"></i>
+                <span>{{ categoryName() }}</span>
+            </div>
         </div>
 
         <form [formGroup]="rssForm" (ngSubmit)="onSubmit()">
@@ -41,25 +48,11 @@
             </div>
 
             <div class="form-group">
-                <label for="category">
-                    <i class="fa fa-folder"></i> Category
-                </label>
-                <div class="select-wrapper">
-                    <select id="category" formControlName="Category">
-                        <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-group">
                 <label for="imageUrl">
                     <i class="fa fa-image"></i> Image URL (Optional)
                 </label>
                 <input type="url" id="imageUrl" formControlName="ImageUrl" placeholder="https://example.com/logo.png"
                     autocomplete="off">
-                <div class="error" *ngIf="rssForm.get('ImageUrl')?.touched && rssForm.get('ImageUrl')?.invalid">
-                    Please enter a valid Image URL
-                </div>
             </div>
 
             <div class="message error-msg" *ngIf="errorMessage()">

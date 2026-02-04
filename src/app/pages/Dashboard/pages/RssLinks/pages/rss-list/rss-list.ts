@@ -47,11 +47,11 @@ export class RssListComponent implements OnInit {
 
     this.rssService.getAllRssSources().subscribe({
       next: (res) => {
-        if (res.IsSuccess) {
-          this.rssList = res.Data || [];
+        if (res.isSuccess) {
+          this.rssList = res.data || [];
           this.calculateStats();
         } else {
-          this.errorMessage = res.Error?.Message || 'Failed to load RSS feeds.';
+          this.errorMessage = res.error?.message || 'Failed to load RSS feeds.';
         }
 
         this.isLoading = false;
@@ -68,9 +68,9 @@ export class RssListComponent implements OnInit {
 
   calculateStats() {
     this.stats.total = this.rssList.length;
-    this.stats.active = this.rssList.filter(r => r.IsActive).length;
+    this.stats.active = this.rssList.filter(r => r.isActive).length;
     // Count unique categories used
-    const cats = new Set(this.rssList.map(r => r.Category));
+    const cats = new Set(this.rssList.map(r => r.category));
     this.stats.categoriesCount = cats.size;
   }
 
