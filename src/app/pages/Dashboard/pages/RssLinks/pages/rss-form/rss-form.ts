@@ -89,7 +89,7 @@ export class RssFormComponent implements OnInit {
     this.rssService.testRssSource(url).subscribe({
       next: (res: any) => {
         this.isTesting = false;
-        if (res.isSuccess) {
+        if (res.isSuccess || res.IsSuccess) {
           this.feedVerified = true;
           const data = res.data;
 
@@ -125,7 +125,7 @@ export class RssFormComponent implements OnInit {
       this.rssService.updateRssSource(this.editId, this.form.value, this.selectedFile || undefined)
         .subscribe({
           next: (res: any) => {
-            if (res.isSuccess) {
+            if (res.isSuccess || res.IsSuccess) {
               this.handleSuccess('Updated');
             } else {
               this.handleError({ error: res.error });
@@ -147,7 +147,7 @@ export class RssFormComponent implements OnInit {
       this.rssService.createRssSource(payload)
         .subscribe({
           next: (res: any) => {
-            if (res.isSuccess) {
+            if (res.isSuccess || res.IsSuccess) {
               this.handleSuccess('Created');
             } else {
               const errorObj = res.error || res.Error;
