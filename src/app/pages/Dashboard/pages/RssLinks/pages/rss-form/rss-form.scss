@@ -156,3 +156,33 @@ $border: #e9ecef;
     &:disabled { opacity: 0.6; cursor: not-allowed; }
   }
 }
+// --- Animations ---
+.fade-in-up {
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+// --- Specific Tweaks ---
+.input-with-action {
+  display: flex; gap: 10px;
+  
+  input { flex: 1; }
+  
+  button {
+    white-space: nowrap;
+    height: 48px; // Match input height roughly
+    display: flex; align-items: center;
+  }
+}
+
+.img-preview {
+  margin-top: 10px;
+  max-width: 150px;
+  border-radius: 6px;
+  border: 1px solid $border;
+  padding: 4px;
+}

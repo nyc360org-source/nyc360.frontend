@@ -18,6 +18,11 @@ export class RssService {
     return this.http.get<RssResponse>(`${this.baseUrl}/list`);
   }
 
+  // --- TEST (Verify & Fetch Data) ---
+  testRssSource(url: string): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/test?url=${encodeURIComponent(url)}`);
+  }
+
   // --- CREATE (Simple JSON) 🆕 This was missing ---
   createRssSource(data: CreateRssRequest): Observable<any> {
     return this.http.post(`${this.baseUrl}/create`, data);

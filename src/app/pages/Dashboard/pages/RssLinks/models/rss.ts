@@ -7,7 +7,7 @@ export interface RssSource {
   rssUrl: string;
   category: number; // This matches the numeric ID from the shared category list
   description: string;
-  imageUrl: string | null; 
+  imageUrl: string | null;
   isActive: boolean;
   lastChecked: string;
 }
@@ -16,6 +16,9 @@ export interface RssSource {
 export interface CreateRssRequest {
   url: string;
   category: number;
+  name: string;
+  description?: string;
+  imageUrl?: string;
 }
 
 // Response Wrapper
