@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormArray } from '@angular/forms';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { HousingAuthService } from '../../service/housing-auth.service';
 import { ToastService } from '../../../../../../shared/services/toast.service';
@@ -49,6 +49,12 @@ export class ListingAuthorizationComponent implements OnInit {
         { id: 12, name: 'Organization Registration Certificate' }
     ];
 
+    availabilityTypes = [
+        { id: 1, name: 'Contact' },
+        { id: 2, name: 'Virtual Tour' },
+        { id: 3, name: 'In-Person Tour' }
+    ];
+
     constructor() {
         this.form = this.fb.group({
             FullName: ['', Validators.required],
@@ -56,18 +62,75 @@ export class ListingAuthorizationComponent implements OnInit {
             Email: ['', [Validators.required, Validators.email]],
             PhoneNumber: ['', Validators.required],
 
-            PreferredContactDate: [null, Validators.required],
-            PreferredContactTime: [null, Validators.required],
-            PreferredVirtualTourDate: [null],
-            PreferredVirtualTourTime: [null],
-            PreferredInPersonTourDate: [null],
-            PreferredInPersonTourTime: [null],
+            Availabilities: this.fb.array([]),
 
             AuthorizationType: [null, Validators.required],
             ListingAuthorizationDocument: [null, Validators.required],
             AuthorizationValidationDate: [null],
             SaveThisAuthorizationForFutureListings: [true]
         });
+
+
+
+    }
+
+    get availabilities(): FormArray {
+        return this.form.get('Availabilities') as FormArray;
+    }
+
+    // Helper to get form groups by type for the template
+    getIndexesByType(typeId: number): number[] {
+        return this.availabilities.controls
+            .map((control, index) => ({ control, index }))
+            .filter(({ control }) => control.get('AvailabilityType')?.value === typeId)
+            .map(({ index }) => index);
+    }
+
+    createAvailabilityGroup(typeId: number = 1): FormGroup {
+        return this.fb.group({
+            AvailabilityType: [typeId, Validators.required],
+            Dates: [[]], // Array of date strings
+            _dateInput: [''],
+            TimeFrom: [''],
+            TimeTo: ['']
+        });
+    }
+
+    addAvailability(typeId: number) {
+        this.availabilities.push(this.createAvailabilityGroup(typeId));
+    }
+
+    removeAvailability(index: number) {
+        this.availabilities.removeAt(index);
+    }
+
+    // Date Chip Helper Methods
+    addDate(groupIndex: number, event: any) {
+        const input = event.target;
+        const value = input.value;
+
+        if (value) {
+            const group = this.availabilities.at(groupIndex) as FormGroup;
+            const currentDates = group.get('Dates')?.value || [];
+
+            // Avoid duplicates
+            if (!currentDates.includes(value)) {
+                group.patchValue({
+                    Dates: [...currentDates, value],
+                    _dateInput: '' // Clear input
+                });
+            } else {
+                group.patchValue({ _dateInput: '' });
+            }
+        }
+    }
+
+    removeDate(groupIndex: number, dateIndex: number) {
+        const group = this.availabilities.at(groupIndex) as FormGroup;
+        const currentDates = group.get('Dates')?.value || [];
+        const newDates = [...currentDates];
+        newDates.splice(dateIndex, 1);
+        group.patchValue({ Dates: newDates });
     }
 
     private authService = inject(AuthService);
@@ -105,6 +168,24 @@ export class ListingAuthorizationComponent implements OnInit {
         this.selectedFiles.splice(index, 1);
     }
 
+    // Validation Helpers
+    get isStep1Valid(): boolean {
+        const f = this.form;
+        return !!(f.get('FullName')?.valid && f.get('Email')?.valid && f.get('PhoneNumber')?.valid);
+    }
+
+    get isStep2Valid(): boolean {
+        // Valid if at least one availability exists
+        return this.availabilities.length > 0;
+    }
+
+    get isStep3Valid(): boolean {
+        const f = this.form;
+        return !!(f.get('AuthorizationType')?.valid &&
+            f.get('ListingAuthorizationDocument')?.valid &&
+            this.selectedFiles.length > 0);
+    }
+
     onSubmit() {
         this.triedToSubmit = true;
         console.log('ListingAuthorization: onSubmit called');
@@ -139,6 +220,12 @@ export class ListingAuthorizationComponent implements OnInit {
                     uploadZone.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
             }, 100);
+            return;
+        }
+
+        // Enforce at least one availability
+        if (this.availabilities.length === 0) {
+            this.toastService.error('Please add at least one availability schedule (Contact, Virtual Tour, or In-Person).');
             return;
         }
 

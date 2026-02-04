@@ -393,30 +393,36 @@
 
                 </div>
 
-                <!-- Agent / Authorization Info -->
-                <div class="sidebar-card agent-card">
-                    <!-- Authorization Header if Exists -->
-                    <div class="auth-box mb-3 p-2 bg-light rounded border border-warning"
-                        *ngIf="property.authorization">
-                        <div class="d-flex align-items-center mb-2">
-                            <i class="bi bi-shield-check text-success fs-4 me-2"></i>
-                            <div>
-                                <small class="text-uppercase fw-bold text-muted" style="font-size: 0.65rem;">Authorized
-                                    Listing</small>
-                                <h6 class="mb-0 fw-bold">{{ property.authorization.organizationName ||
-                                    property.authorization.fullName }}</h6>
+                <!-- Availability Section -->
+                <div class="sidebar-card availability-card mb-4" *ngIf="availabilities && availabilities.length > 0">
+                    <h5 class="fw-bold mb-3 border-bottom pb-2">Availability</h5>
+                    <div class="availability-list">
+                        <div *ngFor="let avail of availabilities" class="availability-item mb-3">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <span class="badge bg-info text-white" *ngIf="avail.availabilityType === 1">Virtual
+                                    Tour</span>
+                                <span class="badge bg-success text-white"
+                                    *ngIf="avail.availabilityType === 0">In-Person</span>
+                                <span class="badge bg-secondary text-white"
+                                    *ngIf="avail.availabilityType > 1">Viewing</span>
                             </div>
-                        </div>
-                        <div class="auth-details small text-muted">
-                            <div *ngIf="property.authorization.authorizationValidationDate">
-                                Verified until: <span class="text-dark fw-bold">{{
-                                    property.authorization.authorizationValidationDate | date:'mediumDate' }}</span>
-                            </div>
-                            <div *ngIf="!property.authorization.authorizationValidationDate">
-                                Verified: <span class="text-dark fw-bold">Permanent</span>
+
+                            <div class="date-group ps-2 border-start border-3 border-warning">
+                                <div *ngFor="let d of avail.dates" class="mb-1">
+                                    <span class="fw-bold text-dark">{{ d | date:'EEE, MMM d' }}</span>
+                                </div>
+                                <div class="text-muted small mt-1" *ngIf="avail.timeFrom">
+                                    <i class="bi bi-clock me-1"></i> {{ avail.timeFrom }} - {{ avail.timeTo }}
+                                </div>
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <!-- Agent / Authorization Info -->
+                <div class="sidebar-card agent-card">
+                    <!-- Authorization Header if Exists -->
+
 
                     <div class="agent-row">
                         <div class="agent-avatar">

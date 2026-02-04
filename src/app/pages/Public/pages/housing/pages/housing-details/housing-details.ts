@@ -32,6 +32,7 @@ export class HousingDetailsComponent implements OnInit {
 
     property: any = null;
     similarProperties: any[] = [];
+    availabilities: any[] = [];
     isLoading = true;
     activeMedia: any = null;
     currentUserId: number | null = null;
@@ -101,6 +102,7 @@ export class HousingDetailsComponent implements OnInit {
 
                     // Map API fields
                     // Map API fields
+                    // Map API fields
                     this.property = {
                         ...data,
                         title: data.title || (data.fullAddress ? data.fullAddress : `${data.bedrooms ?? 0} Bed ${data.bathrooms ?? 0} Bath in ${data.neighborhood || 'NYC'}`),
@@ -151,7 +153,6 @@ export class HousingDetailsComponent implements OnInit {
                         }) || [],
                         // New Fields
                         coListers: data.coListers, // Can be array or null
-                        authorization: data.authorization, // Can be object or null
                         rentingLeaseType: data.rentingLeaseType,
                         rentPrivacyType: data.rentPrivacyType,
                         rentBathroomType: data.rentBathroomType,
@@ -165,6 +166,8 @@ export class HousingDetailsComponent implements OnInit {
                         videos: processedAttachments.filter((a: any) => a.type === 'video'),
                         documents: processedAttachments.filter((a: any) => a.type === 'file')
                     };
+
+                    this.availabilities = res.data.availabilities || [];
                     this.requestInfo = res.data.request;
                     this.similarProperties = (res.data.similar || []).map((p: any) => {
                         const rawMedia = p.imageUrl || (p.attachments?.[0]?.url || p.attachments?.[0]);

@@ -38,14 +38,21 @@ export class HousingAuthService {
             return time;
         };
 
-        if (data.PreferredContactDate) append('PreferredContactDate', formatDate(data.PreferredContactDate));
-        if (data.PreferredContactTime) append('PreferredContactTime', formatTime(data.PreferredContactTime));
+        // Availabilities
+        if (data.Availabilities && Array.isArray(data.Availabilities)) {
+            data.Availabilities.forEach((avail: any, index: number) => {
+                formData.append(`Availabilities[${index}].AvailabilityType`, String(avail.AvailabilityType));
 
-        if (data.PreferredVirtualTourDate) append('PreferredVirtualTourDate', formatDate(data.PreferredVirtualTourDate));
-        if (data.PreferredVirtualTourTime) append('PreferredVirtualTourTime', formatTime(data.PreferredVirtualTourTime));
+                if (avail.Dates && Array.isArray(avail.Dates)) {
+                    avail.Dates.forEach((date: any, dIndex: number) => {
+                        formData.append(`Availabilities[${index}].Dates[${dIndex}]`, formatDate(date));
+                    });
+                }
 
-        if (data.PreferredInPersonTourDate) append('PreferredInPersonTourDate', formatDate(data.PreferredInPersonTourDate));
-        if (data.PreferredInPersonTourTime) append('PreferredInPersonTourTime', formatTime(data.PreferredInPersonTourTime));
+                formData.append(`Availabilities[${index}].TimeFrom`, formatTime(avail.TimeFrom));
+                formData.append(`Availabilities[${index}].TimeTo`, formatTime(avail.TimeTo));
+            });
+        }
 
         // Enums (Ensure they are sent as numbers/strings that backend expects)
         formData.append('AuthorizationType', String(data.AuthorizationType ?? 0));
