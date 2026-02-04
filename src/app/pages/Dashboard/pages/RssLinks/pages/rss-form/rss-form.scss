@@ -22,8 +22,16 @@ $border: #e9ecef;
   margin-bottom: 30px;
 
   .title-section {
-    h2 { font-weight: 800; color: $text-main; margin-bottom: 5px; }
-    p { color: $text-muted; font-size: 0.95rem; }
+    h2 {
+      font-weight: 800;
+      color: $text-main;
+      margin-bottom: 5px;
+    }
+
+    p {
+      color: $text-muted;
+      font-size: 0.95rem;
+    }
   }
 
   .btn-back {
@@ -34,9 +42,15 @@ $border: #e9ecef;
     border-radius: 8px;
     cursor: pointer;
     font-weight: 600;
-    display: flex; align-items: center; gap: 5px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
     transition: 0.2s;
-    &:hover { color: $gold; border-color: $gold; }
+
+    &:hover {
+      color: $gold;
+      border-color: $gold;
+    }
   }
 }
 
@@ -48,13 +62,13 @@ $border: #e9ecef;
   padding: 40px;
   max-width: 800px;
   margin: 0 auto;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.03);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
 }
 
 // --- Form Inputs ---
 .form-group {
   margin-bottom: 20px;
-  
+
   label {
     display: block;
     margin-bottom: 8px;
@@ -63,7 +77,9 @@ $border: #e9ecef;
     color: $text-main;
   }
 
-  input[type="text"], select, textarea {
+  input[type="text"],
+  select,
+  textarea {
     width: 100%;
     padding: 12px 15px;
     border: 1px solid $border;
@@ -78,19 +94,37 @@ $border: #e9ecef;
       border-color: $gold;
       box-shadow: 0 0 0 3px rgba($gold, 0.1);
     }
-    
-    &::placeholder { color: #ccc; }
+
+    &::placeholder {
+      color: #ccc;
+    }
   }
-  
+
   // Custom File Input Styling
   input[type="file"] {
     width: 100%;
     padding: 10px;
-    background: #f9f9f9;
-    border: 1px dashed darken($border, 10%);
+    background: #fdfdfd;
+    border: 2px dashed rgba($gold, 0.3);
     border-radius: 8px;
     cursor: pointer;
-    &:hover { background: #f1f1f1; }
+    transition: 0.3s;
+
+    &:hover {
+      background: rgba($gold, 0.05);
+      border-color: $gold;
+    }
+
+    &::file-selector-button {
+      background: $gold;
+      color: white;
+      border: none;
+      padding: 5px 15px;
+      border-radius: 5px;
+      margin-right: 15px;
+      cursor: pointer;
+      font-weight: 600;
+    }
   }
 }
 
@@ -98,7 +132,10 @@ $border: #e9ecef;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 20px;
-  @media (max-width: 768px) { grid-template-columns: 1fr; }
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
 }
 
 // --- Checkbox (Active Status) ---
@@ -115,7 +152,10 @@ $border: #e9ecef;
     cursor: pointer;
   }
 
-  label { margin: 0; cursor: pointer; }
+  label {
+    margin: 0;
+    cursor: pointer;
+  }
 }
 
 // --- Actions ---
@@ -135,7 +175,10 @@ $border: #e9ecef;
     border-radius: 8px;
     font-weight: 600;
     cursor: pointer;
-    &:hover { background: #f1f1f1; }
+
+    &:hover {
+      background: #f1f1f1;
+    }
   }
 
   .btn-gold {
@@ -147,35 +190,50 @@ $border: #e9ecef;
     font-weight: 700;
     cursor: pointer;
     transition: 0.2s;
-    
-    &:hover:not(:disabled) { 
-      background: darken($gold, 10%); 
-      box-shadow: 0 4px 12px rgba($gold, 0.3); 
+
+    &:hover:not(:disabled) {
+      background: darken($gold, 10%);
+      box-shadow: 0 4px 12px rgba($gold, 0.3);
     }
-    
-    &:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
   }
 }
+
 // --- Animations ---
 .fade-in-up {
   animation: fadeInUp 0.5s ease-out forwards;
 }
 
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 // --- Specific Tweaks ---
 .input-with-action {
-  display: flex; gap: 10px;
-  
-  input { flex: 1; }
-  
+  display: flex;
+  gap: 10px;
+
+  input {
+    flex: 1;
+  }
+
   button {
     white-space: nowrap;
     height: 48px; // Match input height roughly
-    display: flex; align-items: center;
+    display: flex;
+    align-items: center;
   }
 }
 
