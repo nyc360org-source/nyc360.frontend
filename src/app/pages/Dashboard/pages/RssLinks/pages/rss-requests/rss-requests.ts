@@ -151,9 +151,4 @@ export class RssRequestsComponent implements OnInit {
             default: return '';
         }
     }
-
-    getCategoryLabel(categoryId: number): string {
-        const category = this.categories.find(c => c.id === categoryId);
-        return category ? category.name : 'Unknown';
-    }
 }

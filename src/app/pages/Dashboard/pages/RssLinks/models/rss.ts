@@ -58,7 +58,8 @@ export interface RssRequest {
   requester: Requester;
   createdAt: string;
   processedAt: string | null;
-  _expanded?: boolean; // UI state for expandable details
+  _expanded?: boolean; // UI state for expandable details (mobile)
+  _showDetails?: boolean; // UI state for expandable details (desktop)
 }
 
 // Paginated Response for Requests (Backend returns ALL camelCase)

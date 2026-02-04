@@ -24,156 +24,88 @@
       {{ errorMessage }}
     </div>
 
-    <div class="table-wrapper d-none d-md-block">
-      <table *ngIf="requests.length > 0; else emptyState">
-        <thead>
-          <tr>
-            <th>Name / Source</th>
-            <th>Category</th>
-            <th>Requester</th>
-            <th>Submitted</th>
-            <th>Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let req of requests">
-            <td>
-              <div class="source-info">
-                <img [src]="req.imageUrl || 'assets/images/rss-placeholder.png'" alt="" class="source-icon">
-                <div class="details">
-                  <span class="name">{{ req.name }}</span>
-                  <a [href]="req.url" target="_blank" class="url">{{ req.url }}</a>
+    <!-- Cards Layout -->
+    <div class="cards-container" *ngIf="requests.length > 0; else emptyState">
+      <div class="request-card" *ngFor="let req of requests">
+        <!-- Card Header with Image, Name, and Actions -->
+        <div class="card-header">
+          <div class="header-left">
+            <img [src]="req.imageUrl || 'assets/images/rss-placeholder.png'" alt="" class="source-icon">
+            <div class="header-info">
+              <h3 class="source-name">{{ req.name }}</h3>
+              <a [href]="req.url" target="_blank" class="source-url">{{ req.url }}</a>
+            </div>
+          </div>
+          <div class="header-actions">
+            <ng-container *ngIf="req.status === 0">
+              <button (click)="openActionModal(req, 1)" class="btn-approve" title="Approve">
+                <i class="fas fa-check"></i> Approve
+              </button>
+              <button (click)="openActionModal(req, 2)" class="btn-reject" title="Reject">
+                <i class="fas fa-times"></i> Reject
+              </button>
+            </ng-container>
+            <button (click)="openReplyModal(req)" class="btn-reply" title="Add/View Note">
+              <i class="fas fa-reply"></i> Note
+            </button>
+          </div>
+        </div>
+
+        <!-- Card Body with Info Grid -->
+        <div class="card-body">
+          <div class="info-grid">
+            <div class="info-item">
+              <label><i class="fas fa-tag"></i> Category</label>
+              <span class="category-badge">{{ getCategoryLabel(req.category) }}</span>
+            </div>
+
+            <div class="info-item">
+              <label><i class="fas fa-user"></i> Requester</label>
+              <div class="requester-info">
+                <img [src]="'https://api.nyc360.us/users/' + req.requester.imageUrl"
+                  (error)="$event.target['src'] = 'assets/images/default-avatar.png'" alt="{{ req.requester.fullName }}"
+                  class="requester-avatar">
+                <div>
+                  <span class="requester-name">{{ req.requester.fullName }}</span>
+                  <span class="requester-id">ID: {{ req.requester.id }}</span>
                 </div>
               </div>
-            </td>
-            <td>
-              <span class="category-badge">{{ getCategoryLabel(req.category) }}</span>
-            </td>
-            <td>
-              <div class="requester">
-                <span class="uname">{{ req.requester.fullName }}</span>
-                <span class="uid">ID: {{ req.requester.id }}</span>
-              </div>
-            </td>
-            <td>{{ req.createdAt | date:'short' }}</td>
-            <td>
+            </div>
+
+            <div class="info-item">
+              <label><i class="fas fa-calendar"></i> Submitted</label>
+              <span>{{ req.createdAt | date:'medium' }}</span>
+            </div>
+
+            <div class="info-item">
+              <label><i class="fas fa-info-circle"></i> Status</label>
               <span class="status-badge" [ngClass]="getStatusClass(req.status)">
                 {{ getStatusLabel(req.status) }}
               </span>
-            </td>
-            <td>
-              <div class="actions">
-                <!-- Approve/Reject buttons for Pending requests -->
-                <ng-container *ngIf="req.status === 0">
-                  <button (click)="openActionModal(req, 1)" class="btn-approve" title="Approve">
-                    <i class="fas fa-check"></i>
-                  </button>
-                  <button (click)="openActionModal(req, 2)" class="btn-reject" title="Reject">
-                    <i class="fas fa-times"></i>
-                  </button>
-                </ng-container>
+            </div>
 
-                <!-- Reply button for all requests -->
-                <button (click)="openReplyModal(req)" class="btn-reply" title="Add/View Note">
-                  <i class="fas fa-reply"></i>
-                </button>
-              </div>
-
-              <!-- Admin note preview -->
-              <div class="admin-note-preview" *ngIf="req.adminNote">
-                <i class="fas fa-comment-dots" [title]="req.adminNote"></i>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Mobile Card View -->
-    <div class="mobile-cards d-md-none" *ngIf="requests.length > 0">
-      <div class="request-card" *ngFor="let req of requests">
-        <!-- Card Header -->
-        <div class="card-header">
-          <div class="source-info">
-            <img [src]="req.imageUrl || 'assets/images/rss-placeholder.png'" alt="" class="source-icon">
-            <div class="details">
-              <span class="name">{{ req.name }}</span>
-              <span class="category-badge">{{ getCategoryLabel(req.category) }}</span>
+            <div class="info-item" *ngIf="req.processedAt">
+              <label><i class="fas fa-check-circle"></i> Processed</label>
+              <span>{{ req.processedAt | date:'medium' }}</span>
             </div>
           </div>
-          <span class="status-badge" [ngClass]="getStatusClass(req.status)">
-            {{ getStatusLabel(req.status) }}
-          </span>
         </div>
 
-        <!-- Card Body -->
-        <div class="card-body">
-          <div class="info-row">
-            <i class="fas fa-link"></i>
-            <a [href]="req.url" target="_blank" class="url">{{ req.url }}</a>
+        <!-- Card Footer with Description and Admin Note -->
+        <div class="card-footer" *ngIf="req.description || req.adminNote">
+          <div class="detail-section" *ngIf="req.description">
+            <div class="detail-header">
+              <strong><i class="fas fa-align-left"></i> Description</strong>
+            </div>
+            <pre class="detail-content">{{ req.description }}</pre>
           </div>
 
-          <!-- Requester Info with Image -->
-          <div class="info-row requester-row">
-            <i class="fas fa-user"></i>
-            <div class="requester-info">
-              <img [src]="'https://api.nyc360.us/users/' + req.requester.imageUrl"
-                (error)="$event.target['src'] = 'assets/images/default-avatar.png'" alt="{{ req.requester.fullName }}"
-                class="requester-avatar">
-              <span>{{ req.requester.fullName }} <small>(ID: {{ req.requester.id }})</small></span>
+          <div class="detail-section admin-note-section" *ngIf="req.adminNote">
+            <div class="detail-header">
+              <strong><i class="fas fa-comment-dots"></i> Admin Note</strong>
             </div>
+            <pre class="detail-content">{{ req.adminNote }}</pre>
           </div>
-
-          <div class="info-row">
-            <i class="fas fa-clock"></i>
-            <span>{{ req.createdAt | date:'short' }}</span>
-          </div>
-
-          <!-- Expandable Details -->
-          <div class="expandable-section" [class.expanded]="req['_expanded']">
-            <div class="info-row" *ngIf="req.description">
-              <i class="fas fa-align-left"></i>
-              <div class="description-text">
-                <strong>Description:</strong><br>
-                {{ req.description }}
-              </div>
-            </div>
-
-            <div class="info-row" *ngIf="req.adminNote">
-              <i class="fas fa-comment-dots"></i>
-              <div class="admin-note-text">
-                <strong>Admin Note:</strong><br>
-                {{ req.adminNote }}
-              </div>
-            </div>
-
-            <div class="info-row" *ngIf="req.processedAt">
-              <i class="fas fa-check-circle"></i>
-              <span>Processed: {{ req.processedAt | date:'short' }}</span>
-            </div>
-          </div>
-
-          <!-- Toggle Button -->
-          <button class="toggle-details-btn" (click)="req['_expanded'] = !req['_expanded']">
-            <i class="fas" [class.fa-chevron-down]="!req['_expanded']" [class.fa-chevron-up]="req['_expanded']"></i>
-            {{ req['_expanded'] ? 'Hide Details' : 'Show Details' }}
-          </button>
-        </div>
-
-        <!-- Card Actions -->
-        <div class="card-actions">
-          <ng-container *ngIf="req.status === 0">
-            <button (click)="openActionModal(req, 1)" class="btn btn-approve">
-              <i class="fas fa-check"></i> Approve
-            </button>
-            <button (click)="openActionModal(req, 2)" class="btn btn-reject">
-              <i class="fas fa-times"></i> Reject
-            </button>
-          </ng-container>
-          <button (click)="openReplyModal(req)" class="btn btn-reply">
-            <i class="fas fa-reply"></i> {{ req.adminNote ? 'Update Note' : 'Add Note' }}
-          </button>
         </div>
       </div>
     </div>
