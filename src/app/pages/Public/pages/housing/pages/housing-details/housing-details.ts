@@ -207,7 +207,7 @@ export class HousingDetailsComponent implements OnInit {
     }
 
     togglePhotos() {
-        this.showAllPhotos = !this.showAllPhotos;
+        this.openLightbox(0);
     }
 
     // --- Enums & Options (Mapped from Create/Edit) ---
@@ -381,5 +381,112 @@ export class HousingDetailsComponent implements OnInit {
             this.requestInfo.status = newStatus;
             this.cdr.markForCheck();
         }
+    }
+    // --- Lightbox & Zoom Logic ---
+    lightboxActive = false;
+    lightboxIndex = 0;
+
+    // Zoom Variables
+    showZoom = false;
+    zoomStyle: any = {
+        'background-image': '',
+        'background-position': '0% 0%',
+        'display': 'none'
+    };
+    lensStyle: any = {
+        'left.px': 0,
+        'top.px': 0,
+        'display': 'none'
+    };
+
+    openLightbox(index: number = 0) {
+        this.lightboxIndex = index;
+        this.lightboxActive = true;
+
+        // Disable scroll
+        if (isPlatformBrowser(this.platformId)) {
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    closeLightbox() {
+        this.lightboxActive = false;
+        if (isPlatformBrowser(this.platformId)) {
+            document.body.style.overflow = '';
+        }
+    }
+
+    nextImage(e?: Event) {
+        e?.stopPropagation();
+        if (!this.property?.attachments) return;
+        const total = this.property.attachments.length;
+        this.lightboxIndex = (this.lightboxIndex + 1) % total;
+    }
+
+    prevImage(e?: Event) {
+        e?.stopPropagation();
+        if (!this.property?.attachments) return;
+        const total = this.property.attachments.length;
+        this.lightboxIndex = (this.lightboxIndex - 1 + total) % total;
+    }
+
+    getActiveLightboxMedia() {
+        if (!this.property?.attachments?.length) return null;
+        return this.property.attachments[this.lightboxIndex];
+    }
+
+    // Zoom Lens Logic
+    onMouseEnter() {
+        if (this.activeMedia?.type === 'image') {
+            this.showZoom = true;
+            this.zoomStyle.display = 'block';
+            this.lensStyle.display = 'block';
+            this.zoomStyle['background-image'] = `url(${this.activeMedia.url})`;
+        }
+    }
+
+    onMouseLeave() {
+        this.showZoom = false;
+        this.zoomStyle.display = 'none';
+        this.lensStyle.display = 'none';
+    }
+
+    onMouseMove(event: MouseEvent) {
+        if (!this.showZoom) return;
+
+        const imageContainer = event.currentTarget as HTMLElement;
+        const rect = imageContainer.getBoundingClientRect();
+
+        // Coordinates relative to the image container
+        let x = event.clientX - rect.left;
+        let y = event.clientY - rect.top;
+
+        // Lens dimensions (should match CSS)
+        const lensWidth = 100;
+        const lensHeight = 100;
+
+        // Constraint check
+        if (x > rect.width) x = rect.width;
+        if (x < 0) x = 0;
+        if (y > rect.height) y = rect.height;
+        if (y < 0) y = 0;
+
+        // Center the lens on the cursor
+        let lensX = x - (lensWidth / 2);
+        let lensY = y - (lensHeight / 2);
+
+        // Prevent lens from going out of bounds
+        if (lensX > rect.width - lensWidth) lensX = rect.width - lensWidth;
+        if (lensX < 0) lensX = 0;
+        if (lensY > rect.height - lensHeight) lensY = rect.height - lensHeight;
+        if (lensY < 0) lensY = 0;
+
+        this.lensStyle['left.px'] = lensX;
+        this.lensStyle['top.px'] = lensY;
+
+        // Calculate background zoom
+        const scale = 2.5;
+        this.zoomStyle['background-size'] = `${rect.width * scale}px ${rect.height * scale}px`;
+        this.zoomStyle['background-position'] = `-${lensX * scale}px -${lensY * scale}px`;
     }
 }

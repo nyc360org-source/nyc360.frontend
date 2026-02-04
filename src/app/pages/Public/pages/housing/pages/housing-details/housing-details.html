@@ -2,10 +2,16 @@
     <!-- Gallery Grid -->
     <!-- Gallery Grid -->
     <div class="gallery-section">
-        <div class="main-image" (click)="togglePhotos()">
+        <div class="main-image" (click)="openLightbox(property.attachments.indexOf(activeMedia))"
+            (mousemove)="onMouseMove($event)" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
+
+            <!-- Amazon Zoom Lens -->
+            <div class="zoom-lens" *ngIf="showZoom" [ngStyle]="lensStyle"></div>
+            <div class="zoom-result" *ngIf="showZoom" [ngStyle]="zoomStyle"></div>
+
             <!-- Video Player -->
             <video *ngIf="activeMedia?.type === 'video'" [src]="activeMedia.url" controls autoplay muted loop
-                class="media-content"></video>
+                class="media-content" (click)="$event.stopPropagation()"></video>
 
             <!-- Image Display -->
             <img *ngIf="activeMedia?.type === 'image' && activeMedia.url" [src]="activeMedia.url"
@@ -472,29 +478,32 @@
 </div>
 
 <!-- Photos Overlay -->
-<div class="photos-overlay" *ngIf="showAllPhotos" (click)="togglePhotos()">
+<!-- Photos Overlay (Lightbox) -->
+<div class="photos-overlay lightbox-overlay" *ngIf="lightboxActive" (click)="closeLightbox()">
     <div class="overlay-backdrop"></div>
-    <div class="overlay-content" (click)="$event.stopPropagation()">
-        <div class="overlay-header">
-            <div class="header-info">
-                <i class="bi bi-images"></i>
-                <h4>Property Media</h4>
-                <span class="photo-count">{{ property.images?.length + property.videos?.length }} items</span>
-            </div>
-            <button class="close-btn" (click)="togglePhotos()" title="Close">
-                <i class="bi bi-x-lg"></i>
-            </button>
+
+    <div class="lightbox-container" (click)="$event.stopPropagation()">
+        <button class="close-btn" (click)="closeLightbox()"><i class="bi bi-x-lg"></i></button>
+
+        <button class="nav-btn prev" (click)="prevImage($event)"><i class="bi bi-chevron-left"></i></button>
+
+        <div class="lightbox-main-view">
+            <ng-container *ngIf="getActiveLightboxMedia() as media">
+                <img *ngIf="media.type === 'image'" [src]="media.url" class="lightbox-img">
+                <video *ngIf="media.type === 'video'" [src]="media.url" controls autoplay
+                    class="lightbox-video"></video>
+            </ng-container>
         </div>
-        <div class="overlay-grid">
-            <!-- Videos first -->
-            <div class="photo-item" *ngFor="let vid of property.videos; let i = index">
-                <video [src]="vid.url" controls class="w-100" style="max-height: 500px; background:black;"></video>
-                <div class="photo-number">Video {{ i + 1 }}</div>
-            </div>
-            <!-- Then Images -->
-            <div class="photo-item" *ngFor="let img of property.images; let i = index">
-                <img *ngIf="img.url" [src]="img.url" [alt]="'Property photo ' + (i + 1)" loading="lazy">
-                <div class="photo-number">Photo {{ i + 1 }}</div>
+
+        <button class="nav-btn next" (click)="nextImage($event)"><i class="bi bi-chevron-right"></i></button>
+
+        <div class="lightbox-thumbnails">
+            <div *ngFor="let item of property.attachments; let i = index" class="thumb"
+                [class.active]="i === lightboxIndex" (click)="openLightbox(i)">
+                <img *ngIf="item.type === 'image'" [src]="item.url">
+                <div *ngIf="item.type === 'video'" class="vid-thumb">
+                    <i class="bi bi-play-circle-fill"></i>
+                </div>
             </div>
         </div>
     </div>

@@ -39,9 +39,9 @@ export class CreateCommunityPostComponent implements OnInit {
   isSearchingTags = false;
   showTagResults = false;
 
-  // Images
-  images: File[] = [];
-  imagesPreview: string[] = [];
+  // Attachments
+  attachments: File[] = [];
+  previews: { url: string, type: 'image' | 'video' }[] = [];
   isPosting = false;
 
   ngOnInit() {
@@ -106,16 +106,17 @@ export class CreateCommunityPostComponent implements OnInit {
     setTimeout(() => this.showTagResults = false, 200);
   }
 
-  // --- Images Management ---
-  onImageSelected(event: any) {
+  // --- Attachments Management ---
+  onFileSelected(event: any) {
     if (event.target.files && event.target.files.length > 0) {
       const files = Array.from(event.target.files) as File[];
-      this.images.push(...files);
+      this.attachments.push(...files);
 
       files.forEach(file => {
         const reader = new FileReader();
         reader.onload = (e: any) => {
-          this.imagesPreview.push(e.target.result);
+          const type = file.type.startsWith('video') ? 'video' : 'image';
+          this.previews.push({ url: e.target.result, type });
           this.cdr.detectChanges();
         };
         reader.readAsDataURL(file);
@@ -123,32 +124,24 @@ export class CreateCommunityPostComponent implements OnInit {
     }
   }
 
-  removeImage(index: number) {
-    this.images.splice(index, 1);
-    this.imagesPreview.splice(index, 1);
+  removeAttachment(index: number) {
+    this.attachments.splice(index, 1);
+    this.previews.splice(index, 1);
   }
 
   // --- Submit ---
   submitPost() {
-    if ((!this.content.trim() && !this.title.trim()) && this.images.length === 0) return;
+    if ((!this.content.trim() && !this.title.trim()) && this.attachments.length === 0) return;
 
     this.isPosting = true;
-
-    // We send tag NAMES or IDs? 
-    // Usually existing tags have IDs, but new tags?
-    // The simplified version sends just names usually, or IDs if specifically required.
-    // Based on `create-community` update I did earlier (which I reverted), it sent IDs.
-    // Let's assume for posts we want names (hashtags) or IDs.
-    // I'll send NAMES for now to match the previous string[] behavior, unless I can confirm IDs are supported.
-    // Actually `createPost` interface: let's assume it can take strings.
     const tagNames = this.tags.map(t => t.name);
 
     this.postService.createPost({
       communityId: this.communityId,
       title: this.title,
       content: this.content,
-      tags: tagNames, // Sending names as strings
-      attachments: this.images
+      tags: tagNames,
+      attachments: this.attachments
     }).subscribe({
       next: (res) => {
         this.isPosting = false;
