@@ -68,9 +68,9 @@ export class RssListComponent implements OnInit {
 
   calculateStats() {
     this.stats.total = this.rssList.length;
-    this.stats.active = this.rssList.filter(r => r.isActive).length;
+    this.stats.active = this.rssList.filter(r => r.IsActive).length;
     // Count unique categories used
-    const cats = new Set(this.rssList.map(r => r.category));
+    const cats = new Set(this.rssList.map(r => r.Category));
     this.stats.categoriesCount = cats.size;
   }
 
