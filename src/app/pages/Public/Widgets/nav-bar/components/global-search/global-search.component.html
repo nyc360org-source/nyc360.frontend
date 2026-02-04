@@ -35,13 +35,7 @@
                     <button class="search-tab" [class.active]="activeSearchTab === 'communities'"
                         (click)="switchSearchTab('communities'); $event.stopPropagation()"
                         *ngIf="searchResults.data.communities.length">
-                        *ngIf="searchResults.data.communities.length">
                         Groups <span class="count">{{searchResults.data.communities.length}}</span>
-                    </button>
-                    <button class="search-tab" [class.active]="activeSearchTab === 'housing'"
-                        (click)="switchSearchTab('housing'); $event.stopPropagation()"
-                        *ngIf="searchResults.data.housing?.length">
-                        Housing <span class="count">{{searchResults.data.housing.length}}</span>
                     </button>
                     <button class="search-tab" [class.active]="activeSearchTab === 'tags'"
                         (click)="switchSearchTab('tags'); $event.stopPropagation()"
@@ -112,30 +106,6 @@
                     </div>
                 </div>
 
-                <!-- Housing Section -->
-                <div class="result-section"
-                    *ngIf="(activeSearchTab === 'all' || activeSearchTab === 'housing') && searchResults.data.housing?.length">
-                    <div class="section-header" *ngIf="activeSearchTab === 'all'">
-                        <h6 class="section-title">Housing</h6>
-                    </div>
-                    <div class="result-item housing-item" *ngFor="let item of searchResults.data.housing"
-                        [routerLink]="['/public/housing/details', item.id]" (click)="closeSearch()">
-
-                        <div class="housing-thumb-wrapper">
-                            <img [src]="imageService.resolveImageUrl(item.imageUrl, 'housing')" class="housing-thumb"
-                                loading="lazy">
-                        </div>
-
-                        <div class="item-info">
-                            <span class="item-name">
-                                {{ item.numberOfRooms }} Bed &middot; {{ item.numberOfBathrooms }} Bath
-                                <span *ngIf="item.size"> &middot; {{ item.size }} Sq Ft</span>
-                            </span>
-                            <span class="item-meta item-price">${{ item.startingPrice | number }}</span>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Tags Section -->
                 <div class="result-section"
                     *ngIf="(activeSearchTab === 'all' || activeSearchTab === 'tags') && searchResults.data.tags.length">
@@ -152,7 +122,7 @@
 
                 <!-- No Results Found -->
                 <div class="no-results"
-                    *ngIf="!searchResults.data.posts.length && !searchResults.data.users.length && !searchResults.data.communities.length && !searchResults.data.tags.length && !searchResults.data.housing?.length">
+                    *ngIf="!searchResults.data.posts.length && !searchResults.data.users.length && !searchResults.data.communities.length && !searchResults.data.tags.length">
                     <i class="bi bi-search"></i>
                     <p class="no-results-text">No matches found for "{{searchControl.value}}"</p>
                     <p class="no-results-sub">Try searching for something else or check your spelling.</p>

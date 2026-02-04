@@ -10,7 +10,6 @@ export interface SearchResult {
         users: any[];
         communities: any[];
         tags: any[];
-        housing: any[];
     };
     error: any;
 }

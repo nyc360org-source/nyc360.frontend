@@ -63,6 +63,12 @@
                 <i class="bi bi-tags-fill"></i>
                 <span class="link-text">Tags</span>
             </a>
+
+            <a class="nav-item" *ngIf="canViewHousing" routerLink="/admin/housing" routerLinkActive="active"
+                (click)="closeMobileMenu()">
+                <i class="bi bi-houses-fill"></i>
+                <span class="link-text">Housing Listings</span>
+            </a>
         </div>
 
         <div class="nav-group">
