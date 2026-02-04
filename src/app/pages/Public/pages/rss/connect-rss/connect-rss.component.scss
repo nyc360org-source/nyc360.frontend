@@ -62,6 +62,31 @@ $input-radius: 8px;
                 color: $text-light;
                 font-size: 1rem;
                 font-weight: 400;
+                margin-bottom: 1rem;
+            }
+
+            .category-badge {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+                padding: 0.5rem 1.25rem;
+                background: linear-gradient(135deg, $primary-blue 0%, $primary-blue-dark 100%);
+                color: white;
+                border-radius: 50px;
+                font-weight: 600;
+                font-size: 0.9rem;
+                margin-top: 1rem;
+                box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+                transition: all 0.3s ease;
+
+                i {
+                    font-size: 1.1rem;
+                }
+
+                &:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+                }
             }
         }
 

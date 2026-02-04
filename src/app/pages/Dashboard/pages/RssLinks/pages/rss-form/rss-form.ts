@@ -89,25 +89,20 @@ export class RssFormComponent implements OnInit {
     this.rssService.testRssSource(url).subscribe({
       next: (res: any) => {
         this.isTesting = false;
-        // Create/Test check
-        if (res.IsSuccess) {
+        if (res.isSuccess) {
           this.feedVerified = true;
-          const data = res.Data;
+          const data = res.data;
 
           this.form.patchValue({
-            name: data.Name,
-            description: data.Description,
-            imageUrl: data.ImageUrl,
-            // If Category is valid (not 0), use it
-            category: (data.Category && data.Category !== 0) ? data.Category : this.form.get('category')?.value
+            name: data.name,
+            description: data.description,
+            imageUrl: data.imageUrl,
+            category: (data.category && data.category !== 0) ? data.category : this.form.get('category')?.value
           });
-
-          // Show success message or auto-focus?
         } else {
-          this.handleError({ error: res.Error });
+          this.handleError({ error: res.error });
         }
       },
-
 
       error: (err: any) => {
         this.isTesting = false;
@@ -130,10 +125,10 @@ export class RssFormComponent implements OnInit {
       this.rssService.updateRssSource(this.editId, this.form.value, this.selectedFile || undefined)
         .subscribe({
           next: (res: any) => {
-            if (res.IsSuccess) {
+            if (res.isSuccess) {
               this.handleSuccess('Updated');
             } else {
-              this.handleError({ error: res.Error });
+              this.handleError({ error: res.error });
             }
           },
           error: (err: any) => this.handleError(err)
@@ -150,14 +145,12 @@ export class RssFormComponent implements OnInit {
       };
 
       this.rssService.createRssSource(payload)
-
         .subscribe({
           next: (res: any) => {
-            if (res.IsSuccess) {
+            if (res.isSuccess) {
               this.handleSuccess('Created');
             } else {
-              // Handle error
-              const errorObj = res.Error || res.error;
+              const errorObj = res.error || res.Error;
               this.handleError({ error: errorObj });
             }
           },

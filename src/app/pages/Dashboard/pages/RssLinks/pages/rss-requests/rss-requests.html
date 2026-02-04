@@ -24,7 +24,7 @@
       {{ errorMessage }}
     </div>
 
-    <div class="table-wrapper">
+    <div class="table-wrapper d-none d-md-block">
       <table *ngIf="requests.length > 0; else emptyState">
         <thead>
           <tr>
@@ -52,8 +52,8 @@
             </td>
             <td>
               <div class="requester">
-                <span class="uname">{{ req.RequesterName }}</span>
-                <span class="uid">ID: {{ req.RequesterId }}</span>
+                <span class="uname">{{ req.requester.fullName }}</span>
+                <span class="uid">ID: {{ req.requester.id }}</span>
               </div>
             </td>
             <td>{{ req.CreatedAt | date:'short' }}</td>
@@ -63,21 +63,119 @@
               </span>
             </td>
             <td>
-              <div class="actions" *ngIf="req.Status === 0">
-                <button (click)="openActionModal(req, 1)" class="btn-approve" title="Approve">
-                  <i class="fas fa-check"></i>
-                </button>
-                <button (click)="openActionModal(req, 2)" class="btn-reject" title="Reject">
-                  <i class="fas fa-times"></i>
+              <div class="actions">
+                <!-- Approve/Reject buttons for Pending requests -->
+                <ng-container *ngIf="req.status === 0">
+                  <button (click)="openActionModal(req, 1)" class="btn-approve" title="Approve">
+                    <i class="fas fa-check"></i>
+                  </button>
+                  <button (click)="openActionModal(req, 2)" class="btn-reject" title="Reject">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </ng-container>
+
+                <!-- Reply button for all requests -->
+                <button (click)="openReplyModal(req)" class="btn-reply" title="Add/View Note">
+                  <i class="fas fa-reply"></i>
                 </button>
               </div>
-              <div class="admin-note-preview" *ngIf="req.Status !== 0 && req.AdminNote">
-                <i class="fas fa-comment-dots" [title]="req.AdminNote"></i>
+
+              <!-- Admin note preview -->
+              <div class="admin-note-preview" *ngIf="req.adminNote">
+                <i class="fas fa-comment-dots" [title]="req.adminNote"></i>
               </div>
             </td>
           </tr>
         </tbody>
       </table>
+    </div>
+
+    <!-- Mobile Card View -->
+    <div class="mobile-cards d-md-none" *ngIf="requests.length > 0">
+      <div class="request-card" *ngFor="let req of requests">
+        <!-- Card Header -->
+        <div class="card-header">
+          <div class="source-info">
+            <img [src]="req.imageUrl || 'assets/images/rss-placeholder.png'" alt="" class="source-icon">
+            <div class="details">
+              <span class="name">{{ req.name }}</span>
+              <span class="category-badge">{{ getCategoryLabel(req.category) }}</span>
+            </div>
+          </div>
+          <span class="status-badge" [ngClass]="getStatusClass(req.status)">
+            {{ getStatusLabel(req.status) }}
+          </span>
+        </div>
+
+        <!-- Card Body -->
+        <div class="card-body">
+          <div class="info-row">
+            <i class="fas fa-link"></i>
+            <a [href]="req.url" target="_blank" class="url">{{ req.url }}</a>
+          </div>
+
+          <!-- Requester Info with Image -->
+          <div class="info-row requester-row">
+            <i class="fas fa-user"></i>
+            <div class="requester-info">
+              <img [src]="'https://api.nyc360.us/users/' + req.requester.imageUrl"
+                (error)="$event.target['src'] = 'assets/images/default-avatar.png'" alt="{{ req.requester.fullName }}"
+                class="requester-avatar">
+              <span>{{ req.requester.fullName }} <small>(ID: {{ req.requester.id }})</small></span>
+            </div>
+          </div>
+
+          <div class="info-row">
+            <i class="fas fa-clock"></i>
+            <span>{{ req.createdAt | date:'short' }}</span>
+          </div>
+
+          <!-- Expandable Details -->
+          <div class="expandable-section" [class.expanded]="req['_expanded']">
+            <div class="info-row" *ngIf="req.description">
+              <i class="fas fa-align-left"></i>
+              <div class="description-text">
+                <strong>Description:</strong><br>
+                {{ req.description }}
+              </div>
+            </div>
+
+            <div class="info-row" *ngIf="req.adminNote">
+              <i class="fas fa-comment-dots"></i>
+              <div class="admin-note-text">
+                <strong>Admin Note:</strong><br>
+                {{ req.adminNote }}
+              </div>
+            </div>
+
+            <div class="info-row" *ngIf="req.processedAt">
+              <i class="fas fa-check-circle"></i>
+              <span>Processed: {{ req.processedAt | date:'short' }}</span>
+            </div>
+          </div>
+
+          <!-- Toggle Button -->
+          <button class="toggle-details-btn" (click)="req['_expanded'] = !req['_expanded']">
+            <i class="fas" [class.fa-chevron-down]="!req['_expanded']" [class.fa-chevron-up]="req['_expanded']"></i>
+            {{ req['_expanded'] ? 'Hide Details' : 'Show Details' }}
+          </button>
+        </div>
+
+        <!-- Card Actions -->
+        <div class="card-actions">
+          <ng-container *ngIf="req.status === 0">
+            <button (click)="openActionModal(req, 1)" class="btn btn-approve">
+              <i class="fas fa-check"></i> Approve
+            </button>
+            <button (click)="openActionModal(req, 2)" class="btn btn-reject">
+              <i class="fas fa-times"></i> Reject
+            </button>
+          </ng-container>
+          <button (click)="openReplyModal(req)" class="btn btn-reply">
+            <i class="fas fa-reply"></i> {{ req.adminNote ? 'Update Note' : 'Add Note' }}
+          </button>
+        </div>
+      </div>
     </div>
 
     <div class="pagination" *ngIf="totalPages > 1">
@@ -110,7 +208,6 @@
       </div>
 
 
-
       <div class="form-group">
         <label>Admin Note (Optional)</label>
         <textarea [(ngModel)]="adminNote" placeholder="Add a reason or note for this decision..."></textarea>
@@ -120,6 +217,35 @@
       <button class="btn-secondary" (click)="showActionModal = false">Cancel</button>
       <button [class]="actionStatus === 1 ? 'btn-primary' : 'btn-danger'" (click)="submitAction()">
         Confirm {{ actionStatus === 1 ? 'Approval' : 'Rejection' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Reply Modal -->
+<div class="modal-overlay" *ngIf="showReplyModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2>Add/Update Admin Note</h2>
+      <button class="close-btn" (click)="showReplyModal = false">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="req-preview">
+        <strong>Source:</strong> {{ selectedRequest?.name }}<br>
+        <strong>URL:</strong> {{ selectedRequest?.url }}<br>
+        <strong>Status:</strong> <span [ngClass]="getStatusClass(selectedRequest?.status || 0)">{{
+          getStatusLabel(selectedRequest?.status || 0) }}</span>
+      </div>
+
+      <div class="form-group">
+        <label>Admin Note</label>
+        <textarea [(ngModel)]="adminNote" placeholder="Add a note or reply to this request..." rows="5"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="showReplyModal = false">Cancel</button>
+      <button class="btn-primary" (click)="submitReply()">
+        Save Note
       </button>
     </div>
   </div>
