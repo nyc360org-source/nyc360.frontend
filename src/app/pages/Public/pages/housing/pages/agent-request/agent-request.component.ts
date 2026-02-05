@@ -363,19 +363,70 @@ export class AgentRequestComponent implements OnInit {
     }
 
     errorMessage: string | null = null;
+    timeErrors: { [key: number]: string | null } = { 1: null, 2: null, 3: null };
+
+    validateSelectedTime(typeId: number): boolean {
+        let dateControl = '';
+        let timeControl = '';
+
+        if (typeId === 1) { dateControl = 'PrefContactDate'; timeControl = 'PrefContactTime'; }
+        else if (typeId === 2) { dateControl = 'ScheduleVirtualDate'; timeControl = 'VirtualTime'; }
+        else if (typeId === 3) { dateControl = 'InPersonTourDate'; timeControl = 'InPersonTime'; }
+
+        const dateVal = this.form.get(dateControl)?.value;
+        const timeVal = this.form.get(timeControl)?.value;
+
+        // If no date/time selected, nothing to validate (required validators handle emptiness)
+        if (!dateVal || !timeVal) {
+            this.timeErrors[typeId] = null;
+            return true;
+        }
+
+        const windows = this.getTimeWindowsForDate(typeId, dateVal);
+        if (windows.length === 0) {
+            this.timeErrors[typeId] = null;
+            return true; // No constraints for this date
+        }
+
+        // Check if time is within ANY of the windows
+        const timeToMinutes = (t: string) => {
+            const [h, m] = t.split(':').map(Number);
+            return h * 60 + m;
+        };
+
+        const selectedMins = timeToMinutes(timeVal);
+        const isValid = windows.some(w => {
+            const start = timeToMinutes(w.from);
+            const end = timeToMinutes(w.to);
+            return selectedMins >= start && selectedMins <= end;
+        });
+
+        if (!isValid) {
+            const ranges = windows.map(w => `${w.from} - ${w.to}`).join(', ');
+            this.timeErrors[typeId] = `Available times: ${ranges}`;
+            return false;
+        }
+
+        this.timeErrors[typeId] = null;
+        return true;
+    }
 
     onSubmit() {
         console.log('AgentRequestComponent: onSubmit called');
-        if (this.form.invalid) {
+
+        // Custom Time Validation
+        const valid1 = this.validateSelectedTime(1);
+        const valid2 = this.validateSelectedTime(2);
+        const valid3 = this.validateSelectedTime(3);
+
+        if (this.form.invalid || !valid1 || !valid2 || !valid3) {
             console.log('AgentRequestComponent: Form is invalid', this.form.errors);
-            // Log exactly which field is invalid
-            Object.keys(this.form.controls).forEach(key => {
-                const controlErrors = this.form.get(key)?.errors;
-                if (controlErrors != null) {
-                    console.log('Key control: ' + key + ', errors: ', controlErrors);
-                }
-            });
             this.form.markAllAsTouched();
+            // Trigger validation display
+            this.validateSelectedTime(1);
+            this.validateSelectedTime(2);
+            this.validateSelectedTime(3);
+
             this.toastService.error('Please check the form for errors.');
             return;
         }

@@ -57,11 +57,10 @@
               <div class="dropdown-menu-custom">
                 <ng-container *ngFor="let child of btn.children">
                   <!-- Action Link -->
-                  <a *ngIf="child.isAction" [routerLink]="authService.hasHousingPermission() ? child.link : null"
+                  <a *ngIf="child.isAction" [routerLink]="hasContributorAccess() ? child.link : null"
                     [queryParams]="child.queryParams" class="dropdown-item-custom"
-                    (click)="handleContributorAction($event)" [class.locked]="!authService.hasHousingPermission()">
-                    <i class="bi"
-                      [ngClass]="!authService.hasHousingPermission() ? 'bi-lock-fill' : (child.icon || 'bi-dot')"></i>
+                    (click)="handleContributorAction($event)" [class.locked]="!hasContributorAccess()">
+                    <i class="bi" [ngClass]="!hasContributorAccess() ? 'bi-lock-fill' : (child.icon || 'bi-dot')"></i>
                     {{ child.label }}
                   </a>
                   <!-- Regular Link -->
@@ -167,11 +166,10 @@
                 <div class="dropdown-menu-custom">
                   <ng-container *ngFor="let child of btn.children">
                     <!-- Action Link (Needs Permission) -->
-                    <a *ngIf="child.isAction" [routerLink]="authService.hasHousingPermission() ? child.link : null"
+                    <a *ngIf="child.isAction" [routerLink]="hasContributorAccess() ? child.link : []"
                       [queryParams]="child.queryParams" class="dropdown-item-custom"
-                      (click)="handleContributorAction($event)" [class.locked]="!authService.hasHousingPermission()">
-                      <i class="bi"
-                        [ngClass]="!authService.hasHousingPermission() ? 'bi-lock-fill' : (child.icon || 'bi-dot')"></i>
+                      (click)="handleContributorAction($event)" [class.locked]="!hasContributorAccess()">
+                      <i class="bi" [ngClass]="!hasContributorAccess() ? 'bi-lock-fill' : (child.icon || 'bi-dot')"></i>
                       {{ child.label }}
                     </a>
                     <!-- Regular Link -->
@@ -454,7 +452,7 @@
             <div class="col-md-6 mb-4">
               <label class="form-label-premium">Occupation / Role *</label>
               <select class="form-control-premium" formControlName="occupationId">
-                <option *ngFor="let occ of occupations" [value]="occ.id">{{occ.name}}</option>
+                <option *ngFor="let occ of modalOccupations" [value]="occ.id">{{occ.name}}</option>
               </select>
             </div>
             <div class="col-md-6 mb-4">
@@ -468,7 +466,7 @@
           <div class="form-group mb-4">
             <label class="form-label-premium">Reason for Request *</label>
             <textarea class="form-control-premium" formControlName="reason"
-              placeholder="Explain why you need housing access (e.g., I am a licensed agent in NYC)"></textarea>
+              placeholder="Explain why you need contributor access (e.g., I am a certified professional in this field)"></textarea>
             <small class="text-danger"
               *ngIf="verificationForm.get('reason')?.touched && verificationForm.get('reason')?.invalid">
               Required (min 10 characters).

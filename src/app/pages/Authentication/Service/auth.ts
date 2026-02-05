@@ -118,6 +118,26 @@ export class AuthService {
     return false;
   }
 
+  hasCategoryPermission(category: string): boolean {
+    const user = this.currentUser$.value;
+    if (!user) return false;
+    if (this.hasRole('SuperAdmin')) return true;
+
+    // Normalize
+    const target = category.toLowerCase();
+
+    // 1. Specific Logic for Housing (Legacy support)
+    if (target === 'housing') {
+      return this.hasHousingPermission();
+    }
+
+    // 2. Check Permissions String
+    const perms = user.permissions || [];
+    if (perms.includes(target)) return true;
+
+    return false;
+  }
+
   // ============================================================
   // 3. API CALLS (ACCOUNT MANAGEMENT Only)
   // ============================================================

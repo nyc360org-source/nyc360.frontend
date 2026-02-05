@@ -159,7 +159,12 @@
                     <div class="date-input-wrapper"
                         [class.highlight-available]="getTimeWindowsForDate(1, form.get('PrefContactDate')?.value).length > 0">
                         <i class="bi bi-clock"></i>
-                        <input type="time" formControlName="PrefContactTime">
+                        <input type="time" formControlName="PrefContactTime" (change)="validateSelectedTime(1)"
+                            (input)="validateSelectedTime(1)" [class.invalid]="timeErrors[1]">
+                    </div>
+                    <div class="validation-error-banner" *ngIf="timeErrors[1]">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                        <span>{{ timeErrors[1] }}</span>
                     </div>
                     <div class="available-slots-hint mt-2"
                         *ngIf="getTimeWindowsForDate(1, form.get('PrefContactDate')?.value).length > 0">
@@ -236,7 +241,12 @@
                     <div class="date-input-wrapper"
                         [class.highlight-available]="getTimeWindowsForDate(2, form.get('ScheduleVirtualDate')?.value).length > 0">
                         <i class="bi bi-clock-history"></i>
-                        <input type="time" formControlName="VirtualTime">
+                        <input type="time" formControlName="VirtualTime" (change)="validateSelectedTime(2)"
+                            (input)="validateSelectedTime(2)" [class.invalid]="timeErrors[2]">
+                    </div>
+                    <div class="validation-error-banner" *ngIf="timeErrors[2]">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                        <span>{{ timeErrors[2] }}</span>
                     </div>
                     <div class="available-slots-hint mt-2"
                         *ngIf="getTimeWindowsForDate(2, form.get('ScheduleVirtualDate')?.value).length > 0">
@@ -276,7 +286,12 @@
                     <div class="date-input-wrapper"
                         [class.highlight-available]="getTimeWindowsForDate(3, form.get('InPersonTourDate')?.value).length > 0">
                         <i class="bi bi-alarm"></i>
-                        <input type="time" formControlName="InPersonTime">
+                        <input type="time" formControlName="InPersonTime" (change)="validateSelectedTime(3)"
+                            (input)="validateSelectedTime(3)" [class.invalid]="timeErrors[3]">
+                    </div>
+                    <div class="validation-error-banner" *ngIf="timeErrors[3]">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                        <span>{{ timeErrors[3] }}</span>
                     </div>
                     <div class="available-slots-hint mt-2"
                         *ngIf="getTimeWindowsForDate(3, form.get('InPersonTourDate')?.value).length > 0">
@@ -305,7 +320,8 @@
                 <span class="label">AGENT RESPONSE TIME</span>
                 <span class="value">Avg. 4 hours</span>
             </div>
-            <button type="submit" class="btn-send-premium" [disabled]="isSubmitting">
+            <button type="submit" class="btn-send-premium"
+                [disabled]="isSubmitting || form.invalid || timeErrors[1] || timeErrors[2] || timeErrors[3]">
                 <span>Send Inquiry</span>
                 <i class="bi bi-send-fill" *ngIf="!isSubmitting"></i>
                 <span class="spinner-border spinner-border-sm" *ngIf="isSubmitting"></span>

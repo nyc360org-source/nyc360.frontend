@@ -82,7 +82,11 @@ export class CategoryHomeComponent implements OnInit {
   verificationForm!: FormGroup;
   selectedDocFile: File | null = null;
 
-  occupations = [
+  // Default / Generic Occupations
+  modalOccupations: any[] = [];
+
+  // Known Housing Occupations (Hardcoded for now)
+  private readonly housingOccupations = [
     { id: 1854, name: 'Housing Advisor' },
     { id: 1855, name: 'Housing Organization' },
     { id: 1856, name: 'Licensed Agent' }
@@ -121,17 +125,39 @@ export class CategoryHomeComponent implements OnInit {
       this.categoryContext.setCategory(divisionId);
 
       this.resolveHeaderButtons(divisionId, path);
+      this.updateModalOccupations(); // Update occupations based on category
       this.fetchData(divisionId);
     } else {
       this.activeTheme = { label: 'News', color: '#333' }; // Fallback
       this.isHousingCategory = false;
       this.isLoading = false;
       this.resolveHeaderButtons(0, 'news');
+      this.updateModalOccupations();
+    }
+  }
+
+  updateModalOccupations() {
+    if (this.isHousingCategory) {
+      this.modalOccupations = [...this.housingOccupations];
+    } else {
+      // Generic Generation for other categories
+      const label = this.activeTheme?.label || 'Community';
+      this.modalOccupations = [
+        { id: 0, name: `${label} Contributor` }, // Placeholder ID
+        { id: 0, name: `${label} Organization` },
+        { id: 0, name: `${label} Expert` }
+      ];
+    }
+
+    // Reset selection in form if exists
+    if (this.verificationForm) {
+      this.verificationForm.patchValue({ occupationId: this.modalOccupations[0]?.id });
     }
   }
 
   resolveHeaderButtons(divisionId: number, path: string) {
     if (this.activeTheme && this.activeTheme.topLinks && this.activeTheme.topLinks.length > 0) {
+      console.log('Category Path:', path);
       this.headerButtons = this.activeTheme.topLinks.map((link: any): HeaderButton => {
         const btn: HeaderButton = {
           label: link.label,
@@ -156,14 +182,22 @@ export class CategoryHomeComponent implements OnInit {
 
         return btn;
       });
+
+      // Add 'Ask a Question' Button at the end
+      if (path) {
+        this.headerButtons.push({
+          label: 'Ask a Question',
+          link: ['/public/forums', path],
+          icon: 'bi-question-circle'
+        });
+      }
       return;
     }
 
     // Default fallbacks
     this.headerButtons = [
       { label: 'Feed', link: ['/public/feed', path], icon: 'bi-rss' },
-      { label: 'Initiatives', link: ['/public/initiatives', path], icon: 'bi-lightbulb' },
-      { label: 'Create Post', link: ['/public/posts/create'], icon: 'bi-pencil-square', queryParams: { category: divisionId } }
+      { label: 'Ask a Question', link: ['/public/forums', path], icon: 'bi-question-circle' }
     ];
   }
 
@@ -302,13 +336,20 @@ export class CategoryHomeComponent implements OnInit {
     });
   }
 
+  // Check permission for current category
+  hasContributorAccess(): boolean {
+    if (!this.activeTheme || !this.activeTheme.path) return false;
+    return this.authService.hasCategoryPermission(this.activeTheme.path);
+  }
+
   handleContributorAction(event: Event) {
-    if (!this.authService.hasHousingPermission()) {
+    if (!this.hasContributorAccess()) {
       event.preventDefault();
       event.stopPropagation();
       event.stopImmediatePropagation();
+
       this.showVerificationModal = true;
-      this.cdr.markForCheck();
+      this.cdr.detectChanges(); // Use detectChanges to ensure view updates immediately
     }
   }
 

@@ -65,8 +65,8 @@
             </div>
             <div class="hero-info">
                 <div class="meta-tags">
-                    <span class="status-badge" *ngIf="heroPost.metadata?.IsRenting">For Rent</span>
-                    <span class="status-badge" *ngIf="!heroPost.metadata?.IsRenting">For Sale</span>
+                    <!-- <span class="status-badge" *ngIf="heroPost.metadata?.IsRenting">For Rent</span>
+                    <span class="status-badge" *ngIf="!heroPost.metadata?.IsRenting">For Sale</span> -->
                     <span class="time">{{ heroPost.createdAt | date:'shortTime' }}</span>
                 </div>
                 <h2 class="hero-title">{{ heroPost.title }}</h2>

@@ -1160,7 +1160,7 @@ $housing-accent-dark: #a3854a;
     box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
     border-radius: 12px;
     padding: 10px;
-    z-index: 999999;
+    z-index: 1000;
     border: 1px solid rgba(0, 0, 0, 0.1);
     pointer-events: all;
 
@@ -1238,7 +1238,7 @@ $housing-accent-dark: #a3854a;
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1100;
+    z-index: 10000;
     padding: 20px;
   }
 
