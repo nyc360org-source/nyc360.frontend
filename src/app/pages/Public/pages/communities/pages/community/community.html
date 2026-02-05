@@ -22,7 +22,7 @@
 
           <!-- Publish News Article -->
           <ng-container *ngIf="hasCommunityLeaderAccess; else lockedNews">
-            <a routerLink="/public/posts/create" class="simple-item">
+            <a routerLink="/public/posts/create" [queryParams]="{ category: 0 }" class="simple-item">
               <i class="bi bi-newspaper me-2"></i>Publish News Article
             </a>
           </ng-container>

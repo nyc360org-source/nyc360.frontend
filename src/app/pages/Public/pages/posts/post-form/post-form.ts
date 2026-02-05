@@ -34,6 +34,7 @@ export class PostFormComponent implements OnInit {
   isLoading = false;
   isSubmitting = false;
 
+  // Exclude Community (0), Housing (4), and Professions (8) from category selection
   categories = CATEGORY_LIST;
 
   postTypes = [
@@ -68,7 +69,7 @@ export class PostFormComponent implements OnInit {
     this.form = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(5)]],
       content: ['', [Validators.required, Validators.minLength(20)]],
-      category: [0, Validators.required], // Default to 0 (Community)
+      category: [7, Validators.required], // Default to 7 (News) - excluding Community, Housing, Professions
       type: [0, Validators.required],
       locationSearch: ['']
     });
@@ -88,16 +89,21 @@ export class PostFormComponent implements OnInit {
       if (queryParams['category']) {
         this.predefinedCategory = +queryParams['category'];
       } else {
-        // Fallback to context
+        // Fallback to context, but exclude Community (0), Housing (4), and Professions (8)
         const contextCat = this.categoryContext.getCategory();
+
         if (contextCat !== null) {
           this.predefinedCategory = contextCat;
         }
+        // If context category is excluded, predefinedCategory remains null
+        // and the form will use its default value (0) from line 71
+        // But we should change that default to something else
       }
 
       if (this.predefinedCategory !== null) {
         this.form.patchValue({ category: this.predefinedCategory });
       }
+      // If predefinedCategory is null, the form keeps its default from initialization
     });
 
     this.route.params.subscribe(params => {

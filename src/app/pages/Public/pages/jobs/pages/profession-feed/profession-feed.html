@@ -16,8 +16,7 @@
         <!-- Contributor Activity Dropdown -->
         <div class="nav-dropdown-complex" style="position: relative; display: inline-block;">
           <button class="nav-btn dropdown-toggle-btn" (click)="toggleActivityDropdown($event)"
-            [class.active]="isActivityDropdownOpen"
-            style="border: 1px solid #00695C; background: #00695C; color: white;">
+            [class.active]="isActivityDropdownOpen">
             <i class="bi bi-person-fill-gear me-2"></i> Contributor Activity <i class="bi bi-chevron-down ms-2"
               style="font-size: 0.8em;"></i>
           </button>
@@ -38,7 +37,7 @@
 
             <!-- Publish News -->
             <ng-container *ngIf="hasProfessionAccess; else lockedNews">
-              <a routerLink="/public/posts/create" class="simple-item"
+              <a routerLink="/public/posts/create" [queryParams]="{ category: 8 }" class="simple-item"
                 style="display: flex; align-items: center; padding: 12px 20px; color: #333; text-decoration: none;">
                 <i class="bi bi-newspaper me-2" style="color: #00695C;"></i>Publish News Article
               </a>

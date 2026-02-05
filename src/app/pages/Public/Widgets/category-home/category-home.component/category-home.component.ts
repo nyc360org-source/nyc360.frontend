@@ -134,18 +134,33 @@ export class CategoryHomeComponent implements OnInit {
         };
 
         if (link.isDropdown && link.children) {
-          btn.children = link.children.map((child: any): HeaderButtonChild => ({
-            label: child.label,
-            link: [child.route],
-            icon: child.icon,
-            isAction: child.isAction || false,
-            queryParams: (child.route?.includes('/posts/create') || child.route?.includes('/rss/connect'))
-              ? { category: divisionId }
-              : (child.queryParams || undefined)
-          }));
+          btn.children = link.children.map((child: any): HeaderButtonChild => {
+            let queryParams: any = undefined;
+
+            if (child.route?.includes('/posts/create')) {
+              queryParams = { category: divisionId };
+            } else if (child.route?.includes('/rss/connect')) {
+              queryParams = { category: divisionId };
+            } else {
+              queryParams = child.queryParams || undefined;
+            }
+
+            return {
+              label: child.label,
+              link: [child.route],
+              icon: child.icon,
+              isAction: child.isAction || false,
+              queryParams
+            };
+          });
         } else {
           btn.link = [link.route];
-          btn.queryParams = link.route?.includes('/posts/create') ? { category: divisionId } : (link.queryParams || undefined);
+
+          if (link.route?.includes('/posts/create')) {
+            btn.queryParams = { category: divisionId };
+          } else {
+            btn.queryParams = link.queryParams || undefined;
+          }
         }
 
         return btn;
