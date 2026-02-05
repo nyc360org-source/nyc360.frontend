@@ -20,15 +20,35 @@
         </button>
         <div class="dropdown-menu-main" [class.show]="isActivityDropdownOpen" (click)="$event.stopPropagation()">
 
-          <!-- Simple Item -->
-          <a routerLink="/public/posts/create" class="simple-item">
-            <i class="bi bi-newspaper me-2"></i>Publish News Article
-          </a>
+          <!-- Publish News Article -->
+          <ng-container *ngIf="hasCommunityLeaderAccess; else lockedNews">
+            <a routerLink="/public/posts/create" class="simple-item">
+              <i class="bi bi-newspaper me-2"></i>Publish News Article
+            </a>
+          </ng-container>
+          <ng-template #lockedNews>
+            <div class="simple-item locked" (click)="openVerificationModal()">
+              <div class="d-flex align-items-center">
+                <i class="bi bi-newspaper me-2"></i>Publish News Article
+              </div>
+              <i class="bi bi-lock-fill ms-auto" style="font-size: 0.9em; opacity: 0.6;"></i>
+            </div>
+          </ng-template>
 
-          <!-- Simple Item -->
-          <a routerLink="/public/rss/connect" class="simple-item">
-            <i class="bi bi-rss me-2"></i> Connect RSS Feed
-          </a>
+          <!-- Connect RSS Feed -->
+          <ng-container *ngIf="hasCommunityLeaderAccess; else lockedRSS">
+            <a routerLink="/public/rss/connect" class="simple-item">
+              <i class="bi bi-rss me-2"></i> Connect RSS Feed
+            </a>
+          </ng-container>
+          <ng-template #lockedRSS>
+            <div class="simple-item locked" (click)="openVerificationModal()">
+              <div class="d-flex align-items-center">
+                <i class="bi bi-rss me-2"></i> Connect RSS Feed
+              </div>
+              <i class="bi bi-lock-fill ms-auto" style="font-size: 0.9em; opacity: 0.6;"></i>
+            </div>
+          </ng-template>
 
 
 
@@ -132,5 +152,9 @@
     </section>
 
   </div>
+
+  <app-verification-modal *ngIf="isVerificationModalOpen" [categoryName]="'Community'" [categoryId]="4"
+    (close)="closeVerificationModal()" (verified)="onVerified()">
+  </app-verification-modal>
 
 </div>

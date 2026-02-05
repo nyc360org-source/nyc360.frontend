@@ -180,6 +180,71 @@ $text-dark: #2c2c2c;
                 }
             }
         }
+
+        // ... existing styles ...
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            width: 95%;
+            margin: 10px;
+            max-height: 95vh;
+            overflow-y: auto;
+            /* Scrollable if too height */
+            display: flex;
+            flex-direction: column;
+
+            .modal-header-premium {
+                padding: 25px 20px 15px 20px;
+                flex-shrink: 0;
+
+                .icon-badge {
+                    width: 50px;
+                    height: 50px;
+                    font-size: 1.4rem;
+                    margin-bottom: 15px;
+                }
+
+                h3 {
+                    font-size: 1.4rem;
+                    margin-bottom: 5px;
+                }
+
+                p {
+                    font-size: 0.9rem;
+                    padding: 0 10px;
+                }
+
+                .btn-close-modal {
+                    top: 10px;
+                    right: 10px;
+                    font-size: 1.5rem;
+                    padding: 5px;
+                }
+            }
+
+            .modal-body-premium {
+                padding: 20px;
+                overflow-y: auto;
+
+                .modal-footer-premium {
+                    flex-direction: column-reverse;
+                    gap: 12px;
+                    margin-top: 20px;
+
+                    .btn-cancel {
+                        width: 100%;
+                        padding: 12px;
+                        border: 1px solid #e0e0e0;
+                        border-radius: 50px;
+                    }
+
+                    .btn-submit-verification {
+                        width: 100%;
+                        padding: 12px;
+                    }
+                }
+            }
+        }
     }
 }
 

@@ -21,10 +21,17 @@ export interface HiringJob {
   companyName: string;
 }
 
+// Basic tag interface
+export interface UserTag {
+  id: number;
+  name: string;
+}
+
 export interface ProfessionFeedData {
   heroArticle: FeedArticle;
   careerArticles: FeedArticle[];
   hiringNews: HiringJob[];
+  tags?: UserTag[];
 }
 
 export interface ApiResponse<T> {

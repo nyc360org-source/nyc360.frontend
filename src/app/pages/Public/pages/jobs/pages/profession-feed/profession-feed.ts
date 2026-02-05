@@ -9,16 +9,20 @@ import { ArticleGridCardComponent } from '../../../../Widgets/article-grid-card.
 import { ImageService } from '../../../../../../shared/services/image.service';
 import { ImgFallbackDirective } from '../../../../../../shared/directives/img-fallback.directive';
 import { GlobalLoaderService } from '../../../../../../shared/components/global-loader/global-loader.service';
+import { AuthService } from '../../../../../Authentication/Service/auth';
+import { UserInfo } from '../../../../../Authentication/models/user-info';
+import { VerificationModalComponent } from '../../../../../../shared/components/verification-modal/verification-modal';
 
 @Component({
   selector: 'app-profession-feed',
   standalone: true,
-  imports: [CommonModule, RouterLink, ArticleHeroComponent, ArticleGridCardComponent, ImgFallbackDirective],
+  imports: [CommonModule, RouterLink, ArticleHeroComponent, ArticleGridCardComponent, ImgFallbackDirective, VerificationModalComponent],
   templateUrl: './profession-feed.html',
   styleUrls: ['./profession-feed.scss']
 })
 export class ProfessionFeedComponent implements OnInit {
   private feedService = inject(ProfessionFeedService);
+  private authService = inject(AuthService);
   private cdr = inject(ChangeDetectorRef);
   private loaderService = inject(GlobalLoaderService);
   protected readonly environment = environment;
@@ -31,10 +35,36 @@ export class ProfessionFeedComponent implements OnInit {
 
   // Hiring news kept as is, or distinct
   hiringNews: any[] = [];
+  userTags: any[] = [];
+  currentUserInfo: UserInfo | null = null;
+
   isLoading = true;
+  isActivityDropdownOpen = false;
+  isVerificationModalOpen = false;
+
+  get hasProfessionAccess(): boolean {
+    // 1. Check if SuperAdmin
+    if (this.authService.hasRole('SuperAdmin')) return true;
+
+    // 2. Check tags in UserInfo (Primary Reactive Source from my-info)
+    // Assuming 'Profession Leader' as tag or similar access requirements
+    if (this.currentUserInfo && this.currentUserInfo.tags) {
+      // Replace 'Profession Leader' and ID with actual tag if different
+      return this.currentUserInfo.tags.some((t: any) => t.name === 'Profession' || t.id === 8);
+    }
+
+    // 3. Fallback to local tags from page response
+    return this.userTags.some((t: any) => t.name === 'Profession' || t.id === 8);
+  }
 
   ngOnInit() {
     this.loadFeed();
+
+    // Auto-update permissions
+    this.authService.fullUserInfo$.subscribe((info: UserInfo | null) => {
+      this.currentUserInfo = info;
+      this.cdr.detectChanges();
+    });
   }
 
   loadFeed() {
@@ -44,6 +74,11 @@ export class ProfessionFeedComponent implements OnInit {
       next: (res) => {
         if (res.isSuccess && res.data) {
           this.hiringNews = res.data.hiringNews || [];
+
+          // Capture tags if available
+          if (res.data.tags) {
+            this.userTags = res.data.tags;
+          }
 
           // Combine all "News" type content
           const allArticles = [];
@@ -106,5 +141,25 @@ export class ProfessionFeedComponent implements OnInit {
     if (min != null) return `$${min.toLocaleString()}+`;
     if (max != null) return `Up to $${max.toLocaleString()}`;
     return 'Salary Undisclosed';
+  }
+
+  toggleActivityDropdown(event: Event) {
+    event.stopPropagation();
+    this.isActivityDropdownOpen = !this.isActivityDropdownOpen;
+  }
+
+  openVerificationModal() {
+    this.isVerificationModalOpen = true;
+    this.isActivityDropdownOpen = false;
+  }
+
+  closeVerificationModal() {
+    this.isVerificationModalOpen = false;
+  }
+
+  onVerified() {
+    // Reload User Info to get the new tag immediately
+    this.authService.fetchFullUserInfo().subscribe();
+    this.closeVerificationModal();
   }
 }

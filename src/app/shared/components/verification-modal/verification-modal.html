@@ -39,9 +39,10 @@
                 <div class="row">
                     <div class="col-md-12 mb-4">
                         <label class="form-label-premium">Supporting Document *</label>
-                        <div class="file-upload-wrapper">
-                            <input type="file" (change)="onFileSelected($event)" class="d-none" #docInput>
-                            <button type="button" class="btn-upload-trigger" (click)="docInput.click()">
+                        <div class="file-upload-wrapper" (click)="docInput.click()">
+                            <input type="file" (change)="onFileSelected($event)" class="d-none" #docInput
+                                accept=".jpg,.jpeg,.png,.pdf">
+                            <button type="button" class="btn-upload-trigger">
                                 <i class="bi bi-cloud-arrow-up me-2"></i>
                                 {{ selectedDocFile ? selectedDocFile.name : 'Choose File' }}
                             </button>

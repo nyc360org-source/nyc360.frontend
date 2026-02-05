@@ -630,9 +630,14 @@ $font-body: 'Inter', sans-serif;
       font-size: 0.9rem;
       transition: all 0.2s;
 
-      &:hover {
+      // Unlocked Hover
+      &:not(.locked):hover {
         background: #fff0e6;
         color: #BC5E3D;
+
+        i {
+          color: #BC5E3D;
+        }
       }
 
       i {
@@ -640,8 +645,31 @@ $font-body: 'Inter', sans-serif;
         transition: 0.2s;
       }
 
-      &:hover i {
-        color: #BC5E3D;
+      // Locked State (Professional Look)
+      &.locked {
+        justify-content: space-between;
+        background: #fafafa;
+        color: #adb5bd;
+        cursor: pointer;
+        position: relative;
+
+        i {
+          color: #ced4da;
+        }
+
+        &:hover {
+          background: #f8f9fa;
+          color: #6c757d;
+
+          i {
+            color: #adb5bd;
+          }
+
+          .bi-lock-fill {
+            color: #BC5E3D; // Subtle hint of action color on lock
+            opacity: 1 !important;
+          }
+        }
       }
     }
 

@@ -25,7 +25,9 @@ export class VerificationModalComponent implements OnInit {
   isSubmittingVerification = false;
   selectedDocFile: File | null = null;
 
-  occupations = [
+  @Input() extraOccupations: any[] = [];
+
+  occupations: any[] = [
     { id: 1854, name: 'Housing Advisor' },
     { id: 1855, name: 'Housing Organization' },
     { id: 1856, name: 'Licensed Agent' },
@@ -44,6 +46,13 @@ export class VerificationModalComponent implements OnInit {
   ];
 
   ngOnInit() {
+    if (this.extraOccupations && this.extraOccupations.length > 0) {
+      this.occupations = [...this.extraOccupations, ...this.occupations];
+    }
+
+    // De-duplicate by ID just in case
+    this.occupations = this.occupations.filter((v, i, a) => a.findIndex(t => (t.id === v.id)) === i);
+
     this.initForm();
   }
 

@@ -27,7 +27,7 @@ export interface CommunityPost {
   content: string;
   category: number;
   createdAt: string;
-  author: Author | string; 
+  author: Author | string;
   attachments: Attachment[];
   stats: PostStats;
   tags?: string[];
@@ -43,7 +43,7 @@ export interface CommunitySuggestion {
   type: number;
   memberCount: number;
   isPrivate: boolean; // Matches JSON
-  
+
   // UI State (Not from API, added locally)
   isJoined?: boolean;
   isLoadingJoin?: boolean;
@@ -56,9 +56,16 @@ export interface FeedResponse {
   totalCount: number;
 }
 
+export interface UserTag {
+  id: number;
+  name: string;
+  type?: number;
+}
+
 export interface CommunityHomeData {
   feed: FeedResponse;
   suggestions: CommunitySuggestion[];
+  tags?: UserTag[];
 }
 
 // --- ✅ Generic API Response (Updated strictly for your JSON) ---
@@ -66,7 +73,7 @@ export interface ApiResponse<T> {
   isSuccess: boolean;
   data: T;
   error: { code: string; message: string } | null;
-  
+
   // Pagination Fields (Root level in your JSON)
   page?: number;
   pageSize?: number;

@@ -31,10 +31,12 @@ export interface HeaderButton {
   children?: HeaderButtonChild[];
 }
 
+import { VerificationModalComponent } from '../../../../../shared/components/verification-modal/verification-modal';
+
 @Component({
   selector: 'app-category-home',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule, ImgFallbackDirective],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, ImgFallbackDirective, VerificationModalComponent],
   templateUrl: './category-home.component.html',
   styleUrls: ['./category-home.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -78,38 +80,22 @@ export class CategoryHomeComponent implements OnInit {
 
   // --- Permissions & Verification ---
   showVerificationModal = false;
-  isSubmittingVerification = false;
-  verificationForm!: FormGroup;
-  selectedDocFile: File | null = null;
+  // Removed local verification form variables as we use the shared component now
 
-  // Default / Generic Occupations
-  modalOccupations: any[] = [];
-
-  // Known Housing Occupations (Hardcoded for now)
-  private readonly housingOccupations = [
-    { id: 1854, name: 'Housing Advisor' },
-    { id: 1855, name: 'Housing Organization' },
-    { id: 1856, name: 'Licensed Agent' }
-  ];
-
-  documentTypes = [
-    { id: 1, name: 'Government ID' },
-    { id: 2, name: 'Utility Bill' },
-    { id: 5, name: 'Professional License' },
-    { id: 6, name: 'Employee ID Card' },
-    { id: 11, name: 'Contract Agreement' },
-    { id: 12, name: 'Letter of Recommendation' },
-    { id: 99, name: 'Other' }
-  ];
+  // Tag-based Permissions
+  currentUserInfo: any | null = null;
+  categoryTags: any[] = [];
 
   ngOnInit(): void {
-    this.initVerificationForm();
+    // Removed initVerificationForm();
     this.setupAuthSubscription();
     this.route.params.subscribe(params => {
       const path = params['categoryPath'];
       this.resolveCategory(path);
     });
   }
+
+  // ... existing methods ...
 
   resolveCategory(path: string) {
     this.isLoading = true;
@@ -125,40 +111,22 @@ export class CategoryHomeComponent implements OnInit {
       this.categoryContext.setCategory(divisionId);
 
       this.resolveHeaderButtons(divisionId, path);
-      this.updateModalOccupations(); // Update occupations based on category
+      // Removed updateModalOccupations();
       this.fetchData(divisionId);
     } else {
       this.activeTheme = { label: 'News', color: '#333' }; // Fallback
       this.isHousingCategory = false;
       this.isLoading = false;
       this.resolveHeaderButtons(0, 'news');
-      this.updateModalOccupations();
-    }
-  }
-
-  updateModalOccupations() {
-    if (this.isHousingCategory) {
-      this.modalOccupations = [...this.housingOccupations];
-    } else {
-      // Generic Generation for other categories
-      const label = this.activeTheme?.label || 'Community';
-      this.modalOccupations = [
-        { id: 0, name: `${label} Contributor` }, // Placeholder ID
-        { id: 0, name: `${label} Organization` },
-        { id: 0, name: `${label} Expert` }
-      ];
-    }
-
-    // Reset selection in form if exists
-    if (this.verificationForm) {
-      this.verificationForm.patchValue({ occupationId: this.modalOccupations[0]?.id });
+      // Removed updateModalOccupations();
     }
   }
 
   resolveHeaderButtons(divisionId: number, path: string) {
+    let buttons: HeaderButton[] = [];
+
     if (this.activeTheme && this.activeTheme.topLinks && this.activeTheme.topLinks.length > 0) {
-      console.log('Category Path:', path);
-      this.headerButtons = this.activeTheme.topLinks.map((link: any): HeaderButton => {
+      buttons = this.activeTheme.topLinks.map((link: any): HeaderButton => {
         const btn: HeaderButton = {
           label: link.label,
           icon: link.icon,
@@ -182,30 +150,34 @@ export class CategoryHomeComponent implements OnInit {
 
         return btn;
       });
-
-      // Add 'Ask a Question' Button at the end
-      if (path) {
-        this.headerButtons.push({
-          label: 'Ask a Question',
-          link: ['/public/forums', path],
-          icon: 'bi-question-circle'
-        });
-      }
-      return;
+    } else {
+      // Default fallbacks
+      buttons = [
+        { label: 'Feed', link: ['/public/feed', path], icon: 'bi-rss' }
+      ];
     }
 
-    // Default fallbacks
-    this.headerButtons = [
-      { label: 'Feed', link: ['/public/feed', path], icon: 'bi-rss' },
-      { label: 'Ask a Question', link: ['/public/forums', path], icon: 'bi-question-circle' }
-    ];
+    // Contributor Activity dropdown removed to avoid duplication (it comes from theme settings)
+
+    // Add 'Ask a Question' Button at the end
+    buttons.push({
+      label: 'Ask a Question',
+      link: ['/public/forums', path || 'news'],
+      icon: 'bi-question-circle'
+    });
+
+    this.headerButtons = buttons;
   }
 
   fetchData(divisionId: number) {
-    // نطلب عدد أكبر قليلاً لملء الصفحة
     this.homeService.getCategoryHomeData(divisionId, 25).subscribe({
       next: (res: any) => {
         if (res.isSuccess && res.data) {
+          // Capture tags for permission check
+          if (res.data.tags) {
+            this.categoryTags = res.data.tags;
+          }
+
           // دمج المصادر لعمل الفرز اليدوي
           const allIncoming = [...(res.data.featured || []), ...(res.data.latest || [])];
 
@@ -248,6 +220,59 @@ export class CategoryHomeComponent implements OnInit {
     });
   }
 
+  // ... helpers ...
+
+  private setupAuthSubscription() {
+    this.authService.fullUserInfo$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((info) => {
+        this.currentUserInfo = info;
+        this.cdr.markForCheck();
+      });
+  }
+
+  // Check permission for current category based on tags
+  hasContributorAccess(): boolean {
+    // 1. SuperAdmin always access
+    if (this.authService.hasRole('SuperAdmin')) return true;
+
+    // 2. Check if we have page tags and user info
+    if (this.categoryTags.length > 0 && this.currentUserInfo?.tags) {
+      const userTagIds = this.currentUserInfo.tags.map((t: any) => t.id);
+      // Check if any category tag ID exists in user tags
+      const hasTag = this.categoryTags.some(catTag => userTagIds.includes(catTag.id));
+      if (hasTag) return true;
+    }
+
+    // Fallback? If no tags defined for category, maybe allow? 
+    // Or if user data not loaded yet?
+    // User request implies strict check against my-info.
+
+    return false;
+  }
+
+  handleContributorAction(event: Event) {
+    if (!this.hasContributorAccess()) {
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+
+      this.showVerificationModal = true;
+      this.cdr.detectChanges();
+    }
+  }
+
+  onVerified() {
+    // Reload User Info to get the new tag immediately
+    this.authService.fetchFullUserInfo().subscribe();
+    this.closeModal();
+  }
+
+  closeModal() {
+    this.showVerificationModal = false;
+    this.cdr.markForCheck();
+  }
+
   // التحقق من وجود صورة
   hasImage(post: CategoryPost): boolean {
     const direct = !!(post.attachments && post.attachments.length > 0);
@@ -262,10 +287,6 @@ export class CategoryHomeComponent implements OnInit {
     return this.imageService.resolvePostImage(post);
   }
 
-
-
-  // ... existing methods ...
-
   // Navigate to Feed with optional filters
   navigateToFeed(options: { search?: string, filter?: string, tab?: string } = {}) {
     const queryParams: any = {};
@@ -273,21 +294,12 @@ export class CategoryHomeComponent implements OnInit {
     if (options.search) queryParams.search = options.search;
     if (options.filter) queryParams.filter = options.filter;
     if (options.tab) queryParams.tab = options.tab;
-    /* 
-      We pass the current category as part of the route path, 
-      assuming the feed route is structured like /public/feed/:category 
-      or we pass it as a query param if the feed structure is different.
-      Based on nav-bar, route is /public/feed/:categoryName
-    */
     this.router.navigate(['/public/feed', this.activeTheme?.path || 'news'], { queryParams });
   }
 
   onSearch(event: any) {
     const query = event.target.value;
     if (query && query.length > 2) {
-      // Navigate on Enter or if length is sufficient (usually execute on Enter)
-      // Since it's a "Search in..." we might want to wait for Enter key in HTML
-      // For now, let's assume this is called on Enter
       this.navigateToFeed({ search: query });
     }
   }
@@ -317,90 +329,5 @@ export class CategoryHomeComponent implements OnInit {
       }
     }
     return post;
-  }
-
-  private setupAuthSubscription() {
-    this.authService.fullUserInfo$
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => {
-        this.cdr.markForCheck();
-      });
-  }
-
-  private initVerificationForm() {
-    this.verificationForm = this.fb.group({
-      occupationId: [1856, Validators.required], // Default to Licensed Agent
-      reason: ['', [Validators.required, Validators.minLength(10)]],
-      documentType: [1, Validators.required],
-      file: [null, Validators.required]
-    });
-  }
-
-  // Check permission for current category
-  hasContributorAccess(): boolean {
-    if (!this.activeTheme || !this.activeTheme.path) return false;
-    return this.authService.hasCategoryPermission(this.activeTheme.path);
-  }
-
-  handleContributorAction(event: Event) {
-    if (!this.hasContributorAccess()) {
-      event.preventDefault();
-      event.stopPropagation();
-      event.stopImmediatePropagation();
-
-      this.showVerificationModal = true;
-      this.cdr.detectChanges(); // Use detectChanges to ensure view updates immediately
-    }
-  }
-
-  onFileSelected(event: any) {
-    if (event.target.files.length > 0) {
-      this.selectedDocFile = event.target.files[0];
-      this.verificationForm.patchValue({ file: this.selectedDocFile });
-    }
-  }
-
-  submitVerification() {
-    if (this.verificationForm.invalid || !this.selectedDocFile) {
-      this.verificationForm.markAllAsTouched();
-      return;
-    }
-
-    this.isSubmittingVerification = true;
-    const data = {
-      TagId: this.verificationForm.value.occupationId,
-      Reason: this.verificationForm.value.reason,
-      DocumentType: this.verificationForm.value.documentType,
-      File: this.selectedDocFile
-    };
-
-    this.verificationService.submitVerification(data).subscribe({
-      next: (res: any) => {
-        this.isSubmittingVerification = false;
-        if (res.isSuccess || res.IsSuccess) {
-          this.toastService.success('Verification request submitted successfully!');
-          this.showVerificationModal = false;
-          this.verificationForm.reset({
-            occupationId: 1856,
-            documentType: 1
-          });
-          this.selectedDocFile = null;
-        } else {
-          const errorMessage = res.error?.message || res.Error?.Message || 'Submission failed';
-          this.toastService.error(errorMessage);
-        }
-        this.cdr.markForCheck();
-      },
-      error: () => {
-        this.isSubmittingVerification = false;
-        this.toastService.error('Network error. Please try again.');
-        this.cdr.markForCheck();
-      }
-    });
-  }
-
-  closeModal() {
-    this.showVerificationModal = false;
-    this.cdr.markForCheck();
   }
 }

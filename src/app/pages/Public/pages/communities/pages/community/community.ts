@@ -5,15 +5,21 @@ import { CommunityService } from '../../services/community';
 import { CommunityPost, CommunitySuggestion } from '../../models/community';
 import { RouterLink } from '@angular/router';
 
+import { AuthService } from '../../../../../Authentication/Service/auth';
+import { UserInfo } from '../../../../../Authentication/models/user-info';
+
+import { VerificationModalComponent } from '../../../../../../shared/components/verification-modal/verification-modal';
+
 @Component({
   selector: 'app-community',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, VerificationModalComponent],
   templateUrl: './community.html',
   styleUrls: ['./community.scss']
 })
 export class CommunityComponent implements OnInit {
 
+  private authService = inject(AuthService);
   private communityService = inject(CommunityService);
   private cdr = inject(ChangeDetectorRef);
   protected readonly environment = environment;
@@ -26,11 +32,48 @@ export class CommunityComponent implements OnInit {
   suggestions: CommunitySuggestion[] = [];
   posts: CommunityPost[] = [];
   featuredPost: CommunityPost | null = null;
+  userTags: any[] = []; // Tags for permission check
+  currentUserInfo: UserInfo | null = null;
+  isVerificationModalOpen = false;
+
+  get hasCommunityLeaderAccess(): boolean {
+    // 1. Check if SuperAdmin
+    if (this.authService.hasRole('SuperAdmin')) return true;
+
+    // 2. Check tags in UserInfo (Primary Reactive Source from my-info)
+    if (this.currentUserInfo && this.currentUserInfo.tags) {
+      return this.currentUserInfo.tags.some((t: any) => t.name === 'Community Leader' || t.id === 1862);
+    }
+
+    // 3. Fallback to local tags from page response (if my-info is pending)
+    return this.userTags.some((t: any) => t.name === 'Community Leader' || t.id === 1862);
+  }
+
+  openVerificationModal() {
+    this.isVerificationModalOpen = true;
+    this.isActivityDropdownOpen = false; // Close dropdown
+  }
+
+  closeVerificationModal() {
+    this.isVerificationModalOpen = false;
+  }
+
+  onVerified() {
+    // Reload User Info to get the new tag immediately
+    this.authService.fetchFullUserInfo().subscribe();
+    this.closeVerificationModal();
+  }
 
   isLoading = true;
 
   ngOnInit() {
     this.loadData();
+
+    // Subscribe to User Info changes to update UI automatically
+    this.authService.fullUserInfo$.subscribe((info: UserInfo | null) => {
+      this.currentUserInfo = info;
+      this.cdr.detectChanges();
+    });
   }
 
   loadData() {
@@ -47,6 +90,11 @@ export class CommunityComponent implements OnInit {
           if (allPosts.length > 0) {
             this.featuredPost = allPosts[0];
             this.posts = allPosts.slice(1);
+          }
+
+          // 3. Local Tags (Optional fallback)
+          if (res.data.tags) {
+            this.userTags = res.data.tags;
           }
         }
         this.cdr.detectChanges();
