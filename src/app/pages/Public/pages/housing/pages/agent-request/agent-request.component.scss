@@ -594,3 +594,110 @@ $border-color: #E2E8F0;
         margin: 0 auto;
     }
 }
+
+.strict-selection-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 4px;
+
+    .slot-btn {
+        background: white;
+        border: 1.5px solid $border-color;
+        border-radius: 10px;
+        padding: 8px 14px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: $text-light;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        min-width: 80px;
+        text-align: center;
+
+        &:hover {
+            border-color: $primary;
+            color: $primary;
+            background: rgba($primary, 0.02);
+        }
+
+        &.active {
+            background: $primary;
+            color: white;
+            border-color: $primary;
+            box-shadow: 0 4px 12px rgba($primary, 0.25);
+            transform: translateY(-1px);
+        }
+    }
+}
+
+.avail-item.clickable {
+    cursor: pointer;
+    position: relative;
+
+    &:hover {
+        .click-hint {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+    }
+
+    .click-hint {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.9);
+        background: rgba($primary, 0.95);
+        color: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        pointer-events: none;
+        opacity: 0;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        z-index: 10;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+}
+
+.available-slots-hint {
+    margin-top: 8px;
+    font-size: 0.8rem;
+    color: #64748b;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+
+    .slot-chip {
+        background: rgba(181, 155, 98, 0.1);
+        color: #B59B62;
+        padding: 4px 10px;
+        border-radius: 20px;
+        cursor: pointer;
+        border: 1px solid rgba(181, 155, 98, 0.2);
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+
+        &:hover {
+            background: #B59B62;
+            color: white;
+            border-color: #B59B62;
+            transform: translateY(-1.5px);
+            box-shadow: 0 3px 8px rgba(181, 155, 98, 0.25);
+        }
+
+        &:active {
+            transform: translateY(0);
+        }
+    }
+}
+
+.highlight-available {
+    border-color: #B59B62 !important;
+    background-color: rgba(181, 155, 98, 0.03) !important;
+}

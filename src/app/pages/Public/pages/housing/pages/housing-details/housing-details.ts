@@ -8,7 +8,6 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 import { AuthService } from '../../../../../Authentication/Service/auth';
 
-import { HousingDetailsComponent as HousingDetailsType } from './housing-details';
 import { AgentRequestComponent } from '../agent-request/agent-request.component';
 
 import { HousingRequestStatusComponent } from '../request-status/request-status.component';

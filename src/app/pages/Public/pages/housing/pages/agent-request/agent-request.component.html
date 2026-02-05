@@ -30,32 +30,63 @@
             <p>To ensure a prioritized response, please select from the <strong>exclusive availability windows</strong>
                 specified by the agent below:</p>
 
-            <div class="availability-grid">
-                <div class="avail-item" *ngIf="authorization.preferredContactDate">
-                    <span class="a-label">Preferred Contact</span>
-                    <span class="a-value">
-                        <i class="bi bi-chat-dots-fill"></i>
-                        {{ authorization.preferredContactDate | date:'MMM d' }} at {{ authorization.preferredContactTime
+            <div class="avail-item clickable" *ngFor="let avail of availabilities"
+                (click)="selectDate(avail.availabilityType, formatDateForInput(avail.dates[0])); selectTimeWindow(avail.availabilityType, avail)">
+                <span class="a-label">
+                    <ng-container [ngSwitch]="avail.availabilityType">
+                        <span *ngSwitchCase="1">Preferred Contact</span>
+                        <span *ngSwitchCase="2">Virtual Tours</span>
+                        <span *ngSwitchCase="3">In-Person Tours</span>
+                        <span *ngSwitchDefault>Available Slot</span>
+                    </ng-container>
+                </span>
+                <span class="a-value">
+                    <i class="bi" [ngClass]="{
+                            'bi-chat-dots-fill': avail.availabilityType === 1,
+                            'bi-camera-video-fill': avail.availabilityType === 2,
+                            'bi-geo-alt-fill': avail.availabilityType === 3
+                        }"></i>
+                    <ng-container *ngFor="let d of avail.dates; let last = last">
+                        {{ d | date:'MMM d' }}{{ !last ? ', ' : '' }}
+                    </ng-container>
+                    <span *ngIf="avail.timeFrom" class="ms-1">
+                        at {{ avail.timeFrom.split(':').length === 3 ? avail.timeFrom.substring(0, 5) : avail.timeFrom
                         }}
+                        <span *ngIf="avail.timeTo">- {{ avail.timeTo.split(':').length === 3 ? avail.timeTo.substring(0,
+                            5) : avail.timeTo }}</span>
                     </span>
-                </div>
-                <div class="avail-item" *ngIf="authorization.preferredVirtualTourDate">
-                    <span class="a-label">Virtual Tours</span>
-                    <span class="a-value">
-                        <i class="bi bi-camera-video-fill"></i>
-                        {{ authorization.preferredVirtualTourDate | date:'MMM d' }} at {{
-                        authorization.preferredVirtualTourTime }}
-                    </span>
-                </div>
-                <div class="avail-item" *ngIf="authorization.preferredInPersonTourDate">
-                    <span class="a-label">In-Person Tours</span>
-                    <span class="a-value">
-                        <i class="bi bi-geo-alt-fill"></i>
-                        {{ authorization.preferredInPersonTourDate | date:'MMM d' }} at {{
-                        authorization.preferredInPersonTourTime }}
-                    </span>
-                </div>
+                    <div class="click-hint">Click to Select</div>
+                </span>
             </div>
+
+            <ng-template #oldAuthStyle>
+                <div class="availability-grid">
+                    <div class="avail-item" *ngIf="authorization?.preferredContactDate">
+                        <span class="a-label">Preferred Contact</span>
+                        <span class="a-value">
+                            <i class="bi bi-chat-dots-fill"></i>
+                            {{ authorization.preferredContactDate | date:'MMM d' }} at {{
+                            authorization.preferredContactTime }}
+                        </span>
+                    </div>
+                    <div class="avail-item" *ngIf="authorization?.preferredVirtualTourDate">
+                        <span class="a-label">Virtual Tours</span>
+                        <span class="a-value">
+                            <i class="bi bi-camera-video-fill"></i>
+                            {{ authorization.preferredVirtualTourDate | date:'MMM d' }} at {{
+                            authorization.preferredVirtualTourTime }}
+                        </span>
+                    </div>
+                    <div class="avail-item" *ngIf="authorization?.preferredInPersonTourDate">
+                        <span class="a-label">In-Person Tours</span>
+                        <span class="a-value">
+                            <i class="bi bi-geo-alt-fill"></i>
+                            {{ authorization.preferredInPersonTourDate | date:'MMM d' }} at {{
+                            authorization.preferredInPersonTourTime }}
+                        </span>
+                    </div>
+                </div>
+            </ng-template>
         </div>
 
         <div class="banner-footer-note">
@@ -108,17 +139,39 @@
             <div class="form-row-premium date-time-row">
                 <div class="form-group-premium">
                     <label>Preferred Contact Date *</label>
-                    <div class="date-input-wrapper">
-                        <i class="bi bi-calendar3"></i>
-                        <input type="date" formControlName="PrefContactDate" [min]="minContactDate"
-                            [max]="maxContactDate">
-                    </div>
+                    <ng-container *ngIf="getAvailableDates(1).length > 0; else manualContactDate">
+                        <div class="strict-selection-grid">
+                            <button type="button" *ngFor="let d of getAvailableDates(1)" class="slot-btn"
+                                [class.active]="form.get('PrefContactDate')?.value === d" (click)="selectDate(1, d)">
+                                {{ d | date:'EEE, MMM d' }}
+                            </button>
+                        </div>
+                    </ng-container>
+                    <ng-template #manualContactDate>
+                        <div class="date-input-wrapper">
+                            <i class="bi bi-calendar3"></i>
+                            <input type="date" formControlName="PrefContactDate" [min]="minContactDate">
+                        </div>
+                    </ng-template>
                 </div>
                 <div class="form-group-premium">
                     <label>Preferred Contact Time *</label>
-                    <div class="date-input-wrapper">
+                    <div class="date-input-wrapper"
+                        [class.highlight-available]="getTimeWindowsForDate(1, form.get('PrefContactDate')?.value).length > 0">
                         <i class="bi bi-clock"></i>
                         <input type="time" formControlName="PrefContactTime">
+                    </div>
+                    <div class="available-slots-hint mt-2"
+                        *ngIf="getTimeWindowsForDate(1, form.get('PrefContactDate')?.value).length > 0">
+                        <span class="hint-text text-muted small d-block mb-1">Select an agent's preferred slot:</span>
+                        <div class="strict-selection-grid">
+                            <button type="button"
+                                *ngFor="let w of getTimeWindowsForDate(1, form.get('PrefContactDate')?.value)"
+                                class="slot-btn" [class.active]="form.get('PrefContactTime')?.value === w.from"
+                                (click)="selectTimeWindow(1, w)">
+                                {{ w.from }} <span *ngIf="w.to"> - {{ w.to }}</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -162,17 +215,40 @@
             <div class="form-row-premium date-time-row">
                 <div class="form-group-premium">
                     <label>Schedule Virtual Tour</label>
-                    <div class="date-input-wrapper">
-                        <i class="bi bi-camera-video"></i>
-                        <input type="date" formControlName="ScheduleVirtualDate" [min]="minVirtualDate"
-                            [max]="maxVirtualDate">
-                    </div>
+                    <ng-container *ngIf="getAvailableDates(2).length > 0; else manualVirtualDate">
+                        <div class="strict-selection-grid">
+                            <button type="button" *ngFor="let d of getAvailableDates(2)" class="slot-btn"
+                                [class.active]="form.get('ScheduleVirtualDate')?.value === d"
+                                (click)="selectDate(2, d)">
+                                {{ d | date:'EEE, MMM d' }}
+                            </button>
+                        </div>
+                    </ng-container>
+                    <ng-template #manualVirtualDate>
+                        <div class="date-input-wrapper">
+                            <i class="bi bi-camera-video"></i>
+                            <input type="date" formControlName="ScheduleVirtualDate" [min]="minVirtualDate">
+                        </div>
+                    </ng-template>
                 </div>
                 <div class="form-group-premium">
                     <label>Time Window</label>
-                    <div class="date-input-wrapper">
+                    <div class="date-input-wrapper"
+                        [class.highlight-available]="getTimeWindowsForDate(2, form.get('ScheduleVirtualDate')?.value).length > 0">
                         <i class="bi bi-clock-history"></i>
                         <input type="time" formControlName="VirtualTime">
+                    </div>
+                    <div class="available-slots-hint mt-2"
+                        *ngIf="getTimeWindowsForDate(2, form.get('ScheduleVirtualDate')?.value).length > 0">
+                        <span class="hint-text text-muted small d-block mb-1">Agent available during:</span>
+                        <div class="strict-selection-grid">
+                            <button type="button"
+                                *ngFor="let w of getTimeWindowsForDate(2, form.get('ScheduleVirtualDate')?.value)"
+                                class="slot-btn" [class.active]="form.get('VirtualTime')?.value === w.from"
+                                (click)="selectTimeWindow(2, w)">
+                                {{ w.from }} <span *ngIf="w.to"> - {{ w.to }}</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -180,17 +256,39 @@
             <div class="form-row-premium date-time-row">
                 <div class="form-group-premium">
                     <label>Schedule In-Person Tour</label>
-                    <div class="date-input-wrapper">
-                        <i class="bi bi-geo-alt"></i>
-                        <input type="date" formControlName="InPersonTourDate" [min]="minInPersonDate"
-                            [max]="maxInPersonDate">
-                    </div>
+                    <ng-container *ngIf="getAvailableDates(3).length > 0; else manualInPersonDate">
+                        <div class="strict-selection-grid">
+                            <button type="button" *ngFor="let d of getAvailableDates(3)" class="slot-btn"
+                                [class.active]="form.get('InPersonTourDate')?.value === d" (click)="selectDate(3, d)">
+                                {{ d | date:'EEE, MMM d' }}
+                            </button>
+                        </div>
+                    </ng-container>
+                    <ng-template #manualInPersonDate>
+                        <div class="date-input-wrapper">
+                            <i class="bi bi-geo-alt"></i>
+                            <input type="date" formControlName="InPersonTourDate" [min]="minInPersonDate">
+                        </div>
+                    </ng-template>
                 </div>
                 <div class="form-group-premium">
                     <label>Time Window</label>
-                    <div class="date-input-wrapper">
+                    <div class="date-input-wrapper"
+                        [class.highlight-available]="getTimeWindowsForDate(3, form.get('InPersonTourDate')?.value).length > 0">
                         <i class="bi bi-alarm"></i>
                         <input type="time" formControlName="InPersonTime">
+                    </div>
+                    <div class="available-slots-hint mt-2"
+                        *ngIf="getTimeWindowsForDate(3, form.get('InPersonTourDate')?.value).length > 0">
+                        <span class="hint-text text-muted small d-block mb-1">Agent available during:</span>
+                        <div class="strict-selection-grid">
+                            <button type="button"
+                                *ngFor="let w of getTimeWindowsForDate(3, form.get('InPersonTourDate')?.value)"
+                                class="slot-btn" [class.active]="form.get('InPersonTime')?.value === w.from"
+                                (click)="selectTimeWindow(3, w)">
+                                {{ w.from }} <span *ngIf="w.to"> - {{ w.to }}</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

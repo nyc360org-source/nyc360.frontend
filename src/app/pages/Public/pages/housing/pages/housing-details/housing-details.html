@@ -399,12 +399,12 @@
                     <div class="availability-list">
                         <div *ngFor="let avail of availabilities" class="availability-item mb-3">
                             <div class="d-flex align-items-center justify-content-between mb-2">
-                                <span class="badge bg-info text-white" *ngIf="avail.availabilityType === 1">Virtual
+                                <span class="badge bg-primary text-white"
+                                    *ngIf="avail.availabilityType === 1">Contact</span>
+                                <span class="badge bg-info text-white" *ngIf="avail.availabilityType === 2">Virtual
                                     Tour</span>
                                 <span class="badge bg-success text-white"
-                                    *ngIf="avail.availabilityType === 0">In-Person</span>
-                                <span class="badge bg-secondary text-white"
-                                    *ngIf="avail.availabilityType > 1">Viewing</span>
+                                    *ngIf="avail.availabilityType === 3">In-Person</span>
                             </div>
 
                             <div class="date-group ps-2 border-start border-3 border-warning">
@@ -523,12 +523,12 @@
 <div class="agent-request-modal-overlay" *ngIf="showAgentRequestModal" (click)="closeAgentRequest()">
     <div class="modal-content-wrapper" (click)="$event.stopPropagation()">
         <app-agent-request [postId]="property.id" [contentTitle]="property.title" [contentImage]="activeMedia?.url"
-            [authorization]="property.authorization" (close)="closeAgentRequest()"
-            (requestSubmitted)="handleRequestSubmitted()"></app-agent-request>
+            [authorization]="property.authorization || property.author" [availabilities]="availabilities"
+            (close)="closeAgentRequest()" (requestSubmitted)="handleRequestSubmitted()"></app-agent-request>
     </div>
 </div>
 
 <!-- Request Info View Modal -->
 <app-housing-request-status *ngIf="showRequestInfoModal" [requestInfo]="requestInfo" (close)="closeRequestInfo()"
     (statusUpdated)="handleStatusUpdated($event)">
-</app-housing-request-status>
+</app-housing-request-status>d

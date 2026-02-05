@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { PostsService } from '../../../posts/services/posts';
+import { HousingViewService } from '../../service/housing-view.service';
 import { ToastService } from '../../../../../../shared/services/toast.service';
 
 @Component({
@@ -17,12 +18,14 @@ export class AgentRequestComponent implements OnInit {
     private route = inject(ActivatedRoute);
     private router = inject(Router);
     private postsService = inject(PostsService);
+    private housingService = inject(HousingViewService);
     private toastService = inject(ToastService);
 
     @Input() postId: number = 0;
     @Input() contentTitle: string | null = null;
     @Input() contentImage: string | null = null;
     @Input() authorization: any = null;
+    @Input() availabilities: any[] = [];
     @Output() close = new EventEmitter<void>();
 
     @Output() requestSubmitted = new EventEmitter<void>();
@@ -111,8 +114,11 @@ export class AgentRequestComponent implements OnInit {
         const now = new Date();
         this.todayDate = this.formatDateForInput(now);
 
-        if (this.authorization) {
-            // Apply preferences if they exist
+        // If we have specific availabilities list, use those instead of authorization single dates
+        if (this.availabilities && this.availabilities.length > 0) {
+            this.processAvailabilities();
+        } else if (this.authorization) {
+            // Fallback for old authorization format
             if (this.authorization.preferredContactDate) {
                 const date = this.formatDateForInput(this.authorization.preferredContactDate);
                 this.minContactDate = date;
@@ -158,7 +164,116 @@ export class AgentRequestComponent implements OnInit {
         this.form.patchValue({ MoveInDate: this.todayDate });
     }
 
-    private formatDateForInput(dateInput: any): string {
+    private processAvailabilities() {
+        // Find min/max for each type from the array
+        const getLimits = (typeId: number) => {
+            const dates: string[] = [];
+            this.availabilities
+                .filter(a => a.availabilityType === typeId)
+                .forEach(a => {
+                    if (a.dates) {
+                        a.dates.forEach((d: any) => {
+                            const formatted = this.formatDateForInput(d);
+                            if (formatted && formatted >= this.todayDate && !formatted.startsWith('0001')) dates.push(formatted);
+                        });
+                    }
+                });
+            if (dates.length === 0) return { min: this.todayDate, max: '' };
+            dates.sort();
+            return { min: dates[0], max: dates[dates.length - 1] };
+        };
+
+        const contact = getLimits(1);
+        this.minContactDate = contact.min;
+        this.maxContactDate = contact.max;
+
+        const virtual = getLimits(2);
+        this.minVirtualDate = virtual.min;
+        this.maxVirtualDate = virtual.max;
+
+        const inPerson = getLimits(3);
+        this.minInPersonDate = inPerson.min;
+        this.maxInPersonDate = inPerson.max;
+
+        // Auto-select logic
+        const autoSelectForType = (typeId: number) => {
+            const dates = this.getAvailableDates(typeId);
+            if (dates.length === 1) {
+                this.selectDate(typeId, dates[0]);
+                const windows = this.getTimeWindowsForDate(typeId, dates[0]);
+                if (windows.length === 1) {
+                    this.selectTimeWindow(typeId, windows[0]);
+                }
+            }
+        };
+
+        autoSelectForType(1);
+        autoSelectForType(2);
+        autoSelectForType(3);
+    }
+
+    selectDate(typeId: number, date: string) {
+        if (typeId === 1) {
+            this.form.patchValue({ PrefContactDate: date, PrefContactTime: '' });
+        } else if (typeId === 2) {
+            this.form.patchValue({ ScheduleVirtualDate: date, VirtualTime: '' });
+        } else if (typeId === 3) {
+            this.form.patchValue({ InPersonTourDate: date, InPersonTime: '' });
+        }
+
+        // If newly selected date has only one time window, auto-select it
+        const windows = this.getTimeWindowsForDate(typeId, date);
+        if (windows.length === 1) {
+            this.selectTimeWindow(typeId, windows[0]);
+        }
+    }
+
+    selectTimeWindow(typeId: number, window: any) {
+        let timeValue = window.from || window.timeFrom || '';
+
+        // Strip seconds if present (HH:mm:ss -> HH:mm)
+        if (timeValue && timeValue.split(':').length === 3) {
+            timeValue = timeValue.substring(0, 5);
+        }
+
+        if (typeId === 1) {
+            this.form.patchValue({ PrefContactTime: timeValue });
+        } else if (typeId === 2) {
+            this.form.patchValue({ VirtualTime: timeValue });
+        } else if (typeId === 3) {
+            this.form.patchValue({ InPersonTime: timeValue });
+        }
+    }
+
+    getAvailableDates(typeId: number): string[] {
+        const datesSet = new Set<string>();
+        this.availabilities
+            .filter(a => a.availabilityType === typeId)
+            .forEach(a => {
+                if (a.dates) {
+                    a.dates.forEach((d: any) => {
+                        const formatted = this.formatDateForInput(d);
+                        if (formatted && formatted >= this.todayDate && !formatted.startsWith('0001')) datesSet.add(formatted);
+                    });
+                }
+            });
+        return Array.from(datesSet).sort();
+    }
+
+    getTimeWindowsForDate(typeId: number, date: string): { from: string, to: string }[] {
+        return this.availabilities
+            .filter(a => a.availabilityType === typeId && a.dates?.some((d: any) => this.formatDateForInput(d) === date))
+            .map(a => {
+                let from = a.timeFrom || '';
+                let to = a.timeTo || '';
+                if (from.split(':').length === 3) from = from.substring(0, 5);
+                if (to.split(':').length === 3) to = to.substring(0, 5);
+                return { from, to };
+            })
+            .filter(w => w.from || w.to);
+    }
+
+    public formatDateForInput(dateInput: any): string {
         if (!dateInput) return '';
         const d = new Date(dateInput);
         if (isNaN(d.getTime())) return '';
@@ -169,15 +284,20 @@ export class AgentRequestComponent implements OnInit {
     }
 
     loadPostDetails(id: number) {
-        this.postsService.getPostById(id).subscribe({
+        this.housingService.getHousingDetails(id).subscribe({
             next: (res) => {
                 if (res.isSuccess && res.data) {
-                    this.postTitle = res.data.title;
-                    if (res.data.attachments && res.data.attachments.length > 0) {
-                        this.postImage = res.data.attachments[0].url;
+                    const data = res.data.info;
+                    this.postTitle = data.title || data.fullAddress;
+                    if (data.attachments && data.attachments.length > 0) {
+                        this.postImage = data.attachments[0].url;
                     } else {
-                        this.postImage = res.data.imageUrl || null;
+                        this.postImage = data.imageUrl || null;
                     }
+
+                    this.availabilities = res.data.availabilities || [];
+                    this.authorization = data.authorization || data.author;
+                    this.setupDateConstraints();
                 }
             }
         });
