@@ -30,12 +30,16 @@
                     <tr *ngFor="let forum of forums">
                         <td>
                             <div class="d-flex align-items-center">
-                                <img *ngIf="forum.iconUrl" [src]="forum.iconUrl" class="forum-icon me-3">
-                                <div *ngIf="!forum.iconUrl" class="forum-icon me-3">
-                                    <i class="bi bi-chat-square-text"></i>
-                                </div>
+                                <a [routerLink]="['/public/forums', forum.slug]" class="text-decoration-none">
+                                    <img *ngIf="forum.iconUrl" [src]="forum.iconUrl" class="forum-icon me-3">
+                                    <div *ngIf="!forum.iconUrl" class="forum-icon me-3">
+                                        <i class="bi bi-chat-square-text"></i>
+                                    </div>
+                                </a>
                                 <div>
-                                    <div class="fw-bold">{{ forum.title }}</div>
+                                    <a [routerLink]="['/public/forums', forum.slug]" class="forum-link fw-bold">
+                                        {{ forum.title }}
+                                    </a>
                                     <small class="text-muted text-truncate d-inline-block" style="max-width: 200px;">
                                         {{ forum.description }}
                                     </small>
@@ -53,16 +57,28 @@
                         </td>
                         <td>
                             <div class="moderator-avatars">
-                                <img *ngFor="let mod of forum.moderators | slice:0:3"
-                                    [src]="mod.imageUrl ? environment.apiBaseUrl2 + 'avatars/' + mod.imageUrl : 'assets/images/default-avatar.png'"
-                                    [title]="mod.fullName" class="mod-avatar">
+                                <a *ngFor="let mod of forum.moderators | slice:0:3"
+                                    [routerLink]="['/public/profile', mod.username]" target="_blank" class="mod-link">
+                                    <img [src]="mod.imageUrl ? environment.apiBaseUrl2 + 'avatars/' + mod.imageUrl : 'assets/images/default-avatar.png'"
+                                        [title]="mod.fullName" class="mod-avatar">
+                                </a>
                                 <div *ngIf="forum.moderators.length > 3"
                                     class="mod-avatar bg-secondary text-white d-flex align-items-center justify-content-center small">
                                     +{{ forum.moderators.length - 3 }}
                                 </div>
-                                <span *ngIf="forum.moderators.length === 0" class="text-muted small">No
-                                    moderators</span>
                             </div>
+                            <div *ngIf="forum.moderators.length > 0" class="mt-1">
+                                <a [routerLink]="['/public/profile', forum.moderators[0].username]" target="_blank"
+                                    class="mod-name-link small">
+                                    {{ forum.moderators[0].fullName }}
+                                </a>
+                                <span *ngIf="forum.moderators.length > 1" class="text-muted small">
+                                    +{{ forum.moderators.length - 1 }}
+                                </span>
+                            </div>
+                            <span *ngIf="forum.moderators.length === 0" class="text-muted small">
+                                No moderators
+                            </span>
                         </td>
                         <td>
                             <span class="badge" [ngClass]="forum.isActive ? 'bg-success' : 'bg-danger'">
@@ -86,7 +102,7 @@
                             </div>
                         </td>
                     </tr>
-                    <tr *ngIf="forums.length === 0 && !isLoading">
+                    <tr *ngIf="!isLoading && forums.length === 0">
                         <td colspan="6" class="text-center py-5">
                             <i class="bi bi-inbox display-4 text-muted"></i>
                             <p class="mt-2 text-muted">No forums found.</p>
@@ -154,15 +170,25 @@
             <button class="btn-close" (click)="showModeratorsModal = false">&times;</button>
         </div>
         <div class="modal-body">
-            <h6>Current Moderators</h6>
-            <div class="selected-moderators">
-                <div class="mod-tag" *ngFor="let mod of selectedModerators">
-                    <span>{{ mod.fullName }}</span>
-                    <button class="btn-remove" (click)="removeModerator(mod.id)">
-                        <i class="bi bi-x-circle-fill"></i>
+            <div class="selected-moderators-list">
+                <div class="mod-row" *ngFor="let mod of selectedModerators">
+                    <div class="mod-avatar-container">
+                        <img [src]="mod.imageUrl ? environment.apiBaseUrl2 + 'avatars/' + mod.imageUrl : 'assets/images/default-avatar.png'"
+                            class="mod-avatar">
+                    </div>
+                    <a [routerLink]="['/public/profile', mod.username]" target="_blank"
+                        class="mod-details text-decoration-none">
+                        <span class="mod-name">{{ mod.fullName }}</span>
+                        <span class="mod-username">@{{ mod.username }}</span>
+                    </a>
+                    <button class="btn-remove-mod" (click)="removeModerator(mod.id)" title="Remove Moderator">
+                        <i class="bi bi-x-lg"></i>
                     </button>
                 </div>
-                <p *ngIf="selectedModerators.length === 0" class="text-muted small">No moderators assigned.</p>
+                <div *ngIf="selectedModerators.length === 0" class="empty-moderators-state">
+                    <i class="bi bi-shield-slash"></i>
+                    <p>No moderators assigned to this forum yet.</p>
+                </div>
             </div>
 
             <hr>

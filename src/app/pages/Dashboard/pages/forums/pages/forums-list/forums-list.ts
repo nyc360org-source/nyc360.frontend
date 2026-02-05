@@ -8,10 +8,12 @@ import { UsersService } from '../../../users/Service/list';
 import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { environment } from '../../../../../../environments/environment';
 
+import { RouterModule } from '@angular/router';
+
 @Component({
     selector: 'app-forums-list',
     standalone: true,
-    imports: [CommonModule, FormsModule, ReactiveFormsModule],
+    imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule],
     templateUrl: './forums-list.html',
     styleUrls: ['./forums-list.scss']
 })
@@ -24,7 +26,7 @@ export class ForumsListComponent implements OnInit {
     protected readonly environment = environment;
 
     forums: ForumDashboardDto[] = [];
-    isLoading = false;
+    isLoading = true;
     isSaving = false;
 
     // Edit Modal
