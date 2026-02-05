@@ -23,4 +23,8 @@ export class ForumService {
             }
         });
     }
+
+    createQuestion(payload: { ForumId: number; Title: string; Content: string }): Observable<ApiResponse<number>> {
+        return this.http.post<ApiResponse<number>>(`${this.baseUrl}/questions/create`, payload);
+    }
 }

@@ -13,7 +13,7 @@
                     <img [src]="resolveForumIcon(forum.iconUrl)" [alt]="forum.title">
                 </div>
                 <div class="header-text">
-                    <h1>{{ forum.title }} Forum</h1>
+                    <h1>{{ forum.title }}</h1>
                     <p>{{ forum.description }}</p>
                     <div class="forum-meta">
                         <span class="meta-item">
@@ -22,7 +22,7 @@
                         </span>
                     </div>
                 </div>
-                <button class="btn-create-question">
+                <button class="btn-create-question" [routerLink]="['/public/forums', slug, 'create']">
                     <i class="bi bi-plus-lg"></i>
                     Ask a Question
                 </button>
@@ -95,7 +95,7 @@
             </div>
             <h3>No questions yet</h3>
             <p>Be the first one to ask a question in this forum!</p>
-            <button class="btn-create-question secondary">
+            <button class="btn-create-question secondary" [routerLink]="['/public/forums', slug, 'create']">
                 Ask a Question
             </button>
         </div>
