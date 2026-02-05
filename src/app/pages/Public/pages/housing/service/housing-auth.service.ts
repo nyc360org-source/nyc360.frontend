@@ -39,25 +39,10 @@ export class HousingAuthService {
         };
 
         // Availabilities
+        // Availabilities
         if (data.Availabilities && Array.isArray(data.Availabilities)) {
-            data.Availabilities.forEach((avail: any, index: number) => {
-                formData.append(`Availabilities[${index}].AvailabilityType`, String(avail.AvailabilityType));
-
-                // Note: when binding List<T> inside a complex object in multipart/form-data, 
-                // standard ASP.NET Core binders often prefer repeated keys (e.g. "Dates") 
-                // over indexed keys (e.g. "Dates[0]") for simple types.
-                if (avail.Dates && Array.isArray(avail.Dates)) {
-                    avail.Dates.forEach((date: any) => {
-                        formData.append(`Availabilities[${index}].Dates`, formatDate(date));
-                    });
-                }
-
-                formData.append(`Availabilities[${index}].TimeFrom`, formatTime(avail.TimeFrom));
-                formData.append(`Availabilities[${index}].TimeTo`, formatTime(avail.TimeTo));
-            });
-
-            // FALLBACK: Send as JSON string to avoid multipar/form-data binding issues with nested lists
-            formData.append('AvailabilitiesJson', JSON.stringify(data.Availabilities));
+            // Send as JSON string to avoid multipart/form-data binding issues with nested lists
+            formData.append('Availability', JSON.stringify(data.Availabilities));
         }
 
         // Enums (Ensure they are sent as numbers/strings that backend expects)

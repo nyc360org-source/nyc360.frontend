@@ -187,6 +187,8 @@ export class ListingAuthorizationComponent implements OnInit {
     }
 
     onSubmit() {
+        if (this.isSubmitting) return;
+
         this.triedToSubmit = true;
         console.log('ListingAuthorization: onSubmit called');
 
@@ -242,17 +244,21 @@ export class ListingAuthorizationComponent implements OnInit {
         this.housingService.createHousingAuthorization(payload).subscribe({
             next: (res: any) => {
                 this.isSubmitting = false;
+                console.log('ListingAuthorization: Response', res);
                 if (res?.isSuccess || res?.IsSuccess) { // handling different casing from backend if unsure
                     this.toastService.success('Authorization submitted successfully!');
                     this.router.navigate(['/public/housing/details', this.listingId]);
                 } else {
-                    this.toastService.error(res?.Error?.Message || res?.error?.message || 'Submission failed');
+                    const errorMsg = res?.Error?.Message || res?.error?.message || res?.Error?.message || res?.error?.Message || 'Submission failed';
+                    this.toastService.error(errorMsg);
                 }
             },
             error: (err) => {
                 this.isSubmitting = false;
-                console.error(err);
-                this.toastService.error('An error occurred while submitting authorization.');
+                console.error('ListingAuthorization: Error', err);
+                // Try to extract message from error response body if available
+                const errorMsg = err?.error?.Error?.Message || err?.error?.error?.message || err?.message || 'An error occurred while submitting authorization.';
+                this.toastService.error(errorMsg);
             }
         });
     }
