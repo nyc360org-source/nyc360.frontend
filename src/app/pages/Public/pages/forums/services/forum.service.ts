@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../../environments/environment';
-import { Forum, ApiResponse, ForumDetailsData } from '../models/forum';
+import { Forum, ApiResponse, ForumDetailsData, QuestionDetailsData } from '../models/forum';
 
 @Injectable({
     providedIn: 'root'
@@ -27,4 +27,13 @@ export class ForumService {
     createQuestion(payload: { ForumId: number; Title: string; Content: string }): Observable<ApiResponse<number>> {
         return this.http.post<ApiResponse<number>>(`${this.baseUrl}/questions/create`, payload);
     }
+
+    getQuestionDetails(questionId: number): Observable<ApiResponse<QuestionDetailsData>> {
+        return this.http.get<ApiResponse<QuestionDetailsData>>(`${this.baseUrl}/questions/${questionId}`);
+    }
+
+    createAnswer(payload: { QuestionId: number; Content: string }): Observable<ApiResponse<number>> {
+        return this.http.post<ApiResponse<number>>(`${this.baseUrl}/answers/create`, payload);
+    }
 }
+

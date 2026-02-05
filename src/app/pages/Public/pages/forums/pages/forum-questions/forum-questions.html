@@ -60,7 +60,7 @@
                         <span class="created-at">{{ question.createdAt | date:'mediumDate' }}</span>
                     </div>
                     <h3 class="question-title">
-                        <a [routerLink]="['/public/forums', slug, question.slug]">{{ question.title }}</a>
+                        <a [routerLink]="['/public/forums/questions', question.id]">{{ question.title }}</a>
                     </h3>
                     <p class="question-excerpt">{{ question.content | slice:0:150 }}{{ question.content.length > 150 ?
                         '...' : '' }}</p>

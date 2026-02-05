@@ -47,3 +47,23 @@ export interface ForumDetailsData {
     forum: Forum;
     questions: PagedResponse<Question>;
 }
+
+export interface Answer {
+    id: number;
+    questionId: number;
+    content: string;
+    isCorrectAnswer: boolean;
+    createdAt: string;
+    author: {
+        id: number;
+        username: string;
+        fullName: string;
+        imageUrl: string;
+        type: number;
+    };
+}
+
+export interface QuestionDetailsData {
+    question: Question;
+    answers: Answer[];
+}
