@@ -64,6 +64,12 @@
                 <span class="link-text">Tags</span>
             </a>
 
+            <a class="nav-item" *ngIf="canViewForums" routerLink="/admin/forums" routerLinkActive="active"
+                (click)="closeMobileMenu()">
+                <i class="bi bi-chat-left-dots-fill"></i>
+                <span class="link-text">Forums</span>
+            </a>
+
             <a class="nav-item" *ngIf="canViewHousing" routerLink="/admin/housing" routerLinkActive="active"
                 (click)="closeMobileMenu()">
                 <i class="bi bi-houses-fill"></i>

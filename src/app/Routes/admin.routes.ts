@@ -56,6 +56,9 @@ export const ADMIN_ROUTES: Routes = [
       { path: 'communities/disband-requests', loadComponent: () => import('../pages/Dashboard/pages/communities/pages/disband-requests/disband-requests').then(m => m.DisbandRequestsComponent) },
       { path: 'communities/moderation/:id', loadComponent: () => import('../pages/Dashboard/pages/communities/pages/community-moderation/community-moderation').then(m => m.CommunityModerationComponent) },
 
+      // Forums
+      { path: 'forums', loadComponent: () => import('../pages/Dashboard/pages/forums/pages/forums-list/forums-list').then(m => m.ForumsListComponent) },
+
       // Support Tickets
       { path: 'support', loadComponent: () => import('../pages/Dashboard/pages/support-tickets/pages/support-list/support-list').then(m => m.SupportListComponent) }
     ]

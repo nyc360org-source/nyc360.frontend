@@ -24,6 +24,7 @@ export class SidebarComponent implements OnInit {
     canViewCommunities = false;
     canViewSupport = false;
     canViewHousing = false;
+    canViewForums = false;
 
     ngOnInit() {
         this.canViewUsers = this.authService.hasPermission('Permissions.Users.View');
@@ -32,6 +33,7 @@ export class SidebarComponent implements OnInit {
         this.canViewDashboard = this.authService.hasPermission('Permissions.Dashboard.View');
         this.canViewCommunities = this.authService.hasPermission('Permissions.Communities.View');
         this.canViewHousing = this.authService.hasPermission('Permissions.Housing.View');
+        this.canViewForums = this.authService.hasPermission('Permissions.Forums.View') || this.canViewDashboard;
         this.canViewSupport = true; // Based on NavBar implementation
     }
 
