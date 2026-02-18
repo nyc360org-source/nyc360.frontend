@@ -169,57 +169,6 @@
       </div>
     </section>
 
-    <!-- Text-Only Articles (Bottom Section) -->
-    <section class="text-only-section mt-5 fade-in-up" *ngIf="textArticles.length > 0">
-      <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
-        <h2 class="merriweather-font h3 text-dark">Community Updates</h2>
-        <!-- <span class="badge bg-light text-dark">{{ textArticles.length }} New</span> -->
-      </div>
-
-      <div class="row g-4">
-        <div class="col-md-6" *ngFor="let post of textArticles">
-          <div class="text-card-design" [routerLink]="['/public/posts/details', post.id]" style="cursor: pointer;">
-            <div class="card-top-row">
-              <span class="pill-tag">PROFESSION</span>
-              <span class="post-time">{{ post.createdAt | date:'shortTime' }} ago</span>
-            </div>
-            <h3 class="text-title" *ngIf="post.title">“{{ post.title }}”</h3>
-            <p class="text-excerpt" *ngIf="post.content">{{ post.content | slice:0:120 }}{{ post.content.length > 120 ?
-              '...' : '' }}</p>
-
-            <!-- LinkedIn Style Shared Post Box -->
-            <div class="shared-post-box" *ngIf="post.parentPost">
-              <div class="shared-header">
-                <img [src]="getAuthorAvatar(post.parentPost.author)" class="shared-avatar" alt="Avatar"
-                  appImgFallback="avatar">
-                <div class="author-info">
-                  <span class="author-name">{{ post.parentPost.author.name || post.parentPost.author.fullName ||
-                    post.parentPost.author.username }}</span>
-                  <span class="post-date">{{ post.parentPost.createdAt | date:'mediumDate' }}</span>
-                </div>
-              </div>
-              <div class="shared-img-wrapper"
-                *ngIf="imageService.resolvePostImage(post.parentPost) !== imageService.DEFAULT_POST">
-                <img [src]="getArticleImage(post.parentPost)" alt="Shared Image" appImgFallback="post">
-              </div>
-              <div class="shared-content">
-                <h4 *ngIf="post.parentPost.title">{{ post.parentPost.title }}</h4>
-                <p>{{ post.parentPost.content }}</p>
-              </div>
-            </div>
-
-            <div class="card-footer-meta mt-3">
-              <div class="author-group">
-                <img [src]="getAuthorAvatar(post.author)" class="mini-avatar" appImgFallback="avatar">
-                <span>{{ post.author.fullName || post.author.username || 'Member' }}</span>
-              </div>
-              <span class="read-more-link">Read <i class="bi bi-arrow-right"></i></span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
     <!-- Hiring News - High Impact Section -->
     <section class="hiring-premium-section mt-5" *ngIf="hiringNews.length > 0">
       <div class="section-overlay-blob"></div>
