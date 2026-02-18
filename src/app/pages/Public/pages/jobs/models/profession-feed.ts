@@ -18,7 +18,9 @@ export interface HiringJob {
   salaryMax: number;
   workArrangement: number;
   employmentType: number;
+  employmentLevel: number;
   companyName: string;
+  authorAvatarUrl?: string;
 }
 
 // Basic tag interface

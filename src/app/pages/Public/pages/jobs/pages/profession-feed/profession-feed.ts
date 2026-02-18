@@ -26,7 +26,7 @@ export class ProfessionFeedComponent implements OnInit {
   private cdr = inject(ChangeDetectorRef);
   private loaderService = inject(GlobalLoaderService);
   protected readonly environment = environment;
-  protected imageService = inject(ImageService);
+  public imageService = inject(ImageService);
 
   // Data Buckets
   heroArticle: FeedArticle | null = null;

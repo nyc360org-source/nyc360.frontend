@@ -3,12 +3,12 @@ import { RouterModule, Routes } from '@angular/router';
 import { InitiativesLayoutComponent } from './initiatives-layout/initiatives-layout';
 import { CATEGORY_THEMES } from '../feeds/models/categories';
 
-const routes: Routes = Object.keys(CATEGORY_THEMES).map(key => {
+const initiativeRoutes: Routes = Object.keys(CATEGORY_THEMES).map(key => {
   const catId = Number(key);
   const config = (CATEGORY_THEMES as any)[catId];
 
   return {
-    path: config.path, // مثل: 'health', 'community'
+    path: config.path, // e.g., 'health', 'community'
     component: InitiativesLayoutComponent,
     data: {
       categoryEnum: catId,
@@ -18,8 +18,11 @@ const routes: Routes = Object.keys(CATEGORY_THEMES).map(key => {
   };
 });
 
-// DECISIVE FIX: Add redirect for base module path to avoid empty page on back-navigation
-routes.unshift({ path: '', redirectTo: '/public/home', pathMatch: 'full' });
+// Define final routes with the redirect included at the start
+const routes: Routes = [
+  { path: '', redirectTo: '/public/home', pathMatch: 'full' },
+  ...initiativeRoutes
+];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],

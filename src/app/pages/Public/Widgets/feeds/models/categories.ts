@@ -99,7 +99,7 @@ export const CATEGORY_THEMES: { [key: number]: any } = {
     ]
   },
   [CategoryEnum.Lifestyle]: {
-    color: '#28a745', label: 'Lifestyle', path: 'lifestyle', icon: '/icon-category/lifestyle.png', biIcon: 'bi-cup-hot-fill',
+    color: '#8bc34a', label: 'Lifestyle', path: 'lifestyle', icon: '/icon-category/lifestyle.png', biIcon: 'bi-cup-hot-fill',
     route: '/public/category/lifestyle',
     topLinks: [
       { label: 'Feed', route: '/public/feed/lifestyle', icon: 'bi-rss' },
@@ -115,7 +115,7 @@ export const CATEGORY_THEMES: { [key: number]: any } = {
     ]
   },
   [CategoryEnum.Legal]: {
-    color: '#6610f2', label: 'Legal', path: 'legal', icon: '/icon-category/legal.png', biIcon: 'bi-hammer',
+    color: '#102a43', label: 'Legal', path: 'legal', icon: '/icon-category/legal.png', biIcon: 'bi-hammer',
     route: '/public/category/legal',
     topLinks: [
       { label: 'Feed', route: '/public/feed/legal', icon: 'bi-rss' },
@@ -131,7 +131,7 @@ export const CATEGORY_THEMES: { [key: number]: any } = {
     ]
   },
   [CategoryEnum.News]: {
-    color: '#6c757d', label: 'News', path: 'news', icon: '/icon-category/newspaper.png', biIcon: 'bi-newspaper',
+    color: '#333333', label: 'News', path: 'news', icon: '/icon-category/newspaper.png', biIcon: 'bi-newspaper',
     route: '/public/category/news',
     topLinks: [
       { label: 'Feed', route: '/public/feed/news', icon: 'bi-rss' },
@@ -147,7 +147,7 @@ export const CATEGORY_THEMES: { [key: number]: any } = {
     ]
   },
   [CategoryEnum.Professions]: {
-    color: '#fd7e14', label: 'Professions', path: 'professions', icon: '/icon-category/professions.png', biIcon: 'bi-briefcase-fill',
+    color: '#2ecc71', label: 'Professions', path: 'professions', icon: '/icon-category/professions.png', biIcon: 'bi-briefcase-fill',
     route: '/public/profession/feed',
     topLinks: [
       { label: 'Jobs', route: '/public/profession/jobs', icon: 'bi-briefcase' },
@@ -163,7 +163,7 @@ export const CATEGORY_THEMES: { [key: number]: any } = {
     ]
   },
   [CategoryEnum.Social]: {
-    color: '#e83e8c', label: 'Social', path: 'social', icon: '/icon-category/social.png', biIcon: 'bi-chat-heart-fill',
+    color: '#17a2b8', label: 'Social', path: 'social', icon: '/icon-category/social.png', biIcon: 'bi-chat-heart-fill',
     route: '/public/category/social',
     topLinks: [
       { label: 'Feed', route: '/public/feed/social', icon: 'bi-rss' },
@@ -179,7 +179,7 @@ export const CATEGORY_THEMES: { [key: number]: any } = {
     ]
   },
   [CategoryEnum.Transportation]: {
-    color: '#17a2b8', label: 'Transportation', path: 'transportation', icon: '/icon-category/transportation.png', biIcon: 'bi-bus-front-fill',
+    color: '#f1c40f', label: 'Transportation', path: 'transportation', icon: '/icon-category/transportation.png', biIcon: 'bi-bus-front-fill',
     route: '/public/category/transportation',
     topLinks: [
       { label: 'Feed', route: '/public/feed/transportation', icon: 'bi-rss' },
@@ -195,7 +195,7 @@ export const CATEGORY_THEMES: { [key: number]: any } = {
     ]
   },
   [CategoryEnum.Tv]: {
-    color: '#343a40', label: 'TV', path: 'tv', icon: '/icon-category/tv.png', biIcon: 'bi-tv-fill',
+    color: '#0d47a1', label: 'TV', path: 'tv', icon: '/icon-category/tv.png', biIcon: 'bi-tv-fill',
     route: '/public/category/tv',
     topLinks: [
       { label: 'Feed', route: '/public/feed/tv', icon: 'bi-rss' },
