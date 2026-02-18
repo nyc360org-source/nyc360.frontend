@@ -18,7 +18,8 @@ export const CATEGORY_THEMES: { [key: number]: any } = {
     color: '#BC5E3D', label: 'Community', path: 'community', icon: '/icon-category/commumity.png', biIcon: 'bi-people-fill',
     route: '/public/community',
     topLinks: [
-      { label: 'Feed', route: '/public/feed/community', icon: 'bi-rss' },
+      { label: 'Explore', route: '/public/feed/community', icon: 'bi-rss' },
+      { label: 'My Inquiries', route: '', icon: 'bi-rss' },
       {
         label: 'Contributor Activity',
         icon: 'bi-activity',
@@ -34,8 +35,8 @@ export const CATEGORY_THEMES: { [key: number]: any } = {
     color: '#dc3545', label: 'Culture', path: 'culture', icon: '/icon-category/culture.png', biIcon: 'bi-palette-fill',
     route: '/public/category/culture',
     topLinks: [
-      { label: 'Feed', route: '/public/feed/culture', icon: 'bi-rss' },
-      { label: 'initiatives', route: '/public/initiatives/culture', icon: 'bi-lightbulb' },
+      { label: 'Explore', route: '/public/feed/culture', icon: 'bi-rss' },
+      { label: 'My Inquiries', route: '', icon: 'bi-rss' },
       {
         label: 'Contributor Activity',
         icon: 'bi-activity',
@@ -51,8 +52,8 @@ export const CATEGORY_THEMES: { [key: number]: any } = {
     color: '#0056b3', label: 'Education', path: 'education', icon: '/icon-category/education.png', biIcon: 'bi-mortarboard-fill',
     route: '/public/category/education',
     topLinks: [
-      { label: 'Feed', route: '/public/feed/education', icon: 'bi-rss' },
-      { label: 'initiatives', route: '/public/initiatives/education', icon: 'bi-lightbulb' },
+      { label: 'Explore', route: '/public/feed/education', icon: 'bi-rss' },
+      { label: 'My Inquiries', route: '', icon: 'bi-rss' },
       {
         label: 'Contributor Activity',
         icon: 'bi-activity',
@@ -68,8 +69,8 @@ export const CATEGORY_THEMES: { [key: number]: any } = {
     color: '#00c3ff', label: 'Health', path: 'health', icon: '/icon-category/health.png', biIcon: 'bi-heart-pulse-fill',
     route: '/public/category/health',
     topLinks: [
-      { label: 'Feed', route: '/public/feed/health', icon: 'bi-rss' },
-      { label: 'Initiatives', route: '/public/initiatives/health', icon: 'bi-lightbulb' },
+      { label: 'Explore', route: '/public/feed/health', icon: 'bi-rss' },
+      { label: 'My Inquiries', route: '', icon: 'bi-rss' },
       {
         label: 'Contributor Activity',
         icon: 'bi-activity',
@@ -85,7 +86,7 @@ export const CATEGORY_THEMES: { [key: number]: any } = {
     color: '#B59B62', label: 'Housing', path: 'housing', icon: '/icon-category/housing.png', biIcon: 'bi-house-heart-fill',
     route: '/public/housing/home',
     topLinks: [
-      { label: 'Feed', route: '/public/housing/feed', icon: 'bi-rss' },
+      { label: 'Explore', route: '/public/housing/feed', icon: 'bi-rss' },
       {
         label: 'Contributor Activity',
         icon: 'bi-activity',
@@ -102,7 +103,8 @@ export const CATEGORY_THEMES: { [key: number]: any } = {
     color: '#8bc34a', label: 'Lifestyle', path: 'lifestyle', icon: '/icon-category/lifestyle.png', biIcon: 'bi-cup-hot-fill',
     route: '/public/category/lifestyle',
     topLinks: [
-      { label: 'Feed', route: '/public/feed/lifestyle', icon: 'bi-rss' },
+      { label: 'Explore', route: '/public/feed/lifestyle', icon: 'bi-rss' },
+      { label: 'My Inquiries', route: '', icon: 'bi-rss' },
       {
         label: 'Contributor Activity',
         icon: 'bi-activity',
@@ -118,7 +120,8 @@ export const CATEGORY_THEMES: { [key: number]: any } = {
     color: '#102a43', label: 'Legal', path: 'legal', icon: '/icon-category/legal.png', biIcon: 'bi-hammer',
     route: '/public/category/legal',
     topLinks: [
-      { label: 'Feed', route: '/public/feed/legal', icon: 'bi-rss' },
+      { label: 'Explore', route: '/public/feed/legal', icon: 'bi-rss' },
+      { label: 'My Inquiries', route: '', icon: 'bi-rss' },
       {
         label: 'Contributor Activity',
         icon: 'bi-activity',
@@ -134,7 +137,8 @@ export const CATEGORY_THEMES: { [key: number]: any } = {
     color: '#333333', label: 'News', path: 'news', icon: '/icon-category/newspaper.png', biIcon: 'bi-newspaper',
     route: '/public/category/news',
     topLinks: [
-      { label: 'Feed', route: '/public/feed/news', icon: 'bi-rss' },
+      { label: 'Explore', route: '/public/feed/news', icon: 'bi-rss' },
+      { label: 'My Inquiries', route: '', icon: 'bi-rss' },
       {
         label: 'Contributor Activity',
         icon: 'bi-activity',
@@ -166,7 +170,8 @@ export const CATEGORY_THEMES: { [key: number]: any } = {
     color: '#17a2b8', label: 'Social', path: 'social', icon: '/icon-category/social.png', biIcon: 'bi-chat-heart-fill',
     route: '/public/category/social',
     topLinks: [
-      { label: 'Feed', route: '/public/feed/social', icon: 'bi-rss' },
+      { label: 'Explore', route: '/public/feed/social', icon: 'bi-rss' },
+      { label: 'My Inquiries', route: '', icon: 'bi-rss' },
       {
         label: 'Contributor Activity',
         icon: 'bi-activity',
@@ -182,7 +187,8 @@ export const CATEGORY_THEMES: { [key: number]: any } = {
     color: '#f1c40f', label: 'Transportation', path: 'transportation', icon: '/icon-category/transportation.png', biIcon: 'bi-bus-front-fill',
     route: '/public/category/transportation',
     topLinks: [
-      { label: 'Feed', route: '/public/feed/transportation', icon: 'bi-rss' },
+      { label: 'Explore', route: '/public/feed/transportation', icon: 'bi-rss' },
+      { label: 'My Inquiries', route: '', icon: 'bi-rss' },
       {
         label: 'Contributor Activity',
         icon: 'bi-activity',
@@ -198,7 +204,8 @@ export const CATEGORY_THEMES: { [key: number]: any } = {
     color: '#0d47a1', label: 'TV', path: 'tv', icon: '/icon-category/tv.png', biIcon: 'bi-tv-fill',
     route: '/public/category/tv',
     topLinks: [
-      { label: 'Feed', route: '/public/feed/tv', icon: 'bi-rss' },
+      { label: 'Explore', route: '/public/feed/tv', icon: 'bi-rss' },
+      { label: 'My Inquiries', route: '', icon: 'bi-rss' },
       {
         label: 'Contributor Activity',
         icon: 'bi-activity',
