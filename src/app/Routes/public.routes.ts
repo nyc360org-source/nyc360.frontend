@@ -77,6 +77,10 @@ export const PUBLIC_ROUTES: Routes = [
         path: 'category/:categoryPath',
         loadComponent: () => import('../pages/Public/Widgets/category-home/category-home.component/category-home.component').then(m => m.CategoryHomeComponent)
       },
+      {
+        path: 'category/:categoryPath/dashboard',
+        loadComponent: () => import('../pages/Public/pages/category-dashboard/category-dashboard').then(m => m.CategoryDashboardComponent)
+      },
 
       //feed layout route
       {

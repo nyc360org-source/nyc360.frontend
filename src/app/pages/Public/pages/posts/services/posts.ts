@@ -164,4 +164,20 @@ export class PostsService {
   updateHousingRequestStatus(requestId: number | string, status: number): Observable<ApiResponse<any>> {
     return this.http.put<ApiResponse<any>>(`${environment.apiBaseUrl}/housing/agent/request/${requestId}/status`, { Status: status });
   }
+
+  // ✅ Get My Posts by Category (My Inquiries/List)
+  getMyPostsByCategory(category: number, page: number = 1, pageSize: number = 20): Observable<ApiResponse<Post[]>> {
+    const params = new HttpParams()
+      .set('Page', page.toString())
+      .set('PageSize', pageSize.toString());
+    return this.http.get<ApiResponse<Post[]>>(`${this.baseUrl}/me/category/${category}`, { params });
+  }
+
+  // ✅ Get My Category Analysis
+  getMyCategoryAnalysis(category: number, page: number = 1, pageSize: number = 20): Observable<ApiResponse<any>> {
+    const params = new HttpParams()
+      .set('Page', page.toString())
+      .set('PageSize', pageSize.toString());
+    return this.http.get<ApiResponse<any>>(`${this.baseUrl}/me/category/${category}/analysis`, { params });
+  }
 }

@@ -32,11 +32,12 @@ export interface HeaderButton {
 }
 
 import { VerificationModalComponent } from '../../../../../shared/components/verification-modal/verification-modal';
+import { ArticleHeroComponent } from '../../article-hero.component/article-hero.component';
 
 @Component({
   selector: 'app-category-home',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule, ImgFallbackDirective, VerificationModalComponent],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, ImgFallbackDirective, VerificationModalComponent, ArticleHeroComponent],
   templateUrl: './category-home.component.html',
   styleUrls: ['./category-home.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
