@@ -8,6 +8,7 @@ export const PUBLIC_ROUTES: Routes = [
     loadComponent: () => import('../pages/Layout/public-layout/public-layout.component').then(m => m.PublicLayoutComponent),
     canActivate: [authGuard],
     children: [
+      { path: '', redirectTo: 'home', pathMatch: 'full' },
       // Feed
       { path: 'home', loadComponent: () => import('../pages/Public/pages/home/home').then(m => m.Home) },
       { path: 'posts/details/:id', loadComponent: () => import('../pages/Public/pages/posts/post-details/post-details').then(m => m.PostDetailsComponent) },

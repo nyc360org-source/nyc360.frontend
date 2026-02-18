@@ -18,6 +18,9 @@ const routes: Routes = Object.keys(CATEGORY_THEMES).map(key => {
   };
 });
 
+// DECISIVE FIX: Add redirect for base module path to avoid empty page on back-navigation
+routes.unshift({ path: '', redirectTo: '/public/home', pathMatch: 'full' });
+
 @NgModule({
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]

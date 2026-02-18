@@ -139,6 +139,18 @@ $cat-colors: (
     cursor: pointer;
     padding: 0;
   }
+
+  .breadcrumbs-nav-wrapper {
+    margin-left: 10px;
+    padding-left: 20px;
+    border-left: 1px solid rgba(0, 0, 0, 0.08);
+    display: flex;
+    align-items: center;
+    height: 30px;
+
+    // Smooth transition for scrolled state
+    transition: all 0.4s ease;
+  }
 }
 
 .nav-center {
@@ -399,6 +411,21 @@ $cat-colors: (
     &:hover {
       background-color: color.adjust($dark-blue, $lightness: -10%);
     }
+  }
+}
+
+.mobile-breadcrumb-row {
+  background: #fdfdfd;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 5px 15px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  transition: all 0.3s ease;
+
+  // Make it look like part of the categories transition
+  .nav-wrapper.scrolled & {
+    padding: 3px 15px;
   }
 }
 

@@ -6,11 +6,12 @@ import { AuthService } from '../../../Authentication/Service/auth';
 import { CATEGORY_THEMES } from '../feeds/models/categories';
 import { CATEGORY_LIST } from '../../../models/category-list';
 import { GlobalSearchComponent } from './components/global-search/global-search';
+import { BreadcrumbsComponent } from '../../../../shared/components/breadcrumbs/breadcrumbs.component';
 
 @Component({
   selector: 'app-nav-bar',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive, GlobalSearchComponent],
+  imports: [CommonModule, RouterLink, RouterLinkActive, GlobalSearchComponent, BreadcrumbsComponent],
   templateUrl: './nav-bar.component.html',
   styleUrls: ['./nav-bar.component.scss']
 })

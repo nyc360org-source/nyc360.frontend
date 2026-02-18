@@ -4,6 +4,7 @@ import { filter } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
 import { NavBarComponent } from "../../Public/Widgets/nav-bar/nav-bar.component";
 import { FooterComponent } from "../../Public/Widgets/footer/footer.component";
+import { BreadcrumbsComponent } from "../../../shared/components/breadcrumbs/breadcrumbs.component";
 
 @Component({
   selector: 'app-public-layout',
