@@ -19,7 +19,7 @@ export const CATEGORY_THEMES: { [key: number]: any } = {
     route: '/public/community',
     topLinks: [
       { label: 'Explore', route: '/public/feed/community', icon: 'bi-rss' },
-      { label: 'My Inquiries', route: '/public/category/community/dashboard', icon: 'bi-journal-text' },
+      { label: 'My Inquiries', route: '/public/category/community/saved', icon: 'bi-journal-text' },
       { label: 'Contributor Dashboard', route: '/public/category/community/dashboard', icon: 'bi-speedometer2' },
       {
         label: 'Contributor Activity',
@@ -37,7 +37,7 @@ export const CATEGORY_THEMES: { [key: number]: any } = {
     route: '/public/category/culture',
     topLinks: [
       { label: 'Explore', route: '/public/feed/culture', icon: 'bi-rss' },
-      { label: 'My Inquiries', route: '/public/category/culture/dashboard', icon: 'bi-journal-text' },
+      { label: 'My Inquiries', route: '/public/category/culture/saved', icon: 'bi-journal-text' },
       { label: 'Contributor Dashboard', route: '/public/category/culture/dashboard', icon: 'bi-speedometer2' },
       {
         label: 'Contributor Activity',
@@ -55,7 +55,7 @@ export const CATEGORY_THEMES: { [key: number]: any } = {
     route: '/public/category/education',
     topLinks: [
       { label: 'Explore', route: '/public/feed/education', icon: 'bi-rss' },
-      { label: 'My Inquiries', route: '/public/category/education/dashboard', icon: 'bi-journal-text' },
+      { label: 'My Inquiries', route: '/public/category/education/saved', icon: 'bi-journal-text' },
       { label: 'Contributor Dashboard', route: '/public/category/education/dashboard', icon: 'bi-speedometer2' },
 
       {
@@ -74,7 +74,7 @@ export const CATEGORY_THEMES: { [key: number]: any } = {
     route: '/public/category/health',
     topLinks: [
       { label: 'Explore', route: '/public/feed/health', icon: 'bi-rss' },
-      { label: 'My Inquiries', route: '/public/category/health/dashboard', icon: 'bi-journal-text' },
+      { label: 'My Inquiries', route: '/public/category/health/saved', icon: 'bi-journal-text' },
       { label: 'Contributor Dashboard', route: '/public/category/health/dashboard', icon: 'bi-speedometer2' },
 
       {
@@ -93,7 +93,7 @@ export const CATEGORY_THEMES: { [key: number]: any } = {
     route: '/public/housing/home',
     topLinks: [
       { label: 'Explore', route: '/public/housing/feed', icon: 'bi-rss' },
-      { label: 'My Inquiries', route: '/public/category/housing/dashboard', icon: 'bi-journal-text' },
+      { label: 'My Inquiries', route: '/public/category/housing/saved', icon: 'bi-journal-text' },
       { label: 'Contributor Dashboard', route: '/public/category/housing/dashboard', icon: 'bi-speedometer2' },
 
       {
@@ -113,7 +113,7 @@ export const CATEGORY_THEMES: { [key: number]: any } = {
     route: '/public/category/lifestyle',
     topLinks: [
       { label: 'Explore', route: '/public/feed/lifestyle', icon: 'bi-rss' },
-      { label: 'My Inquiries', route: '/public/category/lifestyle/dashboard', icon: 'bi-journal-text' },
+      { label: 'My Inquiries', route: '/public/category/lifestyle/saved', icon: 'bi-journal-text' },
       { label: 'Contributor Dashboard', route: '/public/category/lifestyle/dashboard', icon: 'bi-speedometer2' },
 
       {
@@ -132,7 +132,7 @@ export const CATEGORY_THEMES: { [key: number]: any } = {
     route: '/public/category/legal',
     topLinks: [
       { label: 'Explore', route: '/public/feed/legal', icon: 'bi-rss' },
-      { label: 'My Inquiries', route: '/public/category/legal/dashboard', icon: 'bi-journal-text' },
+      { label: 'My Inquiries', route: '/public/category/legal/saved', icon: 'bi-journal-text' },
       { label: 'Contributor Dashboard', route: '/public/category/legal/dashboard', icon: 'bi-speedometer2' },
 
       {
@@ -151,7 +151,7 @@ export const CATEGORY_THEMES: { [key: number]: any } = {
     route: '/public/category/news',
     topLinks: [
       { label: 'Explore', route: '/public/feed/news', icon: 'bi-rss' },
-      { label: 'My Inquiries', route: '/public/category/news/dashboard', icon: 'bi-journal-text' },
+      { label: 'My Inquiries', route: '/public/category/news/saved', icon: 'bi-journal-text' },
       { label: 'Contributor Dashboard', route: '/public/category/news/dashboard', icon: 'bi-speedometer2' },
 
       {
@@ -170,6 +170,7 @@ export const CATEGORY_THEMES: { [key: number]: any } = {
     route: '/public/profession/feed',
     topLinks: [
       { label: 'Jobs', route: '/public/profession/jobs', icon: 'bi-briefcase' },
+      { label: 'My Inquiries', route: '/public/category/professions/saved', icon: 'bi-journal-text' },
       { label: 'Contributor Dashboard', route: '/public/category/professions/dashboard', icon: 'bi-speedometer2' },
 
       {
@@ -188,7 +189,7 @@ export const CATEGORY_THEMES: { [key: number]: any } = {
     route: '/public/category/social',
     topLinks: [
       { label: 'Explore', route: '/public/feed/social', icon: 'bi-rss' },
-      { label: 'My Inquiries', route: '/public/category/social/dashboard', icon: 'bi-journal-text' },
+      { label: 'My Inquiries', route: '/public/category/social/saved', icon: 'bi-journal-text' },
       { label: 'Contributor Dashboard', route: '/public/category/social/dashboard', icon: 'bi-speedometer2' },
 
       {
@@ -207,7 +208,7 @@ export const CATEGORY_THEMES: { [key: number]: any } = {
     route: '/public/category/transportation',
     topLinks: [
       { label: 'Explore', route: '/public/feed/transportation', icon: 'bi-rss' },
-      { label: 'My Inquiries', route: '/public/category/transportation/dashboard', icon: 'bi-journal-text' },
+      { label: 'My Inquiries', route: '/public/category/transportation/saved', icon: 'bi-journal-text' },
       { label: 'Contributor Dashboard', route: '/public/category/transportation/dashboard', icon: 'bi-speedometer2' },
 
       {
@@ -226,7 +227,7 @@ export const CATEGORY_THEMES: { [key: number]: any } = {
     route: '/public/category/tv',
     topLinks: [
       { label: 'Explore', route: '/public/feed/tv', icon: 'bi-rss' },
-      { label: 'My Inquiries', route: '/public/category/tv/dashboard', icon: 'bi-journal-text' },
+      { label: 'My Inquiries', route: '/public/category/tv/saved', icon: 'bi-journal-text' },
       { label: 'Contributor Dashboard', route: '/public/category/tv/dashboard', icon: 'bi-speedometer2' },
       {
         label: 'Contributor Activity',

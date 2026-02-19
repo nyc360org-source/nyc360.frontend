@@ -40,10 +40,10 @@
 
   <div class="content-wrapper" *ngIf="!isLoading">
     <header class="category-header">
-      <div class="container text-center">
+      <div class="container text-center header-inner">
         <p class="top-meta">Welcome at NYC360</p>
         <h1 class="main-title">{{ activeTheme?.label || 'News' }}</h1>
-        <p class="sub-meta">Where New Yorkers can share ideas, discussions, and local conversations</p>
+        <p class="sub-meta">{{ dynamicDescription }}</p>
 
         <div class="header-nav-buttons" *ngIf="activeTheme">
           <ng-container *ngFor="let btn of headerButtons">
@@ -75,13 +75,19 @@
 
             <!-- Case: Standard Button -->
             <a *ngIf="!btn.isDropdown" [routerLink]="btn.link" [queryParams]="btn.queryParams" class="nav-btn">
-              <i *ngIf="btn.icon" [class]="'bi ' + btn.icon + ' me-1'"></i>
+              <i *ngIf="btn.icon" [class]="'bi ' + btn.icon + ' me-2'"></i>
               {{ btn.label }}
             </a>
           </ng-container>
         </div>
+
+        <div class="breadcrumbs-overlay mt-4">
+          <app-breadcrumbs></app-breadcrumbs>
+        </div>
       </div>
     </header>
+
+    <div style="height: 30px;"></div>
 
     <div class="container main-content">
 

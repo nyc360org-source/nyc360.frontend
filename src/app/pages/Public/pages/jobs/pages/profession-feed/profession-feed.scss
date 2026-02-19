@@ -34,6 +34,18 @@ $font-header: 'Merriweather', serif;
     color: #5a8a7d;
     font-size: 1.2rem;
   }
+
+  .breadcrumbs-overlay {
+    margin-top: 20px;
+    z-index: 10;
+    position: relative;
+    display: flex;
+    justify-content: center;
+
+    @media (max-width: 768px) {
+      margin-top: 15px;
+    }
+  }
 }
 
 .header-nav-buttons {

@@ -9,11 +9,12 @@ import { AuthService } from '../../../../../Authentication/Service/auth';
 import { UserInfo } from '../../../../../Authentication/models/user-info';
 
 import { VerificationModalComponent } from '../../../../../../shared/components/verification-modal/verification-modal';
+import { BreadcrumbsComponent } from '../../../../../../shared/components/breadcrumbs/breadcrumbs.component';
 
 @Component({
   selector: 'app-community',
   standalone: true,
-  imports: [CommonModule, RouterLink, VerificationModalComponent],
+  imports: [CommonModule, RouterLink, VerificationModalComponent, BreadcrumbsComponent],
   templateUrl: './community.html',
   styleUrls: ['./community.scss']
 })

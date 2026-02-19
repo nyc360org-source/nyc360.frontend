@@ -180,4 +180,15 @@ export class PostsService {
       .set('PageSize', pageSize.toString());
     return this.http.get<ApiResponse<any>>(`${this.baseUrl}/me/category/${category}/analysis`, { params });
   }
+
+  // ✅ Get Saved Posts (Inquiries)
+  getSavedPosts(category?: number, page: number = 1, pageSize: number = 20): Observable<ApiResponse<Post[]>> {
+    let params = new HttpParams()
+      .set('Page', page.toString())
+      .set('PageSize', pageSize.toString());
+    if (category !== undefined && category !== null && category !== -1) {
+      params = params.set('Category', category.toString());
+    }
+    return this.http.get<ApiResponse<Post[]>>(`${this.baseUrl}/saved`, { params });
+  }
 }

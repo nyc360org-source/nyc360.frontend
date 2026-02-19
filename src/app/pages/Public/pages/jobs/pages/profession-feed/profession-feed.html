@@ -74,6 +74,10 @@
 
         <a routerLink="/public/forums/professions" class="nav-btn">Ask a Question</a>
       </div>
+
+      <div class="breadcrumbs-overlay mt-4">
+        <app-breadcrumbs></app-breadcrumbs>
+      </div>
     </div>
   </header>
 
@@ -92,162 +96,117 @@
       <div class="text-card-design p-4 shadow-sm" *ngIf="heroArticle.parentPost"
         [routerLink]="['/public/posts/details', heroArticle.id]"
         style="cursor: pointer; border-left: 8px solid #00695C; max-width: 1000px; margin: 0 auto;">
-        <div class="card-top-row">
-          <span class="pill-tag" style="background: #00695C; color: white;">FEATURED SHARE</span>
-          <span class="post-time">{{ heroArticle.createdAt | date:'MMM d, y' }}</span>
-        </div>
-        <h2 class="merriweather-font mb-3" style="font-size: 1.8rem;">{{ heroArticle.title }}</h2>
-        <p class="mb-4" *ngIf="heroArticle.content">{{ heroArticle.content }}</p>
-
-        <div class="shared-post-box">
-          <div class="shared-header">
-            <img [src]="getAuthorAvatar(heroArticle.parentPost.author)" class="shared-avatar" alt="Avatar"
-              appImgFallback="avatar">
-            <div class="author-info">
-              <span class="author-name">{{ heroArticle.parentPost.author.name || heroArticle.parentPost.author.fullName
-                ||
-                heroArticle.parentPost.author.username }}</span>
-              <span class="post-date">{{ heroArticle.parentPost.createdAt | date:'mediumDate' }}</span>
+        <div class="d-flex align-items-start gap-3">
+          <div class="flex-grow-1">
+            <h2 class="h3 mb-3">{{ heroArticle.title }}</h2>
+            <p class="text-muted mb-4">{{ heroArticle.content | slice:0:300 }}...</p>
+            <div class="d-flex align-items-center gap-2">
+              <img [src]="getAuthorAvatar(heroArticle.author)" class="rounded-circle" width="32" height="32"
+                appImgFallback="avatar">
+              <span class="fw-bold">{{ heroArticle.author.fullName }}</span>
+              <span class="text-muted">• {{ heroArticle.createdAt | date }}</span>
             </div>
-          </div>
-          <div class="shared-img-wrapper"
-            *ngIf="imageService.resolvePostImage(heroArticle.parentPost) !== imageService.DEFAULT_POST">
-            <img [src]="getArticleImage(heroArticle.parentPost)" alt="Shared Image" appImgFallback="post">
-          </div>
-          <div class="shared-content">
-            <h4 class="merriweather-font" *ngIf="heroArticle.parentPost.title">{{ heroArticle.parentPost.title }}</h4>
-            <p>{{ heroArticle.parentPost.content }}</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Visual Grid Articles -->
-    <section class="mt-5" *ngIf="visualArticles.length > 0">
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="merriweather-font h3 border-start border-4 border-success ps-3">Career Path Articles</h2>
+    <!-- Visual Articles Grid (With Images) -->
+    <section class="mb-5" *ngIf="visualArticles.length > 0">
+      <div class="d-flex align-items-center gap-3 mb-4">
+        <h2 class="h4 mb-0 fw-bold">Professional Insights</h2>
+        <div class="flex-grow-1 border-bottom"></div>
       </div>
-
       <div class="row g-4">
-        <div class="col-lg-4 col-md-6" *ngFor="let article of visualArticles">
-          <!-- Regular Grid Card -->
-          <app-article-grid-card *ngIf="!article.parentPost" [image]="getArticleImage(article)" [title]="article.title"
-            [description]="article.content" [link]="['/public/posts/details', article.id]" [customColor]="'#26A69A'">
+        <div class="col-md-4" *ngFor="let article of visualArticles">
+          <app-article-grid-card [image]="getArticleImage(article)" [title]="article.title"
+            [description]="article.content" [link]="['/public/posts/details', article.id]" [customColor]="'#00695C'">
           </app-article-grid-card>
-
-          <!-- Shared Grid Card LinkedIn Style -->
-          <div class="text-card-design p-3 h-100" *ngIf="article.parentPost"
-            [routerLink]="['/public/posts/details', article.id]" style="cursor: pointer;">
-            <div class="card-top-row">
-              <span class="pill-tag">SHARED</span>
-              <span class="post-time">{{ article.createdAt | date:'shortDate' }}</span>
-            </div>
-            <h4 class="merriweather-font mb-2" style="font-size: 1.1rem; font-weight: 700;">{{ article.title |
-              slice:0:60 }}</h4>
-
-            <div class="shared-post-box mt-2" style="transform: scale(0.95); margin-left: -2.5%; width: 105%;">
-              <div class="shared-header py-1 px-2">
-                <img [src]="getAuthorAvatar(article.parentPost.author)" class="shared-avatar"
-                  style="width: 18px; height: 18px;" appImgFallback="avatar">
-                <div class="author-info">
-                  <span class="author-name" style="font-size: 0.75rem;">{{ article.parentPost.author.name ||
-                    article.parentPost.author.username }}</span>
-                </div>
-              </div>
-              <div class="shared-img-wrapper" style="max-height: 140px;"
-                *ngIf="imageService.resolvePostImage(article.parentPost) !== imageService.DEFAULT_POST">
-                <img [src]="getArticleImage(article.parentPost)" alt="Shared" appImgFallback="post">
-              </div>
-              <div class="shared-content p-2">
-                <p
-                  style="font-size: 0.8rem; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
-                  {{ article.parentPost.content }}</p>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </section>
 
-    <!-- Hiring News - High Impact Section -->
-    <section class="hiring-premium-section mt-5" *ngIf="hiringNews.length > 0">
-      <div class="section-overlay-blob"></div>
-
-      <div class="section-header-row mb-5">
-        <div class="title-group">
-          <span class="premium-badge">OPPORTUNITIES</span>
-          <h2 class="merriweather-font display-6 fw-bold">NYC Hiring Spotlight</h2>
-          <p>Hand-picked roles from NYC's most innovative companies.</p>
+    <!-- Detailed Text Listings (LinkedIn Feed Style) -->
+    <section class="mb-5" *ngIf="textArticles.length > 0">
+      <div class="d-flex align-items-center gap-3 mb-4">
+        <h2 class="h4 mb-0 fw-bold">Recent Updates</h2>
+        <div class="flex-grow-1 border-bottom"></div>
+      </div>
+      <div class="mx-auto" style="max-width: 800px;">
+        <div class="text-card-design mb-4 p-4 border rounded-3 bg-white hover-shadow transition-all"
+          *ngFor="let article of textArticles" [routerLink]="['/public/posts/details', article.id]"
+          style="cursor: pointer;">
+          <div class="d-flex align-items-center gap-3 mb-3">
+            <img [src]="getAuthorAvatar(article.author)" class="rounded-circle" width="40" height="40"
+              appImgFallback="avatar">
+            <div>
+              <h4 class="h6 mb-0 fw-bold text-dark">{{ article.author.fullName }}</h4>
+              <small class="text-muted">{{ article.createdAt | date:'mediumDate' }}</small>
+            </div>
+          </div>
+          <h3 class="h5 mb-3 fw-bold">{{ article.title }}</h3>
+          <p class="text-muted mb-0 leading-relaxed">{{ article.content | slice:0:220 }}...</p>
+          <div class="mt-3 text-primary-dark fw-bold small">Read Full Update →</div>
         </div>
-        <a routerLink="/public/profession/jobs" class="luxury-btn-primary">
-          <span>View All Roles</span>
-          <i class="bi bi-arrow-right"></i>
-        </a>
+      </div>
+    </section>
+
+    <!-- Job Opportunities Section -->
+    <section class="mb-5 bg-light p-5 rounded-4" *ngIf="hiringNews.length > 0">
+      <div class="text-center mb-5">
+        <h2 class="h2 fw-bold">Hiring Opportunities</h2>
+        <p class="text-muted">Direct openings from verified organizations</p>
       </div>
 
       <div class="row g-4 justify-content-center">
-        <div class="col-md-6 col-lg-5" *ngFor="let job of hiringNews">
-          <div class="premium-job-card" [routerLink]="['/public/job-profile', job.id]">
-            <div class="card-inner">
-              <div class="job-meta-top">
-                <div class="company-brand">
-                  <img [src]="imageService.resolveAvatar({imageUrl: job.authorAvatarUrl})" class="brand-logo"
-                    appImgFallback="avatar">
-                  <div class="brand-info">
-                    <span class="company-name">{{ job.companyName }}</span>
-                    <span class="post-date">Recently Posted</span>
-                  </div>
-                </div>
-                <div class="arrangement-tag" [attr.data-type]="getWorkArrangement(job.workArrangement)">
-                  <i class="bi" [ngClass]="{
-                    'bi-house-heart': job.workArrangement === 1,
-                    'bi-building': job.workArrangement === 0,
-                    'bi-door-open': job.workArrangement === 2
-                  }"></i>
-                  {{ getWorkArrangement(job.workArrangement) }}
-                </div>
+        <div class="col-md-6" *ngFor="let item of (hiringNews | slice:0:6)">
+          <div class="job-pill-card p-4 rounded-3 bg-white border h-100 hover-lift"
+            [routerLink]="['/public/job-profile', item.id]" style="cursor: pointer;">
+            <div class="d-flex align-items-start gap-3">
+              <div class="job-icon-box p-3 rounded-circle" style="background: rgba(0, 105, 92, 0.1);">
+                <i class="bi bi-briefcase-fill style='color: #00695C;' fs-4"></i>
               </div>
-
-              <h3 class="job-title">{{ job.title }}</h3>
-
-              <div class="job-details-grid">
-                <div class="detail-item">
-                  <i class="bi bi-cash-stack"></i>
-                  <span>{{ formatSalary(job.salaryMin, job.salaryMax) }}</span>
+              <div class="flex-grow-1">
+                <div class="d-flex justify-content-between align-items-start mb-1">
+                  <h4 class="h6 fw-bold mb-0">{{ item.title }}</h4>
+                  <span class="badge bg-success-soft text-success small">{{ getEmploymentType(item.employmentType)
+                    }}</span>
                 </div>
-                <div class="detail-item">
-                  <i class="bi bi-briefcase"></i>
-                  <span>{{ getEmploymentType(job.employmentType) }}</span>
+                <div class="text-muted small mb-3">
+                  <span class="me-2"><i class="bi bi-building me-1"></i> {{ item.ownerName }}</span>
+                  <span><i class="bi bi-geo-alt me-1"></i> {{ item.locationName || 'New York, NY' }}</span>
                 </div>
-                <div class="detail-item">
-                  <i class="bi bi-graph-up-arrow"></i>
-                  <span>{{ getLevel(job.employmentLevel) }}</span>
+                <div class="d-flex flex-wrap gap-2">
+                  <span class="badge bg-light text-dark small">{{ getWorkArrangement(item.workArrangement) }}</span>
+                  <span class="badge bg-light text-dark small">{{ getLevel(item.level) }}</span>
+                  <span class="ms-auto fw-bold text-teal-dark">{{ item.startingPrice ? '$' +
+                    item.startingPrice.toLocaleString() : 'Negotiable' }}</span>
                 </div>
-              </div>
-
-              <div class="card-action-bar">
-                <div class="applicants-status">
-                  <i class="bi bi-lightning-charge-fill text-warning"></i>
-                  <span>Actively Recruiting</span>
-                </div>
-                <button class="btn-apply-small">
-                  Details <i class="bi bi-chevron-right"></i>
-                </button>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </section>
 
-    <div class="text-center py-5" *ngIf="!heroArticle && visualArticles.length === 0 && textArticles.length === 0">
-      <p class="text-muted italic">No career articles available at the moment.</p>
-    </div>
+      <div class="text-center mt-5">
+        <button class="btn px-5 py-3 rounded-pill fw-bold shadow-lg" style="background-color: #00695C; color: white;"
+          routerLink="/public/profession/jobs">
+          Browse All Openings <i class="bi bi-arrow-right ms-2"></i>
+        </button>
+      </div>
+    </section>
 
   </div>
 
-  <app-verification-modal *ngIf="isVerificationModalOpen" [categoryName]="'Profession'" [categoryId]="8"
-    (close)="closeVerificationModal()" (verified)="onVerified()">
+  <!-- Empty State -->
+  <div class="text-center py-5" *ngIf="!isLoading && visualArticles.length === 0 && textArticles.length === 0">
+    <i class="bi bi-cup-hot text-muted display-1 mb-4"></i>
+    <h2 class="h4 text-muted">No updates available at the moment</h2>
+    <p class="text-muted">Check back later for fresh professional insights</p>
+  </div>
+
+  <!-- Verification Modal -->
+  <app-verification-modal *ngIf="isVerificationModalOpen" (close)="closeVerificationModal()" (verified)="onVerified()">
   </app-verification-modal>
 
 </div>

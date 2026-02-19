@@ -57,6 +57,15 @@ $font-body: 'Inter', sans-serif;
   }
 }
 
+.breadcrumbs-overlay {
+  margin-top: 20px;
+  z-index: 10;
+
+  @media (max-width: 768px) {
+    margin-top: 15px;
+  }
+}
+
 .header-nav-buttons {
   display: flex;
   justify-content: center;

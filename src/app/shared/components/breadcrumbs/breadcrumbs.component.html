@@ -1,34 +1,21 @@
-<div class="breadcrumbs-container container-fluid px-0 py-2" *ngIf="!isHomePage()">
-    <div class="d-flex align-items-center justify-content-between w-100">
-        <div class="d-flex align-items-center">
-            <!-- Back Button -->
-            <button type="button" class="btn-nav me-2" (click)="goBack()" title="Go Back">
-                <i class="bi bi-chevron-left"></i>
-            </button>
+<div class="breadcrumbs-container px-0 py-2" *ngIf="!isHomePage()">
+    <div class="breadcrumb-trail">
+        <!-- Breadcrumb Trail -->
+        <nav aria-label="breadcrumb" class="d-none d-sm-block">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item">
+                    <a routerLink="/public/home">Home</a>
+                </li>
+                <li class="breadcrumb-item" *ngFor="let breadcrumb of breadcrumbs; let last = last">
+                    <a *ngIf="!last" [routerLink]="[breadcrumb.url]">{{ breadcrumb.label }}</a>
+                    <span *ngIf="last" class="current-label">{{ breadcrumb.label }}</span>
+                </li>
+            </ol>
+        </nav>
 
-            <!-- Breadcrumb Trail -->
-            <nav aria-label="breadcrumb" class="d-none d-sm-block">
-                <ol class="breadcrumb mb-0">
-                    <li class="breadcrumb-item">
-                        <a routerLink="/public/home" class="home-link">Home</a>
-                    </li>
-                    <li class="breadcrumb-item" *ngFor="let breadcrumb of breadcrumbs; let last = last"
-                        [ngClass]="{ 'active': last }">
-                        <a *ngIf="!last" [routerLink]="[breadcrumb.url]">{{ breadcrumb.label }}</a>
-                        <span *ngIf="last" class="current-label">{{ breadcrumb.label }}</span>
-                    </li>
-                </ol>
-            </nav>
-
-            <!-- Mobile Breadcrumb -->
-            <div class="current-page-label d-sm-none" *ngIf="breadcrumbs.length > 0">
-                {{ breadcrumbs[breadcrumbs.length - 1].label }}
-            </div>
+        <!-- Mobile Breadcrumb -->
+        <div class="current-page-label d-sm-none" *ngIf="breadcrumbs.length > 0">
+            {{ breadcrumbs[breadcrumbs.length - 1].label }}
         </div>
-
-        <!-- Forward Button (Right Side) -->
-        <button type="button" class="btn-nav ms-2" (click)="goForward()" title="Go Forward">
-            <i class="bi bi-chevron-right"></i>
-        </button>
     </div>
 </div>

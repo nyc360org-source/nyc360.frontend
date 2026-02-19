@@ -108,6 +108,15 @@ $card-shadow: 0 10px 40px rgba(188, 157, 95, 0.08);
             }
         }
     }
+
+    .breadcrumbs-overlay {
+        margin-top: 20px;
+        z-index: 10;
+
+        @media (max-width: 768px) {
+            margin-top: 15px;
+        }
+    }
 }
 
 // --- 🏠 Hero Section ---

@@ -11,12 +11,13 @@ import { VerificationService } from '../../../settings/services/verification.ser
 import { ToastService } from '../../../../../../shared/services/toast.service';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CategoryContextService } from '../../../../../../shared/services/category-context.service';
+import { BreadcrumbsComponent } from '../../../../../../shared/components/breadcrumbs/breadcrumbs.component';
 
 
 @Component({
     selector: 'app-housing-home',
     standalone: true,
-    imports: [CommonModule, RouterModule, ReactiveFormsModule, ImgFallbackDirective],
+    imports: [CommonModule, RouterModule, ReactiveFormsModule, ImgFallbackDirective, BreadcrumbsComponent],
     templateUrl: './housing-home.html',
     styleUrls: ['./housing-home.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush

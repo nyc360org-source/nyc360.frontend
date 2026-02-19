@@ -17,7 +17,7 @@ export const PUBLIC_ROUTES: Routes = [
       { path: 'posts/edit/:id', loadComponent: () => import('../pages/Public/pages/posts/post-form/post-form').then(m => m.PostFormComponent) },
 
       // Community
-      { path: 'community', loadComponent: () => import('../pages/Public/pages/communities/pages/community/community').then(m => m.CommunityComponent) },
+      { path: 'community', data: { breadcrumb: 'Communities' }, loadComponent: () => import('../pages/Public/pages/communities/pages/community/community').then(m => m.CommunityComponent) },
       { path: 'create-community', loadComponent: () => import('../pages/Public/pages/communities/pages/create-community/create-community').then(m => m.CreateCommunityComponent) },
       { path: 'community/:slug', loadComponent: () => import('../pages/Public/pages/communities/pages/community-profile/community-profile').then(m => m.CommunityProfileComponent) },
       { path: 'community/:slug/manage', loadComponent: () => import('../pages/Public/pages/communities/pages/community-management/community-management').then(m => m.CommunityManagementComponent) },
@@ -27,7 +27,7 @@ export const PUBLIC_ROUTES: Routes = [
       { path: 'post/:id', loadComponent: () => import('../pages/Public/pages/communities/pages/post-details/post-details').then(m => m.PostDetailsComponent) },
 
       // jobs
-      { path: 'profession/feed', loadComponent: () => import('../pages/Public/pages/jobs/pages/profession-feed/profession-feed').then(m => m.ProfessionFeedComponent) },
+      { path: 'profession/feed', data: { breadcrumb: 'Profession' }, loadComponent: () => import('../pages/Public/pages/jobs/pages/profession-feed/profession-feed').then(m => m.ProfessionFeedComponent) },
       { path: 'profession/my-applications', loadComponent: () => import('../pages/Public/pages/jobs/pages/my-applications.component/my-applications.component').then(m => m.MyApplicationsComponent) },
       { path: 'create-offer', loadComponent: () => import('../pages/Public/pages/jobs/pages/create-offer/create-offer').then(m => m.CreateOfferComponent) },
       { path: 'job-profile/:id', loadComponent: () => import('../pages/Public/pages/jobs/pages/job-profile/job-profile').then(m => m.JobProfileComponent) },
@@ -49,7 +49,7 @@ export const PUBLIC_ROUTES: Routes = [
       },
 
       // housing
-      { path: 'housing/home', loadComponent: () => import('../pages/Public/pages/housing/pages/housing-home/housing-home').then(m => m.HousingHomeComponent) },
+      { path: 'housing/home', data: { breadcrumb: 'Housing' }, loadComponent: () => import('../pages/Public/pages/housing/pages/housing-home/housing-home').then(m => m.HousingHomeComponent) },
       { path: 'housing/feed', loadComponent: () => import('../pages/Public/pages/housing/pages/housing-feed/housing-feed').then(m => m.HousingFeedComponent) },
       { path: 'housing/create/renting', loadComponent: () => import('../pages/Public/pages/housing/pages/create-housing/create-housing').then(m => m.CreateHousingComponent) },
       { path: 'housing/create/sale', loadComponent: () => import('../pages/Public/pages/housing/pages/create-sale/create-sale.component').then(m => m.CreateSaleComponent) },
@@ -79,7 +79,13 @@ export const PUBLIC_ROUTES: Routes = [
       },
       {
         path: 'category/:categoryPath/dashboard',
+        data: { breadcrumb: 'Dashboard' },
         loadComponent: () => import('../pages/Public/pages/category-dashboard/category-dashboard').then(m => m.CategoryDashboardComponent)
+      },
+      {
+        path: 'category/:categoryPath/saved',
+        data: { breadcrumb: 'My Inquiries' },
+        loadComponent: () => import('../pages/Public/pages/category-saved-posts/category-saved-posts').then(m => m.CategorySavedPostsComponent)
       },
 
       //feed layout route

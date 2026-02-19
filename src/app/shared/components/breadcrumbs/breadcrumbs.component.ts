@@ -26,7 +26,8 @@ export class BreadcrumbsComponent implements OnInit {
 
     isHomePage(): boolean {
         const url = this.router.url;
-        return url === '/public/home' || url === '/public' || url === '/' || url.endsWith('/home');
+        // Only hide on the absolute root or the main public landing
+        return url === '/public/home' || url === '/public' || url === '/' || url === '';
     }
 
     ngOnInit(): void {
@@ -61,9 +62,10 @@ export class BreadcrumbsComponent implements OnInit {
 
             const label = child.snapshot.data['breadcrumb'] || this.formatLabel(routeURL);
 
-            // Decisions: Aggressively filter out technical segments to keep breadcrumbs simple
-            const ignoredSegments = ['public', 'feed', 'posts', 'pages', 'widgets', 'home'];
-            const isIgnored = ignoredSegments.includes(routeURL.toLowerCase()) || !label;
+            // Decisions: Filter out technical segments unless they have an explicit label
+            const ignoredSegments = ['public', 'feed', 'posts', 'pages', 'widgets'];
+            const segmentExplicitlyNamed = !!child.snapshot.data['breadcrumb'];
+            const isIgnored = !segmentExplicitlyNamed && (ignoredSegments.includes(routeURL.toLowerCase()) || !label);
 
             if (!isIgnored && !breadcrumbs.some(b => b.url === nextUrl)) {
                 breadcrumbs.push({ label, url: nextUrl });
