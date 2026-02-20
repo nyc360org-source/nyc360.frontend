@@ -11,13 +11,13 @@ import { VerificationService } from '../../../settings/services/verification.ser
 import { ToastService } from '../../../../../../shared/services/toast.service';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CategoryContextService } from '../../../../../../shared/services/category-context.service';
-import { BreadcrumbsComponent } from '../../../../../../shared/components/breadcrumbs/breadcrumbs.component';
+
 
 
 @Component({
     selector: 'app-housing-home',
     standalone: true,
-    imports: [CommonModule, RouterModule, ReactiveFormsModule, ImgFallbackDirective, BreadcrumbsComponent],
+    imports: [CommonModule, RouterModule, ReactiveFormsModule, ImgFallbackDirective],
     templateUrl: './housing-home.html',
     styleUrls: ['./housing-home.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
@@ -219,6 +219,16 @@ export class HousingHomeComponent implements OnInit {
         });
     }
 
+    private stripHtml(html: string | null | undefined): string {
+        if (!html) return '';
+        try {
+            const doc = new DOMParser().parseFromString(html, 'text/html');
+            return (doc.body.textContent || '').replace(/\s+/g, ' ').trim();
+        } catch {
+            return html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
+        }
+    }
+
     private processHousingItem(item: any, type: string): any {
         if (!item) return null;
 
@@ -233,10 +243,12 @@ export class HousingHomeComponent implements OnInit {
 
         if (description.includes('\n\n\n')) {
             const parts = description.split('\n\n\n');
-            displayDescription = parts[0];
+            displayDescription = this.stripHtml(parts[0]);
             try {
                 metadata = JSON.parse(parts[parts.length - 1]);
             } catch (e) { }
+        } else {
+            displayDescription = this.stripHtml(description);
         }
 
         // 3. Resolve Media

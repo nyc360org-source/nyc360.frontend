@@ -9,7 +9,7 @@ import { BreadcrumbsComponent } from "../../../shared/components/breadcrumbs/bre
 @Component({
   selector: 'app-public-layout',
   standalone: true,
-  imports: [RouterOutlet, NavBarComponent, FooterComponent, CommonModule],
+  imports: [RouterOutlet, NavBarComponent, FooterComponent, CommonModule, BreadcrumbsComponent],
   templateUrl: './public-layout.component.html',
   styleUrl: './public-layout.component.css'
 })

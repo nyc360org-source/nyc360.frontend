@@ -1,12 +1,11 @@
 .public-content-wrapper {
     padding-top: 110px;
-    /* Base height of the fixed navbar */
+    /* navbar only — breadcrumb is fixed, no layout space */
     min-height: calc(100vh - 110px);
 }
 
 @media (max-width: 991px) {
     .public-content-wrapper {
         padding-top: 65px;
-        /* Adjust for mobile where categories nav might be different */
     }
 }

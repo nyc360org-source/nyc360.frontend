@@ -1,71 +1,138 @@
-.breadcrumbs-container {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    margin-top: 15px;
-}
+/* ═══════════════════════════════════════════════════════════
+   NYC-360 Breadcrumb — Fixed Overlay (Deep Position)
+   Sits lower in the page header. Completely static.
+   ═══════════════════════════════════════════════════════════ */
 
-/* The Professional Pill Container */
-.breadcrumb-trail {
-    display: inline-flex;
-    align-items: center;
-    background: rgba(255, 255, 255, 0.6);
-    backdrop-filter: blur(8px);
-    padding: 6px 20px;
-    border-radius: 50px;
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-}
+.breadcrumbs-nav {
+    position: fixed;
+    /* Lowered to 134px to be clearly inside the page headers */
+    top: 134px;
+    left: 0;
+    right: 0;
+    z-index: 950;
 
-.breadcrumb {
     display: flex;
     align-items: center;
+    height: 32px;
+    padding: 0 32px;
+
+    background: transparent;
+    border: none;
+    box-shadow: none;
+
+    /* Transition only for opacity when scrolling */
+    transition: opacity 0.2s ease-in-out, visibility 0.2s;
+}
+
+.breadcrumbs-nav.scrolled-hide {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+/* ── Breadcrumb list ────────────────────────────────────── */
+.breadcrumb-list {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    overflow: hidden;
+    gap: 0;
+    list-style: none;
     margin: 0;
     padding: 0;
-    list-style: none;
-    font-size: 0.85rem;
+    font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    font-size: 0.78rem;
     font-weight: 500;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
 }
 
+/* ── Items ── */
 .breadcrumb-item {
     display: flex;
     align-items: center;
-    color: #999;
+    /* Static items */
+    transition: none !important;
+    animation: none !important;
 }
 
-.breadcrumb-item+.breadcrumb-item::before {
-    content: "/";
-    padding: 0 12px;
-    color: #ccc;
-    font-weight: 400;
-}
-
-.breadcrumb-item a {
-    color: #888;
+/* ── Links ── */
+.breadcrumb-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: rgba(20, 20, 40, 0.75);
+    font-weight: 500;
+    font-size: 0.78rem;
     text-decoration: none;
-    transition: color 0.2s;
+    padding: 3px 7px;
+    border-radius: 4px;
+    transition: color 0.1s ease-in-out;
+    /* very fast color only */
 }
 
-.breadcrumb-item a:hover {
-    color: #333;
+.breadcrumb-link:hover {
+    color: #0A3D91;
+    background: rgba(10, 61, 145, 0.06);
 }
 
-/* Bold state for the current page */
-.current-label {
-    color: #000;
+.breadcrumb-link svg {
+    flex-shrink: 0;
+    opacity: 0.6;
+}
+
+/* ── Text ── */
+.breadcrumb-text {
+    color: rgba(20, 20, 40, 0.55);
+    font-size: 0.76rem;
+    padding: 3px 7px;
+}
+
+/* ── Separator ── */
+.breadcrumb-separator {
+    display: flex;
+    align-items: center;
+    color: rgba(20, 20, 40, 0.3);
+    padding: 0 1px;
+}
+
+/* ── Active Crumb ── */
+.breadcrumb-item.active .breadcrumb-current {
+    display: inline-flex;
+    align-items: center;
+    color: #0A3D91;
     font-weight: 700;
-    letter-spacing: -0.2px;
+    font-size: 0.78rem;
+    padding: 3px 9px 3px 7px;
+    border-radius: 4px;
+    background: rgba(10, 61, 145, 0.08);
+    /* subtle pill always visible */
+    cursor: default;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 280px;
 }
 
-/* Mobile optimizations */
-.current-page-label {
-    font-weight: 700;
-    color: #000;
-    font-size: 0.85rem;
+/* ════════ RESPONSIVE ══════════════════════════════════════ */
+@media (max-width: 991px) {
+    .breadcrumbs-nav {
+        top: 85px;
+        /* adjusted for mobile navbar height */
+        height: 28px;
+        padding: 0 16px;
+    }
 }
 
 @media (max-width: 576px) {
-    .breadcrumb-trail {
-        padding: 4px 16px;
+    .breadcrumbs-nav {
+        top: 85px;
+        height: 26px;
+        padding: 0 12px;
+    }
+
+    .breadcrumb-item:not(:first-child):not(:nth-last-child(-n+3)),
+    .breadcrumb-separator:not(:nth-last-child(-n+4)) {
+        display: none;
     }
 }

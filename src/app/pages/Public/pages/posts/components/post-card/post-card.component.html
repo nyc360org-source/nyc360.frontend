@@ -11,7 +11,7 @@
 
     <div class="post-content-area" (click)="viewPostDetails(post.id, $event)">
         <a class="post-title-link" *ngIf="post.title">{{ post.title }}</a>
-        <p class="post-text">{{ post.content }}</p>
+        <p class="post-text">{{ post.content | stripHtml }}</p>
 
         <!-- Repost Box -->
         <div *ngIf="post.parentPost" class="repost-box">
@@ -21,7 +21,8 @@
                 <strong style="font-size: 0.9rem;">{{ getAuthorName(post.parentPost.author) }}</strong>
             </div>
             <h5 style="font-weight: 700; margin-bottom: 8px;">{{ post.parentPost.title }}</h5>
-            <p style="font-size: 0.95rem; color: #555; margin-bottom: 12px;">{{ post.parentPost.content }}</p>
+            <p style="font-size: 0.95rem; color: #555; margin-bottom: 12px;">{{ post.parentPost.content | stripHtml }}
+            </p>
 
             <!-- Parent Post Attachments (Display if present) -->
             <div *ngIf="(post.parentPost.attachments && post.parentPost.attachments.length > 0) || post.parentPost.imageUrl"

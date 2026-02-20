@@ -103,6 +103,7 @@ export class CommunityProfileComponent implements OnInit {
             // Map to ExtendedPost
             this.posts = data.posts.data.map((p: any) => ({
               ...p,
+              content: this.stripHtml(p.content),
               comments: [], // Init empty
               currentUserInteraction: p.currentUserInteraction || InteractionType.None,
               showComments: false,
@@ -358,6 +359,16 @@ export class CommunityProfileComponent implements OnInit {
     if (!url) return 'assets/images/default-avatar.png';
     if (url.includes('http')) return url;
     return `${environment.apiBaseUrl2}/avatars/${url}`;
+  }
+
+  private stripHtml(html: string | null | undefined): string {
+    if (!html) return '';
+    try {
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      return (doc.body.textContent || '').replace(/\s+/g, ' ').trim();
+    } catch {
+      return html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
+    }
   }
 
   getAuthorName(author: any): string {

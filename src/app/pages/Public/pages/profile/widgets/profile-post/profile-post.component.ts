@@ -6,11 +6,12 @@ import { Post, InteractionType } from '../../../posts/models/posts';
 import { PostsService } from '../../../posts/services/posts';
 import { ToastService } from '../../../../../../shared/services/toast.service';
 import { environment } from '../../../../../../environments/environment';
+import { StripHtmlPipe } from '../../../../../../shared/pipes/strip-html.pipe';
 
 @Component({
     selector: 'app-profile-post',
     standalone: true,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, StripHtmlPipe],
     templateUrl: './profile-post.component.html',
     styleUrls: ['./profile-post.component.scss']
 })
@@ -209,10 +210,20 @@ export class ProfilePostComponent {
         return null;
     }
 
+    private stripHtml(html: string | null | undefined): string {
+        if (!html) return '';
+        try {
+            const doc = new DOMParser().parseFromString(html, 'text/html');
+            return (doc.body.textContent || '').replace(/\s+/g, ' ').trim();
+        } catch {
+            return html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
+        }
+    }
+
     getCleanContent(content: string): string {
         if (!content) return '';
         const parts = content.split('\n\n\n');
-        return parts[0].trim();
+        return this.stripHtml(parts[0]);
     }
 
     navigateToProfile(username: string, event?: Event) {

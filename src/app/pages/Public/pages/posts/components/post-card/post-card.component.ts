@@ -6,11 +6,12 @@ import { Post, InteractionType, PostComment } from '../../models/posts';
 import { PostsService } from '../../services/posts';
 import { ToastService } from '../../../../../../shared/services/toast.service';
 import { environment } from '../../../../../../environments/environment';
+import { StripHtmlPipe } from '../../../../../../shared/pipes/strip-html.pipe';
 
 @Component({
     selector: 'app-post-card',
     standalone: true,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, StripHtmlPipe],
     templateUrl: './post-card.component.html',
     styleUrls: ['./post-card.component.scss']
 })

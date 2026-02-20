@@ -56,7 +56,10 @@ export class TagPostsComponent implements OnInit {
 
         if (res.isSuccess) {
           if (Array.isArray(res.data)) {
-            this.posts = res.data;
+            this.posts = res.data.map(p => ({
+              ...p,
+              content: this.stripHtml(p.content)
+            }));
             this.totalCount = res.totalCount ?? this.posts.length;
 
             // 🔥 استخراج التاجات من البوستات (Extraction Logic)
@@ -91,6 +94,16 @@ export class TagPostsComponent implements OnInit {
     this.relatedTags = Array.from(allTags)
       .filter(t => t.toLowerCase() !== this.tagName.toLowerCase())
       .slice(0, 20);
+  }
+
+  private stripHtml(html: string | null | undefined): string {
+    if (!html) return '';
+    try {
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      return (doc.body.textContent || '').replace(/\s+/g, ' ').trim();
+    } catch {
+      return html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
+    }
   }
 
   // --- Helpers ---

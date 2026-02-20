@@ -33,12 +33,12 @@ export interface HeaderButton {
 
 import { VerificationModalComponent } from '../../../../../shared/components/verification-modal/verification-modal';
 import { ArticleHeroComponent } from '../../article-hero.component/article-hero.component';
-import { BreadcrumbsComponent } from '../../../../../shared/components/breadcrumbs/breadcrumbs.component';
+
 
 @Component({
   selector: 'app-category-home',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule, ImgFallbackDirective, VerificationModalComponent, ArticleHeroComponent, BreadcrumbsComponent],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, ImgFallbackDirective, VerificationModalComponent, ArticleHeroComponent],
   templateUrl: './category-home.component.html',
   styleUrls: ['./category-home.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -329,22 +329,37 @@ export class CategoryHomeComponent implements OnInit {
     return this.imageService.resolveAvatar(author);
   }
 
+  private stripHtml(html: string | null | undefined): string {
+    if (!html) return '';
+    try {
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      return (doc.body.textContent || '').replace(/\s+/g, ' ').trim();
+    } catch {
+      return html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
+    }
+  }
+
   private parsePostData(post: any): any {
     if (!post.content) return post;
 
-    // Check for JSON in content
+    // Check for JSON in content (Housing metadata format)
     if (post.content.includes('{') && post.content.includes('}')) {
       try {
         const parts = post.content.split('\n\n\n');
         const jsonPart = parts.find((p: string) => p.trim().startsWith('{'));
         if (jsonPart) {
           post.housingMetadata = JSON.parse(jsonPart.trim());
-          post.cleanDescription = parts.find((p: string) => !p.trim().startsWith('{')) || '';
+          const rawDesc = parts.find((p: string) => !p.trim().startsWith('{')) || '';
+          post.cleanDescription = this.stripHtml(rawDesc);
+          return post; // Housing posts: don't overwrite content
         }
       } catch (e) {
         console.error('Failed to parse post metadata', e);
       }
     }
+
+    // Strip HTML from RSS/blog content for display in card excerpts
+    post.content = this.stripHtml(post.content);
     return post;
   }
 }

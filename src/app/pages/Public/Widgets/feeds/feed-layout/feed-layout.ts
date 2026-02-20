@@ -135,9 +135,9 @@ export class FeedLayoutComponent implements OnInit, OnDestroy {
           authorImg: this.imageService.resolveAvatar(post.author),
           authorName: post.author?.fullName || post.author?.username || 'Member',
           title: post.title || post.parentPost?.title,
-          content: post.content,
+          content: this.stripHtml(post.content),
           sharedTitle: isShared ? post.parentPost.title : null,
-          sharedContent: isShared ? post.parentPost.content : null,
+          sharedContent: isShared ? this.stripHtml(post.parentPost.content) : null,
           locationName: post.location?.neighborhood || post.location?.city,
           categoryName: catTheme.label,
           categoryColor: catTheme.color,
@@ -153,6 +153,19 @@ export class FeedLayoutComponent implements OnInit, OnDestroy {
 
   getPostTypeName(postType: number, sourceType: number): string {
     return sourceType === 2 ? 'Article' : (postType === 1 ? 'News' : 'Post');
+  }
+
+  /** Strip HTML tags and decode HTML entities from a string (e.g. RSS content) */
+  private stripHtml(html: string | null | undefined): string {
+    if (!html) return '';
+    // Use DOMParser to safely parse and extract text
+    try {
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      return (doc.body.textContent || '').replace(/\s+/g, ' ').trim();
+    } catch {
+      // Fallback: simple regex strip
+      return html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
+    }
   }
 
   generatePageArray() {

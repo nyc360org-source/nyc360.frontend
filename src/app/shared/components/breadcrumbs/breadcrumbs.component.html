@@ -1,21 +1,48 @@
-<div class="breadcrumbs-container px-0 py-2" *ngIf="!isHomePage()">
-    <div class="breadcrumb-trail">
-        <!-- Breadcrumb Trail -->
-        <nav aria-label="breadcrumb" class="d-none d-sm-block">
-            <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item">
-                    <a routerLink="/public/home">Home</a>
-                </li>
-                <li class="breadcrumb-item" *ngFor="let breadcrumb of breadcrumbs; let last = last">
-                    <a *ngIf="!last" [routerLink]="[breadcrumb.url]">{{ breadcrumb.label }}</a>
-                    <span *ngIf="last" class="current-label">{{ breadcrumb.label }}</span>
-                </li>
-            </ol>
-        </nav>
+<nav class="breadcrumbs-nav" aria-label="Breadcrumb navigation" *ngIf="!isHomePage()"
+    [class.scrolled-hide]="isScrolled">
+    <ol class="breadcrumb-list">
 
-        <!-- Mobile Breadcrumb -->
-        <div class="current-page-label d-sm-none" *ngIf="breadcrumbs.length > 0">
-            {{ breadcrumbs[breadcrumbs.length - 1].label }}
-        </div>
-    </div>
-</div>
+        <!-- ① Root: Home — always first -->
+        <li class="breadcrumb-item">
+            <a routerLink="/public/home" class="breadcrumb-link" title="Go to Home">
+                <!-- Home icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                    <polyline points="9 22 9 12 15 12 15 22" />
+                </svg>
+                Home
+            </a>
+        </li>
+
+        <!-- ② Dynamic crumb trail -->
+        <ng-container *ngFor="let crumb of breadcrumbs; let last = last">
+
+            <!-- Chevron separator -->
+            <li class="breadcrumb-separator" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6" />
+                </svg>
+            </li>
+
+            <li class="breadcrumb-item" [class.active]="last">
+                <!-- Clickable ancestor (has a real URL) -->
+                <a *ngIf="!last && crumb.url" [routerLink]="crumb.url" class="breadcrumb-link"
+                    [title]="'Go to ' + crumb.label">
+                    {{ crumb.label }}
+                </a>
+                <!-- Non-navigable label -->
+                <span *ngIf="!last && !crumb.url" class="breadcrumb-text">
+                    {{ crumb.label }}
+                </span>
+                <!-- Current active page -->
+                <span *ngIf="last" class="breadcrumb-current" [title]="crumb.label">
+                    {{ crumb.label }}
+                </span>
+            </li>
+
+        </ng-container>
+
+    </ol>
+</nav>

@@ -354,11 +354,28 @@ export class Home implements OnInit {
   }
 
   // Helpers
+  private stripHtml(html: string | null | undefined): string {
+    if (!html) return '';
+    try {
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      return (doc.body.textContent || '').replace(/\s+/g, ' ').trim();
+    } catch {
+      return html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
+    }
+  }
+
   private normalizePost(post: any): Post {
     if (!post.stats) post.stats = { views: 0, likes: 0, dislikes: 0, comments: 0, shares: 0 };
     if (post.isSaved === undefined) post.isSaved = (post.isSavedByUser === true);
     if (!post.title) post.title = '';
-    if (!post.content) post.content = '';
+
+    // Clean HTML content for excerpts
+    if (post.content) {
+      post.content = this.stripHtml(post.content);
+    } else {
+      post.content = '';
+    }
+
     return post;
   }
 

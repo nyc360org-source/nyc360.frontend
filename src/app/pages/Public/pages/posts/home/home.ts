@@ -20,7 +20,7 @@ interface Alert { type: 'yellow' | 'blue' | 'red'; title: string; desc: string; 
   styleUrls: ['./home.scss']
 })
 export class Home implements OnInit {
-  
+
   protected readonly environment = environment;
   private postsService = inject(PostsService);
   private weatherService = inject(WeatherService);
@@ -31,7 +31,7 @@ export class Home implements OnInit {
   // Data
   featuredPosts: Post[] = [];      // Top 3 cards
   heroBanner: Post | null = null;   // The big card below them
-  interestGroups: InterestGroup[] = []; 
+  interestGroups: InterestGroup[] = [];
   trendingTags: string[] = [];
   suggestedCommunities: CommunitySuggestion[] = [];
   highlightedPosts: Post[] = [];
@@ -39,7 +39,7 @@ export class Home implements OnInit {
   // Weather Data
   weatherData: any = null;
   currentDate: Date = new Date();
-  
+
   // Alerts Data
   alerts: Alert[] = [
     { type: 'yellow', title: 'Gridlock Alert', desc: 'Midtown traffic moving slow due to UN General Assembly', icon: 'bi-exclamation-triangle-fill' },
@@ -47,7 +47,7 @@ export class Home implements OnInit {
   ];
 
   isLoading = true;
-  selectedCategoryId: number = -1; 
+  selectedCategoryId: number = -1;
   categories = [{ id: -1, name: 'All', icon: 'bi-grid' }, ...CATEGORY_LIST];
 
   toasts: Toast[] = [];
@@ -98,8 +98,8 @@ export class Home implements OnInit {
   private hasValidImage(post: Post): boolean {
     if (post.imageUrl && post.imageUrl.trim() !== '') return true;
     if (post.attachments && post.attachments.length > 0) {
-        const url = post.attachments[0].url;
-        if (url && url.trim() !== '') return true;
+      const url = post.attachments[0].url;
+      if (url && url.trim() !== '') return true;
     }
     return false;
   }
@@ -107,7 +107,7 @@ export class Home implements OnInit {
   processData(data: FeedData) {
     const rawFeatured = data.featuredPosts || [];
     const validFeatured = rawFeatured.filter(p => this.hasValidImage(this.normalizePost(p)));
-    
+
     // 1. Top 3 Small Cards (Featured)
     this.featuredPosts = validFeatured.slice(0, 3);
 
@@ -121,7 +121,7 @@ export class Home implements OnInit {
     } else if (validFeatured.length > 3) {
       this.heroBanner = validFeatured[3]; // Fallback to 4th featured post if available
     } else {
-        this.heroBanner = null; // Hide if no data
+      this.heroBanner = null; // Hide if no data
     }
 
     // 3. Interest Groups
@@ -173,30 +173,48 @@ export class Home implements OnInit {
   }
 
   onJoinCommunity(comm: CommunitySuggestion) {
-     if (!this.authService.currentUser$.value) { this.showToast('Login required', 'info'); return; }
-     if (comm.isJoined || comm.isLoadingJoin) return;
-     comm.isLoadingJoin = true;
-     this.postsService.joinCommunity(comm.id).subscribe({
-         next: (res) => {
-             comm.isLoadingJoin = false;
-             if(res.isSuccess) { comm.isJoined = true; this.showToast('Joined!', 'success'); }
-             else this.showToast('Failed', 'error');
-             this.cdr.detectChanges();
-         },
-         error: () => { comm.isLoadingJoin = false; this.cdr.detectChanges(); }
-     })
+    if (!this.authService.currentUser$.value) { this.showToast('Login required', 'info'); return; }
+    if (comm.isJoined || comm.isLoadingJoin) return;
+    comm.isLoadingJoin = true;
+    this.postsService.joinCommunity(comm.id).subscribe({
+      next: (res) => {
+        comm.isLoadingJoin = false;
+        if (res.isSuccess) { comm.isJoined = true; this.showToast('Joined!', 'success'); }
+        else this.showToast('Failed', 'error');
+        this.cdr.detectChanges();
+      },
+      error: () => { comm.isLoadingJoin = false; this.cdr.detectChanges(); }
+    })
   }
-  
-  private showToast(message: string, type: 'success'|'error'|'info') {
-      const id = this.toastCounter++;
-      this.toasts.push({id, message, type});
-      setTimeout(() => this.removeToast(id), 3500);
+
+  private showToast(message: string, type: 'success' | 'error' | 'info') {
+    const id = this.toastCounter++;
+    this.toasts.push({ id, message, type });
+    setTimeout(() => this.removeToast(id), 3500);
   }
   removeToast(id: number) { this.toasts = this.toasts.filter(t => t.id !== id); this.cdr.detectChanges(); }
+
+  private stripHtml(html: string | null | undefined): string {
+    if (!html) return '';
+    try {
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      return (doc.body.textContent || '').replace(/\s+/g, ' ').trim();
+    } catch {
+      return html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
+    }
+  }
 
   private normalizePost(post: any): Post {
     if (!post.stats) post.stats = { views: 0, likes: 0, dislikes: 0, comments: 0, shares: 0 };
     if (post.isSaved === undefined) post.isSaved = (post.isSavedByUser === true);
+
+    // Clean HTML content for excerpts
+    if (post.content) {
+      post.content = this.stripHtml(post.content);
+    } else {
+      post.content = '';
+    }
+
     return post;
   }
 
@@ -208,8 +226,8 @@ export class Home implements OnInit {
 
   getAuthorImage(author: PostAuthor | string | undefined | null): string {
     if (typeof author === 'object' && author?.imageUrl) {
-        if (author.imageUrl.includes('http')) return author.imageUrl;
-        return `${this.environment.apiBaseUrl3}/${author.imageUrl}`;
+      if (author.imageUrl.includes('http')) return author.imageUrl;
+      return `${this.environment.apiBaseUrl3}/${author.imageUrl}`;
     }
     return 'assets/images/default-avatar.png';
   }

@@ -47,7 +47,7 @@
             </div>
         </div>
 
-        <p class="post-text" *ngIf="post.content && post.category !== 4">{{ post.content }}</p>
+        <p class="post-text" *ngIf="post.content && post.category !== 4">{{ post.content | stripHtml }}</p>
 
         <!-- ✅ HOUSING DATA VIEW (If category 4) -->
         <div class="housing-preview-container" *ngIf="post.category === 4">
@@ -90,7 +90,8 @@
                 <strong style="font-size: 0.9rem;">{{ getAuthorName(post.parentPost.author) }}</strong>
             </div>
             <h5 style="font-weight: 700; margin-bottom: 8px;">{{ post.parentPost.title }}</h5>
-            <p style="font-size: 0.95rem; color: #555; margin-bottom: 12px;">{{ post.parentPost.content }}</p>
+            <p style="font-size: 0.95rem; color: #555; margin-bottom: 12px;">{{ post.parentPost.content | stripHtml }}
+            </p>
 
             <!-- Parent Post Attachments -->
             <div *ngIf="(post.parentPost.attachments && post.parentPost.attachments.length > 0) || post.parentPost.imageUrl"
