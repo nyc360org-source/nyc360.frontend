@@ -5,6 +5,13 @@
     <h1>Community</h1>
     <p>Where New Yorkers can share ideas, discussions, and local conversations</p>
 
+    <form class="community-header-search" (submit)="onCommunitySearch(); $event.preventDefault()">
+      <i class="bi bi-search search-icon" aria-hidden="true"></i>
+      <input type="text" name="communitySearch" [(ngModel)]="communitySearchTerm"
+        placeholder="Search groups, topics, or neighborhoods..." autocomplete="off">
+      <button type="submit" class="search-btn">Search</button>
+    </form>
+
     <div class="header-nav-buttons">
       <!-- <a routerLink="/public/feed/community" class="nav-btn">Feed</a> -->
       <!-- <a routerLink="/public/feed/community" class="nav-btn">Feed</a> -->
@@ -71,23 +78,23 @@
 
   </header>
 
-  <div style="height: 30px;"></div>
+  <div class="content-top-spacer" aria-hidden="true"></div>
 
   <div class="content-wrapper">
 
     <section class="featured-section" *ngIf="featuredPost && featuredPost.attachments.length > 0">
       <div class="featured-card">
         <div class="feat-img">
-          <img
+          <img class="feat-media-link"
             [src]="featuredPost.attachments.length ? resolvePostImage(featuredPost.attachments[0].url) : 'assets/images/nyc-city.jpg'"
-            alt="Featured" [routerLink]="['/public/post', featuredPost.id]" style="cursor: pointer;">
+            alt="Featured" [routerLink]="['/public/post', featuredPost.id]">
         </div>
         <div class="feat-content">
           <div class="tags-row">
             <span class="badge-orange">COMMUNITY HIGHLIGHT</span>
             <span class="read-time">4 min read</span>
           </div>
-          <h2 [routerLink]="['/public/post', featuredPost.id]" style="cursor: pointer;">
+          <h2 class="feat-title-link" [routerLink]="['/public/post', featuredPost.id]">
             {{ featuredPost.title }}
           </h2>
           <p>{{ featuredPost.content | slice:0:150 }}...</p>
@@ -137,22 +144,59 @@
 
     <!-- Text-Only Featured Post (Moved Down) -->
     <section class="featured-section text-only-mode" *ngIf="featuredPost && featuredPost.attachments.length === 0">
-      <div class="featured-card">
-        <div class="feat-content w-100" style="padding: 40px; text-align: left;">
+      <div class="featured-card featured-card-text">
+        <div class="feat-content feat-content-text w-100">
           <div class="tags-row">
-            <span class="badge-orange" style="background: #e3f2fd; color: #1976d2;">LATEST UPDATE</span>
+            <span class="badge-orange badge-soft-blue">LATEST UPDATE</span>
             <span class="read-time">Text Post</span>
           </div>
-          <h2 [routerLink]="['/public/post', featuredPost.id]" style="cursor: pointer; font-size: 2rem;">
+          <h2 class="feat-title-link text-only-title" [routerLink]="['/public/post', featuredPost.id]">
             {{ featuredPost.title }}
           </h2>
-          <p style="font-size: 1.1rem; color: #444;">{{ featuredPost.content | slice:0:300 }}...</p>
-          <button class="btn-read-full" [routerLink]="['/public/post', featuredPost.id]"
-            style="background: transparent; border: 2px solid #BC5E3D; color: #BC5E3D; box-shadow: none;">
+          <p class="text-only-desc">{{ featuredPost.content | slice:0:300 }}...</p>
+          <button class="btn-read-full btn-outline" [routerLink]="['/public/post', featuredPost.id]">
             Read Full Article <i class="bi bi-arrow-right ms-2"></i>
           </button>
         </div>
       </div>
+    </section>
+
+    <section class="discussions-section" *ngIf="discussionPosts.length > 0">
+      <div class="sec-title">
+        <span class="dot"></span>
+        <h3>Active Discussions</h3>
+      </div>
+
+      <article class="discuss-item" *ngFor="let post of discussionPosts">
+        <h4 [routerLink]="['/public/post', post.id]">{{ post.title }}</h4>
+        <div class="discussion-actions">
+          <a class="read-more-link" [routerLink]="['/public/post', post.id]">
+            Read More <i class="bi bi-arrow-right"></i>
+          </a>
+          <span class="comments-count">
+            <i class="bi bi-chat-text"></i> {{ post.stats.comments || 0 }} comments
+          </span>
+        </div>
+      </article>
+    </section>
+
+    <section class="support-cards-section" *ngIf="supportCards.length > 0">
+      <article class="support-card" *ngFor="let item of supportCards">
+        <div class="support-card-header">
+          <span class="support-icon" [class.help-icon]="item.label === 'Help'">
+            <i class="bi" [class.bi-question-lg]="item.label === 'QUESTION'" [class.bi-star-fill]="item.label === 'Help'"></i>
+          </span>
+          <h3>{{ item.label }}</h3>
+        </div>
+
+        <h4 [routerLink]="['/public/post', item.post.id]">{{ item.post.title }}</h4>
+        <p>{{ item.post.content | slice:0:110 }}...</p>
+
+        <div class="support-meta">
+          <span>Posted by <strong>{{ getPostAuthorName(item.post) }}</strong></span>
+          <span>{{ item.post.stats.comments || 0 }} answers</span>
+        </div>
+      </article>
     </section>
 
 
@@ -167,6 +211,7 @@
   </div>
 
   <app-verification-modal *ngIf="isVerificationModalOpen" [categoryName]="'Community'" [categoryId]="4"
+    [extraOccupations]="communityPublicBadgeTags"
     (close)="closeVerificationModal()" (verified)="onVerified()">
   </app-verification-modal>
 

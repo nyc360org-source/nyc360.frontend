@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { VerificationService } from '../../../pages/Public/pages/settings/services/verification.service';
 import { ToastService } from '../../../shared/services/toast.service';
+import { filterPublicCommunityBadges } from '../../utils/community-badge-policy';
 
 @Component({
   selector: 'app-verification-modal',
@@ -45,24 +46,70 @@ export class VerificationModalComponent implements OnInit {
     { id: 99, name: 'Other' }
   ];
 
-  ngOnInit() {
-    if (this.extraOccupations && this.extraOccupations.length > 0) {
-      this.occupations = [...this.extraOccupations, ...this.occupations];
-    }
+  readonly communitySecondGateKeys: string[] = [
+    'Community Publishing Key',
+    'Community Moderation Key',
+    'Location Listing Key'
+  ];
 
-    // De-duplicate by ID just in case
-    this.occupations = this.occupations.filter((v, i, a) => a.findIndex(t => (t.id === v.id)) === i);
+  showCommunityPolicyDetails = false;
 
-    this.initForm();
+  get isCommunityPolicyMode(): boolean {
+    return (this.categoryName || '').trim().toLowerCase() === 'community';
   }
 
-  initForm() {
+  toggleCommunityPolicyDetails(): void {
+    this.showCommunityPolicyDetails = !this.showCommunityPolicyDetails;
+  }
+
+  ngOnInit() {
+    const sourceOccupations = (this.extraOccupations && this.extraOccupations.length > 0)
+      ? this.extraOccupations
+      : this.occupations;
+
+    // Community membership tags are internal and should never appear as public badge options.
+    this.occupations = this.dedupeById(
+      this.normalizeOccupations(filterPublicCommunityBadges(sourceOccupations))
+    );
+
+    this.initForm(this.getInitialOccupationId());
+  }
+
+  initForm(initialOccupationId: number | null) {
     this.verificationForm = this.fb.group({
-      occupationId: [1856, Validators.required],
+      occupationId: [initialOccupationId, Validators.required],
       reason: ['', [Validators.required, Validators.minLength(10)]],
       documentType: [1, Validators.required],
       file: [null, Validators.required]
     });
+  }
+
+  private dedupeById(items: any[]): any[] {
+    // Keep labels distinct even if backend tag ID is reused as fallback for multiple D01 labels.
+    return items.filter((item, index, arr) => {
+      const key = `${item.id}::${item.name}`;
+      return arr.findIndex((x) => `${x.id}::${x.name}` === key) === index;
+    });
+  }
+
+  private normalizeOccupations(items: any[]): any[] {
+    return items
+      .map((item) => {
+        const id = Number(item?.id ?? item?.Id);
+        const name = (item?.name ?? item?.Name ?? '').toString().trim();
+        return { id, name };
+      })
+      .filter((item) => Number.isFinite(item.id) && !!item.name);
+  }
+
+  private getInitialOccupationId(): number | null {
+    if (!this.occupations.length) return null;
+
+    const preferredId = 1856; // Keep current default for housing-oriented flows.
+    const hasPreferred = this.occupations.some((occ) => occ.id === preferredId);
+    if (hasPreferred) return preferredId;
+
+    return this.occupations[0]?.id ?? null;
   }
 
   onFileSelected(event: any) {
@@ -73,6 +120,11 @@ export class VerificationModalComponent implements OnInit {
   }
 
   submitVerification() {
+    if (!this.occupations.length) {
+      this.toastService.error('No public badges are available for this request right now.');
+      return;
+    }
+
     if (this.verificationForm.invalid || !this.selectedDocFile) {
       this.verificationForm.markAllAsTouched();
       return;
@@ -80,7 +132,7 @@ export class VerificationModalComponent implements OnInit {
 
     this.isSubmittingVerification = true;
     const data = {
-      TagId: this.verificationForm.value.occupationId,
+      TagId: Number(this.verificationForm.value.occupationId),
       Reason: this.verificationForm.value.reason,
       DocumentType: this.verificationForm.value.documentType,
       File: this.selectedDocFile

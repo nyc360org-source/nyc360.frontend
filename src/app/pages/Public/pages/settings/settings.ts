@@ -12,6 +12,7 @@ import {
 } from '../profile/models/profile';
 import { Subject, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, catchError } from 'rxjs/operators';
+import { filterPublicCommunityBadges } from '../../../../shared/utils/community-badge-policy';
 
 @Component({
     selector: 'app-settings',
@@ -153,7 +154,13 @@ export class SettingsComponent implements OnInit {
                 );
             })
         ).subscribe((res: any) => {
-            this.tagSearchResults = res.data || [];
+            this.tagSearchResults = filterPublicCommunityBadges(res.data || [])
+                .map((tag: any) => ({
+                    ...tag,
+                    id: tag?.id ?? tag?.Id,
+                    name: tag?.name ?? tag?.Name
+                }))
+                .filter((tag: any) => !!tag.id && !!tag.name);
             this.showTagDropdown = this.tagSearchResults.length > 0;
             this.cdr.detectChanges();
         });

@@ -3,18 +3,20 @@ import { CommonModule } from '@angular/common';
 import { environment } from '../../../../../../environments/environment';
 import { CommunityService } from '../../services/community';
 import { CommunityPost, CommunitySuggestion } from '../../models/community';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 
 import { AuthService } from '../../../../../Authentication/Service/auth';
 import { UserInfo } from '../../../../../Authentication/models/user-info';
 
 import { VerificationModalComponent } from '../../../../../../shared/components/verification-modal/verification-modal';
+import { buildCommunityD01BadgeOptions, isCommunityLeaderTag } from '../../../../../../shared/utils/community-badge-policy';
 
 
 @Component({
   selector: 'app-community',
   standalone: true,
-  imports: [CommonModule, RouterLink, VerificationModalComponent],
+  imports: [CommonModule, FormsModule, RouterLink, VerificationModalComponent],
   templateUrl: './community.html',
   styleUrls: ['./community.scss']
 })
@@ -23,6 +25,7 @@ export class CommunityComponent implements OnInit {
   private authService = inject(AuthService);
   private communityService = inject(CommunityService);
   private cdr = inject(ChangeDetectorRef);
+  private router = inject(Router);
   protected readonly environment = environment;
 
   // UI State
@@ -34,8 +37,10 @@ export class CommunityComponent implements OnInit {
   posts: CommunityPost[] = [];
   featuredPost: CommunityPost | null = null;
   userTags: any[] = []; // Tags for permission check
+  communityPublicBadgeTags: any[] = buildCommunityD01BadgeOptions([]);
   currentUserInfo: UserInfo | null = null;
   isVerificationModalOpen = false;
+  communitySearchTerm = '';
 
   get hasCommunityLeaderAccess(): boolean {
     // 1. Check if SuperAdmin
@@ -43,11 +48,11 @@ export class CommunityComponent implements OnInit {
 
     // 2. Check tags in UserInfo (Primary Reactive Source from my-info)
     if (this.currentUserInfo && this.currentUserInfo.tags) {
-      return this.currentUserInfo.tags.some((t: any) => t.name === 'Community Leader' || t.id === 1862);
+      return this.currentUserInfo.tags.some((t: any) => isCommunityLeaderTag(t));
     }
 
     // 3. Fallback to local tags from page response (if my-info is pending)
-    return this.userTags.some((t: any) => t.name === 'Community Leader' || t.id === 1862);
+    return this.userTags.some((t: any) => isCommunityLeaderTag(t));
   }
 
   openVerificationModal() {
@@ -97,6 +102,7 @@ export class CommunityComponent implements OnInit {
           if (res.data.tags) {
             this.userTags = res.data.tags;
           }
+          this.communityPublicBadgeTags = buildCommunityD01BadgeOptions(res.data.tags || []);
         }
         this.cdr.detectChanges();
       },
@@ -105,6 +111,50 @@ export class CommunityComponent implements OnInit {
         this.cdr.detectChanges();
       }
     });
+  }
+
+  onCommunitySearch(): void {
+    const search = this.communitySearchTerm.trim();
+    this.router.navigate(
+      ['/public/discover'],
+      { queryParams: search ? { search } : {} }
+    );
+  }
+
+  get discussionPosts(): CommunityPost[] {
+    if (this.posts.length > 0) {
+      return this.posts.slice(0, 3);
+    }
+    return this.featuredPost ? [this.featuredPost] : [];
+  }
+
+  get supportCards(): Array<{ post: CommunityPost; label: 'QUESTION' | 'Help' }> {
+    const primary = this.posts.slice(3, 5);
+    const fallback = this.posts.slice(0, 2);
+    const source = (primary.length > 0 ? primary : fallback).slice(0, 2);
+
+    return source.map((post, index) => ({
+      post,
+      label: this.inferSupportLabel(post, index)
+    }));
+  }
+
+  private inferSupportLabel(post: CommunityPost, index: number): 'QUESTION' | 'Help' {
+    const text = [
+      post?.title || '',
+      post?.content || '',
+      ...(post?.tags || [])
+    ].join(' ').toLowerCase();
+
+    if (text.includes('help')) return 'Help';
+    if (text.includes('question') || text.includes('?')) return 'QUESTION';
+
+    return index === 0 ? 'QUESTION' : 'Help';
+  }
+
+  getPostAuthorName(post: CommunityPost): string {
+    if (typeof post?.author === 'string') return post.author;
+    return post?.author?.name || 'Community Member';
   }
 
   // دالة الانضمام
