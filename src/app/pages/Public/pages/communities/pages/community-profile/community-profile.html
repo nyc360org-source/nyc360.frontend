@@ -6,14 +6,26 @@
 
   <div class="community-header">
     <div class="cover-container">
-      <div class="cover-image" [style.backgroundImage]="'url(' + resolveCommunityImage(community.coverUrl) + ')'"></div>
+      <div class="cover-image" *ngIf="hasCommunityCover(); else communityCoverFallback">
+        <img [src]="resolveCommunityImage(community.coverUrl)" alt="" (error)="markCommunityCoverBroken()">
+      </div>
+      <ng-template #communityCoverFallback>
+        <div class="cover-image cover-image-fallback"></div>
+      </ng-template>
       <div class="overlay-gradient"></div>
     </div>
 
     <div class="header-content container">
       <div class="info-row">
         <div class="logo-box">
-          <img [src]="resolveCommunityImage(community.imageUrl)" alt="Community Logo">
+          <ng-container *ngIf="hasCommunityLogo(); else communityLogoFallback">
+            <img [src]="resolveCommunityImage(community.imageUrl)" alt="Community Logo" (error)="markCommunityLogoBroken()">
+          </ng-container>
+          <ng-template #communityLogoFallback>
+            <div class="logo-fallback">
+              {{ getCommunityInitials(community.name) }}
+            </div>
+          </ng-template>
         </div>
 
         <div class="text-details">

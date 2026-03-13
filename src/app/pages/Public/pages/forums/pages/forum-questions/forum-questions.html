@@ -43,9 +43,12 @@
         <div class="questions-list" *ngIf="!isLoading && questions.length > 0">
             <div class="question-card" *ngFor="let question of questions" [class.pinned]="question.isPinned">
                 <div class="card-left">
-                    <div class="author-avatar">
-                        <img [src]="resolveUserImage(question.author)" [alt]="question.author.username">
-                    </div>
+                    <app-initials-avatar
+                        class="author-avatar"
+                        [name]="question.author.fullName || question.author.username"
+                        [src]="question.author.imageUrl"
+                        [alt]="question.author.fullName || question.author.username">
+                    </app-initials-avatar>
                 </div>
                 <div class="card-center">
                     <div class="question-meta">

@@ -5,22 +5,16 @@
 
 .breadcrumbs-nav {
     position: fixed;
-    /* Lowered to 134px to be clearly inside the page headers */
-    top: 134px;
+    top: 126px;
     left: 0;
     right: 0;
     z-index: 950;
 
     display: flex;
     align-items: center;
-    height: 32px;
-    padding: 0 32px;
+    height: auto;
+    padding: 0 40px;
 
-    background: transparent;
-    border: none;
-    box-shadow: none;
-
-    /* Transition only for opacity when scrolling */
     transition: opacity 0.2s ease-in-out, visibility 0.2s;
 }
 
@@ -41,10 +35,11 @@
     margin: 0;
     padding: 0;
     font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
-    font-size: 0.78rem;
+    font-size: 0.86rem;
     font-weight: 500;
     letter-spacing: 0.01em;
     white-space: nowrap;
+    padding: 8px 0;
 }
 
 /* ── Items ── */
@@ -60,53 +55,52 @@
 .breadcrumb-link {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
-    color: rgba(20, 20, 40, 0.75);
+    gap: 6px;
+    color: #5d6778;
     font-weight: 500;
-    font-size: 0.78rem;
+    font-size: 0.86rem;
     text-decoration: none;
-    padding: 3px 7px;
+    padding: 2px 0;
     border-radius: 4px;
     transition: color 0.1s ease-in-out;
     /* very fast color only */
 }
 
 .breadcrumb-link:hover {
-    color: #0A3D91;
-    background: rgba(10, 61, 145, 0.06);
+    color: #334155;
+    background: transparent;
 }
 
 .breadcrumb-link svg {
     flex-shrink: 0;
-    opacity: 0.6;
+    opacity: 0.9;
 }
 
 /* ── Text ── */
 .breadcrumb-text {
-    color: rgba(20, 20, 40, 0.55);
-    font-size: 0.76rem;
-    padding: 3px 7px;
+    color: #5d6778;
+    font-size: 0.86rem;
+    padding: 2px 0;
 }
 
 /* ── Separator ── */
 .breadcrumb-separator {
     display: flex;
     align-items: center;
-    color: rgba(20, 20, 40, 0.3);
-    padding: 0 1px;
+    color: #8b95a7;
+    padding: 0 8px;
 }
 
 /* ── Active Crumb ── */
 .breadcrumb-item.active .breadcrumb-current {
     display: inline-flex;
     align-items: center;
-    color: #0A3D91;
-    font-weight: 700;
-    font-size: 0.78rem;
-    padding: 3px 9px 3px 7px;
-    border-radius: 4px;
-    background: rgba(10, 61, 145, 0.08);
-    /* subtle pill always visible */
+    color: #1557b0;
+    font-weight: 600;
+    font-size: 0.86rem;
+    padding: 4px 10px;
+    border-radius: 6px;
+    background: #dbe9fb;
     cursor: default;
     white-space: nowrap;
     overflow: hidden;
@@ -114,25 +108,48 @@
     max-width: 280px;
 }
 
+/* Dark hero pages (forums) */
+.breadcrumbs-nav.dark-theme .breadcrumb-link {
+    color: rgba(226, 232, 240, 0.92);
+}
+
+.breadcrumbs-nav.dark-theme .breadcrumb-link:hover {
+    color: #ffffff;
+}
+
+.breadcrumbs-nav.dark-theme .breadcrumb-text {
+    color: rgba(203, 213, 225, 0.9);
+}
+
+.breadcrumbs-nav.dark-theme .breadcrumb-separator {
+    color: rgba(148, 163, 184, 0.9);
+}
+
+.breadcrumbs-nav.dark-theme .breadcrumb-item.active .breadcrumb-current {
+    color: #d8e8ff;
+    background: rgba(56, 125, 227, 0.32);
+}
+
 /* ════════ RESPONSIVE ══════════════════════════════════════ */
 @media (max-width: 991px) {
     .breadcrumbs-nav {
-        top: 85px;
-        /* adjusted for mobile navbar height */
-        height: 28px;
+        top: 88px;
         padding: 0 16px;
     }
 }
 
 @media (max-width: 576px) {
     .breadcrumbs-nav {
-        top: 85px;
-        height: 26px;
+        top: 88px;
         padding: 0 12px;
     }
 
     .breadcrumb-item:not(:first-child):not(:nth-last-child(-n+3)),
     .breadcrumb-separator:not(:nth-last-child(-n+4)) {
         display: none;
+    }
+
+    .breadcrumb-list {
+        max-width: calc(100vw - 24px);
     }
 }

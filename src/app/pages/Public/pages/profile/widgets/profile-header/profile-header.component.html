@@ -33,9 +33,9 @@
                     </h1>
 
                     <!-- Primary Tag -->
-                    <span class="primary-tag" *ngIf="user.tags && user.tags.length > 0">
+                    <span class="primary-tag" *ngIf="publicBadgeTags.length > 0">
                         <i class="bi bi-tag-fill"></i>
-                        {{ user.tags[0].name }}
+                        {{ publicBadgeTags[0].name }}
                     </span>
                 </div>
 
@@ -47,13 +47,13 @@
                 </div>
 
                 <!-- Secondary Tags -->
-                <div class="tags-cluster" *ngIf="user.tags && user.tags.length > 1">
-                    <span class="secondary-tag" *ngFor="let tag of user.tags | slice:1:6">
+                <div class="tags-cluster" *ngIf="publicBadgeTags.length > 1">
+                    <span class="secondary-tag" *ngFor="let tag of publicBadgeTags | slice:1:6">
                         <i class="bi bi-tag"></i>
                         {{ tag.name }}
                     </span>
-                    <span class="more-count" *ngIf="user.tags.length > 6">
-                        +{{ user.tags.length - 6 }}
+                    <span class="more-count" *ngIf="publicBadgeTags.length > 6">
+                        +{{ publicBadgeTags.length - 6 }}
                     </span>
                 </div>
             </div>

@@ -1,12 +1,5 @@
 <div class="create-question-container">
     <div class="header">
-        <div class="breadcrumb" *ngIf="forum">
-            <a routerLink="/public/forums">Forums</a>
-            <span>/</span>
-            <a [routerLink]="['/public/forums', slug]">{{ forum.title }}</a>
-            <span>/</span>
-            <span>Create Question</span>
-        </div>
         <h1>Ask a Question</h1>
         <p>Get help from the {{ forum?.title || 'community' }}. Be clear and specific for the best answers.</p>
     </div>

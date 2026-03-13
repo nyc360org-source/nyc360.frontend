@@ -49,6 +49,11 @@ export class CreateCommunityComponent implements OnInit {
     isPrivate: [false] // ✅ New Field: Default is Public (false)
   });
 
+  get inviteLink(): string {
+    const slug = (this.form.get('slug')?.value || '').trim();
+    return slug ? `nyc360.com/join/${slug}` : 'nyc360.com/join/your-community';
+  }
+
   ngOnInit() {
     // Setup Location Search with Debounce
     this.locationSearchControl.valueChanges.pipe(
@@ -122,6 +127,17 @@ export class CreateCommunityComponent implements OnInit {
       reader.onload = e => this.coverPreview = e.target?.result as string;
       reader.readAsDataURL(file);
     }
+  }
+
+  copyInviteLink() {
+    const link = this.inviteLink;
+    if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(link)
+        .then(() => this.toastService.success('Invite link copied.'))
+        .catch(() => this.toastService.error('Could not copy invite link.'));
+      return;
+    }
+    this.toastService.error('Clipboard is not available in this browser.');
   }
 
   submit() {
