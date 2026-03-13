@@ -19,19 +19,15 @@ const INTERNAL_COMMUNITY_MEMBERSHIP_TAG_IDS = new Set<number>([
   // Add known backend IDs here when confirmed.
 ]);
 
-const COMMUNITY_LEADER_TAG_NAMES = new Set([
-  'community leader'
-]);
-
-const COMMUNITY_LEADER_TAG_IDS = new Set<number>([
-  1862,
-  2001
-]);
+const COMMUNITY_LEADER_TAG_NAMES = [
+  'community leader',
+  'community leader badge'
+] as const;
 
 const COMMUNITY_D01_LABELS = {
-  leader: 'D01.1 Apply for Community Leader Badges',
-  create: 'D01.2 Apply for Create a Community',
-  organization: 'D01.3 List Community Organization in Space'
+  leader: 'Apply for Community Leader Badges',
+  create: 'Apply for Create a Community',
+  organization: 'List Community Organization in Space'
 } as const;
 
 const COMMUNITY_D01_ALIASES = {
@@ -98,16 +94,14 @@ export function filterPublicCommunityBadges<T extends TagLike>(tags: T[] | null 
 export function isCommunityLeaderTag(tag: TagLike | null | undefined): boolean {
   if (!tag) return false;
 
-  const tagId = getTagId(tag);
-  if (typeof tagId === 'number' && COMMUNITY_LEADER_TAG_IDS.has(tagId)) {
-    return true;
-  }
+  const normalized = normalizeTagName(getTagName(tag));
+  if (!normalized) return false;
 
-  return COMMUNITY_LEADER_TAG_NAMES.has(normalizeTagName(getTagName(tag)));
+  return COMMUNITY_LEADER_TAG_NAMES.some((name) => normalized.includes(name));
 }
 
 /**
- * Builds community verification options in fixed D01 order/labels, while preserving backend tag IDs.
+ * Builds community verification options in fixed order/labels, while preserving backend tag IDs.
  */
 export function buildCommunityD01BadgeOptions(tags: TagLike[] | null | undefined): BadgeOption[] {
   const incoming = toBadgeOptions(tags);
@@ -144,7 +138,7 @@ export function buildCommunityD01BadgeOptions(tags: TagLike[] | null | undefined
   }
   if (create) usedIds.add(create.id);
 
-  // Always return the 3 D01 labels in required order.
+  // Always return the 3 public community badge labels in required order.
   // IDs are resolved to known valid tags; when dedicated backend tags are missing, create/org may share an ID.
   return [
     { id: (leader || { id: 2001 }).id, name: COMMUNITY_D01_LABELS.leader },

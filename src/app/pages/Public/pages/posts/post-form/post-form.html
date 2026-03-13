@@ -2,17 +2,19 @@
 
   <div class="page-header fade-in-down">
     <div class="title-section">
-      <h2 class="gold-text">
-        {{ isEditMode ? 'EDIT POST' : 'CREATE NEW POST' }}
-        <span *ngIf="predefinedCategory !== null" class="ms-2 text-muted"
-          style="font-size: 0.6em; vertical-align: middle;">
-          <i class="bi bi-caret-right-fill"></i> {{ getCategoryName(predefinedCategory) | uppercase }}
+      <span class="header-kicker">{{ isEditMode ? 'Editing studio' : 'Publishing studio' }}</span>
+      <div class="title-row">
+        <h2>{{ isEditMode ? 'Edit Post' : 'Create New Post' }}</h2>
+        <span *ngIf="predefinedCategory !== null" class="category-pill">
+          <i class="bi bi-grid-fill"></i>
+          {{ getCategoryName(predefinedCategory) }}
         </span>
-      </h2>
+      </div>
       <p class="subtitle">Share your story with the world.</p>
     </div>
     <button (click)="goBack()" class="btn-back">
-      <i class="bi bi-arrow-left"></i> Back
+      <i class="bi bi-arrow-left"></i>
+      <span>Back</span>
     </button>
 
   </div>
@@ -135,8 +137,11 @@
           <input type="file" (change)="onFileSelect($event)" multiple id="fileInput" class="hidden-input"
             accept="image/*,video/*">
           <label for="fileInput" class="upload-label">
-            <i class="bi bi-cloud-arrow-up-fill"></i>
-            <span>{{ isEditMode ? 'Add more media' : 'Drag images or videos here or click to upload' }}</span>
+            <span class="upload-icon-shell">
+              <i class="bi bi-cloud-arrow-up-fill"></i>
+            </span>
+            <span class="upload-title">{{ isEditMode ? 'Add more media' : 'Drag images or videos here or click to upload' }}</span>
+            <small>{{ isEditMode ? 'Drop files here or browse to attach more media.' : 'Images and videos only. The native file picker stays hidden.' }}</small>
           </label>
         </div>
         <small class="text-muted d-block mt-1 ms-1" style="font-size: 0.8em;">

@@ -12,12 +12,11 @@ import { GlobalLoaderService } from '../../../../../../shared/components/global-
 import { AuthService } from '../../../../../Authentication/Service/auth';
 import { UserInfo } from '../../../../../Authentication/models/user-info';
 import { VerificationModalComponent } from '../../../../../../shared/components/verification-modal/verification-modal';
-import { BreadcrumbsComponent } from '../../../../../../shared/components/breadcrumbs/breadcrumbs.component';
 
 @Component({
   selector: 'app-profession-feed',
   standalone: true,
-  imports: [CommonModule, RouterLink, ArticleHeroComponent, ArticleGridCardComponent, ImgFallbackDirective, VerificationModalComponent, BreadcrumbsComponent],
+  imports: [CommonModule, RouterLink, ArticleHeroComponent, ArticleGridCardComponent, ImgFallbackDirective, VerificationModalComponent],
   templateUrl: './profession-feed.html',
   styleUrls: ['./profession-feed.scss']
 })

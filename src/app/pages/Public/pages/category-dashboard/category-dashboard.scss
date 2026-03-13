@@ -3,30 +3,37 @@
     --bg-light: #f8f9fa;
     --sidebar-w: 260px;
     --header-h: 60px;
+    --dashboard-top-clearance: 64px;
+    --dashboard-sticky-top: 174px;
 }
 
 .category-dashboard-wrapper {
     display: flex;
-    min-height: 80vh; // Changed from 100vh to avoid pushing too much
+    align-items: flex-start;
+    gap: 24px;
+    min-height: 80vh;
     background-color: var(--bg-light);
     font-family: 'Inter', sans-serif;
     position: relative;
-    overflow: hidden; // Contain children
+    overflow: visible;
+    padding: var(--dashboard-top-clearance) 24px 36px;
 }
 
 /* SIDEBAR - DESKTOP */
 .dashboard-sidebar {
     width: var(--sidebar-w);
+    flex: 0 0 var(--sidebar-w);
     background: white;
-    border-right: 1px solid rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(15, 23, 42, 0.06);
+    border-radius: 24px;
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.05);
     display: flex;
     flex-direction: column;
     padding: 24px 16px;
-
-    // FIXED Overlap Fix: Change to sticky so it stays within content and doesn't cover footer
     position: sticky;
-    top: 100px; // Adjusted for global navbar height
-    height: calc(100vh - 120px);
+    top: var(--dashboard-sticky-top);
+    height: calc(100vh - var(--dashboard-sticky-top) - 24px);
+    max-height: calc(100vh - var(--dashboard-sticky-top) - 24px);
     z-index: 10;
     transition: all 0.3s ease;
 
@@ -167,8 +174,9 @@
 /* MAIN CONTENT */
 .dashboard-main-content {
     flex: 1;
-    padding: 32px;
-    max-width: 1200px;
+    min-width: 0;
+    max-width: none;
+    padding: 0;
     transition: all 0.3s ease;
 
     .content-header {
@@ -176,6 +184,11 @@
         justify-content: space-between;
         align-items: flex-start;
         margin-bottom: 32px;
+        background: white;
+        border: 1px solid rgba(15, 23, 42, 0.05);
+        border-radius: 24px;
+        padding: 26px 28px;
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.04);
 
         .header-title {
             h1 {
@@ -586,9 +599,21 @@
 /* RESPONSIVE BREAKPOINTS */
 
 @media (max-width: 991px) {
+    :host {
+        --dashboard-top-clearance: 48px;
+        --dashboard-sticky-top: 146px;
+    }
+
+    .category-dashboard-wrapper {
+        gap: 18px;
+        padding: var(--dashboard-top-clearance) 18px 28px;
+    }
+
     .dashboard-sidebar {
-        width: 70px;
+        width: 76px;
+        flex-basis: 76px;
         padding: 20px 8px;
+        border-radius: 22px;
 
         .brand-name,
         .user-info,
@@ -623,7 +648,7 @@
 
     .dashboard-main-content {
         margin-left: 0;
-        padding: 24px;
+        padding: 0;
     }
 }
 
@@ -641,8 +666,8 @@
 @media (max-width: 600px) {
     .category-dashboard-wrapper {
         flex-direction: column;
-        margin-top: 55px;
-        padding-bottom: 80px;
+        gap: 16px;
+        padding: 24px 12px 80px;
     }
 
     .dashboard-sidebar {
@@ -651,11 +676,12 @@
         top: auto;
         left: 0;
         width: 100%;
-        height: 65px;
+        height: 68px;
         flex-direction: row;
         padding: 0 10px;
         border-right: none;
         border-top: 1px solid #eee;
+        border-radius: 18px 18px 0 0;
         background: rgba(255, 255, 255, 0.95);
         backdrop-filter: blur(10px);
         box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
@@ -707,12 +733,13 @@
 
     .dashboard-main-content {
         margin-left: 0;
-        padding: 16px;
+        padding: 0;
         width: 100%;
 
         .content-header {
             flex-direction: column;
             gap: 16px;
+            padding: 20px 18px;
 
             .header-title h1 {
                 font-size: 1.5rem;

@@ -103,127 +103,81 @@ $text-dark: #2c2c2c;
             }
 
             .community-policy-card {
-                margin-bottom: 24px;
-                padding: 14px 14px 10px;
+                margin-bottom: 22px;
+                padding: 14px 14px 12px;
                 border-radius: 12px;
-                border: 1px solid #e7dfd9;
-                background: #fdfcfa;
+                border: 1px solid #dfe7f2;
+                background: #fafcff;
 
                 .policy-top-row {
                     display: flex;
                     align-items: center;
                     justify-content: space-between;
-                    gap: 10px;
-                    margin-bottom: 8px;
+                    gap: 12px;
+                    margin-bottom: 10px;
                 }
 
                 .dept-chip {
                     display: inline-flex;
                     align-items: center;
-                    padding: 6px 10px;
+                    padding: 5px 9px;
                     border-radius: 999px;
-                    font-size: 0.76rem;
-                    font-weight: 800;
-                    letter-spacing: 0.35px;
-                    color: #9d2f10;
-                    background: #ffe8dd;
-                }
-
-                .policy-toggle {
-                    background: transparent;
-                    border: 1px solid #d7dbe0;
-                    color: #3a4659;
-                    font-size: 0.78rem;
+                    font-size: 0.73rem;
                     font-weight: 700;
-                    border-radius: 999px;
-                    padding: 4px 10px;
-                    cursor: pointer;
-                    transition: 0.2s ease;
-
-                    &:hover {
-                        background: #f2f4f7;
-                        border-color: #bcc4cf;
-                    }
+                    letter-spacing: 0.25px;
+                    text-transform: uppercase;
+                    color: #125f57;
+                    background: #ddf2ee;
                 }
 
-                .purpose-line {
-                    margin: 0 0 8px;
-                    color: #586272;
-                    font-size: 0.84rem;
-                    font-weight: 600;
-                }
-
-                .note-line {
-                    margin: 0 0 12px;
-                    color: #334155;
-                    font-size: 0.87rem;
-                    line-height: 1.45;
-                }
-
-                .policy-title,
-                .internal-title {
-                    margin: 0 0 8px;
-                    color: #253048;
-                    font-weight: 700;
-                    font-size: 0.84rem;
-                }
-
-                .policy-d01-list {
-                    margin: 0 0 10px 18px;
-                    padding: 0;
-
-                    li {
-                        margin: 0 0 4px;
-                        color: #2c3649;
-                        font-size: 0.86rem;
-                        line-height: 1.35;
-                        font-weight: 600;
-                    }
-                }
-
-                .policy-details {
-                    margin-top: 10px;
-                    padding-top: 10px;
-                    border-top: 1px dashed #d8dde4;
-                }
-
-                .policy-details-grid {
-                    display: grid;
-                    grid-template-columns: repeat(2, minmax(0, 1fr));
-                    gap: 12px;
-                }
-
-                .detail-block {
-                    background: #ffffff;
-                    border: 1px solid #e7ebf0;
-                    border-radius: 10px;
-                    padding: 10px 10px 8px;
-                }
-
-                .detail-block + .detail-block {
-                    margin-top: 0;
-                }
-
-                .gate-title {
-                    margin-top: 0;
-                }
-
-                .policy-list {
-                    margin: 0 0 8px 18px;
-                    padding: 0;
-
-                    li {
-                        margin: 0 0 3px;
-                        color: #424242;
-                        font-size: 0.84rem;
-                        line-height: 1.35;
-                    }
-                }
-
-                .footnote-line {
-                    margin: 8px 0 4px;
-                    color: #4f4f4f;
+                .policy-helper {
+                    color: #5b6a80;
                     font-size: 0.82rem;
+                    font-weight: 500;
+                }
+
+                .policy-section-title {
+                    margin: 0 0 8px;
+                    color: #475569;
+                    font-size: 0.75rem;
+                    font-weight: 600;
+                    letter-spacing: 0.28px;
+                    text-transform: uppercase;
+                }
+
+                .badge-list {
+                    margin: 0;
+                    padding: 0;
+                    list-style: none;
+                    display: grid;
+                    gap: 0;
+
+                    li {
+                        display: flex;
+                        align-items: flex-start;
+                        gap: 8px;
+                        padding: 6px 0;
+                        border-bottom: 1px dashed #d7e0eb;
+                    }
+
+                    li:last-child {
+                        border-bottom: none;
+                    }
+
+                    .badge-index {
+                        min-width: 18px;
+                        color: #0f766e;
+                        font-size: 0.87rem;
+                        font-weight: 800;
+                    }
+
+                    .badge-label {
+                        color: #243247;
+                        font-size: 0.87rem;
+                        line-height: 1.4;
+                        font-weight: 500;
+                        font-family: inherit;
+                    }
                 }
             }
 
@@ -372,8 +326,12 @@ $text-dark: #2c2c2c;
                 overflow-y: auto;
 
                 .community-policy-card {
-                    .policy-details-grid {
-                        grid-template-columns: 1fr;
+                    padding: 12px 12px 10px;
+
+                    .policy-top-row {
+                        flex-direction: column;
+                        align-items: flex-start;
+                        gap: 6px;
                     }
                 }
 

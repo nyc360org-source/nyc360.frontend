@@ -4,6 +4,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { VerificationService } from '../../../pages/Public/pages/settings/services/verification.service';
 import { ToastService } from '../../../shared/services/toast.service';
 import { filterPublicCommunityBadges } from '../../utils/community-badge-policy';
+import { AuthService } from '../../../pages/Authentication/Service/auth';
 
 @Component({
   selector: 'app-verification-modal',
@@ -21,6 +22,9 @@ export class VerificationModalComponent implements OnInit {
   private fb = inject(FormBuilder);
   private verificationService = inject(VerificationService);
   private toastService = inject(ToastService);
+  private authService = inject(AuthService);
+
+  private readonly pendingRequestsStorageKey = 'nyc360_pending_tag_verification_requests';
 
   verificationForm!: FormGroup;
   isSubmittingVerification = false;
@@ -46,20 +50,8 @@ export class VerificationModalComponent implements OnInit {
     { id: 99, name: 'Other' }
   ];
 
-  readonly communitySecondGateKeys: string[] = [
-    'Community Publishing Key',
-    'Community Moderation Key',
-    'Location Listing Key'
-  ];
-
-  showCommunityPolicyDetails = false;
-
   get isCommunityPolicyMode(): boolean {
     return (this.categoryName || '').trim().toLowerCase() === 'community';
-  }
-
-  toggleCommunityPolicyDetails(): void {
-    this.showCommunityPolicyDetails = !this.showCommunityPolicyDetails;
   }
 
   ngOnInit() {
@@ -96,10 +88,23 @@ export class VerificationModalComponent implements OnInit {
     return items
       .map((item) => {
         const id = Number(item?.id ?? item?.Id);
-        const name = (item?.name ?? item?.Name ?? '').toString().trim();
+        const rawName = (item?.name ?? item?.Name ?? '').toString().trim();
+        const name = this.toDisplayOccupationName(rawName);
         return { id, name };
       })
       .filter((item) => Number.isFinite(item.id) && !!item.name);
+  }
+
+  private toDisplayOccupationName(name: string): string {
+    if (!name) return '';
+
+    // Community badges can arrive as technical labels like "D01.1 Apply ...".
+    // Strip only that machine prefix and keep user-facing role text.
+    if (this.isCommunityPolicyMode) {
+      return name.replace(/^[A-Z]\d{2}\.\d+\s*[-:.]?\s*/i, '').trim();
+    }
+
+    return name;
   }
 
   private getInitialOccupationId(): number | null {
@@ -130,9 +135,21 @@ export class VerificationModalComponent implements OnInit {
       return;
     }
 
+    const selectedTagId = Number(this.verificationForm.value.occupationId);
+
+    if (this.hasApprovedAccess(selectedTagId)) {
+      this.toastService.info('You already have access for this role.');
+      return;
+    }
+
+    if (this.hasPendingRequest(selectedTagId)) {
+      this.toastService.info('You already submitted a request for this role.');
+      return;
+    }
+
     this.isSubmittingVerification = true;
     const data = {
-      TagId: Number(this.verificationForm.value.occupationId),
+      TagId: selectedTagId,
       Reason: this.verificationForm.value.reason,
       DocumentType: this.verificationForm.value.documentType,
       File: this.selectedDocFile
@@ -142,11 +159,18 @@ export class VerificationModalComponent implements OnInit {
       next: (res: any) => {
         this.isSubmittingVerification = false;
         if (res.isSuccess || res.IsSuccess) {
+          this.storePendingRequest(selectedTagId);
           this.toastService.success('Verification request submitted successfully!');
           this.verified.emit();
           this.closeModal();
         } else {
           const errorMessage = res.error?.message || res.Error?.Message || 'Submission failed';
+          if (this.isDuplicateSubmissionMessage(errorMessage)) {
+            this.storePendingRequest(selectedTagId);
+            this.toastService.info('You already submitted a request for this role.');
+            this.closeModal();
+            return;
+          }
           this.toastService.error(errorMessage);
         }
       },
@@ -159,5 +183,74 @@ export class VerificationModalComponent implements OnInit {
 
   closeModal() {
     this.close.emit();
+  }
+
+  private hasApprovedAccess(tagId: number): boolean {
+    const fullUserInfo = this.authService.getFullUserInfo();
+    const hasApprovedTag = !!fullUserInfo?.tags?.some((tag) => Number(tag.id) === tagId);
+
+    if (hasApprovedTag) {
+      this.clearPendingRequest(tagId);
+    }
+
+    return hasApprovedTag;
+  }
+
+  private hasPendingRequest(tagId: number): boolean {
+    const userId = this.authService.getUserId();
+    if (!userId || typeof window === 'undefined') return false;
+
+    return this.getStoredPendingRequests().some((request) =>
+      request.userId === userId && request.tagId === tagId
+    );
+  }
+
+  private storePendingRequest(tagId: number): void {
+    const userId = this.authService.getUserId();
+    if (!userId || typeof window === 'undefined') return;
+
+    const requests = this.getStoredPendingRequests();
+    const alreadyExists = requests.some((request) => request.userId === userId && request.tagId === tagId);
+
+    if (alreadyExists) return;
+
+    requests.push({
+      userId,
+      tagId,
+      submittedAt: new Date().toISOString()
+    });
+
+    localStorage.setItem(this.pendingRequestsStorageKey, JSON.stringify(requests));
+  }
+
+  private clearPendingRequest(tagId: number): void {
+    const userId = this.authService.getUserId();
+    if (!userId || typeof window === 'undefined') return;
+
+    const nextRequests = this.getStoredPendingRequests().filter((request) =>
+      !(request.userId === userId && request.tagId === tagId)
+    );
+
+    localStorage.setItem(this.pendingRequestsStorageKey, JSON.stringify(nextRequests));
+  }
+
+  private getStoredPendingRequests(): Array<{ userId: number; tagId: number; submittedAt: string }> {
+    if (typeof window === 'undefined') return [];
+
+    try {
+      const raw = localStorage.getItem(this.pendingRequestsStorageKey);
+      const parsed = raw ? JSON.parse(raw) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  }
+
+  private isDuplicateSubmissionMessage(message: string): boolean {
+    const normalized = (message || '').toLowerCase();
+    return normalized.includes('already submitted')
+      || normalized.includes('already requested')
+      || normalized.includes('already exists')
+      || normalized.includes('pending');
   }
 }

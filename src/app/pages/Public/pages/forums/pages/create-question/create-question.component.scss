@@ -8,31 +8,16 @@
 .create-question-container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 4.25rem 2rem 2rem;
     animation: fadeIn 0.4s ease-out;
+
+    @media (max-width: 768px) {
+        padding: 3.25rem 1rem 2rem;
+    }
 }
 
 .header {
     margin-bottom: 2.5rem;
-
-    .breadcrumb {
-        color: #94a3b8;
-        font-size: 0.875rem;
-        margin-bottom: 1.25rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-
-        a {
-            color: #94a3b8;
-            text-decoration: none;
-            transition: color 0.2s;
-
-            &:hover {
-                color: #3b82f6;
-            }
-        }
-    }
 
     h1 {
         font-size: 2.25rem;

@@ -11,50 +11,6 @@
 
         <div class="modal-body-premium">
             <form [formGroup]="verificationForm" (ngSubmit)="submitVerification()">
-                <div class="community-policy-card" *ngIf="isCommunityPolicyMode">
-                    <div class="policy-top-row">
-                        <span class="dept-chip">Department 01 · COMMUNITY</span>
-                        <button type="button" class="policy-toggle" (click)="toggleCommunityPolicyDetails()">
-                            {{ showCommunityPolicyDetails ? 'Hide Details' : 'Show Details' }}
-                        </button>
-                    </div>
-
-                    <p class="purpose-line">Purpose: Neighborhood governance</p>
-
-                    <p class="note-line">
-                        <strong>Community Member</strong> is internal membership and not a public 2nd Gate badge.
-                    </p>
-
-                    <p class="policy-title">Public / 2nd Gate badges (D01.0):</p>
-                    <ol class="policy-d01-list">
-                        <li>D01.1 Apply for Community Leader Badges</li>
-                        <li>D01.2 Apply for Create a Community</li>
-                        <li>D01.3 List Community Organization in Space</li>
-                    </ol>
-
-                    <div class="policy-details" *ngIf="showCommunityPolicyDetails">
-                        <div class="policy-details-grid">
-                            <div class="detail-block">
-                                <p class="internal-title">Internal (Not a Badge): Community Member</p>
-                                <ul class="policy-list">
-                                    <li>User applies to join a specific community</li>
-                                    <li>Community Leader approves internally</li>
-                                    <li>This is group membership logic, not identity badge</li>
-                                </ul>
-                            </div>
-
-                            <div class="detail-block">
-                                <p class="policy-title gate-title">2nd Gate Keys:</p>
-                                <ul class="policy-list">
-                                    <li *ngFor="let key of communitySecondGateKeys">{{ key }}</li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <p class="footnote-line">This keeps governance clean and avoids badge inflation.</p>
-                    </div>
-                </div>
-
                 <div class="row">
                     <div class="col-md-6 mb-4">
                         <label class="form-label-premium">Occupation / Role *</label>
