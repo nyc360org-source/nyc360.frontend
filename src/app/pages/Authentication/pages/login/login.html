@@ -20,13 +20,8 @@
         <p>Enter your credentials to continue.</p>
       </div>
 
-      <div class="alert-box alert-box-info" *ngIf="emailVerificationNotice" @fadeIn>
-        <i class="bi bi-envelope-check-fill"></i>
-        <span>{{ emailVerificationNotice }}</span>
-      </div>
-
       <!-- Error Alert -->
-      <div class="alert-box alert-box-error" *ngIf="loginError" @fadeIn>
+      <div class="alert-box" *ngIf="loginError" @fadeIn>
         <i class="bi bi-exclamation-triangle-fill"></i>
         <span>{{ loginError }}</span>
       </div>

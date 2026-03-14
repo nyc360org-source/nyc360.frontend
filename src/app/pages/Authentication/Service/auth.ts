@@ -230,7 +230,6 @@ export class AuthService {
       avatarUrl: data.AvatarUrl ?? data.avatarUrl,
       coverImageUrl: data.CoverImageUrl ?? data.coverImageUrl,
       twoFactorEnabled: data.TwoFactorEnabled ?? data.twoFactorEnabled,
-      emailConfirmed: data.EmailConfirmed ?? data.emailConfirmed,
       isVerified: data.IsVerified ?? data.isVerified,
       isPending: data.IsPending ?? data.isPending ?? false,
       applicationsCount: data.ApplicationsCount ?? data.applicationsCount ?? 0,

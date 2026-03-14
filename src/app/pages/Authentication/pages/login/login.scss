@@ -8,7 +8,6 @@ $text-muted: #64748b;
 $border-soft: #f1f5f9;
 $border-strong: #e2e8f0;
 $input-fill: #f8fafc;
-$info: #2563eb;
 $danger: #ef4444;
 
 .auth-layout {
@@ -293,6 +292,8 @@ $danger: #ef4444;
 }
 
 .alert-box {
+  background: rgba($danger, 0.05);
+  color: $danger;
   padding: 15px;
   border-radius: 12px;
   font-size: 0.9rem;
@@ -300,17 +301,5 @@ $danger: #ef4444;
   display: flex;
   align-items: center;
   gap: 10px;
-  border: 1px solid transparent;
-}
-
-.alert-box-info {
-  background: rgba($info, 0.08);
-  color: color.adjust($info, $lightness: -8%);
-  border-color: rgba($info, 0.25);
-}
-
-.alert-box-error {
-  background: rgba($danger, 0.05);
-  color: $danger;
-  border-color: rgba($danger, 0.1);
+  border: 1px solid rgba($danger, 0.1);
 }

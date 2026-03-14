@@ -48,7 +48,6 @@ export class RegisterNewYorkerComponent implements OnInit {
     showModal = false;
     modalTitle = 'Welcome Home!';
     modalMessage = '';
-    registeredEmail = '';
 
     ngOnInit() {
         this.initForm();
@@ -167,9 +166,8 @@ export class RegisterNewYorkerComponent implements OnInit {
             next: (res) => {
                 this.isLoading = false;
                 if (res.isSuccess) {
-                    this.registeredEmail = formValue.Email;
                     this.modalTitle = 'Welcome, New Yorker!';
-                    this.modalMessage = 'Your profile has been created. We sent a verification email to your inbox. Please verify your email before signing in.';
+                    this.modalMessage = 'Your profile has been created. You can now connect with your local community and follow neighborhood updates.';
                     this.showModal = true;
                 } else {
                     this.toastService.error(res.error?.message || 'Registration failed.');
@@ -184,15 +182,7 @@ export class RegisterNewYorkerComponent implements OnInit {
 
     onModalClose() {
         this.showModal = false;
-        const queryParams: Record<string, string> = {
-            verificationEmailSent: 'true'
-        };
-
-        if (this.registeredEmail) {
-            queryParams['email'] = this.registeredEmail;
-        }
-
-        this.router.navigate(['/auth/login'], { queryParams });
+        this.router.navigate(['/auth/login']);
     }
 
     goBack() {
