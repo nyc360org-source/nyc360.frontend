@@ -1,11 +1,9 @@
 import { Component, inject, OnInit, AfterViewInit, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { trigger, style, animate, transition } from '@angular/animations';
-import { take } from 'rxjs';
 import { LoginService } from '../../Service/login-service';
-import { AuthService } from '../../Service/auth';
 import { ToastService } from '../../../../shared/services/toast.service';
 
 declare var google: any;
@@ -30,9 +28,7 @@ import { AuthSuccessModalComponent } from '../../../../shared/components/auth-su
 export class LoginComponent implements OnInit, AfterViewInit {
 
   private loginService = inject(LoginService);
-  private authService = inject(AuthService);
   private router = inject(Router);
-  private route = inject(ActivatedRoute);
   private ngZone = inject(NgZone);
   private fb = inject(FormBuilder);
   private toastService = inject(ToastService);
@@ -45,11 +41,9 @@ export class LoginComponent implements OnInit, AfterViewInit {
   modalTitle = 'Welcome Back!';
   modalMessage = 'You have successfully logged in.';
   redirectUrl = '/public/home';
-  emailVerificationNotice = '';
 
   ngOnInit() {
     this.initForm();
-    this.showVerificationNoticeFromRegistration();
   }
 
   initForm() {
@@ -57,22 +51,6 @@ export class LoginComponent implements OnInit, AfterViewInit {
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
-  }
-
-  private showVerificationNoticeFromRegistration() {
-    const verificationEmailSent = this.route.snapshot.queryParamMap.get('verificationEmailSent');
-    if (verificationEmailSent !== 'true') {
-      return;
-    }
-
-    const email = (this.route.snapshot.queryParamMap.get('email') || '').trim();
-    if (email) {
-      this.loginForm.patchValue({ email });
-    }
-
-    const emailSegment = email ? ` to ${email}` : '';
-    this.emailVerificationNotice = `We sent a verification email${emailSegment}. Please verify your email before logging in.`;
-    this.toastService.show(this.emailVerificationNotice, 'info', 5000);
   }
 
   ngAfterViewInit() {
@@ -143,7 +121,6 @@ export class LoginComponent implements OnInit, AfterViewInit {
 
   onSubmit() {
     this.loginError = '';
-
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
 
@@ -181,30 +158,11 @@ export class LoginComponent implements OnInit, AfterViewInit {
             this.toastService.info('Please verify your account with the OTP sent to your email');
             this.router.navigate(['/auth/verify-otp'], { queryParams: { email: loginData.email } });
           } else {
-            this.authService.fetchFullUserInfo().pipe(take(1)).subscribe({
-              next: (userInfoRes) => {
-                const emailConfirmed = userInfoRes.data?.emailConfirmed;
-                if (emailConfirmed === false) {
-                  this.authService.logout();
-                  this.loginError = 'Please verify your email before logging in.';
-                  this.toastService.error('Please verify your email before logging in.');
-                  return;
-                }
-
-                this.toastService.success('Login successful! Welcome back.');
-                this.modalTitle = 'Welcome Back!';
-                this.modalMessage = 'You have successfully logged in.';
-                this.redirectUrl = '/public/home';
-                this.showModal = true;
-              },
-              error: () => {
-                this.toastService.success('Login successful! Welcome back.');
-                this.modalTitle = 'Welcome Back!';
-                this.modalMessage = 'You have successfully logged in.';
-                this.redirectUrl = '/public/home';
-                this.showModal = true;
-              }
-            });
+            this.toastService.success('Login successful! Welcome back.');
+            this.modalTitle = 'Welcome Back!';
+            this.modalMessage = 'You have successfully logged in.';
+            this.redirectUrl = '/public/home';
+            this.showModal = true;
           }
         } else {
           // Handle specific error messages from API

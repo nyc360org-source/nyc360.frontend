@@ -9,7 +9,6 @@ export interface UserInfo {
   avatarUrl: string;
   coverImageUrl: string;
   twoFactorEnabled: boolean;
-  emailConfirmed?: boolean;
   isVerified: boolean;
   isPending: boolean;
   location: UserLocation | null;
