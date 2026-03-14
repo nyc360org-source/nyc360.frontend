@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { CommunityService, LocationDto } from '../../services/community';
 import { CommunitySuggestion } from '../../models/community';
 import { environment } from '../../../../../../environments/environment';
@@ -21,7 +21,6 @@ export class CommunityDiscoveryComponent implements OnInit {
   private communityService = inject(CommunityService);
   protected readonly environment = environment;
   private loaderService = inject(GlobalLoaderService);
-  private route = inject(ActivatedRoute);
 
   // Data
   communities: (CommunitySuggestion & { showSuccess?: boolean })[] = [];
@@ -61,16 +60,7 @@ export class CommunityDiscoveryComponent implements OnInit {
   ];
 
   ngOnInit() {
-    this.route.queryParamMap.subscribe((params) => {
-      const searchFromUrl = (params.get('search') || '').trim();
-      const hasChanged = searchFromUrl !== this.searchText;
-      this.searchText = searchFromUrl;
-      if (hasChanged) {
-        this.currentPage = 1;
-      }
-      this.loadCommunities();
-    });
-
+    this.loadCommunities();
     this.setupLocationSearch();
   }
 

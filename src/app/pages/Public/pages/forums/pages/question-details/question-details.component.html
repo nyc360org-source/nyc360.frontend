@@ -1,5 +1,11 @@
 <div class="question-details-container">
+    <!-- Header with Breadcrumb -->
     <div class="header">
+        <div class="breadcrumb" *ngIf="question">
+            <a routerLink="/public/forums">Forums</a>
+            <span>/</span>
+            <span>Question Details</span>
+        </div>
     </div>
 
     <!-- Question Card -->
@@ -17,13 +23,9 @@
             </div>
             <h1 class="question-title">{{ question.title }}</h1>
             <div class="question-meta">
-                    <div class="author-info">
-                    <app-initials-avatar
-                        class="author-avatar"
-                        [name]="question.author.fullName || question.author.username"
-                        [src]="question.author.imageUrl"
-                        [alt]="question.author.fullName">
-                    </app-initials-avatar>
+                <div class="author-info">
+                    <img [src]="resolveAvatarUrl(question.author.imageUrl)" [alt]="question.author.fullName"
+                        class="author-avatar">
                     <div class="author-details">
                         <div class="author-name-row">
                             <a [routerLink]="['/public/profile', question.author.username]" class="author-name">{{
@@ -120,12 +122,8 @@
             <div class="answer-card" *ngFor="let answer of answers" [class.correct-answer]="answer.isCorrectAnswer">
                 <div class="answer-header">
                     <div class="author-info">
-                        <app-initials-avatar
-                            class="author-avatar"
-                            [name]="answer.author.fullName || answer.author.username"
-                            [src]="answer.author.imageUrl"
-                            [alt]="answer.author.fullName">
-                        </app-initials-avatar>
+                        <img [src]="resolveAvatarUrl(answer.author.imageUrl)" [alt]="answer.author.fullName"
+                            class="author-avatar">
                         <div class="author-details">
                             <div class="author-name-row">
                                 <a [routerLink]="['/public/profile', answer.author.username]" class="author-name">{{

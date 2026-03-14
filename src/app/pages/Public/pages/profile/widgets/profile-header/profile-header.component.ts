@@ -5,7 +5,6 @@ import { environment } from '../../../../../../environments/environment';
 import { ProfileService } from '../../service/profile';
 import { ToastService } from '../../../../../../shared/services/toast.service';
 import { AuthService } from '../../../../../Authentication/Service/auth';
-import { filterPublicCommunityBadges } from '../../../../../../shared/utils/community-badge-policy';
 
 @Component({
     selector: 'app-profile-header',
@@ -90,15 +89,6 @@ export class ProfileHeaderComponent {
 
     get isVerified(): boolean {
         return this.user?.stats?.isVerified === true;
-    }
-
-    get publicBadgeTags(): any[] {
-        return filterPublicCommunityBadges(this.user?.tags || [])
-            .map((tag: any) => ({
-                ...tag,
-                name: tag?.name ?? tag?.Name
-            }))
-            .filter((tag: any) => !!tag.name);
     }
 
     get locationDisplay(): string {
