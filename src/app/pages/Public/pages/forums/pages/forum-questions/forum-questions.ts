@@ -4,12 +4,12 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ForumService } from '../../services/forum.service';
 import { Forum, Question, ApiResponse, ForumDetailsData } from '../../models/forum';
 import { GlobalLoaderService } from '../../../../../../shared/components/global-loader/global-loader.service';
-import { InitialsAvatarComponent } from '../../../../../../shared/components/initials-avatar/initials-avatar.component';
+import { ImageService } from '../../../../../../shared/services/image.service';
 
 @Component({
     selector: 'app-forum-questions',
     standalone: true,
-    imports: [CommonModule, RouterLink, InitialsAvatarComponent],
+    imports: [CommonModule, RouterLink],
     templateUrl: './forum-questions.html',
     styleUrls: ['./forum-questions.scss']
 })
@@ -17,6 +17,7 @@ export class ForumQuestionsComponent implements OnInit {
     private route = inject(ActivatedRoute);
     private forumService = inject(ForumService);
     private loaderService = inject(GlobalLoaderService);
+    protected imageService = inject(ImageService);
 
     slug: string = '';
     forum: Forum | null = null;
@@ -58,6 +59,10 @@ export class ForumQuestionsComponent implements OnInit {
                 this.loaderService.hide();
             }
         });
+    }
+
+    resolveUserImage(author: any): string {
+        return this.imageService.resolveAvatar(author);
     }
 
     resolveForumIcon(iconUrl: string | undefined): string {

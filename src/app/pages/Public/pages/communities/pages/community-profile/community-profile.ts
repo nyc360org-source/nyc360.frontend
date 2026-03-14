@@ -63,8 +63,6 @@ export class CommunityProfileComponent implements OnInit {
   isMembersLoading = false;
   isJoinLoading = false;
   shareSuccess = false;
-  brokenCommunityLogo = false;
-  brokenCommunityCover = false;
 
   // Getters for Logic
   get isJoined(): boolean {
@@ -97,8 +95,6 @@ export class CommunityProfileComponent implements OnInit {
         this.isLoading = false;
         const data = res.data || res.Data;
         if ((res.isSuccess || res.IsSuccess) && data) {
-          this.brokenCommunityLogo = false;
-          this.brokenCommunityCover = false;
           this.community = data.community;
           this.ownerId = data.ownerId;
           this.memberRole = data.memberRole ? Number(data.memberRole) : null;
@@ -340,34 +336,6 @@ export class CommunityProfileComponent implements OnInit {
   }
 
   // --- Helpers ---
-  hasCommunityLogo(): boolean {
-    return !!this.cleanText(this.community?.imageUrl) && !this.brokenCommunityLogo;
-  }
-
-  hasCommunityCover(): boolean {
-    return !!this.cleanText(this.community?.coverUrl) && !this.brokenCommunityCover;
-  }
-
-  markCommunityLogoBroken(): void {
-    this.brokenCommunityLogo = true;
-  }
-
-  markCommunityCoverBroken(): void {
-    this.brokenCommunityCover = true;
-  }
-
-  getCommunityInitials(name?: string | null): string {
-    const parts = this.cleanText(name)
-      .split(/\s+/)
-      .filter(Boolean);
-
-    if (parts.length >= 2) {
-      return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
-    }
-
-    return (parts[0] || 'NY').slice(0, 2).toUpperCase();
-  }
-
   resolveCommunityImage(url?: string): string {
     if (!url) return 'assets/images/placeholder-cover.jpg';
     if (url.includes('http')) return url;
@@ -406,11 +374,5 @@ export class CommunityProfileComponent implements OnInit {
   getAuthorName(author: any): string {
     if (!author) return 'NYC360 Member';
     return typeof author === 'string' ? author : author.name;
-  }
-
-  private cleanText(value: string | null | undefined): string {
-    return String(value || '')
-      .replace(/\s+/g, ' ')
-      .trim();
   }
 }

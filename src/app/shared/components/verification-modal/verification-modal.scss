@@ -20,12 +20,9 @@ $text-dark: #2c2c2c;
         background: $modal-bg;
         width: 90%;
         max-width: 650px;
-        max-height: 92vh;
         border-radius: 20px;
         box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
         overflow: hidden;
-        display: flex;
-        flex-direction: column;
         animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         border: 1px solid rgba(255, 255, 255, 0.2);
 
@@ -83,103 +80,6 @@ $text-dark: #2c2c2c;
 
         .modal-body-premium {
             padding: 40px;
-            overflow-y: auto;
-            overscroll-behavior: contain;
-            scrollbar-gutter: stable;
-            scrollbar-width: thin;
-            scrollbar-color: #b8c1cc transparent;
-
-            &::-webkit-scrollbar {
-                width: 8px;
-            }
-
-            &::-webkit-scrollbar-track {
-                background: transparent;
-            }
-
-            &::-webkit-scrollbar-thumb {
-                background: #c4ccd6;
-                border-radius: 999px;
-            }
-
-            .community-policy-card {
-                margin-bottom: 22px;
-                padding: 14px 14px 12px;
-                border-radius: 12px;
-                border: 1px solid #dfe7f2;
-                background: #fafcff;
-
-                .policy-top-row {
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-                    gap: 12px;
-                    margin-bottom: 10px;
-                }
-
-                .dept-chip {
-                    display: inline-flex;
-                    align-items: center;
-                    padding: 5px 9px;
-                    border-radius: 999px;
-                    font-size: 0.73rem;
-                    font-weight: 700;
-                    letter-spacing: 0.25px;
-                    text-transform: uppercase;
-                    color: #125f57;
-                    background: #ddf2ee;
-                }
-
-                .policy-helper {
-                    color: #5b6a80;
-                    font-size: 0.82rem;
-                    font-weight: 500;
-                }
-
-                .policy-section-title {
-                    margin: 0 0 8px;
-                    color: #475569;
-                    font-size: 0.75rem;
-                    font-weight: 600;
-                    letter-spacing: 0.28px;
-                    text-transform: uppercase;
-                }
-
-                .badge-list {
-                    margin: 0;
-                    padding: 0;
-                    list-style: none;
-                    display: grid;
-                    gap: 0;
-
-                    li {
-                        display: flex;
-                        align-items: flex-start;
-                        gap: 8px;
-                        padding: 6px 0;
-                        border-bottom: 1px dashed #d7e0eb;
-                    }
-
-                    li:last-child {
-                        border-bottom: none;
-                    }
-
-                    .badge-index {
-                        min-width: 18px;
-                        color: #0f766e;
-                        font-size: 0.87rem;
-                        font-weight: 800;
-                    }
-
-                    .badge-label {
-                        color: #243247;
-                        font-size: 0.87rem;
-                        line-height: 1.4;
-                        font-weight: 500;
-                        font-family: inherit;
-                    }
-                }
-            }
 
             .form-label-premium {
                 font-weight: 700;
@@ -288,6 +188,7 @@ $text-dark: #2c2c2c;
             width: 95%;
             margin: 10px;
             max-height: 95vh;
+            overflow-y: auto;
             /* Scrollable if too height */
             display: flex;
             flex-direction: column;
@@ -324,16 +225,6 @@ $text-dark: #2c2c2c;
             .modal-body-premium {
                 padding: 20px;
                 overflow-y: auto;
-
-                .community-policy-card {
-                    padding: 12px 12px 10px;
-
-                    .policy-top-row {
-                        flex-direction: column;
-                        align-items: flex-start;
-                        gap: 6px;
-                    }
-                }
 
                 .modal-footer-premium {
                     flex-direction: column-reverse;

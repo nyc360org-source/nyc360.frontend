@@ -1,119 +1,96 @@
 <div class="community-page">
 
   <header class="page-header">
-    <small>Welcome to NYC360</small>
+    <small>Welcome at NYC360</small>
     <h1>Community</h1>
     <p>Where New Yorkers can share ideas, discussions, and local conversations</p>
 
-    <form class="community-header-search" (submit)="onCommunitySearch(); $event.preventDefault()">
-      <i class="bi bi-search search-icon" aria-hidden="true"></i>
-      <input type="text" name="communitySearch" [(ngModel)]="communitySearchTerm"
-        placeholder="Search groups, topics, or neighborhoods..." autocomplete="off">
-      <button type="submit" class="search-btn">Search</button>
-    </form>
-
     <div class="header-nav-buttons">
+      <!-- <a routerLink="/public/feed/community" class="nav-btn">Feed</a> -->
+      <!-- <a routerLink="/public/feed/community" class="nav-btn">Feed</a> -->
       <a routerLink="/public/discover" class="nav-btn">
-        <i class="bi bi-rss nav-btn-icon"></i>
-        <span>Explore</span>
+        <i class="bi bi-compass me-2"></i> Explore
       </a>
       <a routerLink="/public/category/community/saved" class="nav-btn">
-        <i class="bi bi-journal-text nav-btn-icon"></i>
-        <span>My Inquiries</span>
-      </a>
-      <a routerLink="/public/category/community/dashboard" class="nav-btn">
-        <i class="bi bi-speedometer2 nav-btn-icon"></i>
-        <span>Contributor Dashboard</span>
+        <i class="bi bi-chat-left-text me-2"></i> My Inquiries
       </a>
 
 
-      <div class="nav-dropdown-complex" (mouseenter)="openActivityDropdown()"
-        (mouseleave)="scheduleCloseActivityDropdown()">
+      <!-- Nested Dropdown -->
+      <div class="nav-dropdown-complex">
         <button class="nav-btn dropdown-toggle-btn" (click)="toggleActivityDropdown($event)"
           [class.active]="isActivityDropdownOpen">
-          <i class="bi bi-activity nav-btn-icon"></i>
-          <span>Contributor Activities</span>
-          <i class="bi bi-chevron-down dropdown-caret"></i>
+          <i class="bi bi-person-fill-gear me-2"></i> Contributor Activity <i class="bi bi-chevron-down ms-2"
+            style="font-size: 0.8em;"></i>
         </button>
         <div class="dropdown-menu-main" [class.show]="isActivityDropdownOpen" (click)="$event.stopPropagation()">
-          <button type="button" class="simple-item activity-pill" (click)="openLeaderApplicationModal()">
-            Apply For Community Leader
-          </button>
 
-          <a routerLink="/public/create-community" class="simple-item activity-pill" (click)="closeActivityDropdown()">
-            Creating a Community
-          </a>
-
-          <button type="button" class="simple-item activity-pill"
-            (click)="openVerificationFromDropdown('List Community Organization in THE360 SPACE')">
-            List Community Organization in SPACE
-          </button>
-
+          <!-- Publish News Article -->
           <ng-container *ngIf="hasCommunityLeaderAccess; else lockedNews">
-            <a routerLink="/public/posts/create" [queryParams]="{ category: 0 }" class="simple-item activity-pill"
-              (click)="closeActivityDropdown()">
-              Publish News Article
+            <a routerLink="/public/posts/create" [queryParams]="{ category: 0 }" class="simple-item">
+              <i class="bi bi-newspaper me-2"></i>Publish News Article
             </a>
           </ng-container>
           <ng-template #lockedNews>
-            <div class="locked-tooltip-wrap">
-              <button type="button" class="simple-item locked-row" disabled aria-disabled="true">
-                <i class="bi bi-lock-fill" aria-hidden="true"></i>
-                <span>Publish News Article</span>
-              </button>
-              <div class="locked-tooltip" role="tooltip">
-                Requires Community Leader badge approval.
+            <div class="simple-item locked" (click)="openVerificationModal()">
+              <div class="d-flex align-items-center">
+                <i class="bi bi-newspaper me-2"></i>Publish News Article
               </div>
+              <i class="bi bi-lock-fill ms-auto" style="font-size: 0.9em; opacity: 0.6;"></i>
             </div>
           </ng-template>
 
+          <!-- Connect RSS Feed -->
           <ng-container *ngIf="hasCommunityLeaderAccess; else lockedRSS">
-            <a routerLink="/public/rss/connect" class="simple-item activity-pill" (click)="closeActivityDropdown()">
-              Connect RSS Feed
+            <a routerLink="/public/rss/connect" class="simple-item">
+              <i class="bi bi-rss me-2"></i> Connect RSS Feed
             </a>
           </ng-container>
           <ng-template #lockedRSS>
-            <div class="locked-tooltip-wrap">
-              <button type="button" class="simple-item locked-row" disabled aria-disabled="true">
-                <i class="bi bi-lock-fill" aria-hidden="true"></i>
-                <span>Connect RSS Feed</span>
-              </button>
-              <div class="locked-tooltip" role="tooltip">
-                Requires Community Leader badge approval.
+            <div class="simple-item locked" (click)="openVerificationModal()">
+              <div class="d-flex align-items-center">
+                <i class="bi bi-rss me-2"></i> Connect RSS Feed
               </div>
+              <i class="bi bi-lock-fill ms-auto" style="font-size: 0.9em; opacity: 0.6;"></i>
             </div>
           </ng-template>
+
+
+
         </div>
       </div>
+
+      <a routerLink="/public/my-communities" class="nav-btn">
+        <i class="bi bi-people me-2"></i> My Communities
+      </a>
       <a routerLink="/public/forums/community" class="nav-btn">
-        <i class="bi bi-question-circle nav-btn-icon"></i>
-        <span>Ask a Question</span>
+        <i class="bi bi-patch-question me-2"></i> Ask a Question
       </a>
     </div>
 
 
   </header>
 
-  <div class="content-top-spacer" aria-hidden="true"></div>
+  <div style="height: 30px;"></div>
 
   <div class="content-wrapper">
 
-    <section class="featured-section" *ngIf="featuredPost && hasFeaturedMedia(featuredPost)">
+    <section class="featured-section" *ngIf="featuredPost && featuredPost.attachments.length > 0">
       <div class="featured-card">
         <div class="feat-img">
-          <img class="feat-media-link"
-            [src]="resolvePostImage(featuredPost.attachments[0]?.url)"
-            alt="Featured" [routerLink]="['/public/post', featuredPost.id]">
+          <img
+            [src]="featuredPost.attachments.length ? resolvePostImage(featuredPost.attachments[0].url) : 'assets/images/nyc-city.jpg'"
+            alt="Featured" [routerLink]="['/public/post', featuredPost.id]" style="cursor: pointer;">
         </div>
         <div class="feat-content">
           <div class="tags-row">
             <span class="badge-orange">COMMUNITY HIGHLIGHT</span>
-            <span class="read-time">{{ formatPostDate(featuredPost.createdAt) }}</span>
+            <span class="read-time">4 min read</span>
           </div>
-          <h2 class="feat-title-link" [routerLink]="['/public/post', featuredPost.id]">
-            {{ getFeaturedTitle(featuredPost) }}
+          <h2 [routerLink]="['/public/post', featuredPost.id]" style="cursor: pointer;">
+            {{ featuredPost.title }}
           </h2>
-          <p>{{ getFeaturedExcerpt(featuredPost, 150) }}</p>
+          <p>{{ featuredPost.content | slice:0:150 }}...</p>
           <button class="btn-read-full" [routerLink]="['/public/post', featuredPost.id]">Read Full Article</button>
         </div>
       </div>
@@ -131,35 +108,18 @@
         </button>
       </div>
 
-      <div class="cards-scroller" *ngIf="hasCommunitySuggestions; else discoverEmpty">
+      <div class="cards-scroller">
         <div class="comm-card" *ngFor="let comm of suggestions">
           <div class="card-top">
-            <ng-container *ngIf="hasCommunityAvatar(comm); else fallbackCommunityAvatar">
-              <img [src]="resolveCommunityAvatar(comm.avatarUrl)" class="comm-avatar"
-                [routerLink]="getCommunityRoute(comm)" [style.cursor]="getCommunityRoute(comm) ? 'pointer' : 'default'"
-                (error)="markCommunityAvatarBroken(comm.id)">
-            </ng-container>
-            <ng-template #fallbackCommunityAvatar>
-              <div class="comm-avatar comm-avatar-fallback">
-                {{ getCommunityInitials(comm.name) }}
-              </div>
-            </ng-template>
+            <img [src]="resolveCommunityAvatar(comm.avatarUrl)" class="comm-avatar"
+              [routerLink]="['/public/community', comm.slug]" style="cursor: pointer;">
             <div class="comm-info">
-              <div class="comm-meta-row">
-                <span class="comm-visibility" [class.private]="comm.isPrivate">
-                  {{ comm.isPrivate ? 'Private' : 'Open' }}
-                </span>
-                <span class="comm-members">{{ formatCompactNumber(comm.memberCount) }} Members</span>
-              </div>
-              <h4 [routerLink]="getCommunityRoute(comm)" [style.cursor]="getCommunityRoute(comm) ? 'pointer' : 'default'">
+              <h4 [routerLink]="['/public/community', comm.slug]" style="cursor: pointer;">
                 {{ comm.name }}
               </h4>
+              <span>{{ comm.memberCount }} Members</span>
             </div>
           </div>
-
-          <p class="comm-desc">
-            {{ getExcerpt(comm.description, 96) }}
-          </p>
 
           <button class="btn-join" [class.joined]="comm.isJoined" (click)="joinCommunity(comm)"
             [disabled]="comm.isLoadingJoin || comm.isJoined">
@@ -169,76 +129,30 @@
           </button>
         </div>
 
-      </div>
-      <ng-template #discoverEmpty>
-        <div class="discover-empty-state">
-          <div class="empty-state-icon">
-            <i class="bi bi-people"></i>
-          </div>
-          <div class="empty-state-copy">
-            <h3>No community suggestions right now</h3>
-            <p>We’ll show active community recommendations here as soon as valid data is available.</p>
-          </div>
+        <div class="empty-msg" *ngIf="suggestions.length === 0 && !isLoading">
+          No suggested communities at the moment.
         </div>
-      </ng-template>
+      </div>
     </section>
 
     <!-- Text-Only Featured Post (Moved Down) -->
-    <section class="featured-section text-only-mode" *ngIf="featuredPost && !hasFeaturedMedia(featuredPost)">
-      <div class="featured-card featured-card-text">
-        <div class="feat-content feat-content-text w-100" [class.compact]="isCompactTextFeatured(featuredPost)">
+    <section class="featured-section text-only-mode" *ngIf="featuredPost && featuredPost.attachments.length === 0">
+      <div class="featured-card">
+        <div class="feat-content w-100" style="padding: 40px; text-align: left;">
           <div class="tags-row">
-            <span class="badge-orange badge-soft-blue">LATEST UPDATE</span>
-            <span class="read-time">{{ formatPostDate(featuredPost.createdAt) }}</span>
+            <span class="badge-orange" style="background: #e3f2fd; color: #1976d2;">LATEST UPDATE</span>
+            <span class="read-time">Text Post</span>
           </div>
-          <h2 class="feat-title-link text-only-title" [routerLink]="['/public/post', featuredPost.id]">
-            {{ getFeaturedTitle(featuredPost) }}
+          <h2 [routerLink]="['/public/post', featuredPost.id]" style="cursor: pointer; font-size: 2rem;">
+            {{ featuredPost.title }}
           </h2>
-          <p class="text-only-desc">{{ getFeaturedExcerpt(featuredPost, 300) }}</p>
-          <button class="btn-read-full btn-outline" [routerLink]="['/public/post', featuredPost.id]">
+          <p style="font-size: 1.1rem; color: #444;">{{ featuredPost.content | slice:0:300 }}...</p>
+          <button class="btn-read-full" [routerLink]="['/public/post', featuredPost.id]"
+            style="background: transparent; border: 2px solid #BC5E3D; color: #BC5E3D; box-shadow: none;">
             Read Full Article <i class="bi bi-arrow-right ms-2"></i>
           </button>
         </div>
       </div>
-    </section>
-
-    <section class="discussions-section" *ngIf="discussionPosts.length > 0">
-      <div class="sec-title">
-        <span class="dot"></span>
-        <h3>Active Discussions</h3>
-      </div>
-
-      <article class="discuss-item" *ngFor="let post of discussionPosts">
-        <h4 [routerLink]="['/public/post', post.id]">{{ post.title }}</h4>
-        <p class="discussion-snippet">{{ getExcerpt(post.content, 120) }}</p>
-        <div class="discussion-actions">
-          <a class="read-more-link" [routerLink]="['/public/post', post.id]">
-            Read More <i class="bi bi-arrow-right"></i>
-          </a>
-          <span class="comments-count">
-            <i class="bi bi-chat-text"></i> {{ post.stats.comments || 0 }} comments
-          </span>
-        </div>
-      </article>
-    </section>
-
-    <section class="support-cards-section" *ngIf="supportCards.length > 0">
-      <article class="support-card" *ngFor="let item of supportCards">
-        <div class="support-card-header">
-          <span class="support-icon" [class.help-icon]="item.label === 'Help'">
-            <i class="bi" [class.bi-question-lg]="item.label === 'QUESTION'" [class.bi-star-fill]="item.label === 'Help'"></i>
-          </span>
-          <h3>{{ item.label }}</h3>
-        </div>
-
-        <h4 [routerLink]="['/public/post', item.post.id]">{{ item.post.title }}</h4>
-        <p>{{ item.post.content | slice:0:110 }}...</p>
-
-        <div class="support-meta">
-          <span>Posted by <strong>{{ getPostAuthorName(item.post) }}</strong></span>
-          <span>{{ item.post.stats.comments || 0 }} answers</span>
-        </div>
-      </article>
     </section>
 
 
@@ -253,16 +167,7 @@
   </div>
 
   <app-verification-modal *ngIf="isVerificationModalOpen" [categoryName]="'Community'" [categoryId]="4"
-    [extraOccupations]="verificationModalOccupations"
     (close)="closeVerificationModal()" (verified)="onVerified()">
   </app-verification-modal>
-
-  <app-community-leader-application-modal *ngIf="isLeaderApplicationModalOpen"
-    [fullName]="leaderApplicationFullName"
-    [email]="leaderApplicationEmail"
-    [phoneNumber]="leaderApplicationPhoneNumber"
-    (close)="closeLeaderApplicationModal()"
-    (submitApplication)="onLeaderApplicationSubmitted($event)">
-  </app-community-leader-application-modal>
 
 </div>

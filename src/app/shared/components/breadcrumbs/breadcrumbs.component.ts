@@ -25,11 +25,9 @@ const ROUTE_MAP: Array<{
         { match: /^\/category\/([^/]+)\/dashboard/, crumbs: (m, f) => [{ label: 'Category', url: `/public/category/${m[1]}` }, { label: 'Dashboard', url: f }] },
 
         // Community
-        { match: /^\/community$/, crumbs: () => [{ label: 'Community', url: '/public/community' }] },
-        { match: /^\/community\/([^/]+)\/manage$/, crumbs: (m, f) => [{ label: 'Community', url: '/public/community' }, { label: m[1].replace(/-/g, ' '), url: `/public/community/${m[1]}` }, { label: 'Manage Community', url: f }] },
-        { match: /^\/community\/([^/]+)$/, crumbs: (m, f) => [{ label: 'Community', url: '/public/community' }, { label: m[1].replace(/-/g, ' '), url: f }] },
-        { match: /^\/create-community$/, crumbs: () => [{ label: 'Community', url: '/public/community' }, { label: 'Create Community', url: '/public/create-community' }] },
-        { match: /^\/my-communities$/, crumbs: () => [{ label: 'Community', url: '/public/community' }, { label: 'My Communities', url: '/public/my-communities' }] },
+        { match: /^\/communities$/, crumbs: () => [{ label: 'Communities', url: '/public/communities' }] },
+        { match: /^\/community\/([^/]+)$/, crumbs: (m, f) => [{ label: 'Communities', url: '/public/communities' }, { label: m[1].replace(/-/g, ' '), url: f }] },
+        { match: /^\/my-communities$/, crumbs: () => [{ label: 'Communities', url: '/public/communities' }, { label: 'My Communities', url: '/public/my-communities' }] },
 
         // Housing
         { match: /^\/housing$/, crumbs: () => [{ label: 'Housing', url: '/public/housing' }] },
@@ -42,10 +40,7 @@ const ROUTE_MAP: Array<{
         { match: /^\/job-profile\/([^/]+)$/, crumbs: (m, f) => [{ label: 'Professions', url: '/public/profession' }, { label: 'Job Details', url: f }] },
 
         // Forums
-        { match: /^\/forums$/, crumbs: () => [{ label: 'Forums', url: '/public/forums' }] },
-        { match: /^\/forums\/([^/]+)\/create$/, crumbs: (m, f) => [{ label: 'Forums', url: '/public/forums' }, { label: m[1].replace(/-/g, ' '), url: `/public/forums/${m[1]}` }, { label: 'Ask a Question', url: f }] },
         { match: /^\/forums\/([^/]+)$/, crumbs: (m, f) => [{ label: 'Forums', url: '/public/forums' }, { label: m[1].replace(/-/g, ' '), url: f }] },
-        { match: /^\/forums\/questions\/([^/]+)$/, crumbs: (m, f) => [{ label: 'Forums', url: '/public/forums' }, { label: 'Question Details', url: f }] },
 
         // Posts & Global Details
         { match: /^\/posts\/details\/([^/]+)$/, crumbs: (m, f) => [{ label: 'Posts', url: '/public/home' }, { label: 'Post Details', url: f }] },
@@ -74,14 +69,6 @@ function getContextKey(relUrl: string): string {
     return root;
 }
 
-function toTitleCase(value: string): string {
-    return value
-        .split(/\s+/)
-        .filter(Boolean)
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ');
-}
-
 @Component({
     selector: 'app-breadcrumbs',
     standalone: true,
@@ -92,14 +79,6 @@ function toTitleCase(value: string): string {
 export class BreadcrumbsComponent implements OnInit, OnDestroy {
     private router = inject(Router);
     private routerSub?: Subscription;
-    private readonly hiddenOnRoutes: RegExp[] = [
-        /^\/$/,
-        /^\/public\/?$/,
-        /^\/public\/home$/
-    ];
-    private readonly darkThemeRoutes: RegExp[] = [
-        /^\/public\/forums(\/.*)?$/
-    ];
 
     breadcrumbs: Breadcrumb[] = [];
     isScrolled = false;
@@ -117,12 +96,7 @@ export class BreadcrumbsComponent implements OnInit, OnDestroy {
 
     isHomePage(): boolean {
         const url = this.router.url.split('?')[0];
-        return this.hiddenOnRoutes.some((pattern) => pattern.test(url));
-    }
-
-    isDarkThemeRoute(): boolean {
-        const url = this.router.url.split('?')[0];
-        return this.darkThemeRoutes.some((pattern) => pattern.test(url));
+        return url === '/public/home' || url === '/public' || url === '/' || url === '';
     }
 
     ngOnInit(): void {
@@ -182,13 +156,13 @@ export class BreadcrumbsComponent implements OnInit, OnDestroy {
     }
 
     private getCrumbsFromMap(relUrl: string, fullUrl: string): Breadcrumb[] {
+        // Base root for all public pages
+        const homeCrumb: Breadcrumb = { label: 'Home', url: '/public/home' };
+
         for (const route of ROUTE_MAP) {
             const match = relUrl.match(route.match);
             if (match) {
-                return route.crumbs(match, fullUrl).map((crumb) => ({
-                    ...crumb,
-                    label: toTitleCase(crumb.label)
-                }));
+                return [homeCrumb, ...route.crumbs(match, fullUrl)];
             }
         }
         return [];

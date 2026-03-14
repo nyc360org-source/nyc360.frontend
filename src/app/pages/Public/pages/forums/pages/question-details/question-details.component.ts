@@ -6,12 +6,11 @@ import { ForumService } from '../../services/forum.service';
 import { GlobalLoaderService } from '../../../../../../shared/components/global-loader/global-loader.service';
 import { ToastService } from '../../../../../../shared/services/toast.service';
 import { Question, Answer } from '../../models/forum';
-import { InitialsAvatarComponent } from '../../../../../../shared/components/initials-avatar/initials-avatar.component';
 
 @Component({
     selector: 'app-question-details',
     standalone: true,
-    imports: [CommonModule, FormsModule, RouterLink, InitialsAvatarComponent],
+    imports: [CommonModule, FormsModule, RouterLink],
     templateUrl: './question-details.component.html',
     styleUrls: ['./question-details.component.scss']
 })
@@ -167,5 +166,12 @@ export class QuestionDetailsComponent implements OnInit {
             case 3: return 'Verified';
             default: return 'Member';
         }
+    }
+
+    resolveAvatarUrl(imageUrl: string | undefined): string {
+        if (!imageUrl) {
+            return 'assets/default-avatar.png';
+        }
+        return `https://nyc360.runasp.net/avatars/${imageUrl}`;
     }
 }

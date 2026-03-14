@@ -11,6 +11,7 @@
   <div class="container form-container">
 
     <form [formGroup]="form" (ngSubmit)="submit()">
+
       <div class="form-card">
         <h3><i class="bi bi-info-circle-fill"></i> Basic Information</h3>
 
@@ -88,27 +89,18 @@
       <!-- Tags form card removed -->
 
       <div class="form-card privacy-card">
-        <h3><i class="bi bi-info-circle-fill"></i> Privacy & Access</h3>
+        <h3><i class="bi bi-shield-lock-fill"></i> Privacy</h3>
+        <p class="hint">Control who can see and join your community.</p>
 
-        <div class="toggle-row access-row">
+        <div class="toggle-row">
           <div class="toggle-info">
-            <strong>{{ form.get('isPrivate')?.value ? 'Private Community' : 'Public Community' }}</strong>
-            <span>
-              {{ form.get('isPrivate')?.value ? 'Only approved members can find and join.' : 'Anyone can find and join.' }}
-            </span>
+            <strong>Private Community</strong>
+            <span>Only members can see posts. New members must be approved.</span>
           </div>
           <label class="switch">
             <input type="checkbox" formControlName="isPrivate">
             <span class="slider round"></span>
           </label>
-        </div>
-
-        <div class="invite-block">
-          <label>Invite Link</label>
-          <div class="invite-row">
-            <input type="text" [value]="inviteLink" readonly>
-            <button type="button" class="copy-btn" (click)="copyInviteLink()">Copy</button>
-          </div>
         </div>
       </div>
 
@@ -145,7 +137,7 @@
       </div>
 
       <div class="actions-row">
-        <button type="button" class="btn-cancel" routerLink="/public/community">Cancel</button>
+        <button type="button" class="btn-cancel" routerLink="/public/communities/community">Cancel</button>
         <button type="submit" class="btn-submit" [disabled]="isSubmitting">
           {{ isSubmitting ? 'Creating...' : 'Create Community' }}
         </button>
